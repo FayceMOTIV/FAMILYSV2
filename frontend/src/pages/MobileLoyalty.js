@@ -196,16 +196,16 @@ const MobileLoyalty = () => {
         {/* CTA */}
         <div className="bg-gradient-to-r from-[#C62828] to-[#8B0000] rounded-[32px] p-6 text-white text-center shadow-xl">
           <h2 className="text-xl font-black mb-3">
-            Prêt à gagner plus ?
+            Prêt à gagner du cashback ?
           </h2>
           <p className="mb-5 opacity-90">
-            Commande maintenant et gagne ton prochain tampon
+            Chaque commande = 5% crédité instantanément
           </p>
           <Button
             onClick={() => navigate('/menu')}
             className="w-full bg-[#FFD54F] hover:bg-[#FFC107] text-[#121212] py-7 rounded-full text-lg font-black shadow-lg active:scale-95"
           >
-            Commander
+            Commander maintenant
             <ChevronRight className="w-5 h-5 ml-2" />
           </Button>
         </div>
