@@ -9,30 +9,30 @@ const api = axios.create({
   },
 });
 
-// Add auth token to requests
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('admin_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+// Add auth token to requests - TEMPORAIREMENT DESACTIVE
+// api.interceptors.request.use(
+//   (config) => {
+//     const token = localStorage.getItem('admin_token');
+//     if (token) {
+//       config.headers.Authorization = `Bearer ${token}`;
+//     }
+//     return config;
+//   },
+//   (error) => Promise.reject(error)
+// );
 
-// Handle 401 errors
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('admin_token');
-      localStorage.removeItem('admin_user');
-      window.location.href = '/admin/login';
-    }
-    return Promise.reject(error);
-  }
-);
+// Handle 401 errors - TEMPORAIREMENT DESACTIVE
+// api.interceptors.response.use(
+//   (response) => response,
+//   (error) => {
+//     if (error.response?.status === 401) {
+//       localStorage.removeItem('admin_token');
+//       localStorage.removeItem('admin_user');
+//       window.location.href = '/admin/login';
+//     }
+//     return Promise.reject(error);
+//   }
+// );
 
 export const authAPI = {
   login: (email, password) => api.post('/auth/login', { email, password }),
