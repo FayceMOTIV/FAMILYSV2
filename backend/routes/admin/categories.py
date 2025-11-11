@@ -4,9 +4,10 @@ from models.category import Category, CategoryCreate, CategoryUpdate
 from middleware.auth import require_manager_or_admin
 from datetime import datetime, timezone
 
+from database import db
+
 router = APIRouter(prefix="/categories", tags=["admin-categories"])
 
-from database import db
 
 @router.get("", response_model=List[Category])
 async def get_categories(current_user: dict = Security(require_manager_or_admin)):

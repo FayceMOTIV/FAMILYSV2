@@ -4,9 +4,10 @@ from models.product import Product, ProductCreate, ProductUpdate
 from middleware.auth import require_manager_or_admin
 from datetime import datetime, timezone
 
+from database import db
+
 router = APIRouter(prefix="/products", tags=["admin-products"])
 
-from database import db
 
 @router.get("", response_model=List[Product])
 async def get_products(

@@ -4,10 +4,11 @@ from middleware.auth import require_manager_or_admin
 from typing import Dict, List
 import os
 
+from database import db
+
 router = APIRouter(prefix="/dashboard", tags=["admin-dashboard"])
 
 # Get DB dependency
-from database import db
 
 @router.get("/stats")
 async def get_dashboard_stats(current_user: dict = Security(require_manager_or_admin)):

@@ -4,9 +4,10 @@ from models.order import Order, OrderStatusUpdate, OrderStatus
 from middleware.auth import require_manager_or_admin
 from datetime import datetime, timezone
 
+from database import db
+
 router = APIRouter(prefix="/orders", tags=["admin-orders"])
 
-from database import db
 
 @router.get("", response_model=List[Order])
 async def get_orders(
