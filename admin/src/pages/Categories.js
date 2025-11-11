@@ -75,7 +75,10 @@ export const Categories = () => {
               <div className="flex items-center justify-between">
                 <h4 className="font-bold text-lg">{category.name}</h4>
                 <div className="flex space-x-2">
-                  <Button size="sm" variant="outline">
+                  <Button size="sm" variant="outline" onClick={() => {
+                    setEditingCategory(category);
+                    setShowModal(true);
+                  }}>
                     <Edit2 className="w-4 h-4" />
                   </Button>
                   <Button size="sm" variant="danger" onClick={() => handleDelete(category.id)}>
