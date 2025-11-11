@@ -171,12 +171,12 @@ tail -f /var/log/supervisor/admin.out.log
 
 ---
 
-## 📈 Ce qui reste pour Phase 1 (optionnel)
+## ✅ Bonus Phase 1 (COMPLÉTÉ)
 
-- [ ] Modal création/édition produit (UI)
-- [ ] Modal création/édition catégorie (UI)
-- [ ] Créer quelques commandes de test pour voir dashboard rempli
-- [ ] Upload d'images produits (actuellement URLs externes)
+- [x] Modal création/édition produit (UI) - ✅ FONCTIONNEL
+- [x] Modal création/édition catégorie (UI) - ✅ FONCTIONNEL
+- [x] Créer quelques commandes de test pour voir dashboard rempli - ✅ 15 COMMANDES
+- [ ] Upload d'images produits (actuellement URLs externes) - Phase 2
 
 ---
 
