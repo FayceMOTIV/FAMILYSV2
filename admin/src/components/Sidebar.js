@@ -48,21 +48,34 @@ export const Sidebar = () => {
       </div>
 
       {/* Menu Items */}
-      <nav className="flex-1 p-4 space-y-2">
-        {menuItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            end={item.exact}
-            className={({ isActive }) =>
-              cn(
-                'flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200',
-                isActive
-                  ? 'bg-primary text-white font-semibold'
-                  : 'text-gray-700 hover:bg-gray-100'
-              )
-            }
-          >
+      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+        {menuItems.map((item) => {
+          if (item.section) {
+            return (
+              <div key={item.path} className="pt-4 pb-2">
+                <div className="flex items-center space-x-2 px-4 text-sm font-bold text-primary">
+                  <item.icon className="w-4 h-4" />
+                  <span>{item.name}</span>
+                </div>
+              </div>
+            );
+          }
+          
+          return (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              end={item.exact}
+              className={({ isActive }) =>
+                cn(
+                  'flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200',
+                  item.indent && 'pl-8',
+                  isActive
+                    ? 'bg-primary text-white font-semibold'
+                    : 'text-gray-700 hover:bg-gray-100'
+                )
+              }
+            >
             <item.icon className="w-5 h-5" />
             <span>{item.name}</span>
           </NavLink>
