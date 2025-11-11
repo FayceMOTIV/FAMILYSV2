@@ -49,9 +49,9 @@ const MobileLoyalty = () => {
       <div className="bg-gradient-to-br from-[#FFD54F] to-[#FFC107] pt-8 pb-8 px-4">
         <div className="text-center text-[#121212]">
           <Award className="w-16 h-16 mx-auto mb-4" />
-          <h1 className="text-3xl font-black mb-2">Ma Carte Fidélité</h1>
+          <h1 className="text-3xl font-black mb-2">Ma Carte Cashback</h1>
           <p className="text-lg font-semibold">
-            Collecte des tampons et débloque des récompenses
+            5% de tous tes achats crédités sur ta carte
           </p>
         </div>
       </div>
