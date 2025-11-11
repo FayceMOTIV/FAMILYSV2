@@ -176,35 +176,43 @@ const ProductDetail = () => {
             {/* Options */}
             {options.length > 0 && (
               <div className="space-y-4">
-                {options.map(group => (
-                  <div key={group.id} className="bg-gray-50 dark:bg-[#0f0f0f] rounded-3xl p-5">
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4">
-                      {group.name}
-                      {group.required && <span className="text-[#C62828] ml-2">*</span>}
-                    </h3>
-                    <div className="space-y-2">
-                      {group.options.map(option => {
-                        const isSelected = (selectedOptions[group.id] || []).includes(option.id);
-                        return (
-                          <button
-                            key={option.id}
-                            onClick={() => handleOptionChange(group.id, option.id, group.type === 'multi')}
-                            className={`w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-200 active:scale-98 ${
-                              isSelected
-                                ? 'border-[#C62828] bg-[#C62828]/10 dark:bg-[#C62828]/20'
-                                : 'border-gray-200 dark:border-gray-700'
-                            }`}
-                          >
-                            <span className="font-bold text-gray-800 dark:text-white">{option.name}</span>
-                            <span className="text-[#C62828] dark:text-[#FFD54F] font-bold text-sm">
-                              {option.deltaPrice > 0 ? `+${option.deltaPrice.toFixed(2)}€` : 'Inclus'}
-                            </span>
-                          </button>
-                        );
-                      })}
+                {options.map(group => {
+                  // Check if this group should be shown based on showIf condition
+                  if (group.showIf) {
+                    const conditionMet = (selectedOptions[group.showIf.optionGroupId] || []).includes(group.showIf.optionId);
+                    if (!conditionMet) return null;
+                  }
+
+                  return (
+                    <div key={group.id} className="bg-gray-50 dark:bg-[#0f0f0f] rounded-3xl p-5">
+                      <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4">
+                        {group.name}
+                        {group.required && <span className="text-[#C62828] ml-2">*</span>}
+                      </h3>
+                      <div className="space-y-2">
+                        {group.options.map(option => {
+                          const isSelected = (selectedOptions[group.id] || []).includes(option.id);
+                          return (
+                            <button
+                              key={option.id}
+                              onClick={() => handleOptionChange(group.id, option.id, group.type === 'multi')}
+                              className={`w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-200 active:scale-98 ${
+                                isSelected
+                                  ? 'border-[#C62828] bg-[#C62828]/10 dark:bg-[#C62828]/20'
+                                  : 'border-gray-200 dark:border-gray-700'
+                              }`}
+                            >
+                              <span className="font-bold text-gray-800 dark:text-white">{option.name}</span>
+                              <span className="text-[#C62828] dark:text-[#FFD54F] font-bold text-sm">
+                                {option.deltaPrice > 0 ? `+${option.deltaPrice.toFixed(2)}€` : 'Inclus'}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 
