@@ -129,7 +129,7 @@ const Checkout = () => {
         {/* Progress Steps */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
-            {[1, 2, 3].map((s) => (
+            {[1, 2, 3, 4].map((s) => (
               <div key={s} className="flex items-center flex-1">
                 <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-300 ${
@@ -140,7 +140,7 @@ const Checkout = () => {
                 >
                   {s < step ? <Check className="w-6 h-6" /> : s}
                 </div>
-                {s < 3 && (
+                {s < 4 && (
                   <div
                     className={`flex-1 h-1 mx-2 transition-all duration-300 ${
                       s < step ? 'bg-[#C62828]' : 'bg-gray-200 dark:bg-gray-700'
@@ -151,8 +151,9 @@ const Checkout = () => {
             ))}
           </div>
           <div className="flex justify-between mt-2 text-xs font-semibold text-gray-600 dark:text-gray-400">
-            <span>Coordonnées</span>
-            <span>Retrait</span>
+            <span>Mode</span>
+            <span>Date/Heure</span>
+            <span>Infos</span>
             <span>Paiement</span>
           </div>
         </div>
