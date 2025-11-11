@@ -55,22 +55,11 @@ const MobileFavorites = () => {
 
       <div className="px-4 py-6">
         {favoriteProducts.length === 0 ? (
-          <div className="text-center py-20">
-            <Heart className="w-24 h-24 text-gray-300 dark:text-gray-700 mx-auto mb-6" />
-            <h2 className="text-2xl font-black text-gray-800 dark:text-white mb-4">
-              Aucun favori
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-8 text-base px-6">
-              Ajoute des produits à tes favoris pour les retrouver facilement
-            </p>
-            <Button
-              onClick={() => navigate('/menu')}
-              className="bg-gradient-to-r from-[#C62828] to-[#8B0000] text-white px-10 py-7 rounded-full text-lg font-bold active:scale-95"
-            >
-              Découvrir le menu
-              <ChevronRight className="w-5 h-5 ml-2" />
-            </Button>
-          </div>
+          <EmptyState
+            type="favorites"
+            onAction={() => navigate('/menu')}
+            actionLabel="Découvrir le menu"
+          />
         ) : (
           <div className="space-y-4">
             {favoriteProducts.map((product) => (
