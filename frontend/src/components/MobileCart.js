@@ -8,31 +8,29 @@ import EmptyState from './EmptyState';
 
 const MobileCart = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
-  const { cart, removeFromCart, updateCartQuantity, getCartTotal } = useApp();
+  const { cart, removeFromCart, updateCartQuantity, getCartTotal, user, loyaltyStamps } = useApp();
+  const [useCashback, setUseCashback] = useState(false);
 
-  const total = getCartTotal();
+  // Calcul du cashback disponible
+  const totalSpent = user?.orderHistory?.reduce((sum, order) => sum + order.total, 0) || 0;
+  const cashbackBalance = totalSpent * 0.05; // 5%
+  const canUseCashback = cashbackBalance >= 10;
+
+  const subtotal = getCartTotal();
+  const cashbackUsed = useCashback && canUseCashback ? Math.min(cashbackBalance, subtotal) : 0;
+  const total = subtotal - cashbackUsed;
 
   const handleCheckout = () => {
     onClose();
     navigate('/checkout');
   };
 
-  return (
-    <>
-      {/* Backdrop */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/60 z-[60] transition-opacity duration-300"
-          onClick={onClose}
-        />
-      )}
+  if (!isOpen) return null;
 
-      {/* Bottom Sheet */}
-      <div
-        className={`fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1a1a1a] rounded-t-[32px] shadow-2xl z-[70] transform transition-transform duration-300 max-h-[85vh] ${
-          isOpen ? 'translate-y-0' : 'translate-y-full'
-        }`}
-      >
+  return (
+    <div className="fixed inset-0 bg-[#FAFAFA] dark:bg-[#121212] z-[9999] overflow-hidden">
+      {/* Full Screen Cart */}
+      <div className="h-full flex flex-col">
         {/* Handle Bar */}
         <div className="flex justify-center pt-3 pb-2">
           <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full"></div>
