@@ -57,14 +57,14 @@ const MobileLoyalty = () => {
       </div>
 
       <div className="px-4 py-6 space-y-6">
-        {/* Loyalty Card */}
-        <div className="bg-gradient-to-br from-[#C62828] via-[#8B0000] to-[#C62828] rounded-[32px] p-6 shadow-2xl text-white relative overflow-hidden">
+        {/* Cashback Card */}
+        <div className="bg-gradient-to-br from-[#C62828] via-[#8B0000] to-[#C62828] rounded-[32px] p-8 shadow-2xl text-white relative overflow-hidden">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute inset-0" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }}></div>
           </div>
 
           <div className="relative z-10">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-8">
               <div className="flex-1">
                 <div className="text-sm opacity-90 mb-1">Membre</div>
                 <div className="text-2xl font-black">{user.name}</div>
@@ -74,48 +74,53 @@ const MobileLoyalty = () => {
                   src="https://customer-assets.emergentagent.com/job_foodie-hub-21/artifacts/ybj62fs7_logo%20family%27s%20ok%20%21.png" 
                   alt="Family's"
                   className="w-full h-full object-contain"
-                  style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }}
+                  style={{ 
+                    mixBlendMode: 'multiply',
+                    filter: 'contrast(1.1) drop-shadow(0 2px 4px rgba(0,0,0,0.1))' 
+                  }}
                 />
               </div>
             </div>
 
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-lg font-bold">Progression</span>
-                <span className="text-3xl font-black">{loyaltyStamps} / {totalStamps}</span>
+            {/* Balance Display */}
+            <div className="text-center mb-8">
+              <div className="text-sm opacity-90 mb-2">Solde Cashback disponible</div>
+              <div className="text-7xl font-black mb-2">
+                {cashbackBalance.toFixed(2)}€
               </div>
-              <div className="h-3 bg-white/20 rounded-full overflow-hidden">
+              <div className="text-base opacity-90">
+                5% de {totalSpent.toFixed(2)}€ dépensés
+              </div>
+            </div>
+
+            {/* Status Bar */}
+            <div className="bg-white/20 rounded-2xl p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold">Prochain palier</span>
+                <span className="text-sm font-bold">{nextRewardThreshold}€</span>
+              </div>
+              <div className="h-2 bg-white/20 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-[#FFD54F] rounded-full transition-all duration-500"
-                  style={{ width: `${progress}%` }}
+                  style={{ width: `${Math.min((cashbackBalance / nextRewardThreshold) * 100, 100)}%` }}
                 />
               </div>
-              <div className="text-sm opacity-90 mt-2 text-center">
-                {totalStamps - loyaltyStamps > 0
-                  ? `🎯 Plus que ${totalStamps - loyaltyStamps} commande${totalStamps - loyaltyStamps > 1 ? 's' : ''} !`
-                  : '🎉 Félicitations ! Récompense débloquée !'}
+              <div className="text-xs opacity-75 mt-2 text-center">
+                {canUseReward 
+                  ? '✨ Tu peux utiliser ton cashback !'
+                  : `Plus que ${(nextRewardThreshold - cashbackBalance).toFixed(2)}€ pour utiliser ton cashback`}
               </div>
             </div>
 
-            {/* Stamps Grid */}
-            <div className="grid grid-cols-5 gap-2">
-              {[...Array(totalStamps)].map((_, idx) => (
-                <div
-                  key={idx}
-                  className={`aspect-square rounded-2xl border-2 border-dashed transition-all duration-300 flex items-center justify-center ${
-                    idx < loyaltyStamps
-                      ? 'bg-[#FFD54F] border-[#FFD54F] scale-105'
-                      : 'bg-white/10 border-white/30'
-                  }`}
-                >
-                  {idx < loyaltyStamps ? (
-                    <Star className="w-5 h-5 text-[#121212] fill-[#121212]" />
-                  ) : (
-                    <span className="text-white/50 text-sm font-bold">{idx + 1}</span>
-                  )}
-                </div>
-              ))}
-            </div>
+            {/* Use Cashback Button */}
+            {canUseReward && (
+              <Button
+                onClick={() => navigate('/menu')}
+                className="w-full mt-6 bg-[#FFD54F] hover:bg-[#FFC107] text-[#121212] py-5 rounded-2xl font-black text-lg shadow-xl active:scale-95"
+              >
+                Utiliser mon cashback
+              </Button>
+            )}
           </div>
         </div>
 
