@@ -76,10 +76,11 @@ export const Sidebar = () => {
                 )
               }
             >
-            <item.icon className="w-5 h-5" />
-            <span>{item.name}</span>
-          </NavLink>
-        ))}
+              <item.icon className="w-5 h-5" />
+              <span>{item.name}</span>
+            </NavLink>
+          );
+        })}
       </nav>
 
       {/* User Info & Logout */}
