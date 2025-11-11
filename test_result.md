@@ -359,11 +359,13 @@ metadata:
 
 test_plan:
   current_focus:
-    - "CountdownBanner sur page d'accueil"
-    - "Bottom Navigation - Bug existant"
+    - "AI Sales Analysis"
+    - "AI Promo Suggestion"
+    - "CORS Configuration"
   stuck_tasks:
-    - "CountdownBanner sur page d'accueil"
-    - "Bottom Navigation - Bug existant"
+    - "AI Sales Analysis"
+    - "AI Promo Suggestion"
+    - "CORS Configuration"
   test_all: false
   test_priority: "high_first"
 
