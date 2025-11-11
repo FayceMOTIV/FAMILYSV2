@@ -94,16 +94,18 @@ const ProductDetail = () => {
 
   return (
     <div className="bg-[#FAFAFA] dark:bg-[#121212] min-h-screen pb-20">
-      {/* Mobile Product Page */}
-      <div className="relative">
-        {/* Back Button Floating */}
+      {/* Back Button - Fixed at top */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/20 to-transparent p-4">
         <button
           onClick={() => navigate(-1)}
-          className="absolute top-4 left-4 z-10 w-12 h-12 bg-white/90 dark:bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+          className="w-12 h-12 bg-white dark:bg-[#1a1a1a] rounded-full flex items-center justify-center shadow-xl active:scale-90 transition-transform"
         >
           <ChevronLeft className="w-6 h-6 text-gray-800 dark:text-white" />
         </button>
+      </div>
 
+      {/* Mobile Product Page */}
+      <div className="relative">
         <div className="space-y-0">
           {/* Product Image - Full Width */}
           <div className="relative h-80">
