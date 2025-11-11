@@ -268,19 +268,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Splash Screen & Animations"
     - "CountdownBanner sur page d'accueil"
-    - "Ajout au Panier avec Animation"
-    - "ProductNotes - Instructions spéciales"
-    - "Panier avec Swipe"
-    - "Empty States"
-    - "Mode Sombre Automatique"
-    - "Recommandations"
-    - "Performance & Transitions"
     - "Bottom Navigation - Bug existant"
   stuck_tasks:
+    - "CountdownBanner sur page d'accueil"
     - "Bottom Navigation - Bug existant"
-  test_all: true
+  test_all: false
   test_priority: "high_first"
 
 agent_communication:
