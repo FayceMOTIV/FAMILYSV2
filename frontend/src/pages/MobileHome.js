@@ -25,43 +25,67 @@ const MobileHome = () => {
 
   return (
     <div className="bg-[#FAFAFA] dark:bg-[#121212] min-h-screen">
-      {/* Hero Section with Logo */}
-      <section className="relative bg-gradient-to-br from-[#C62828] via-[#8B0000] to-[#C62828] text-white pt-8 pb-12 px-4">
-        <div className="text-center space-y-6">
-          {/* Logo */}
-          <div className="inline-flex items-center justify-center mb-2">
-            <img 
-              src="https://customer-assets.emergentagent.com/job_foodie-hub-21/artifacts/ybj62fs7_logo%20family%27s%20ok%20%21.png" 
-              alt="Family's Original Burger"
-              className="h-24 w-auto object-contain"
-            />
+      {/* Hero Section with Logo - Full Screen Immersive */}
+      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#C62828] via-[#8B0000] to-[#C62828]">
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,213,79,0.3),transparent_50%)]"></div>
           </div>
-          
-          {/* Badge */}
-          <div className="inline-block">
-            <div className="flex items-center space-x-2 bg-[#FFD54F] text-[#121212] px-5 py-2.5 rounded-full font-bold text-sm shadow-lg">
-              <Award className="w-5 h-5" />
-              <span>Meilleur Fast-Food 2025</span>
+        </div>
+
+        <div className="relative z-10 text-center space-y-8 px-6 py-12">
+          {/* Logo - Centered and Large */}
+          <div className="flex items-center justify-center mb-4">
+            <div className="relative">
+              {/* Glow effect behind logo */}
+              <div className="absolute inset-0 blur-2xl opacity-50 bg-[#FFD54F] rounded-full scale-150"></div>
+              
+              {/* Logo with removed background */}
+              <img 
+                src="https://customer-assets.emergentagent.com/job_foodie-hub-21/artifacts/ybj62fs7_logo%20family%27s%20ok%20%21.png" 
+                alt="Family's Original Burger"
+                className="relative h-40 w-auto object-contain drop-shadow-2xl"
+                style={{
+                  filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.3))'
+                }}
+              />
             </div>
           </div>
 
-          <h1 className="text-3xl font-black leading-tight px-4">
-            Savourez l'Excellence
-            <br />
-            <span className="text-[#FFD54F]">chez Family's</span>
-          </h1>
+          {/* Subtitle with animation */}
+          <div className="space-y-3">
+            <div className="inline-flex items-center space-x-2 bg-[#FFD54F] text-[#121212] px-6 py-3 rounded-full font-black text-sm shadow-2xl animate-pulse">
+              <Award className="w-5 h-5" />
+              <span>Meilleur Fast-Food Bourg-en-Bresse</span>
+            </div>
+            
+            <h1 className="text-4xl font-black leading-tight text-white">
+              Savourez l'Excellence
+              <br />
+              <span className="text-[#FFD54F] text-5xl">chez Family's</span>
+            </h1>
+            
+            <p className="text-xl text-white/95 font-semibold max-w-sm mx-auto">
+              Burgers gourmands, tacos généreux
+              <br />
+              et desserts maison
+            </p>
+          </div>
           
-          <p className="text-lg text-white/90 px-6">
-            Burgers gourmands, tacos généreux et desserts maison
-          </p>
-          
+          {/* CTA Button */}
           <Button
             onClick={() => navigate('/menu')}
-            className="bg-[#FFD54F] hover:bg-[#FFC107] text-[#121212] px-10 py-7 rounded-full text-xl font-black shadow-2xl transition-all duration-300 active:scale-95 mt-4"
+            className="bg-[#FFD54F] hover:bg-[#FFC107] text-[#121212] px-12 py-8 rounded-full text-2xl font-black shadow-2xl transition-all duration-300 active:scale-95 mt-6 border-4 border-[#121212]/10"
           >
             Commander maintenant
-            <ChevronRight className="w-6 h-6 ml-2" />
+            <ChevronRight className="w-7 h-7 ml-2" />
           </Button>
+
+          {/* Scroll indicator */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <div className="w-1 h-12 bg-white/30 rounded-full"></div>
+          </div>
         </div>
       </section>
 
