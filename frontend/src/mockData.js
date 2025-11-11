@@ -176,31 +176,31 @@ export const categories = [
     id: 'burgers', 
     name: 'Burgers', 
     icon: 'beef',
-    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=400&fit=crop&q=80'
+    image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=400&h=400&fit=crop&q=80'
   },
   { 
     id: 'tacos', 
     name: 'Tacos', 
     icon: 'wrap-text',
-    image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400&h=400&fit=crop&q=80'
+    image: 'https://images.unsplash.com/photo-1683062332605-4e1209d75346?w=400&h=400&fit=crop&q=80'
   },
   { 
     id: 'menus', 
     name: 'Menus', 
     icon: 'package',
-    image: 'https://images.unsplash.com/photo-1561758033-d89a9ad46330?w=400&h=400&fit=crop&q=80'
+    image: 'https://images.pexels.com/photos/2351274/pexels-photo-2351274.jpeg?w=400&h=400&fit=crop'
   },
   { 
     id: 'desserts', 
     name: 'Desserts', 
     icon: 'cake',
-    image: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400&h=400&fit=crop&q=80'
+    image: 'https://images.unsplash.com/photo-1644158776192-2d24ce35da1d?w=400&h=400&fit=crop&q=80'
   },
   { 
     id: 'boissons', 
     name: 'Boissons', 
     icon: 'glass-water',
-    image: 'https://images.unsplash.com/photo-1554866585-cd94860890b7?w=400&h=400&fit=crop&q=80'
+    image: 'https://images.unsplash.com/photo-1632996988606-274cfd06eb68?w=400&h=400&fit=crop&q=80'
   }
 ];
 
