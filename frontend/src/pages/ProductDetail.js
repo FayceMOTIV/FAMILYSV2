@@ -16,6 +16,8 @@ const ProductDetail = () => {
 
   const [quantity, setQuantity] = useState(1);
   const [selectedOptions, setSelectedOptions] = useState({});
+  const [productNotes, setProductNotes] = useState('');
+  const [showAnimation, setShowAnimation] = useState(false);
 
   if (!product) {
     return (
