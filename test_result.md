@@ -107,15 +107,18 @@ user_problem_statement: "Teste TOUS les boutons et la navigation de l'applicatio
 frontend:
   - task: "Page d'accueil - Boutons et navigation"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/frontend/src/pages/MobileHome.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "testing"
         - comment: "Test initial - Vérifier bouton 'Commander maintenant', boutons '+' sur best-sellers, 'Voir tout', 'Voir mon cashback', boutons catégories"
+        - working: false
+        - agent: "testing"
+        - comment: "PROBLÈME CRITIQUE: Bouton 'Commander maintenant' ne fonctionne pas - URL reste inchangée après clic, ne navigue pas vers /menu. Autres boutons ('+', 'Voir tout', 'Voir mon cashback', catégories) fonctionnent correctement."
 
   - task: "Page Menu - Recherche et filtres"
     implemented: true
