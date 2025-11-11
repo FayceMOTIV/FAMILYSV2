@@ -85,6 +85,12 @@ admin_router.include_router(admin_dashboard.router)
 admin_router.include_router(admin_products.router)
 admin_router.include_router(admin_categories.router)
 admin_router.include_router(admin_orders.router)
+admin_router.include_router(admin_ai.router)
+admin_router.include_router(admin_promos.router)
+admin_router.include_router(admin_customers.router)
+admin_router.include_router(admin_notifications.router)
+admin_router.include_router(admin_reservations.router)
+admin_router.include_router(admin_settings.router)
 
 # Include the routers in the main app
 app.include_router(api_router)
