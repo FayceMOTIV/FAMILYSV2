@@ -231,15 +231,15 @@ const MobileHome = () => {
         <div className="bg-gradient-to-r from-[#FFD54F] to-[#FFC107] rounded-[32px] p-6 shadow-xl">
           <div className="text-[#121212] text-center">
             <Award className="w-12 h-12 mx-auto mb-3" />
-            <h2 className="text-2xl font-black mb-2">Carte de Fidélité</h2>
+            <h2 className="text-2xl font-black mb-2">Cashback 5%</h2>
             <p className="text-base font-semibold mb-4">
-              1 menu offert tous les 10 commandes !
+              5% de tous tes achats crédités sur ta carte !
             </p>
             <Button
               onClick={() => navigate('/loyalty')}
               className="bg-[#C62828] hover:bg-[#8B0000] text-white px-8 py-6 rounded-full text-lg font-bold shadow-lg active:scale-95 transition-all"
             >
-              Voir ma carte
+              Voir mon cashback
             </Button>
           </div>
         </div>
