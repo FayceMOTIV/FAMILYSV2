@@ -4,6 +4,7 @@ import { Heart, Star, ShoppingBag, ChevronRight } from 'lucide-react';
 import { products } from '../mockData';
 import { useApp } from '../context/AppContext';
 import { Button } from '../components/ui/button';
+import EmptyState from '../components/EmptyState';
 
 const MobileFavorites = () => {
   const navigate = useNavigate();
