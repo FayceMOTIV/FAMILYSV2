@@ -83,7 +83,7 @@ async def analyze_sales(current_user: dict = Security(require_manager_or_admin))
     }
     
     # AI Analysis
-    analysis = analyze_sales_data(sales_data)
+    analysis = await analyze_sales_data(sales_data)
     
     return {"sales_data": sales_data, "ai_analysis": analysis}
 
