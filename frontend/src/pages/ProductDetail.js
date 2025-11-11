@@ -5,6 +5,8 @@ import { products, productOptions } from '../mockData';
 import { useApp } from '../context/AppContext';
 import { Button } from '../components/ui/button';
 import { toast } from '../hooks/use-toast';
+import ProductNotes from '../components/ProductNotes';
+import AddToCartAnimation from '../components/AddToCartAnimation';
 
 const ProductDetail = () => {
   const { slug } = useParams();
