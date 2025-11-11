@@ -115,7 +115,7 @@ const MobileProfile = () => {
           {/* Back Office Button - Dev/Admin Only */}
           {process.env.REACT_APP_SHOW_ADMIN_SHORTCUT !== 'false' && (
             <a
-              href="https://family-manage-2.preview.emergentagent.com/backoffice/admin"
+              href="/admin"
               target="_blank"
               rel="noopener noreferrer"
               className="w-full flex items-center justify-between p-6 hover:bg-gray-50 dark:hover:bg-[#2a2a2a] active:bg-gray-100 dark:active:bg-[#2a2a2a] transition-colors"
