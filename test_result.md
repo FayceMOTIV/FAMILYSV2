@@ -101,3 +101,122 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Teste TOUS les boutons et la navigation de l'application mobile Family's sur http://localhost:3000 avec viewport mobile iPhone 14 Pro (393x852). Tests à effectuer: Page d'accueil, Menu, Produit, Fidélité, Favoris, Profil, Panier et Bottom Navigation. Concentre-toi particulièrement sur le bouton RETOUR qui est signalé comme ne fonctionnant pas."
+
+frontend:
+  - task: "Page d'accueil - Boutons et navigation"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/MobileHome.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Test initial - Vérifier bouton 'Commander maintenant', boutons '+' sur best-sellers, 'Voir tout', 'Voir mon cashback', boutons catégories"
+
+  - task: "Page Menu - Recherche et filtres"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/MobileMenu.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Test initial - Vérifier barre de recherche, filtres catégories, boutons '+', favoris, panier header"
+
+  - task: "Page Produit - Bouton retour CRITIQUE"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/ProductDetail.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Test CRITIQUE - Bouton retour signalé comme ne fonctionnant pas, vérifier aussi favoris, options, quantité, ajouter au panier"
+
+  - task: "Page Fidélité/Cashback"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/MobileLoyalty.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Test initial - Vérifier boutons 'Se connecter', 'Utiliser mon cashback', 'Commander maintenant'"
+
+  - task: "Page Favoris"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/MobileFavorites.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Test initial - Vérifier boutons 'Se connecter', 'Découvrir le menu', boutons '+' et favoris"
+
+  - task: "Page Profil"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/MobileProfile.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Test initial - Vérifier boutons 'Se connecter', toggle thème, 'Recommander', WhatsApp, 'Se déconnecter'"
+
+  - task: "Panier (sidebar)"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/MobileCart.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Test initial - Vérifier bouton fermer, quantité (+/-), supprimer, 'Commander'"
+
+  - task: "Bottom Navigation"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/MobileLayout.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Test initial - Navigation entre toutes les pages, vérifier onglet actif mis en évidence"
+
+metadata:
+  created_by: "testing_agent"
+  version: "1.0"
+  test_sequence: 1
+
+test_plan:
+  current_focus:
+    - "Page Produit - Bouton retour CRITIQUE"
+    - "Page d'accueil - Boutons et navigation"
+    - "Page Menu - Recherche et filtres"
+    - "Panier (sidebar)"
+    - "Bottom Navigation"
+  stuck_tasks: []
+  test_all: true
+  test_priority: "high_first"
+
+agent_communication:
+    - agent: "testing"
+    - message: "Début des tests complets de l'application mobile Family's. Focus prioritaire sur le bouton retour de la page produit qui est signalé comme défaillant. Tests avec viewport iPhone 14 Pro (393x852)."
