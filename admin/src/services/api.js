@@ -65,4 +65,45 @@ export const ordersAPI = {
   getSummary: () => api.get('/orders/stats/summary'),
 };
 
+// Phase 2 APIs
+export const aiAPI = {
+  generateMarketing: (data) => api.post('/ai/generate-marketing', data),
+  analyzeSales: () => api.get('/ai/analyze-sales'),
+  chat: (question) => api.post('/ai/chat', { question }),
+  suggestPromo: () => api.get('/ai/suggest-promo'),
+};
+
+export const promosAPI = {
+  getAll: () => api.get('/promos'),
+  create: (data) => api.post('/promos', data),
+  update: (id, data) => api.put(`/promos/${id}`, data),
+  delete: (id) => api.delete(`/promos/${id}`),
+};
+
+export const customersAPI = {
+  getAll: (params) => api.get('/customers', { params }),
+  create: (data) => api.post('/customers', data),
+  update: (id, data) => api.put(`/customers/${id}`, data),
+  getSegments: () => api.get('/customers/stats/segments'),
+};
+
+export const notificationsAPI = {
+  getAll: () => api.get('/notifications'),
+  create: (data) => api.post('/notifications', data),
+  send: (id) => api.post(`/notifications/${id}/send`),
+  delete: (id) => api.delete(`/notifications/${id}`),
+};
+
+export const reservationsAPI = {
+  getAll: (params) => api.get('/reservations', { params }),
+  create: (data) => api.post('/reservations', data),
+  updateStatus: (id, data) => api.patch(`/reservations/${id}/status`, data),
+  delete: (id) => api.delete(`/reservations/${id}`),
+};
+
+export const settingsAPI = {
+  get: () => api.get('/settings'),
+  update: (data) => api.put('/settings', data),
+};
+
 export default api;
