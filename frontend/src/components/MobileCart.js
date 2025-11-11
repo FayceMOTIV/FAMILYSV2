@@ -1,5 +1,5 @@
-import React from 'react';
-import { X, ShoppingBag } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, ShoppingBag, Award, ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { Button } from './ui/button';
