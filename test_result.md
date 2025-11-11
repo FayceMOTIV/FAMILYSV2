@@ -220,9 +220,9 @@ frontend:
     implemented: true
     working: false
     file: "/app/frontend/src/components/MobileLayout.js"
-    stuck_count: 1
+    stuck_count: 2
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "NA"
         - agent: "testing"
@@ -230,6 +230,9 @@ frontend:
         - working: false
         - agent: "testing"
         - comment: "PROBLÈME PARTIEL: Navigation fonctionne mais URLs incorrectes - Favoris et Profil naviguent vers /loyalty au lieu de /favorites et /profile. Accueil et Commander fonctionnent correctement. États actifs visibles."
+        - working: false
+        - agent: "testing"
+        - comment: "❌ BUG #2 PERSISTE: Test de régression échoué. Les boutons Favoris et Profil ne naviguent plus vers /loyalty mais ne naviguent pas du tout - l'URL reste inchangée. Accueil ✅, Commander ✅, Fidélité ✅ fonctionnent correctement. Problème spécifique aux boutons Favoris et Profil qui semblent avoir un problème de navigation."
 
 metadata:
   created_by: "testing_agent"
