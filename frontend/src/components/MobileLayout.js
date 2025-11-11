@@ -12,11 +12,11 @@ const MobileLayout = ({ children }) => {
   const cartCount = getCartItemsCount();
 
   const navItems = [
-    { icon: Home, label: 'Accueil', path: '/', id: 'home' },
-    { icon: ShoppingBag, label: 'Commander', path: '/menu', id: 'menu' },
-    { icon: Award, label: 'Fidélité', path: '/loyalty', id: 'loyalty' },
-    { icon: Heart, label: 'Favoris', path: '/favorites', id: 'favorites' },
-    { icon: User, label: 'Profil', path: '/profile', id: 'profile' }
+    { icon: Home, label: 'Accueil', path: '/' },
+    { icon: ShoppingBag, label: 'Commander', path: '/menu' },
+    { icon: Award, label: 'Fidélité', path: '/loyalty' },
+    { icon: Heart, label: 'Favoris', path: '/favorites' },
+    { icon: User, label: 'Profil', path: '/profile' }
   ];
 
   const isActive = (path) => location.pathname === path;
