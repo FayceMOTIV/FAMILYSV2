@@ -26,6 +26,9 @@ function App() {
           <Route path="/admin" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="ai" element={<AIAssistant />} />
+            <Route path="ai-marketing/campaigns" element={<AICampaigns />} />
+            <Route path="ai-marketing/history" element={<CampaignHistory />} />
+            <Route path="ai-marketing/settings" element={<AIMarketingSettings />} />
             <Route path="products" element={<Products />} />
             <Route path="orders" element={<Orders />} />
             <Route path="categories" element={<Categories />} />
