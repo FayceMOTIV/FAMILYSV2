@@ -66,7 +66,7 @@ const MobileCart = ({ isOpen, onClose }) => {
           ) : (
             <div className="space-y-3">
               <p className="text-xs text-gray-500 dark:text-gray-400 px-2 mb-2">
-                💡 Glisse vers la gauche pour supprimer
+                💡 Clique sur la poubelle pour supprimer (ou glisse sur mobile)
               </p>
               {cart.map((item) => (
                 <SwipeableCartItem key={item.id} item={item} />
