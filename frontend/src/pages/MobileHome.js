@@ -30,7 +30,21 @@ const MobileHome = () => {
       {process.env.REACT_APP_SHOW_ADMIN_SHORTCUT !== 'false' && (
         <button
           onClick={() => {
-            const adminUrl = process.env.REACT_APP_ADMIN_URL || 'http://localhost:3001/admin';
+            // Get admin URL from env or construct it
+            let adminUrl = process.env.REACT_APP_ADMIN_URL;
+            
+            if (!adminUrl) {
+              // If no env var, detect if we're on localhost or production
+              const currentHost = window.location.host;
+              if (currentHost.includes('localhost')) {
+                adminUrl = 'http://localhost:3001/admin';
+              } else {
+                // On Emergent preview, use same domain with admin path
+                adminUrl = `${window.location.protocol}//${window.location.host}/admin`;
+              }
+            }
+            
+            console.log('Opening Back Office:', adminUrl);
             window.open(adminUrl, '_blank', 'noopener,noreferrer');
           }}
           className="fixed top-4 right-4 z-50 bg-gradient-to-br from-[#C62828] to-[#8B0000] text-white px-4 py-2 rounded-full font-bold text-xs shadow-2xl hover:scale-105 active:scale-95 transition-all duration-200 flex items-center space-x-2"
