@@ -123,6 +123,6 @@ async def suggest_promo(current_user: dict = Security(require_manager_or_admin))
     
     sales_summary = f"Commandes 7 derniers jours: {len(orders)}, CA: {sum(o.get('total', 0) for o in orders):.2f}€"
     
-    suggestion = generate_promo_suggestion({"summary": sales_summary})
+    suggestion = await generate_promo_suggestion({"summary": sales_summary})
     
     return {"suggestion": suggestion}
