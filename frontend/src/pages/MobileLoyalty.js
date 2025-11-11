@@ -138,7 +138,7 @@ const MobileLoyalty = () => {
               <div>
                 <h3 className="font-bold text-gray-800 dark:text-white mb-1">Commande</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Chaque commande > 8€ = 1 tampon
+                  Passe ta commande normalement
                 </p>
               </div>
             </div>
@@ -147,9 +147,9 @@ const MobileLoyalty = () => {
                 2
               </div>
               <div>
-                <h3 className="font-bold text-gray-800 dark:text-white mb-1">Collecte</h3>
+                <h3 className="font-bold text-gray-800 dark:text-white mb-1">Reçois 5%</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Accumule 10 tampons sur ta carte
+                  5% du montant est automatiquement crédité
                 </p>
               </div>
             </div>
@@ -158,49 +158,38 @@ const MobileLoyalty = () => {
                 3
               </div>
               <div>
-                <h3 className="font-bold text-gray-800 dark:text-white mb-1">Profite</h3>
+                <h3 className="font-bold text-gray-800 dark:text-white mb-1">Utilise</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Menu gratuit jusqu'à 12€ offert !
+                  Dès 10€, utilise ton cashback sur une commande
                 </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Rewards */}
+        {/* Stats */}
         <div className="bg-white dark:bg-[#1a1a1a] rounded-[32px] p-6 shadow-lg">
           <h2 className="text-xl font-black text-gray-800 dark:text-white mb-5 flex items-center">
             <Gift className="w-6 h-6 mr-3 text-[#C62828] dark:text-[#FFD54F]" />
-            Récompenses
+            Tes avantages
           </h2>
-          <div className="space-y-3">
-            {rewards.map((reward, idx) => (
-              <div
-                key={idx}
-                className={`p-5 rounded-3xl transition-all duration-300 ${
-                  reward.unlocked
-                    ? 'bg-gradient-to-br from-[#C62828] to-[#8B0000] text-white'
-                    : 'bg-gray-50 dark:bg-[#2a2a2a] text-gray-400 dark:text-gray-500'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4 flex-1">
-                    <div className="text-3xl">{reward.icon}</div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold">{reward.title}</h3>
-                      <p className={`text-sm ${reward.unlocked ? 'text-white/90' : ''}`}>
-                        {reward.description}
-                      </p>
-                    </div>
-                  </div>
-                  <div className={`text-xs font-bold px-3 py-1.5 rounded-full ${
-                    reward.unlocked ? 'bg-[#FFD54F] text-[#121212]' : 'bg-gray-200 dark:bg-gray-700'
-                  }`}>
-                    {reward.stamps}
-                  </div>
-                </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-gradient-to-br from-[#C62828] to-[#8B0000] rounded-3xl p-5 text-white text-center">
+              <div className="text-4xl font-black mb-1">{totalSpent.toFixed(0)}€</div>
+              <div className="text-sm opacity-90">Total dépensé</div>
+            </div>
+            <div className="bg-gradient-to-br from-[#FFD54F] to-[#FFC107] rounded-3xl p-5 text-[#121212] text-center">
+              <div className="text-4xl font-black mb-1">5%</div>
+              <div className="text-sm font-bold">Cashback</div>
+            </div>
+            <div className="bg-gray-50 dark:bg-[#2a2a2a] rounded-3xl p-5 text-center col-span-2">
+              <div className="text-3xl font-black text-[#C62828] dark:text-[#FFD54F] mb-1">
+                {(totalSpent * 0.05).toFixed(2)}€
               </div>
-            ))}
+              <div className="text-sm text-gray-600 dark:text-gray-400 font-semibold">
+                Total cashback gagné
+              </div>
+            </div>
           </div>
         </div>
 
