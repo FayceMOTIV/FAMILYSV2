@@ -22,6 +22,10 @@ import { cn } from '../utils/cn';
 const menuItems = [
   { name: 'Tableau de bord', path: '/admin', icon: LayoutDashboard, exact: true },
   { name: 'Assistant IA', path: '/admin/ai', icon: Sparkles },
+  { name: '🤖 IA Marketing', path: '/admin/ai-marketing', icon: Zap, section: true },
+  { name: 'Campagnes proposées', path: '/admin/ai-marketing/campaigns', icon: Zap, indent: true },
+  { name: 'Historique & Résultats', path: '/admin/ai-marketing/history', icon: History, indent: true },
+  { name: 'Paramètres IA', path: '/admin/ai-marketing/settings', icon: Sliders, indent: true },
   { name: 'Produits', path: '/admin/products', icon: Package },
   { name: 'Commandes', path: '/admin/orders', icon: ShoppingCart },
   { name: 'Catégories', path: '/admin/categories', icon: FolderOpen },
