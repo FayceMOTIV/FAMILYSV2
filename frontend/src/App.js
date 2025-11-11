@@ -28,10 +28,11 @@ function App() {
 
   const handleSplashComplete = () => {
     sessionStorage.setItem('hasSeenSplash', 'true');
+    setShowSplash(false);
     setAppReady(true);
   };
 
-  if (showSplash) {
+  if (showSplash && !appReady) {
     return <SplashScreen onComplete={handleSplashComplete} />;
   }
 
