@@ -11,11 +11,18 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { cn } from '../utils/cn';
 
+import { Sparkles, Tag, Users, Bell, Calendar } from 'lucide-react';
+
 const menuItems = [
   { name: 'Tableau de bord', path: '/admin', icon: LayoutDashboard, exact: true },
+  { name: 'Assistant IA', path: '/admin/ai', icon: Sparkles },
   { name: 'Produits', path: '/admin/products', icon: Package },
   { name: 'Commandes', path: '/admin/orders', icon: ShoppingCart },
   { name: 'Catégories', path: '/admin/categories', icon: FolderOpen },
+  { name: 'Promos', path: '/admin/promos', icon: Tag },
+  { name: 'Clients', path: '/admin/customers', icon: Users },
+  { name: 'Notifications', path: '/admin/notifications', icon: Bell },
+  { name: 'Réservations', path: '/admin/reservations', icon: Calendar },
   { name: 'Paramètres', path: '/admin/settings', icon: Settings },
 ];
 
