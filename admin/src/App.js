@@ -17,10 +17,10 @@ import { Reservations } from './pages/Reservations';
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter basename="/backoffice">
+      <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Layout />}>
+          <Route path="/admin/login" element={<Login />} />
+          <Route path="/admin" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="ai" element={<AIAssistant />} />
             <Route path="products" element={<Products />} />
