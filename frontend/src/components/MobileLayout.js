@@ -36,21 +36,15 @@ const MobileLayout = ({ children }) => {
             const active = isActive(item.path);
             return (
               <button
-                key={item.id}
-                onClick={() => {
-                  if (item.id === 'menu' && location.pathname === '/menu') {
-                    setIsCartOpen(true);
-                  } else {
-                    navigate(item.path);
-                  }
-                }}
+                key={item.path}
+                onClick={() => navigate(item.path)}
                 className={`relative flex flex-col items-center justify-center py-2 px-3 rounded-2xl min-w-[64px] transition-all duration-300 ${
                   active
                     ? 'text-[#C62828] dark:text-[#FFD54F] bg-[#C62828]/10 dark:bg-[#FFD54F]/10 scale-110'
                     : 'text-gray-500 dark:text-gray-400'
                 }`}
               >
-                {item.id === 'menu' && cartCount > 0 && (
+                {item.path === '/menu' && cartCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-[#C62828] dark:bg-[#FFD54F] text-white dark:text-[#121212] text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
                     {cartCount}
                   </span>
