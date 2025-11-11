@@ -158,28 +158,28 @@ const ProductDetail = () => {
 
             {/* Options */}
             {options.length > 0 && (
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {options.map(group => (
-                  <div key={group.id} className="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 shadow-lg">
+                  <div key={group.id} className="bg-gray-50 dark:bg-[#0f0f0f] rounded-3xl p-5">
                     <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4">
                       {group.name}
                       {group.required && <span className="text-[#C62828] ml-2">*</span>}
                     </h3>
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       {group.options.map(option => {
                         const isSelected = (selectedOptions[group.id] || []).includes(option.id);
                         return (
                           <button
                             key={option.id}
                             onClick={() => handleOptionChange(group.id, option.id, group.type === 'multi')}
-                            className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-300 ${
+                            className={`w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-200 active:scale-98 ${
                               isSelected
                                 ? 'border-[#C62828] bg-[#C62828]/10 dark:bg-[#C62828]/20'
-                                : 'border-gray-200 dark:border-gray-700 hover:border-[#C62828] dark:hover:border-[#FFD54F]'
+                                : 'border-gray-200 dark:border-gray-700'
                             }`}
                           >
-                            <span className="font-semibold text-gray-800 dark:text-white">{option.name}</span>
-                            <span className="text-[#C62828] dark:text-[#FFD54F] font-bold">
+                            <span className="font-bold text-gray-800 dark:text-white">{option.name}</span>
+                            <span className="text-[#C62828] dark:text-[#FFD54F] font-bold text-sm">
                               {option.deltaPrice > 0 ? `+${option.deltaPrice.toFixed(2)}€` : 'Inclus'}
                             </span>
                           </button>
@@ -191,42 +191,44 @@ const ProductDetail = () => {
               </div>
             )}
 
-            {/* Quantity */}
-            <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 shadow-lg">
+            {/* Quantity & Total */}
+            <div className="bg-gray-50 dark:bg-[#0f0f0f] rounded-3xl p-5">
               <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4">Quantité</h3>
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4 bg-gray-100 dark:bg-[#2a2a2a] rounded-full p-2">
+                <div className="flex items-center space-x-2 bg-white dark:bg-[#1a1a1a] rounded-full p-1">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-12 h-12 bg-white dark:bg-[#1a1a1a] rounded-full flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                    className="w-12 h-12 rounded-full flex items-center justify-center active:bg-gray-100 dark:active:bg-gray-700 transition-colors"
                   >
                     <Minus className="w-5 h-5" />
                   </button>
-                  <span className="text-2xl font-bold w-12 text-center">{quantity}</span>
+                  <span className="text-2xl font-black px-4 min-w-[60px] text-center">{quantity}</span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="w-12 h-12 bg-white dark:bg-[#1a1a1a] rounded-full flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                    className="w-12 h-12 rounded-full flex items-center justify-center active:bg-gray-100 dark:active:bg-gray-700 transition-colors"
                   >
                     <Plus className="w-5 h-5" />
                   </button>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Total</div>
-                  <div className="text-3xl font-bold text-[#C62828] dark:text-[#FFD54F]">
+                  <div className="text-sm text-gray-600 dark:text-gray-400 font-semibold">Total</div>
+                  <div className="text-4xl font-black text-[#C62828] dark:text-[#FFD54F]">
                     {calculateTotalPrice.toFixed(2)}€
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Add to Cart Button */}
-            <Button
-              onClick={handleAddToCart}
-              className="w-full bg-gradient-to-r from-[#C62828] to-[#8B0000] hover:from-[#8B0000] hover:to-[#C62828] text-white py-8 rounded-2xl text-xl font-bold shadow-2xl transition-all duration-300 transform hover:scale-105"
-            >
-              <ShoppingBag className="w-6 h-6 mr-3" />
-              Ajouter au panier
-            </Button>
+            {/* Add to Cart Button - Fixed at bottom */}
+            <div className="fixed bottom-20 left-0 right-0 p-4 bg-white dark:bg-[#1a1a1a] border-t border-gray-200 dark:border-gray-800 z-10">
+              <Button
+                onClick={handleAddToCart}
+                className="w-full bg-gradient-to-r from-[#C62828] to-[#8B0000] text-white py-7 rounded-full text-xl font-black shadow-2xl active:scale-95 transition-all duration-200"
+              >
+                <ShoppingBag className="w-6 h-6 mr-3" />
+                Ajouter - {calculateTotalPrice.toFixed(2)}€
+              </Button>
+            </div>
           </div>
         </div>
       </div>
