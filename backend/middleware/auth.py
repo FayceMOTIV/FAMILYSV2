@@ -1,8 +1,8 @@
 from fastapi import HTTPException, Security, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import Optional
-from ..utils.auth import decode_access_token
-from ..models.user import UserRole
+from utils.auth import decode_access_token
+from models.user import UserRole
 
 security = HTTPBearer()
 
