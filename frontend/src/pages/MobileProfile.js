@@ -115,7 +115,7 @@ const MobileProfile = () => {
           {/* Back Office Button - Dev/Admin Only */}
           {process.env.REACT_APP_SHOW_ADMIN_SHORTCUT !== 'false' && (
             <a
-              href="http://localhost:3001/admin"
+              href={process.env.REACT_APP_ADMIN_URL || '/admin'}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full flex items-center justify-between p-6 hover:bg-gray-50 dark:hover:bg-[#2a2a2a] active:bg-gray-100 dark:active:bg-[#2a2a2a] transition-colors"
