@@ -75,8 +75,16 @@ async def get_status_checks():
     
     return status_checks
 
-# Include the router in the main app
+# Include admin routes
+admin_router.include_router(admin_auth.router)
+admin_router.include_router(admin_dashboard.router)
+admin_router.include_router(admin_products.router)
+admin_router.include_router(admin_categories.router)
+admin_router.include_router(admin_orders.router)
+
+# Include the routers in the main app
 app.include_router(api_router)
+app.include_router(admin_router)
 
 app.add_middleware(
     CORSMiddleware,
