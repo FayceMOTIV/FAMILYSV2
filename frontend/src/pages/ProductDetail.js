@@ -105,21 +105,19 @@ const ProductDetail = () => {
         </button>
 
         <div className="space-y-0">
-          {/* Product Image */}
-          <div className="relative">
-            <div className="rounded-3xl overflow-hidden shadow-2xl">
-              <img
-                src={product.imageUrl}
-                alt={product.name}
-                className="w-full h-96 lg:h-[600px] object-cover"
-              />
-            </div>
+          {/* Product Image - Full Width */}
+          <div className="relative h-80">
+            <img
+              src={product.imageUrl}
+              alt={product.name}
+              className="w-full h-full object-cover"
+            />
             <button
               onClick={() => toggleFavorite(product.id)}
-              className="absolute top-4 right-4 w-14 h-14 bg-white/90 dark:bg-black/60 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
+              className="absolute top-4 right-4 w-12 h-12 bg-white/90 dark:bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform"
             >
               <Star
-                className={`w-7 h-7 ${
+                className={`w-6 h-6 ${
                   isFavorite(product.id)
                     ? 'fill-[#C62828] text-[#C62828]'
                     : 'text-gray-600 dark:text-gray-300'
@@ -127,7 +125,7 @@ const ProductDetail = () => {
               />
             </button>
             {product.tags.length > 0 && (
-              <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+              <div className="absolute bottom-4 left-4">
                 {product.tags.map(tag => (
                   <span
                     key={tag}
@@ -141,19 +139,21 @@ const ProductDetail = () => {
           </div>
 
           {/* Product Info */}
-          <div className="space-y-6">
+          <div className="bg-white dark:bg-[#1a1a1a] rounded-t-[32px] -mt-8 relative z-10 px-4 pt-6 pb-6 space-y-6">
             <div>
-              <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">
+              <h1 className="text-3xl font-black text-gray-800 dark:text-white mb-3">
                 {product.name}
               </h1>
-              <p className="text-lg text-gray-600 dark:text-gray-400">
+              <p className="text-base text-gray-600 dark:text-gray-400 leading-relaxed">
                 {product.description}
               </p>
             </div>
 
-            <div className="bg-gradient-to-r from-[#C62828] to-[#8B0000] text-white rounded-2xl p-6">
-              <div className="text-sm opacity-90 mb-1">Prix</div>
-              <div className="text-4xl font-bold">{product.basePrice.toFixed(2)}€</div>
+            <div className="bg-gradient-to-r from-[#C62828] to-[#8B0000] text-white rounded-3xl p-5 flex items-center justify-between">
+              <div>
+                <div className="text-sm opacity-90 mb-1">Prix</div>
+                <div className="text-4xl font-black">{product.basePrice.toFixed(2)}€</div>
+              </div>
             </div>
 
             {/* Options */}
