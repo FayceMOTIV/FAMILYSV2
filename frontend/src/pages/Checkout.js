@@ -158,51 +158,68 @@ const Checkout = () => {
           </div>
         </div>
 
-        {/* Step 1: Contact Info */}
+        {/* Step 1: Consumption Mode */}
         {step === 1 && (
           <div className="space-y-6">
             <div className="bg-white dark:bg-[#1a1a1a] rounded-3xl p-8 shadow-lg">
               <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 flex items-center">
-                <MapPin className="w-6 h-6 mr-3 text-[#C62828] dark:text-[#FFD54F]" />
-                Vos coordonnées
+                <Utensils className="w-6 h-6 mr-3 text-[#C62828] dark:text-[#FFD54F]" />
+                Mode de consommation
               </h2>
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                    Nom complet *
-                  </label>
-                  <Input
-                    type="text"
-                    value={orderData.name}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
-                    placeholder="Jean Dupont"
-                    className="w-full p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                    Email *
-                  </label>
-                  <Input
-                    type="email"
-                    value={orderData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    placeholder="jean.dupont@example.com"
-                    className="w-full p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                    Téléphone *
-                  </label>
-                  <Input
-                    type="tel"
-                    value={orderData.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                    placeholder="06 12 34 56 78"
-                    className="w-full p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700"
-                  />
-                </div>
+                <button
+                  onClick={() => handleInputChange('consumptionMode', 'takeaway')}
+                  className={`w-full flex items-center p-6 rounded-2xl border-2 transition-all duration-300 ${
+                    orderData.consumptionMode === 'takeaway'
+                      ? 'border-[#C62828] bg-[#C62828]/10 dark:bg-[#C62828]/20'
+                      : 'border-gray-200 dark:border-gray-700 hover:border-[#C62828]'
+                  }`}
+                >
+                  <div className="w-14 h-14 bg-gradient-to-br from-[#C62828] to-[#8B0000] rounded-2xl flex items-center justify-center mr-4">
+                    <Package className="w-7 h-7 text-white" />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <div className="font-bold text-lg text-gray-800 dark:text-white">À emporter</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Récupérez votre commande au comptoir</div>
+                  </div>
+                  {orderData.consumptionMode === 'takeaway' && (
+                    <Check className="w-6 h-6 text-[#C62828] dark:text-[#FFD54F]" />
+                  )}
+                </button>
+
+                <button
+                  onClick={() => handleInputChange('consumptionMode', 'dine-in')}
+                  className={`w-full flex items-center p-6 rounded-2xl border-2 transition-all duration-300 ${
+                    orderData.consumptionMode === 'dine-in'
+                      ? 'border-[#C62828] bg-[#C62828]/10 dark:bg-[#C62828]/20'
+                      : 'border-gray-200 dark:border-gray-700 hover:border-[#C62828]'
+                  }`}
+                >
+                  <div className="w-14 h-14 bg-gradient-to-br from-[#FFD54F] to-[#FFC107] rounded-2xl flex items-center justify-center mr-4">
+                    <Utensils className="w-7 h-7 text-[#121212]" />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <div className="font-bold text-lg text-gray-800 dark:text-white">Sur place</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Consommez directement au restaurant</div>
+                  </div>
+                  {orderData.consumptionMode === 'dine-in' && (
+                    <Check className="w-6 h-6 text-[#C62828] dark:text-[#FFD54F]" />
+                  )}
+                </button>
+
+                <button
+                  onClick={() => handleInputChange('consumptionMode', 'delivery')}
+                  className={`w-full flex items-center p-6 rounded-2xl border-2 transition-all duration-300 opacity-60 cursor-not-allowed`}
+                  disabled
+                >
+                  <div className="w-14 h-14 bg-gray-300 dark:bg-gray-700 rounded-2xl flex items-center justify-center mr-4">
+                    <ShoppingBag className="w-7 h-7 text-gray-500" />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <div className="font-bold text-lg text-gray-500 dark:text-gray-600">Livraison</div>
+                    <div className="text-sm text-gray-400 dark:text-gray-500">Bientôt disponible</div>
+                  </div>
+                </button>
               </div>
             </div>
           </div>
