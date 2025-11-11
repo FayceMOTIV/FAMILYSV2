@@ -30,8 +30,7 @@ const MobileHome = () => {
       {process.env.REACT_APP_SHOW_ADMIN_SHORTCUT !== 'false' && (
         <button
           onClick={() => {
-            // Force admin URL to port 3001
-            const adminUrl = 'http://localhost:3001/admin';
+            const adminUrl = 'https://family-manage-2.preview.emergentagent.com/backoffice/admin';
             console.log('Opening Back Office:', adminUrl);
             window.open(adminUrl, '_blank', 'noopener,noreferrer');
           }}
