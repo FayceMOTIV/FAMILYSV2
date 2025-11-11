@@ -244,7 +244,7 @@ const burgerBaseOptions = [
     id: 'accompaniment',
     name: 'Accompagnement',
     type: 'single',
-    required: false,
+    required: true,
     showIf: { optionGroupId: 'menu-choice', optionId: 'menu' },
     options: [
       { id: 'frites', name: 'Frites maison', deltaPrice: 0 },
@@ -257,7 +257,7 @@ const burgerBaseOptions = [
     id: 'drink',
     name: 'Boisson',
     type: 'single',
-    required: false,
+    required: true,
     showIf: { optionGroupId: 'menu-choice', optionId: 'menu' },
     options: [
       { id: 'coca-33', name: 'Coca-Cola 33cl', deltaPrice: 0 },
