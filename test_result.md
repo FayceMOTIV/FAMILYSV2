@@ -152,15 +152,18 @@ frontend:
 
   - task: "Page Fidélité/Cashback"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/pages/MobileLoyalty.js"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "testing"
         - comment: "Test initial - Vérifier boutons 'Se connecter', 'Utiliser mon cashback', 'Commander maintenant'"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ FONCTIONNE: Bouton 'Se connecter' fonctionne, page s'affiche correctement, navigation accessible. Boutons 'Utiliser mon cashback' et 'Commander maintenant' présents et fonctionnels."
 
   - task: "Page Favoris"
     implemented: true
