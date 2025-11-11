@@ -16,8 +16,6 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { cn } from '../utils/cn';
 
-import { Sparkles, Tag, Users, Bell, Calendar } from 'lucide-react';
-
 const menuItems = [
   { name: 'Tableau de bord', path: '/admin', icon: LayoutDashboard, exact: true },
   { name: 'Assistant IA', path: '/admin/ai', icon: Sparkles },
