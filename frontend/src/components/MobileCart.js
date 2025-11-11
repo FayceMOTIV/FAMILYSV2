@@ -31,23 +31,24 @@ const MobileCart = ({ isOpen, onClose }) => {
     <div className="fixed inset-0 bg-[#FAFAFA] dark:bg-[#121212] z-[9999] overflow-hidden">
       {/* Full Screen Cart */}
       <div className="h-full flex flex-col">
-        {/* Handle Bar */}
-        <div className="flex justify-center pt-3 pb-2">
-          <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full"></div>
-        </div>
-
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-800">
-          <h2 className="text-2xl font-bold text-[#C62828] dark:text-[#FFD54F] flex items-center">
-            <ShoppingBag className="w-7 h-7 mr-3" />
-            Votre Panier
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
-          >
-            <X className="w-7 h-7" />
-          </button>
+        <div className="bg-white dark:bg-[#1a1a1a] px-6 py-5 border-b border-gray-200 dark:border-gray-800">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <h1 className="text-2xl font-black text-gray-800 dark:text-white">
+                Mon Panier
+              </h1>
+            </div>
+            <div className="bg-[#C62828] dark:bg-[#FFD54F] text-white dark:text-[#121212] px-4 py-2 rounded-full">
+              <span className="font-black">{cart.length} article{cart.length > 1 ? 's' : ''}</span>
+            </div>
+          </div>
         </div>
 
         {/* Cart Items */}
