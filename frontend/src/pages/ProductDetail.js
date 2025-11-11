@@ -64,9 +64,15 @@ const ProductDetail = () => {
 
   const handleAddToCart = () => {
     // Validate required options
-    const missingRequired = options.find(
-      group => group.required && (!selectedOptions[group.id] || selectedOptions[group.id].length === 0)
-    );
+    const missingRequired = options.find(group => {
+      // Check if group should be shown
+      if (group.showIf) {
+        const conditionMet = (selectedOptions[group.showIf.optionGroupId] || []).includes(group.showIf.optionId);
+        if (!conditionMet) return false; // Skip validation if not shown
+      }
+      
+      return group.required && (!selectedOptions[group.id] || selectedOptions[group.id].length === 0);
+    });
 
     if (missingRequired) {
       toast({
