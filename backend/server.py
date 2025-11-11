@@ -10,6 +10,12 @@ from typing import List
 import uuid
 from datetime import datetime, timezone
 
+# Import admin routes
+from routes.admin import auth as admin_auth
+from routes.admin import dashboard as admin_dashboard
+from routes.admin import products as admin_products
+from routes.admin import categories as admin_categories
+from routes.admin import orders as admin_orders
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -20,10 +26,13 @@ client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
 # Create the main app without a prefix
-app = FastAPI()
+app = FastAPI(title="Family's API", version="1.0.0")
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
+
+# Create admin router with /api/v1/admin prefix
+admin_router = APIRouter(prefix="/api/v1/admin")
 
 
 # Define Models
