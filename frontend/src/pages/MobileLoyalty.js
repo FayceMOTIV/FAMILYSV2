@@ -67,15 +67,16 @@ const MobileLoyalty = () => {
 
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-6">
-              <div>
+              <div className="flex-1">
                 <div className="text-sm opacity-90 mb-1">Membre</div>
                 <div className="text-2xl font-black">{user.name}</div>
               </div>
-              <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center p-1">
+              <div className="relative w-16 h-16 bg-white rounded-3xl flex items-center justify-center p-2 shadow-lg">
                 <img 
                   src="https://customer-assets.emergentagent.com/job_foodie-hub-21/artifacts/ybj62fs7_logo%20family%27s%20ok%20%21.png" 
                   alt="Family's"
                   className="w-full h-full object-contain"
+                  style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }}
                 />
               </div>
             </div>
