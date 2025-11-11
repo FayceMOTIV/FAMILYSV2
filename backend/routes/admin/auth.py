@@ -7,16 +7,11 @@ import os
 
 router = APIRouter(prefix="/auth", tags=["admin-auth"])
 
-# DB will be imported when needed
-db = None
-
-def set_db(database):
-    global db
-    db = database
-
 @router.post("/login")
 async def login(credentials: UserLogin):
     """Admin login endpoint."""
+    from database import db
+    
     # Find user by email
     user_dict = await db.users.find_one({"email": credentials.email})
     
