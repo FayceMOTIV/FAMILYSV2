@@ -303,8 +303,58 @@ const Checkout = () => {
           </div>
         )}
 
-        {/* Step 3: Payment */}
+        {/* Step 3: Contact Info */}
         {step === 3 && (
+          <div className="space-y-6">
+            <div className="bg-white dark:bg-[#1a1a1a] rounded-3xl p-8 shadow-lg">
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 flex items-center">
+                <MapPin className="w-6 h-6 mr-3 text-[#C62828] dark:text-[#FFD54F]" />
+                Vos coordonnées
+              </h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Nom complet *
+                  </label>
+                  <Input
+                    type="text"
+                    value={orderData.name}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    placeholder="Jean Dupont"
+                    className="w-full p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Email *
+                  </label>
+                  <Input
+                    type="email"
+                    value={orderData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    placeholder="jean.dupont@example.com"
+                    className="w-full p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Téléphone *
+                  </label>
+                  <Input
+                    type="tel"
+                    value={orderData.phone}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    placeholder="06 12 34 56 78"
+                    className="w-full p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 4: Payment */}
+        {step === 4 && (
           <div className="space-y-6">
             <div className="bg-white dark:bg-[#1a1a1a] rounded-3xl p-8 shadow-lg">
               <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 flex items-center">
