@@ -437,10 +437,10 @@ const Checkout = () => {
 
         {/* Action Button */}
         <Button
-          onClick={step === 3 ? handlePlaceOrder : handleNext}
-          className="w-full bg-gradient-to-r from-[#C62828] to-[#8B0000] hover:from-[#8B0000] hover:to-[#C62828] text-white py-8 rounded-2xl text-xl font-bold shadow-2xl transition-all duration-300 transform hover:scale-105"
+          onClick={step === 4 ? handlePlaceOrder : handleNext}
+          className="w-full bg-gradient-to-r from-[#C62828] to-[#8B0000] hover:from-[#8B0000] hover:to-[#C62828] text-white py-8 rounded-2xl text-xl font-bold shadow-2xl transition-all duration-300 active:scale-95"
         >
-          {step === 3 ? 'Confirmer la commande' : 'Continuer'}
+          {step === 4 ? 'Confirmer la commande' : 'Continuer'}
         </Button>
       </div>
     </div>
