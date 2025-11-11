@@ -17,7 +17,7 @@ import { Reservations } from './pages/Reservations';
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename="/backoffice">
         <Routes>
           <Route path="/admin/login" element={<Login />} />
           <Route path="/admin" element={<Layout />}>
