@@ -29,7 +29,7 @@ const MobileHome = () => {
       {/* Back Office Button - Top Right */}
       {process.env.REACT_APP_SHOW_ADMIN_SHORTCUT !== 'false' && (
         <a
-          href="http://localhost:3001/admin"
+          href={process.env.REACT_APP_ADMIN_URL || '/admin'}
           target="_blank"
           rel="noopener noreferrer"
           className="fixed top-4 right-4 z-50 bg-gradient-to-br from-[#C62828] to-[#8B0000] text-white px-4 py-2 rounded-full font-bold text-xs shadow-2xl hover:scale-105 active:scale-95 transition-all duration-200 flex items-center space-x-2"
