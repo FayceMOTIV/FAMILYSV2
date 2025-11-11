@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Header } from '../components/Header';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
-import { Input, Label } from '../components/Input';
+import { ProductModal } from '../components/ProductModal';
 import { productsAPI } from '../services/api';
 import { Plus, Edit2, Trash2, Package } from 'lucide-react';
 
