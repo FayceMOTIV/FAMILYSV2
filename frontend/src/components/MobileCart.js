@@ -154,7 +154,7 @@ const MobileCart = ({ isOpen, onClose }) => {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 
