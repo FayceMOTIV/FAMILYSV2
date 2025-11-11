@@ -1,14 +1,18 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from ...models.user import User, UserCreate, UserLogin, UserResponse
-from ...utils.auth import verify_password, get_password_hash, create_access_token
+from models.user import User, UserCreate, UserLogin, UserResponse
+from utils.auth import verify_password, get_password_hash, create_access_token
 from typing import Optional
 import os
 
 router = APIRouter(prefix="/auth", tags=["admin-auth"])
 
-# Get DB dependency (will be injected from main server)
-from ...server import db
+# DB will be imported when needed
+db = None
+
+def set_db(database):
+    global db
+    db = database
 
 @router.post("/login")
 async def login(credentials: UserLogin):
