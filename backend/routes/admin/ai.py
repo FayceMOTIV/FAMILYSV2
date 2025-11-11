@@ -105,7 +105,7 @@ async def ai_chat_endpoint(request: ChatRequest, current_user: dict = Security(r
         context["today_revenue"] = sum(o.get("total", 0) for o in today_orders)
         context["today_orders"] = len(today_orders)
     
-    response = ai_chat(request.question, context)
+    response = await ai_chat(request.question, context)
     
     return {"question": request.question, "response": response}
 
