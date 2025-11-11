@@ -30,7 +30,7 @@ const MobileHome = () => {
       {process.env.REACT_APP_SHOW_ADMIN_SHORTCUT !== 'false' && (
         <button
           onClick={() => {
-            const adminUrl = 'https://family-manage-2.preview.emergentagent.com/backoffice/admin';
+            const adminUrl = `${window.location.origin}/admin`;
             console.log('Opening Back Office:', adminUrl);
             window.open(adminUrl, '_blank', 'noopener,noreferrer');
           }}
