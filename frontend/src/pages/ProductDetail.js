@@ -208,6 +208,9 @@ const ProductDetail = () => {
               </div>
             )}
 
+            {/* Product Notes */}
+            <ProductNotes notes={productNotes} onNotesChange={setProductNotes} />
+
             {/* Quantity & Total */}
             <div className="bg-gray-50 dark:bg-[#0f0f0f] rounded-3xl p-5">
               <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4">Quantité</h3>
@@ -235,6 +238,9 @@ const ProductDetail = () => {
                 </div>
               </div>
             </div>
+
+            {/* Add to Cart Animation */}
+            <AddToCartAnimation trigger={showAnimation} productImage={product.imageUrl} />
 
             {/* Add to Cart Button - Fixed at bottom */}
             <div className="fixed bottom-20 left-0 right-0 p-4 bg-white dark:bg-[#1a1a1a] border-t border-gray-200 dark:border-gray-800 z-10">
