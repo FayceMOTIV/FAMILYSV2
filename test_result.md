@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Teste TOUS les boutons et la navigation de l'application mobile Family's sur http://localhost:3000 avec viewport mobile iPhone 14 Pro (393x852). Tests à effectuer: Page d'accueil, Menu, Produit, Fidélité, Favoris, Profil, Panier et Bottom Navigation. Concentre-toi particulièrement sur le bouton RETOUR qui est signalé comme ne fonctionnant pas."
+user_problem_statement: "Teste TOUTES les nouvelles fonctionnalités premium de l'application Family's sur http://localhost:3000 avec viewport mobile iPhone 14 Pro (393x852). Tests à effectuer: Splash Screen & Animations, CountdownBanner, Ajout au Panier avec Animation, Panier avec Swipe, Empty States, Mode Sombre Automatique, Recommandations, Notes Produit, Performance & Transitions. Concentre-toi sur l'expérience utilisateur globale et la fluidité !"
 
 frontend:
   - task: "Page d'accueil - Boutons et navigation"
