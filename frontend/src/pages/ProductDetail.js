@@ -88,11 +88,22 @@ const ProductDetail = () => {
       });
     });
 
-    addToCart(product, selectedOptionsArray, quantity);
+    // Ajouter les notes si présentes
+    const productWithNotes = { ...product, notes: productNotes };
+    addToCart(productWithNotes, selectedOptionsArray, quantity);
+    
+    // Animation
+    setShowAnimation(true);
+    setTimeout(() => setShowAnimation(false), 1000);
+    
+    // Haptic feedback
+    if (navigator.vibrate) {
+      navigator.vibrate([50, 30, 50]);
+    }
     
     toast({
-      title: 'Ajouté au panier !',
-      description: `${product.name} a été ajouté à votre panier`,
+      title: '🎉 Ajouté au panier !',
+      description: `${product.name} x${quantity}`,
     });
   };
 
