@@ -16,6 +16,12 @@ from routes.admin import dashboard as admin_dashboard
 from routes.admin import products as admin_products
 from routes.admin import categories as admin_categories
 from routes.admin import orders as admin_orders
+from routes.admin import ai as admin_ai
+from routes.admin import promos as admin_promos
+from routes.admin import customers as admin_customers
+from routes.admin import notifications as admin_notifications
+from routes.admin import reservations as admin_reservations
+from routes.admin import settings as admin_settings
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
