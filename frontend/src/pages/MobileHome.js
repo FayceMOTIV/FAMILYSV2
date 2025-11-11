@@ -41,13 +41,14 @@ const MobileHome = () => {
               {/* Glow effect behind logo */}
               <div className="absolute inset-0 blur-2xl opacity-50 bg-[#FFD54F] rounded-full scale-150"></div>
               
-              {/* Logo with removed background */}
+              {/* Logo with removed background using mix-blend-mode */}
               <img 
                 src="https://customer-assets.emergentagent.com/job_foodie-hub-21/artifacts/ybj62fs7_logo%20family%27s%20ok%20%21.png" 
                 alt="Family's Original Burger"
-                className="relative h-40 w-auto object-contain drop-shadow-2xl"
+                className="relative h-48 w-auto object-contain"
                 style={{
-                  filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.3))'
+                  mixBlendMode: 'multiply',
+                  filter: 'contrast(1.2) saturate(1.1) drop-shadow(0 25px 50px rgba(0,0,0,0.4))'
                 }}
               />
             </div>
