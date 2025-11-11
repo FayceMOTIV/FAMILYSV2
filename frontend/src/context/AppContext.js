@@ -25,10 +25,20 @@ export const AppProvider = ({ children }) => {
     const savedFavorites = localStorage.getItem('familys_favorites');
     const savedTheme = localStorage.getItem('familys_theme');
     const savedUser = localStorage.getItem('familys_user');
+    const autoTheme = localStorage.getItem('familys_auto_theme');
     
     if (savedCart) setCart(JSON.parse(savedCart));
     if (savedFavorites) setFavorites(JSON.parse(savedFavorites));
-    if (savedTheme) setTheme(savedTheme);
+    
+    // Auto dark mode basé sur l'heure (19h-7h)
+    if (autoTheme === 'true' || !savedTheme) {
+      const hour = new Date().getHours();
+      const isDarkHours = hour >= 19 || hour < 7;
+      setTheme(isDarkHours ? 'dark' : 'light');
+    } else if (savedTheme) {
+      setTheme(savedTheme);
+    }
+    
     if (savedUser) {
       const userData = JSON.parse(savedUser);
       setUser(userData);
