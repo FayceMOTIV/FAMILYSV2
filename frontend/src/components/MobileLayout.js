@@ -29,16 +29,21 @@ const MobileLayout = ({ children }) => {
       </main>
 
       {/* Fixed Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1a1a1a] border-t border-gray-200 dark:border-gray-800 z-50 safe-area-inset-bottom">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1a1a1a] border-t border-gray-200 dark:border-gray-800 z-[9999] safe-area-inset-bottom">
         <div className="flex justify-around items-center py-2 px-2">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
+            const handleClick = () => {
+              console.log('Navigation to:', item.path);
+              navigate(item.path);
+            };
             return (
               <button
                 key={item.path}
-                onClick={() => navigate(item.path)}
-                className={`relative flex flex-col items-center justify-center py-2 px-3 rounded-2xl min-w-[64px] transition-all duration-300 ${
+                onClick={handleClick}
+                type="button"
+                className={`relative flex flex-col items-center justify-center py-2 px-3 rounded-2xl min-w-[64px] transition-all duration-300 cursor-pointer ${
                   active
                     ? 'text-[#C62828] dark:text-[#FFD54F] bg-[#C62828]/10 dark:bg-[#FFD54F]/10 scale-110'
                     : 'text-gray-500 dark:text-gray-400'
