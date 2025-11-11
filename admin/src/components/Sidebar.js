@@ -11,7 +11,10 @@ import {
   Tag,
   Users,
   Bell,
-  Calendar
+  Calendar,
+  Zap,
+  History,
+  Sliders
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { cn } from '../utils/cn';
