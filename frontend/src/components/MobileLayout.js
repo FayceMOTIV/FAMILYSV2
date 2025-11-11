@@ -28,6 +28,19 @@ const MobileLayout = ({ children }) => {
         {children}
       </main>
 
+      {/* Floating Cart Button */}
+      {cartCount > 0 && (
+        <button
+          onClick={() => setIsCartOpen(true)}
+          className="fixed bottom-24 right-4 z-[9998] w-16 h-16 bg-gradient-to-br from-[#C62828] to-[#8B0000] text-white rounded-full shadow-2xl flex items-center justify-center active:scale-90 transition-all duration-300 animate-bounce"
+        >
+          <ShoppingBag className="w-7 h-7" />
+          <span className="absolute -top-2 -right-2 bg-[#FFD54F] text-[#121212] text-sm font-black rounded-full w-7 h-7 flex items-center justify-center animate-pulse">
+            {cartCount}
+          </span>
+        </button>
+      )}
+
       {/* Fixed Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1a1a1a] border-t border-gray-200 dark:border-gray-800 z-[9999] safe-area-inset-bottom">
         <div className="flex justify-around items-center py-2 px-2">
