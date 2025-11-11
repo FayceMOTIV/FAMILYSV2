@@ -19,8 +19,8 @@ function App() {
     <AuthProvider>
       <BrowserRouter basename="/backoffice">
         <Routes>
-          <Route path="/admin/login" element={<Login />} />
-          <Route path="/admin" element={<Layout />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="ai" element={<AIAssistant />} />
             <Route path="products" element={<Products />} />
@@ -32,7 +32,7 @@ function App() {
             <Route path="reservations" element={<Reservations />} />
             <Route path="settings" element={<Settings />} />
           </Route>
-          <Route path="*" element={<Navigate to="/admin" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
