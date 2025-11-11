@@ -5,10 +5,13 @@ import { Button } from '../components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
 const MobileLoyalty = () => {
-  const { user, loyaltyStamps, login } = useApp();
+  const { user, login } = useApp();
   const navigate = useNavigate();
-  const totalStamps = 10;
-  const progress = (loyaltyStamps / totalStamps) * 100;
+  
+  // Cashback system - 5% of purchases
+  const totalSpent = user?.orderHistory?.reduce((sum, order) => sum + order.total, 0) || 0;
+  const cashbackBalance = totalSpent * 0.05; // 5% cashback
+  const nextRewardThreshold = 10; // 10€ pour utiliser le cashback
 
   const handleLogin = () => {
     login();
@@ -22,10 +25,10 @@ const MobileLoyalty = () => {
             <Award className="w-12 h-12 text-[#121212]" />
           </div>
           <h2 className="text-2xl font-black text-gray-800 dark:text-white mb-4">
-            Carte de Fidélité
+            Carte Cashback
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
-            Connectez-vous pour accéder à votre carte et profiter de récompenses
+            Connecte-toi pour récupérer 5% sur tous tes achats
           </p>
           <Button
             onClick={handleLogin}
@@ -38,12 +41,7 @@ const MobileLoyalty = () => {
     );
   }
 
-  const rewards = [
-    { stamps: 5, title: 'Réduc 10%', description: 'Sur ta prochaine commande', icon: '🎫', unlocked: loyaltyStamps >= 5 },
-    { stamps: 10, title: 'Menu offert', description: "Menu Family's gratuit", icon: '🍔', unlocked: loyaltyStamps >= 10 },
-    { stamps: 20, title: 'Dessert offert', description: 'Dessert au choix', icon: '🍰', unlocked: loyaltyStamps >= 20 },
-    { stamps: 30, title: 'Menu King offert', description: 'Notre signature', icon: '👑', unlocked: loyaltyStamps >= 30 }
-  ];
+  const canUseReward = cashbackBalance >= nextRewardThreshold;
 
   return (
     <div className="bg-[#FAFAFA] dark:bg-[#121212] min-h-screen">
