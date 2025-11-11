@@ -4,19 +4,19 @@ import { useAuth } from '../contexts/AuthContext';
 import { Sidebar } from './Sidebar';
 
 export const Layout = () => {
-  const { isAuthenticated, loading } = useAuth();
+  // const { isAuthenticated, loading } = useAuth();
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Chargement...</p>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center">
+  //       <p>Chargement...</p>
+  //     </div>
+  //   );
+  // }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/admin/login" replace />;
-  }
+  // if (!isAuthenticated) {
+  //   return <Navigate to="/admin/login" replace />;
+  // }
 
   return (
     <div className="flex min-h-screen bg-gray-50">
