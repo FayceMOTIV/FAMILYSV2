@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 router = APIRouter(prefix="/products", tags=["admin-products"])
 
-from ...server import db
+from database import db
 
 @router.get("", response_model=List[Product])
 async def get_products(

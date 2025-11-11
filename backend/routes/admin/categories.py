@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 router = APIRouter(prefix="/categories", tags=["admin-categories"])
 
-from ...server import db
+from database import db
 
 @router.get("", response_model=List[Category])
 async def get_categories(current_user: dict = Security(require_manager_or_admin)):

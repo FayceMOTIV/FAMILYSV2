@@ -7,7 +7,7 @@ import os
 router = APIRouter(prefix="/dashboard", tags=["admin-dashboard"])
 
 # Get DB dependency
-from ...server import db
+from database import db
 
 @router.get("/stats")
 async def get_dashboard_stats(current_user: dict = Security(require_manager_or_admin)):
