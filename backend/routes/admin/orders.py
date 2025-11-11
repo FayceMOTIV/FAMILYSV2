@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Security, status, Query
 from typing import List, Optional
-from ...models.order import Order, OrderStatusUpdate, OrderStatus
+from models.order import Order, OrderStatusUpdate, OrderStatus
 from ...middleware.auth import require_manager_or_admin
 from datetime import datetime, timezone
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Security, status
 from typing import List
-from ...models.category import Category, CategoryCreate, CategoryUpdate
+from models.category import Category, CategoryCreate, CategoryUpdate
 from ...middleware.auth import require_manager_or_admin
 from datetime import datetime, timezone
 
