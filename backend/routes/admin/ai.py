@@ -38,7 +38,7 @@ async def generate_marketing(request: MarketingRequest, current_user: dict = Sec
     else:
         prompt = request.context or "Génère du contenu marketing pour Family's."
     
-    result = generate_marketing_text(prompt, request.context or "")
+    result = await generate_marketing_text(prompt, request.context or "")
     
     return {"generated_text": result, "type": request.type}
 
