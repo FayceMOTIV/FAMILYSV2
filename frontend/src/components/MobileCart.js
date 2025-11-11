@@ -52,7 +52,7 @@ const MobileCart = ({ isOpen, onClose }) => {
         </div>
 
         {/* Cart Items */}
-        <div className="overflow-y-auto px-4 py-4" style={{ maxHeight: 'calc(85vh - 220px)' }}>
+        <div className="flex-1 overflow-y-auto px-4 py-4">
           {cart.length === 0 ? (
             <EmptyState 
               type="cart" 
