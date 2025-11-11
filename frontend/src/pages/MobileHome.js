@@ -29,11 +29,12 @@ const MobileHome = () => {
       <section className="relative bg-gradient-to-br from-[#C62828] via-[#8B0000] to-[#C62828] text-white pt-8 pb-12 px-4">
         <div className="text-center space-y-6">
           {/* Logo */}
-          <div className="inline-flex items-center space-x-3 mb-2">
-            <div className="w-16 h-16 bg-gradient-to-br from-[#FFD54F] to-[#FFC107] rounded-3xl flex items-center justify-center shadow-xl">
-              <span className="text-[#121212] font-black text-3xl">F</span>
-            </div>
-            <span className="text-4xl font-black tracking-tight">Family's</span>
+          <div className="inline-flex items-center justify-center mb-2">
+            <img 
+              src="https://customer-assets.emergentagent.com/job_foodie-hub-21/artifacts/ybj62fs7_logo%20family%27s%20ok%20%21.png" 
+              alt="Family's Original Burger"
+              className="h-24 w-auto object-contain"
+            />
           </div>
           
           {/* Badge */}
