@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Header } from '../components/Header';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
+import { CategoryModal } from '../components/CategoryModal';
 import { categoriesAPI } from '../services/api';
 import { FolderOpen, Plus, Edit2, Trash2 } from 'lucide-react';
 
 export const Categories = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [editingCategory, setEditingCategory] = useState(null);
 
   useEffect(() => {
     loadCategories();
