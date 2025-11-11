@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, CreditCard, MapPin, Clock, Check } from 'lucide-react';
+import { ChevronLeft, CreditCard, MapPin, Clock, Check, ShoppingBag, Utensils, Package } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -14,8 +14,11 @@ const Checkout = () => {
     name: user?.name || '',
     email: user?.email || '',
     phone: user?.phone || '',
+    consumptionMode: '', // à emporter, sur place
+    pickupDate: '',
     pickupTime: '',
-    paymentMethod: 'card'
+    paymentMethod: 'card',
+    specialInstructions: ''
   });
 
   const total = getCartTotal();
