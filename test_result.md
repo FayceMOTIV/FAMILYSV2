@@ -105,118 +105,115 @@
 user_problem_statement: "Teste TOUTES les nouvelles fonctionnalités premium de l'application Family's sur http://localhost:3000 avec viewport mobile iPhone 14 Pro (393x852). Tests à effectuer: Splash Screen & Animations, CountdownBanner, Ajout au Panier avec Animation, Panier avec Swipe, Empty States, Mode Sombre Automatique, Recommandations, Notes Produit, Performance & Transitions. Concentre-toi sur l'expérience utilisateur globale et la fluidité !"
 
 frontend:
-  - task: "Page d'accueil - Boutons et navigation"
+  - task: "Splash Screen & Animations"
     implemented: true
-    working: true
-    file: "/app/frontend/src/pages/MobileHome.js"
+    working: "NA"
+    file: "/app/frontend/src/components/SplashScreen.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "NA"
         - agent: "testing"
-        - comment: "Test initial - Vérifier bouton 'Commander maintenant', boutons '+' sur best-sellers, 'Voir tout', 'Voir mon cashback', boutons catégories"
-        - working: false
-        - agent: "testing"
-        - comment: "PROBLÈME CRITIQUE: Bouton 'Commander maintenant' ne fonctionne pas - URL reste inchangée après clic, ne navigue pas vers /menu. Autres boutons ('+', 'Voir tout', 'Voir mon cashback', catégories) fonctionnent correctement."
-        - working: true
-        - agent: "testing"
-        - comment: "✅ BUG #1 CORRIGÉ: Bouton 'Commander maintenant' fonctionne maintenant correctement et navigue vers /menu comme attendu. Test de régression réussi."
+        - comment: "Test initial - Vider sessionStorage et recharger pour voir le splash screen, vérifier que le logo Family's apparaît avec animation, vérifier la transition vers la page d'accueil"
 
-  - task: "Page Menu - Recherche et filtres"
+  - task: "CountdownBanner sur page d'accueil"
     implemented: true
-    working: true
-    file: "/app/frontend/src/pages/MobileMenu.js"
+    working: "NA"
+    file: "/app/frontend/src/components/CountdownBanner.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "NA"
         - agent: "testing"
-        - comment: "Test initial - Vérifier barre de recherche, filtres catégories, boutons '+', favoris, panier header"
-        - working: true
-        - agent: "testing"
-        - comment: "✅ FONCTIONNE: Barre de recherche opérationnelle, filtres catégories (Tout, Burgers, Tacos, etc.) fonctionnent, boutons '+' sur produits OK, navigation vers détails produits OK. Panier header non visible car panier vide (comportement normal)."
+        - comment: "Test initial - Vérifier qu'il y a un compte à rebours 'Menu King à 9,90€', vérifier que le timer se met à jour, vérifier les couleurs et animations"
 
-  - task: "Page Produit - Bouton retour CRITIQUE"
+  - task: "Ajout au Panier avec Animation"
     implemented: true
-    working: true
-    file: "/app/frontend/src/pages/ProductDetail.js"
+    working: "NA"
+    file: "/app/frontend/src/components/AddToCartAnimation.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "NA"
         - agent: "testing"
-        - comment: "Test CRITIQUE - Bouton retour signalé comme ne fonctionnant pas, vérifier aussi favoris, options, quantité, ajouter au panier"
-        - working: false
-        - agent: "testing"
-        - comment: "PROBLÈME CRITIQUE CONFIRMÉ: Bouton retour navigue vers /profile au lieu de revenir à la page précédente. Autres fonctionnalités OK: boutons favoris, quantité (+/-), ajouter au panier fonctionnent. Navigation vers page produit fonctionne."
-        - working: true
-        - agent: "testing"
-        - comment: "✅ BUG #3 CORRIGÉ: Bouton retour fonctionne maintenant correctement et revient à la page précédente (/menu) au lieu d'aller vers /profile. Test de régression réussi."
+        - comment: "Test initial - Aller sur /menu, cliquer sur un produit, sélectionner les options requises, cliquer sur 'Ajouter au panier', vérifier animation du burger qui vole vers le panier avec particules, vérifier vibration haptic (si disponible), vérifier toast de confirmation"
 
-  - task: "Page Fidélité/Cashback"
+  - task: "ProductNotes - Instructions spéciales"
     implemented: true
-    working: true
-    file: "/app/frontend/src/pages/MobileLoyalty.js"
+    working: "NA"
+    file: "/app/frontend/src/components/ProductNotes.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Test initial - Sur une page produit, cliquer sur 'Instructions spéciales', tester les suggestions rapides ('Sans oignons', etc.), ajouter une note personnalisée, sauvegarder, vérifier que les notes sont visibles dans l'item du panier"
+
+  - task: "Panier avec Swipe"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/SwipeableCartItem.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Test initial - Ouvrir le panier, vérifier instructions 'Glisse vers la gauche pour supprimer', tester swiper un item vers la gauche, vérifier background rouge avec icône poubelle apparaît, vérifier item se supprime après swipe complet, vérifier animation smooth"
+
+  - task: "Empty States"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/EmptyState.js"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "NA"
         - agent: "testing"
-        - comment: "Test initial - Vérifier boutons 'Se connecter', 'Utiliser mon cashback', 'Commander maintenant'"
-        - working: true
-        - agent: "testing"
-        - comment: "✅ FONCTIONNE: Bouton 'Se connecter' fonctionne, page s'affiche correctement, navigation accessible. Boutons 'Utiliser mon cashback' et 'Commander maintenant' présents et fonctionnels."
+        - comment: "Test initial - Vider le panier complètement, vérifier EmptyState s'affiche avec emoji animé 🍔, message 'Ton panier a faim !', bouton 'Découvrir le menu'. Aller sur /favorites (non connecté), vérifier EmptyState favoris avec emoji ⭐"
 
-  - task: "Page Favoris"
+  - task: "Mode Sombre Automatique"
     implemented: true
-    working: true
-    file: "/app/frontend/src/pages/MobileFavorites.js"
+    working: "NA"
+    file: "/app/frontend/src/context/AppContext.js"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "NA"
         - agent: "testing"
-        - comment: "Test initial - Vérifier boutons 'Se connecter', 'Découvrir le menu', boutons '+' et favoris"
-        - working: true
-        - agent: "testing"
-        - comment: "✅ FONCTIONNE: Page favoris accessible, bouton 'Découvrir le menu' fonctionne et navigue correctement. Interface utilisateur responsive et fonctionnelle."
+        - comment: "Test initial - Aller dans Profil, toggle le thème manuellement, vérifier transition smooth entre light/dark, vérifier persistance dans localStorage, vérifier tous les composants s'adaptent"
 
-  - task: "Page Profil"
+  - task: "Recommandations"
     implemented: true
-    working: true
-    file: "/app/frontend/src/pages/MobileProfile.js"
+    working: "NA"
+    file: "/app/frontend/src/components/RecommendedProducts.js"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "NA"
         - agent: "testing"
-        - comment: "Test initial - Vérifier boutons 'Se connecter', toggle thème, 'Recommander', WhatsApp, 'Se déconnecter'"
-        - working: true
-        - agent: "testing"
-        - comment: "✅ FONCTIONNE: Bouton 'Se connecter' fonctionne, toggle thème opérationnel, page profil accessible et fonctionnelle. Interface utilisateur complète."
+        - comment: "Test initial - Aller sur une page produit, scroller vers le bas, vérifier section 'Recommandé pour toi' s'affiche, vérifier 3 produits recommandés, cliquer sur un produit recommandé, vérifier navigation vers ce produit"
 
-  - task: "Panier (sidebar)"
+  - task: "Performance & Transitions"
     implemented: true
-    working: true
-    file: "/app/frontend/src/components/MobileCart.js"
+    working: "NA"
+    file: "/app/frontend/src/App.js"
     stuck_count: 0
-    priority: "high"
-    needs_retesting: false
+    priority: "medium"
+    needs_retesting: true
     status_history:
         - working: "NA"
         - agent: "testing"
-        - comment: "Test initial - Vérifier bouton fermer, quantité (+/-), supprimer, 'Commander'"
-        - working: true
-        - agent: "testing"
-        - comment: "✅ FONCTIONNE: Panier s'ouvre correctement via bottom nav, bouton fermer (X) fonctionne, interface panier responsive. Ajout au panier depuis page produit opérationnel."
+        - comment: "Test initial - Naviguer entre toutes les pages, vérifier transitions fluides, vérifier aucun lag ou freeze, vérifier animations à 60fps, tester sur plusieurs tailles d'écran mobile, vérifier que tous les boutons sont cliquables, vérifier qu'il n'y a pas d'erreurs console, vérifier la persistance des données (localStorage)"
 
-  - task: "Bottom Navigation"
+  - task: "Bottom Navigation - Bug existant"
     implemented: true
     working: false
     file: "/app/frontend/src/components/MobileLayout.js"
