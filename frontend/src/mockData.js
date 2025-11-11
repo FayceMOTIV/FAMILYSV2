@@ -228,41 +228,69 @@ export const promotions = [
   }
 ];
 
+// Options communes pour tous les burgers
+const burgerBaseOptions = [
+  {
+    id: 'menu-choice',
+    name: 'Formule',
+    type: 'single',
+    required: true,
+    options: [
+      { id: 'solo', name: 'Burger seul', deltaPrice: 0 },
+      { id: 'menu', name: 'Menu (Burger + Accompagnement + Boisson)', deltaPrice: 3.50 }
+    ]
+  },
+  {
+    id: 'accompaniment',
+    name: 'Accompagnement',
+    type: 'single',
+    required: false,
+    showIf: { optionGroupId: 'menu-choice', optionId: 'menu' },
+    options: [
+      { id: 'frites', name: 'Frites maison', deltaPrice: 0 },
+      { id: 'potatoes', name: 'Potatoes', deltaPrice: 0.50 },
+      { id: 'onion-rings', name: 'Onion rings', deltaPrice: 0.80 },
+      { id: 'salade', name: 'Salade', deltaPrice: 0 }
+    ]
+  },
+  {
+    id: 'drink',
+    name: 'Boisson',
+    type: 'single',
+    required: false,
+    showIf: { optionGroupId: 'menu-choice', optionId: 'menu' },
+    options: [
+      { id: 'coca-33', name: 'Coca-Cola 33cl', deltaPrice: 0 },
+      { id: 'coca-50', name: 'Coca-Cola 50cl', deltaPrice: 0.50 },
+      { id: 'sprite-33', name: 'Sprite 33cl', deltaPrice: 0 },
+      { id: 'fanta-33', name: 'Fanta 33cl', deltaPrice: 0 },
+      { id: 'ice-tea-33', name: 'Ice Tea 33cl', deltaPrice: 0 },
+      { id: 'eau', name: 'Eau minérale 50cl', deltaPrice: 0 }
+    ]
+  },
+  {
+    id: 'supplements',
+    name: 'Suppléments',
+    type: 'multi',
+    required: false,
+    options: [
+      { id: 'bacon', name: 'Bacon supplémentaire', deltaPrice: 1.50 },
+      { id: 'double-steak', name: 'Double steak', deltaPrice: 2.50 },
+      { id: 'oeuf', name: 'Œuf', deltaPrice: 1.00 },
+      { id: 'cheddar', name: 'Cheddar supplémentaire', deltaPrice: 0.80 },
+      { id: 'emmental', name: 'Emmental supplémentaire', deltaPrice: 0.80 },
+      { id: 'sauce-bbq', name: 'Sauce BBQ', deltaPrice: 0.50 },
+      { id: 'sauce-mayo', name: 'Sauce mayonnaise', deltaPrice: 0.50 },
+      { id: 'sauce-algerienne', name: 'Sauce algérienne', deltaPrice: 0.50 }
+    ]
+  }
+];
+
 export const productOptions = {
-  'burger-1': [
-    {
-      id: 'opt-group-1',
-      name: 'Type de pain',
-      type: 'single',
-      required: true,
-      options: [
-        { id: 'opt-1', name: 'Pain classique', deltaPrice: 0 },
-        { id: 'opt-2', name: 'Pain brioché', deltaPrice: 0.50 }
-      ]
-    },
-    {
-      id: 'opt-group-2',
-      name: 'Fromage',
-      type: 'single',
-      required: false,
-      options: [
-        { id: 'opt-3', name: 'Cheddar', deltaPrice: 0 },
-        { id: 'opt-4', name: 'Emmental', deltaPrice: 0 },
-        { id: 'opt-5', name: 'Double fromage', deltaPrice: 0.80 }
-      ]
-    },
-    {
-      id: 'opt-group-3',
-      name: 'Extras',
-      type: 'multi',
-      required: false,
-      options: [
-        { id: 'opt-6', name: 'Bacon supplémentaire', deltaPrice: 1.50 },
-        { id: 'opt-7', name: 'Double steak', deltaPrice: 2.50 },
-        { id: 'opt-8', name: 'Œuf', deltaPrice: 1.00 }
-      ]
-    }
-  ]
+  'burger-1': burgerBaseOptions,
+  'burger-2': burgerBaseOptions,
+  'burger-3': burgerBaseOptions,
+  'burger-4': burgerBaseOptions
 };
 
 // User mock data
