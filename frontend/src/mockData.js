@@ -172,11 +172,36 @@ export const products = [
 ];
 
 export const categories = [
-  { id: 'burgers', name: 'Burgers', icon: 'beef' },
-  { id: 'tacos', name: 'Tacos', icon: 'wrap-text' },
-  { id: 'menus', name: 'Menus', icon: 'package' },
-  { id: 'desserts', name: 'Desserts', icon: 'cake' },
-  { id: 'boissons', name: 'Boissons', icon: 'glass-water' }
+  { 
+    id: 'burgers', 
+    name: 'Burgers', 
+    icon: 'beef',
+    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=400&fit=crop&q=80'
+  },
+  { 
+    id: 'tacos', 
+    name: 'Tacos', 
+    icon: 'wrap-text',
+    image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400&h=400&fit=crop&q=80'
+  },
+  { 
+    id: 'menus', 
+    name: 'Menus', 
+    icon: 'package',
+    image: 'https://images.unsplash.com/photo-1561758033-d89a9ad46330?w=400&h=400&fit=crop&q=80'
+  },
+  { 
+    id: 'desserts', 
+    name: 'Desserts', 
+    icon: 'cake',
+    image: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400&h=400&fit=crop&q=80'
+  },
+  { 
+    id: 'boissons', 
+    name: 'Boissons', 
+    icon: 'glass-water',
+    image: 'https://images.unsplash.com/photo-1554866585-cd94860890b7?w=400&h=400&fit=crop&q=80'
+  }
 ];
 
 export const promotions = [
