@@ -48,20 +48,30 @@ const Checkout = () => {
 
   const validateStep = () => {
     if (step === 1) {
-      if (!orderData.name || !orderData.email || !orderData.phone) {
+      if (!orderData.consumptionMode) {
         toast({
-          title: 'Informations manquantes',
-          description: 'Veuillez remplir tous les champs',
+          title: 'Mode de consommation manquant',
+          description: 'Choisissez comment vous souhaitez consommer',
           variant: 'destructive'
         });
         return false;
       }
     }
     if (step === 2) {
-      if (!orderData.pickupTime) {
+      if (!orderData.pickupDate || !orderData.pickupTime) {
         toast({
-          title: 'Créneau manquant',
-          description: 'Veuillez sélectionner un créneau de retrait',
+          title: 'Date/Heure manquante',
+          description: 'Veuillez sélectionner une date et heure',
+          variant: 'destructive'
+        });
+        return false;
+      }
+    }
+    if (step === 3) {
+      if (!orderData.name || !orderData.email || !orderData.phone) {
+        toast({
+          title: 'Informations manquantes',
+          description: 'Veuillez remplir tous les champs',
           variant: 'destructive'
         });
         return false;
