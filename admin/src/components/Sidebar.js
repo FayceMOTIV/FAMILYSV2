@@ -6,7 +6,12 @@ import {
   ShoppingCart, 
   FolderOpen, 
   Settings,
-  LogOut
+  LogOut,
+  Sparkles,
+  Tag,
+  Users,
+  Bell,
+  Calendar
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { cn } from '../utils/cn';
