@@ -30,20 +30,8 @@ const MobileHome = () => {
       {process.env.REACT_APP_SHOW_ADMIN_SHORTCUT !== 'false' && (
         <button
           onClick={() => {
-            // Get admin URL from env or construct it
-            let adminUrl = process.env.REACT_APP_ADMIN_URL;
-            
-            if (!adminUrl) {
-              // If no env var, detect if we're on localhost or production
-              const currentHost = window.location.host;
-              if (currentHost.includes('localhost')) {
-                adminUrl = 'http://localhost:3001/admin';
-              } else {
-                // On Emergent preview, use same domain with admin path
-                adminUrl = `${window.location.protocol}//${window.location.host}/admin`;
-              }
-            }
-            
+            // Force admin URL to port 3001
+            const adminUrl = 'http://localhost:3001/admin';
             console.log('Opening Back Office:', adminUrl);
             window.open(adminUrl, '_blank', 'noopener,noreferrer');
           }}
