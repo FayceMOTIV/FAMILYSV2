@@ -1,0 +1,55 @@
+{
+  "name": "familys-admin",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
+    "axios": "^1.7.2",
+    "recharts": "^2.12.7",
+    "lucide-react": "^0.507.0",
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-dropdown-menu": "^2.0.6",
+    "@radix-ui/react-select": "^2.0.0",
+    "@radix-ui/react-switch": "^1.0.3",
+    "@radix-ui/react-toast": "^1.1.5",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.3.0"
+  },
+  "devDependencies": {
+    "@craco/craco": "^7.1.0",
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "react-scripts": "5.0.1",
+    "tailwindcss": "^3.4.3",
+    "vite": "^5.2.0"
+  },
+  "scripts": {
+    "dev": "BROWSER=none PORT=3001 craco start",
+    "build": "craco build",
+    "test": "craco test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
