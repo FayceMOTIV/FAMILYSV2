@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Security, status
 from typing import List, Optional
 from models.product import Product, ProductCreate, ProductUpdate
-from ...middleware.auth import require_manager_or_admin
+from middleware.auth import require_manager_or_admin
 from datetime import datetime, timezone
 
 router = APIRouter(prefix="/products", tags=["admin-products"])

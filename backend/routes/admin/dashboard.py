@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Security
 from datetime import datetime, timedelta, timezone
-from ...middleware.auth import require_manager_or_admin
+from middleware.auth import require_manager_or_admin
 from typing import Dict, List
 import os
 

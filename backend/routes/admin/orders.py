@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Security, status, Query
 from typing import List, Optional
 from models.order import Order, OrderStatusUpdate, OrderStatus
-from ...middleware.auth import require_manager_or_admin
+from middleware.auth import require_manager_or_admin
 from datetime import datetime, timezone
 
 router = APIRouter(prefix="/orders", tags=["admin-orders"])
