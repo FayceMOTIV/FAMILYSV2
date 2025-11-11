@@ -1,0 +1,81 @@
+import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Home, ShoppingBag, Award, Heart, User } from 'lucide-react';
+import { useApp } from '../context/AppContext';
+import MobileCart from './MobileCart';
+
+const MobileLayout = ({ children }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { isCartOpen, setIsCartOpen, getCartItemsCount } = useApp();
+  
+  const cartCount = getCartItemsCount();
+
+  const navItems = [
+    { icon: Home, label: 'Accueil', path: '/', id: 'home' },
+    { icon: ShoppingBag, label: 'Commander', path: '/menu', id: 'menu' },
+    { icon: Award, label: 'Fidélité', path: '/loyalty', id: 'loyalty' },
+    { icon: Heart, label: 'Favoris', path: '/favorites', id: 'favorites' },
+    { icon: User, label: 'Profil', path: '/profile', id: 'profile' }
+  ];
+
+  const isActive = (path) => location.pathname === path;
+
+  return (
+    <div className="min-h-screen bg-[#FAFAFA] dark:bg-[#121212] pb-20">
+      {/* Main Content - No Header */}
+      <main className="min-h-screen">
+        {children}
+      </main>
+
+      {/* Fixed Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1a1a1a] border-t border-gray-200 dark:border-gray-800 z-50 safe-area-inset-bottom">
+        <div className="flex justify-around items-center py-2 px-2">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item.path);
+            return (
+              <button
+                key={item.id}
+                onClick={() => {
+                  if (item.id === 'menu' && location.pathname === '/menu') {
+                    setIsCartOpen(true);
+                  } else {
+                    navigate(item.path);
+                  }
+                }}
+                className={`relative flex flex-col items-center justify-center py-2 px-3 rounded-2xl min-w-[64px] transition-all duration-300 ${
+                  active
+                    ? 'text-[#C62828] dark:text-[#FFD54F] bg-[#C62828]/10 dark:bg-[#FFD54F]/10 scale-110'
+                    : 'text-gray-500 dark:text-gray-400'
+                }`}
+              >
+                {item.id === 'menu' && cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-[#C62828] dark:bg-[#FFD54F] text-white dark:text-[#121212] text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                    {cartCount}
+                  </span>
+                )}
+                <Icon 
+                  className={`w-6 h-6 mb-1 transition-all duration-300 ${
+                    active ? 'scale-110' : ''
+                  }`} 
+                  strokeWidth={active ? 2.5 : 2}
+                />
+                <span className={`text-[10px] font-semibold ${
+                  active ? 'scale-105' : ''
+                }`}>
+                  {item.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </nav>
+
+      {/* Mobile Cart Overlay */}
+      <MobileCart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+    </div>
+  );
+};
+
+export default MobileLayout;
