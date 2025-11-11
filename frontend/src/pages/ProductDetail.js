@@ -93,22 +93,18 @@ const ProductDetail = () => {
   };
 
   return (
-    <div className="pb-20">
-      {/* Back Button */}
-      <div className="bg-white dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center text-[#C62828] dark:text-[#FFD54F] hover:underline font-semibold"
-          >
-            <ChevronLeft className="w-5 h-5 mr-1" />
-            Retour
-          </button>
-        </div>
-      </div>
+    <div className="bg-[#FAFAFA] dark:bg-[#121212] min-h-screen pb-20">
+      {/* Mobile Product Page */}
+      <div className="relative">
+        {/* Back Button Floating */}
+        <button
+          onClick={() => navigate(-1)}
+          className="absolute top-4 left-4 z-10 w-12 h-12 bg-white/90 dark:bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+        >
+          <ChevronLeft className="w-6 h-6 text-gray-800 dark:text-white" />
+        </button>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="space-y-0">
           {/* Product Image */}
           <div className="relative">
             <div className="rounded-3xl overflow-hidden shadow-2xl">
