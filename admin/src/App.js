@@ -32,7 +32,7 @@ function App() {
             <Route path="reservations" element={<Reservations />} />
             <Route path="settings" element={<Settings />} />
           </Route>
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/admin" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
