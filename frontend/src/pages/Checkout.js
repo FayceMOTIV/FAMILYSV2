@@ -225,32 +225,77 @@ const Checkout = () => {
           </div>
         )}
 
-        {/* Step 2: Pickup Time */}
+        {/* Step 2: Date & Time */}
         {step === 2 && (
           <div className="space-y-6">
             <div className="bg-white dark:bg-[#1a1a1a] rounded-3xl p-8 shadow-lg">
               <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 flex items-center">
                 <Clock className="w-6 h-6 mr-3 text-[#C62828] dark:text-[#FFD54F]" />
-                Créneau de retrait
+                Date et heure de {orderData.consumptionMode === 'dine-in' ? 'réservation' : 'retrait'}
               </h2>
-              <div className="grid grid-cols-4 gap-3">
-                {timeSlots.map((time) => (
-                  <button
-                    key={time}
-                    onClick={() => handleInputChange('pickupTime', time)}
-                    className={`p-4 rounded-xl font-semibold transition-all duration-300 ${
-                      orderData.pickupTime === time
-                        ? 'bg-[#C62828] text-white scale-105 shadow-lg'
-                        : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                    }`}
-                  >
-                    {time}
-                  </button>
-                ))}
+              
+              {/* Date Selection */}
+              <div className="mb-6">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                  Choisissez la date
+                </label>
+                <div className="grid grid-cols-3 gap-3">
+                  {(() => {
+                    const dates = [];
+                    for (let i = 0; i < 7; i++) {
+                      const date = new Date();
+                      date.setDate(date.getDate() + i);
+                      const dateStr = date.toISOString().split('T')[0];
+                      const dayName = i === 0 ? "Aujourd'hui" : i === 1 ? 'Demain' : date.toLocaleDateString('fr-FR', { weekday: 'short' });
+                      const dayNum = date.getDate();
+                      const month = date.toLocaleDateString('fr-FR', { month: 'short' });
+                      
+                      dates.push(
+                        <button
+                          key={dateStr}
+                          onClick={() => handleInputChange('pickupDate', dateStr)}
+                          className={`p-4 rounded-2xl font-semibold transition-all duration-300 ${
+                            orderData.pickupDate === dateStr
+                              ? 'bg-[#C62828] text-white scale-105 shadow-lg'
+                              : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                          }`}
+                        >
+                          <div className="text-xs opacity-80">{dayName}</div>
+                          <div className="text-2xl font-black">{dayNum}</div>
+                          <div className="text-xs">{month}</div>
+                        </button>
+                      );
+                    }
+                    return dates;
+                  })()}
+                </div>
               </div>
+
+              {/* Time Selection */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                  Choisissez l'heure
+                </label>
+                <div className="grid grid-cols-4 gap-3">
+                  {timeSlots.map((time) => (
+                    <button
+                      key={time}
+                      onClick={() => handleInputChange('pickupTime', time)}
+                      className={`p-4 rounded-xl font-semibold transition-all duration-300 ${
+                        orderData.pickupTime === time
+                          ? 'bg-[#C62828] text-white scale-105 shadow-lg'
+                          : 'bg-gray-100 dark:bg-[#2a2a2a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      {time}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="mt-6 p-4 bg-[#FFD54F]/20 rounded-xl">
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  <strong>Adresse de retrait:</strong><br />
+                  <strong>📍 Adresse:</strong><br />
                   123 Avenue de la République, 01000 Bourg-en-Bresse
                 </p>
               </div>
