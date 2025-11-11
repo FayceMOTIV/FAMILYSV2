@@ -197,15 +197,18 @@ frontend:
 
   - task: "Panier (sidebar)"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/components/MobileCart.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "testing"
         - comment: "Test initial - Vérifier bouton fermer, quantité (+/-), supprimer, 'Commander'"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ FONCTIONNE: Panier s'ouvre correctement via bottom nav, bouton fermer (X) fonctionne, interface panier responsive. Ajout au panier depuis page produit opérationnel."
 
   - task: "Bottom Navigation"
     implemented: true
