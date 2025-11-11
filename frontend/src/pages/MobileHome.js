@@ -75,13 +75,13 @@ const MobileHome = () => {
           </div>
           
           {/* CTA Button */}
-          <Button
+          <button
             onClick={() => navigate('/menu')}
-            className="bg-[#FFD54F] hover:bg-[#FFC107] text-[#121212] px-12 py-8 rounded-full text-2xl font-black shadow-2xl transition-all duration-300 active:scale-95 mt-6 border-4 border-[#121212]/10"
+            className="bg-[#FFD54F] hover:bg-[#FFC107] text-[#121212] px-12 py-8 rounded-full text-2xl font-black shadow-2xl transition-all duration-300 active:scale-95 mt-6 border-4 border-[#121212]/10 inline-flex items-center"
           >
             Commander maintenant
             <ChevronRight className="w-7 h-7 ml-2" />
-          </Button>
+          </button>
 
           {/* Scroll indicator */}
           <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
