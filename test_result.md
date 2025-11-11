@@ -234,13 +234,16 @@ test_plan:
   current_focus:
     - "Page Produit - Bouton retour CRITIQUE"
     - "Page d'accueil - Boutons et navigation"
-    - "Page Menu - Recherche et filtres"
-    - "Panier (sidebar)"
     - "Bottom Navigation"
-  stuck_tasks: []
+  stuck_tasks:
+    - "Page Produit - Bouton retour CRITIQUE"
+    - "Page d'accueil - Boutons et navigation"
+    - "Bottom Navigation"
   test_all: true
   test_priority: "high_first"
 
 agent_communication:
     - agent: "testing"
     - message: "Début des tests complets de l'application mobile Family's. Focus prioritaire sur le bouton retour de la page produit qui est signalé comme défaillant. Tests avec viewport iPhone 14 Pro (393x852)."
+    - agent: "testing"
+    - message: "TESTS TERMINÉS - 3 PROBLÈMES CRITIQUES IDENTIFIÉS: 1) Bouton 'Commander maintenant' page d'accueil ne fonctionne pas 2) Navigation bottom bar: Favoris/Profil vont vers /loyalty 3) Bouton retour produit va vers /profile au lieu de revenir en arrière. Autres fonctionnalités (recherche, filtres, panier, ajout produits) fonctionnent correctement."
