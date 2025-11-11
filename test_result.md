@@ -255,8 +255,4 @@ test_plan:
 
 agent_communication:
     - agent: "testing"
-    - message: "Début des tests complets de l'application mobile Family's. Focus prioritaire sur le bouton retour de la page produit qui est signalé comme défaillant. Tests avec viewport iPhone 14 Pro (393x852)."
-    - agent: "testing"
-    - message: "TESTS TERMINÉS - 3 PROBLÈMES CRITIQUES IDENTIFIÉS: 1) Bouton 'Commander maintenant' page d'accueil ne fonctionne pas 2) Navigation bottom bar: Favoris/Profil vont vers /loyalty 3) Bouton retour produit va vers /profile au lieu de revenir en arrière. Autres fonctionnalités (recherche, filtres, panier, ajout produits) fonctionnent correctement."
-    - agent: "testing"
-    - message: "TESTS DE RÉGRESSION EFFECTUÉS - RÉSULTAT: 2/3 bugs corrigés. ✅ BUG #1 CORRIGÉ: Bouton 'Commander maintenant' navigue correctement vers /menu. ✅ BUG #3 CORRIGÉ: Bouton retour page produit fonctionne et revient à la page précédente. ❌ BUG #2 PERSISTE: Bottom Navigation - Les boutons Favoris et Profil ne naviguent pas du tout (URL reste inchangée), ils ne vont plus vers /loyalty mais ne vont pas non plus vers /favorites et /profile comme attendu."
+    - message: "Début des tests complets des nouvelles fonctionnalités premium de l'application mobile Family's. Focus sur l'expérience utilisateur globale et la fluidité avec viewport iPhone 14 Pro (393x852). Tests à effectuer: Splash Screen & Animations, CountdownBanner, Ajout au Panier avec Animation, Panier avec Swipe, Empty States, Mode Sombre Automatique, Recommandations, Notes Produit, Performance & Transitions."
