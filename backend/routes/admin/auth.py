@@ -63,6 +63,8 @@ async def login(credentials: UserLogin):
 @router.post("/register", response_model=UserResponse)
 async def register(user_create: UserCreate):
     """Register new admin user (for initial setup only)."""
+    from database import db
+    
     # Check if user already exists
     existing_user = await db.users.find_one({"email": user_create.email})
     if existing_user:
