@@ -212,15 +212,18 @@ frontend:
 
   - task: "Bottom Navigation"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/frontend/src/components/MobileLayout.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "testing"
         - comment: "Test initial - Navigation entre toutes les pages, vérifier onglet actif mis en évidence"
+        - working: false
+        - agent: "testing"
+        - comment: "PROBLÈME PARTIEL: Navigation fonctionne mais URLs incorrectes - Favoris et Profil naviguent vers /loyalty au lieu de /favorites et /profile. Accueil et Commander fonctionnent correctement. États actifs visibles."
 
 metadata:
   created_by: "testing_agent"
