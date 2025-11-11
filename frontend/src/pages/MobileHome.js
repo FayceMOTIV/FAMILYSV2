@@ -91,8 +91,16 @@ const MobileHome = () => {
         </div>
       </section>
 
+      {/* Countdown Banner */}
+      <section className="px-4 -mt-8 relative z-20 mb-4">
+        <CountdownBanner
+          endTime={new Date(Date.now() + 7200000).toISOString()} // 2 heures
+          message="Menu King à 9,90€ !"
+        />
+      </section>
+
       {/* Promotions Carousel */}
-      <section className="px-4 -mt-6 relative z-20 mb-8">
+      <section className="px-4 relative z-20 mb-8">
         <div className="bg-white dark:bg-[#1a1a1a] rounded-[32px] shadow-2xl overflow-hidden">
           <div className="relative h-48">
             {promotions.map((promo, idx) => (
