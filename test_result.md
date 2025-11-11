@@ -140,9 +140,9 @@ frontend:
 
   - task: "Page Produit - Bouton retour CRITIQUE"
     implemented: true
-    working: false
+    working: true
     file: "/app/frontend/src/pages/ProductDetail.js"
-    stuck_count: 1
+    stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
@@ -152,6 +152,9 @@ frontend:
         - working: false
         - agent: "testing"
         - comment: "PROBLÈME CRITIQUE CONFIRMÉ: Bouton retour navigue vers /profile au lieu de revenir à la page précédente. Autres fonctionnalités OK: boutons favoris, quantité (+/-), ajouter au panier fonctionnent. Navigation vers page produit fonctionne."
+        - working: true
+        - agent: "testing"
+        - comment: "✅ BUG #3 CORRIGÉ: Bouton retour fonctionne maintenant correctement et revient à la page précédente (/menu) au lieu d'aller vers /profile. Test de régression réussi."
 
   - task: "Page Fidélité/Cashback"
     implemented: true
