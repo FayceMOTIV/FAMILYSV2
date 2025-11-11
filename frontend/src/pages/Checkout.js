@@ -408,6 +408,32 @@ const Checkout = () => {
         {/* Order Summary */}
         <div className="bg-white dark:bg-[#1a1a1a] rounded-3xl p-6 shadow-lg">
           <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Récapitulatif</h3>
+          
+          {/* Order Details Summary */}
+          {step > 1 && orderData.consumptionMode && (
+            <div className="mb-4 p-4 bg-gray-50 dark:bg-[#0f0f0f] rounded-2xl space-y-2">
+              <div className="flex items-center text-sm">
+                <Utensils className="w-4 h-4 mr-2 text-[#C62828] dark:text-[#FFD54F]" />
+                <span className="font-semibold text-gray-700 dark:text-gray-300">
+                  {orderData.consumptionMode === 'takeaway' ? 'À emporter' : 'Sur place'}
+                </span>
+              </div>
+              {orderData.pickupDate && orderData.pickupTime && (
+                <div className="flex items-center text-sm">
+                  <Clock className="w-4 h-4 mr-2 text-[#C62828] dark:text-[#FFD54F]" />
+                  <span className="text-gray-600 dark:text-gray-400">
+                    {new Date(orderData.pickupDate).toLocaleDateString('fr-FR', { 
+                      weekday: 'long', 
+                      day: 'numeric', 
+                      month: 'long' 
+                    })} à {orderData.pickupTime}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Cart Items */}
           <div className="space-y-3 mb-4">
             {cart.map((item) => (
               <div key={item.id} className="flex justify-between text-sm">
@@ -420,16 +446,18 @@ const Checkout = () => {
               </div>
             ))}
           </div>
+          
           <div className="border-t border-gray-200 dark:border-gray-800 pt-4 flex justify-between items-center">
             <span className="text-lg font-bold text-gray-800 dark:text-white">Total</span>
             <span className="text-3xl font-bold text-[#C62828] dark:text-[#FFD54F]">
               {total.toFixed(2)}€
             </span>
           </div>
+          
           {total >= 8 && (
             <div className="mt-4 p-4 bg-[#FFD54F]/20 rounded-xl">
               <p className="text-sm text-gray-700 dark:text-gray-300 text-center">
-                🎫 Vous gagnerez 1 tampon avec cette commande !
+                🎫 +{(total * 0.05).toFixed(2)}€ cashback (5%) sur cette commande !
               </p>
             </div>
           )}
