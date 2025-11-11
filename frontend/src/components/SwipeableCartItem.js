@@ -90,9 +90,17 @@ const SwipeableCartItem = ({ item }) => {
                   <Plus className="w-4 h-4" />
                 </button>
               </div>
-              <span className="font-bold text-xl text-[#C62828] dark:text-[#FFD54F]">
-                {item.totalPrice.toFixed(2)}€
-              </span>
+              <div className="flex items-center space-x-3">
+                <span className="font-bold text-xl text-[#C62828] dark:text-[#FFD54F]">
+                  {item.totalPrice.toFixed(2)}€
+                </span>
+                <button
+                  onClick={() => removeFromCart(item.id)}
+                  className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors text-red-500 active:scale-90"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
