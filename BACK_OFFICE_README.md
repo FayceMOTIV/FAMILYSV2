@@ -95,6 +95,13 @@ cd /app/backend
 python seed_data.py
 ```
 
+### Créer des commandes de test :
+```bash
+cd /app/backend
+python create_test_orders.py
+# Génère 15 commandes avec différents statuts et moyens de paiement
+```
+
 ### Redémarrer les services :
 ```bash
 sudo supervisorctl restart backend
