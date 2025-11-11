@@ -94,7 +94,7 @@ const MobileProfile = () => {
           </div>
           <button
             onClick={toggleTheme}
-            className="w-full flex items-center justify-between p-6 hover:bg-gray-50 dark:hover:bg-[#2a2a2a] active:bg-gray-100 dark:active:bg-[#2a2a2a] transition-colors"
+            className="w-full flex items-center justify-between p-6 hover:bg-gray-50 dark:hover:bg-[#2a2a2a] active:bg-gray-100 dark:active:bg-[#2a2a2a] transition-colors border-b border-gray-200 dark:border-gray-800"
           >
             <div className="flex items-center space-x-4">
               {theme === 'light' ? (
@@ -111,6 +111,29 @@ const MobileProfile = () => {
             </div>
             <ChevronRight className="w-5 h-5 text-gray-400" />
           </button>
+          
+          {/* Back Office Button - Dev/Admin Only */}
+          {process.env.REACT_APP_SHOW_ADMIN_SHORTCUT !== 'false' && (
+            <a
+              href="http://localhost:3001/admin"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-between p-6 hover:bg-gray-50 dark:hover:bg-[#2a2a2a] active:bg-gray-100 dark:active:bg-[#2a2a2a] transition-colors"
+            >
+              <div className="flex items-center space-x-4">
+                <div className="w-7 h-7 bg-gradient-to-br from-[#C62828] to-[#8B0000] rounded-lg flex items-center justify-center">
+                  <User className="w-4 h-4 text-white" />
+                </div>
+                <div className="text-left">
+                  <div className="font-bold text-gray-800 dark:text-white">Back Office</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    Gestion admin (test)
+                  </div>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-gray-400" />
+            </a>
+          )}
         </div>
 
         {/* Order History */}
