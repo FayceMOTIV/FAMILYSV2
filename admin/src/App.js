@@ -13,6 +13,9 @@ import { Promos } from './pages/Promos';
 import { Customers } from './pages/Customers';
 import { Notifications } from './pages/Notifications';
 import { Reservations } from './pages/Reservations';
+import { AICampaigns } from './pages/AICampaigns';
+import { CampaignHistory } from './pages/CampaignHistory';
+import { AIMarketingSettings } from './pages/AIMarketingSettings';
 
 function App() {
   return (
