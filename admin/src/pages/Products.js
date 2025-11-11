@@ -108,6 +108,17 @@ export const Products = () => {
           </div>
         )}
       </div>
+
+      {/* Product Modal */}
+      <ProductModal
+        isOpen={showModal}
+        onClose={() => {
+          setShowModal(false);
+          setEditingProduct(null);
+        }}
+        product={editingProduct}
+        onSuccess={loadProducts}
+      />
     </div>
   );
 };
