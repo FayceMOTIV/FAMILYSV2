@@ -103,7 +103,7 @@ const MobileMenu = () => {
         </div>
       </div>
 
-      {/* Category Filters - Horizontal Scroll */}
+      {/* Category Filters - Horizontal Scroll with Images */}
       <div className="sticky top-[140px] z-10 bg-[#FAFAFA] dark:bg-[#121212] px-4 py-4 border-b border-gray-200 dark:border-gray-800">
         <div className="flex space-x-3 overflow-x-auto hide-scrollbar pb-1">
           <button
@@ -120,13 +120,22 @@ const MobileMenu = () => {
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`flex-shrink-0 px-6 py-3 rounded-full font-bold whitespace-nowrap transition-all duration-300 active:scale-95 ${
+              className={`relative flex-shrink-0 w-28 h-28 rounded-3xl overflow-hidden transition-all duration-300 active:scale-95 ${
                 selectedCategory === cat.id
-                  ? 'bg-[#C62828] text-white shadow-lg scale-105'
-                  : 'bg-white dark:bg-[#1a1a1a] text-gray-700 dark:text-gray-300 shadow'
+                  ? 'ring-4 ring-[#C62828] shadow-xl scale-105'
+                  : 'shadow-md'
               }`}
             >
-              {cat.name}
+              <img
+                src={cat.image}
+                alt={cat.name}
+                className="w-full h-full object-cover"
+              />
+              <div className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex items-end justify-center pb-3 ${
+                selectedCategory === cat.id ? 'from-[#C62828]/90 via-[#C62828]/60' : ''
+              }`}>
+                <span className="text-white font-bold text-sm">{cat.name}</span>
+              </div>
             </button>
           ))}
         </div>
