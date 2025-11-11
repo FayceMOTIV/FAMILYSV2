@@ -1,8 +1,10 @@
 import React from 'react';
-import { X, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
+import { X, ShoppingBag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { Button } from './ui/button';
+import SwipeableCartItem from './SwipeableCartItem';
+import EmptyState from './EmptyState';
 
 const MobileCart = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
