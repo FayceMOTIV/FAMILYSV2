@@ -71,8 +71,12 @@ const MobileLoyalty = () => {
                 <div className="text-sm opacity-90 mb-1">Membre</div>
                 <div className="text-2xl font-black">{user.name}</div>
               </div>
-              <div className="w-14 h-14 bg-[#FFD54F] rounded-2xl flex items-center justify-center">
-                <span className="text-2xl font-black text-[#121212]">F</span>
+              <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center p-1">
+                <img 
+                  src="https://customer-assets.emergentagent.com/job_foodie-hub-21/artifacts/ybj62fs7_logo%20family%27s%20ok%20%21.png" 
+                  alt="Family's"
+                  className="w-full h-full object-contain"
+                />
               </div>
             </div>
 
