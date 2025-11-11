@@ -100,6 +100,17 @@ export const Categories = () => {
           </div>
         )}
       </div>
+
+      {/* Category Modal */}
+      <CategoryModal
+        isOpen={showModal}
+        onClose={() => {
+          setShowModal(false);
+          setEditingCategory(null);
+        }}
+        category={editingCategory}
+        onSuccess={loadCategories}
+      />
     </div>
   );
 };
