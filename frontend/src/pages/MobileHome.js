@@ -4,6 +4,7 @@ import { ChevronRight, Star, Award, Flame } from 'lucide-react';
 import { products, promotions, categories } from '../mockData';
 import { Button } from '../components/ui/button';
 import { useApp } from '../context/AppContext';
+import CountdownBanner from '../components/CountdownBanner';
 
 const MobileHome = () => {
   const navigate = useNavigate();
