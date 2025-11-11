@@ -167,15 +167,18 @@ frontend:
 
   - task: "Page Favoris"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/pages/MobileFavorites.js"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "testing"
         - comment: "Test initial - Vérifier boutons 'Se connecter', 'Découvrir le menu', boutons '+' et favoris"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ FONCTIONNE: Page favoris accessible, bouton 'Découvrir le menu' fonctionne et navigue correctement. Interface utilisateur responsive et fonctionnelle."
 
   - task: "Page Profil"
     implemented: true
