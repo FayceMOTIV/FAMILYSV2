@@ -90,14 +90,18 @@ async def update_order_status(
         )
     
     # Update status
+    update_data = {
+        "status": status_update.status,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    # Add cancellation reason if provided
+    if status_update.cancellation_reason:
+        update_data["cancellation_reason"] = status_update.cancellation_reason
+    
     await db.orders.update_one(
         {"id": order_id},
-        {
-            "$set": {
-                "status": status_update.status,
-                "updated_at": datetime.now(timezone.utc).isoformat()
-            }
-        }
+        {"$set": update_data}
     )
     
     # Envoyer notification selon le statut
