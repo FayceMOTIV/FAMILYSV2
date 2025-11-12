@@ -651,9 +651,9 @@ class AdminBackendTester:
             notification_data = {
                 "title": "Test Notification",
                 "message": "Ceci est une notification de test",
-                "type": "promotion",
-                "target_audience": "all",
-                "scheduled_for": datetime.now(timezone.utc).isoformat()
+                "notification_type": "push",
+                "target_segment": "all",
+                "scheduled_at": datetime.now(timezone.utc).isoformat()
             }
             
             async with self.session.post(
