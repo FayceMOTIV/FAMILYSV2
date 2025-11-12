@@ -373,8 +373,13 @@ export const Options = () => {
               </Button>
             </div>
           </div>
-        </Modal>
-      )}
+        onClose={() => {
+          setShowModal(false);
+          setEditingOption(null);
+        }}
+        option={editingOption}
+        onSuccess={loadOptions}
+      />
     </div>
   );
 };
