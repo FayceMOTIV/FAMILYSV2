@@ -12,16 +12,6 @@ export const Options = () => {
   const [options, setOptions] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingOption, setEditingOption] = useState(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    type: 'single',
-    is_required: false,
-    max_choices: 1,
-    price: 0,
-    choices: []
-  });
-  const [newChoice, setNewChoice] = useState({ name: '', price: 0 });
 
   useEffect(() => {
     loadOptions();
