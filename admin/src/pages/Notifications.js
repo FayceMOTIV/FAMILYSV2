@@ -20,9 +20,10 @@ export const Notifications = () => {
   const loadNotifications = async () => {
     try {
       const response = await notificationsAPI.getAll();
-      setNotifications(response.data);
+      setNotifications(response.data.notifications || response.data || []);
     } catch (error) {
       console.error('Failed to load notifications:', error);
+      setNotifications([]);
     } finally {
       setLoading(false);
     }
