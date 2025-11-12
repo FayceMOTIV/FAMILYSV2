@@ -88,10 +88,9 @@ class AdminBackendTester:
         try:
             category_data = {
                 "name": "Test Burgers Deluxe",
-                "description": "Nos meilleurs burgers premium",
+                "slug": "test-burgers-deluxe",
                 "image": "/uploads/test-burger.jpg",
-                "order": 1,
-                "is_active": True
+                "order": 1
             }
             
             async with self.session.post(
