@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Header } from '../components/Header';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
+import { PromoModal } from '../components/PromoModal';
 import { promosAPI } from '../services/api';
-import { Plus, Tag } from 'lucide-react';
+import { Plus, Tag, Edit2, Trash2, ToggleLeft, ToggleRight } from 'lucide-react';
 
 export const Promos = () => {
   const [promos, setPromos] = useState([]);
