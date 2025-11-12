@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '../components/Card';
 import { CheckCircle, XCircle, TrendingUp, Users, DollarSign, Award, Loader } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://resto-dashboard-21.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_API_URL || 'https://resto-backoffice-1.preview.emergentagent.com';
 
 export const CampaignHistory = () => {
   const [campaigns, setCampaigns] = useState([]);

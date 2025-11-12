@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Upload, X, Loader } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://resto-dashboard-21.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_API_URL || 'https://resto-backoffice-1.preview.emergentagent.com';
 
 export const ImageUpload = ({ currentImage, onImageChange, label = "Image" }) => {
   const [uploading, setUploading] = useState(false);
