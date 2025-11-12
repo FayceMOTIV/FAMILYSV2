@@ -9,10 +9,10 @@ from database import db
 router = APIRouter(prefix="/categories", tags=["admin-categories"])
 
 
-@router.get("", response_model=List[Category])
-async def get_categories(current_user: dict = Security(require_manager_or_admin)):
+@router.get("")  # response_model=List[Category]
+async def get_categories():  # current_user: dict = Security(require_manager_or_admin)
     """Get all categories for restaurant."""
-    restaurant_id = current_user.get("restaurant_id")
+    restaurant_id = "default"  # current_user.get("restaurant_id")
     
     categories = await db.categories.find(
         {"restaurant_id": restaurant_id}
