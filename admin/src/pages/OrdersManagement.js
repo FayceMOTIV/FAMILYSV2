@@ -464,7 +464,10 @@ export const OrdersManagement = () => {
                       )}
                       {order.status !== 'canceled' && order.status !== 'completed' && (
                         <Button
-                          onClick={() => updateOrderStatus(order.id, 'canceled')}
+                          onClick={() => {
+                            setSelectedOrder(order);
+                            setShowCancellationModal(true);
+                          }}
                           variant="outline"
                           className="px-6 border-2 border-red-500 text-red-600 hover:bg-red-50"
                         >
