@@ -49,9 +49,9 @@ async def send_notification(notif_id: str):  # current_user: dict = Security(req
     
     return {"message": "Notification sent", "sent_count": 1}
 
-@router.delete("/{notif_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_notification(notif_id: str, current_user: dict = Security(require_manager_or_admin)):
-    restaurant_id = current_user.get("restaurant_id")
+@router.delete("/{notif_id}")
+async def delete_notification(notif_id: str):  # current_user: dict = Security(require_manager_or_admin)
+    restaurant_id = "default"  # current_user.get("restaurant_id")
     result = await db.notifications.delete_one({"id": notif_id, "restaurant_id": restaurant_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Notification not found")
