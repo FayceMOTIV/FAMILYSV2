@@ -31,8 +31,8 @@ async def create_notification(notif_create: NotificationCreate):  # current_user
     return {"success": True, "notification": notif_dict}
 
 @router.post("/{notif_id}/send")
-async def send_notification(notif_id: str, current_user: dict = Security(require_manager_or_admin)):
-    restaurant_id = current_user.get("restaurant_id")
+async def send_notification(notif_id: str):  # current_user: dict = Security(require_manager_or_admin)
+    restaurant_id = "default"  # current_user.get("restaurant_id")
     notif = await db.notifications.find_one({"id": notif_id, "restaurant_id": restaurant_id})
     if not notif:
         raise HTTPException(status_code=404, detail="Notification not found")
