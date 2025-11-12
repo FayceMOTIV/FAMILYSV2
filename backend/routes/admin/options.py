@@ -12,7 +12,7 @@ async def get_options():
     """Get all product options."""
     restaurant_id = "default"
     
-    options = await db.product_options.find(
+    options = await db.options.find(
         {"restaurant_id": restaurant_id}
     ).sort("name", 1).to_list(length=None)
     
