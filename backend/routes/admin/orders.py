@@ -147,15 +147,21 @@ async def update_order_payment(
         )
     
     # Update payment
+    update_data = {
+        "payment_method": payment_update.payment_method,
+        "payment_status": payment_update.payment_status,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    # Add amount_received and change_given if provided
+    if payment_update.amount_received is not None:
+        update_data["amount_received"] = payment_update.amount_received
+    if payment_update.change_given is not None:
+        update_data["change_given"] = payment_update.change_given
+    
     await db.orders.update_one(
         {"id": order_id},
-        {
-            "$set": {
-                "payment_method": payment_update.payment_method,
-                "payment_status": payment_update.payment_status,
-                "updated_at": datetime.now(timezone.utc).isoformat()
-            }
-        }
+        {"$set": update_data}
     )
     
     return {"success": True, "message": "Payment updated successfully"}
