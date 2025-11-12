@@ -44,7 +44,7 @@ async def update_option(
     """Update product option."""
     restaurant_id = "default"
     
-    existing = await db.product_options.find_one({
+    existing = await db.options.find_one({
         "id": option_id,
         "restaurant_id": restaurant_id
     })
