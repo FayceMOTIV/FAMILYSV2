@@ -58,12 +58,12 @@ async def update_option(
     update_data = option_update.model_dump(exclude_unset=True)
     update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
     
-    await db.product_options.update_one(
+    await db.options.update_one(
         {"id": option_id},
         {"$set": update_data}
     )
     
-    updated_option = await db.product_options.find_one({"id": option_id}, {"_id": 0})
+    updated_option = await db.options.find_one({"id": option_id}, {"_id": 0})
     
     return {"success": True, "option": updated_option}
 
