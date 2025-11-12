@@ -4,7 +4,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { Layout } from './components/Layout';
 import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
-import { Products } from './pages/Products';
+import { Products } from './pages/ProductsNew';
 import { OrdersManagement } from './pages/OrdersManagement';
 import { Categories } from './pages/Categories';
 import { Settings } from './pages/Settings';
