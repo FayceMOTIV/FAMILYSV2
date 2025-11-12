@@ -85,3 +85,5 @@ async def delete_category(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Category not found"
         )
+    
+    return {"success": True, "message": "Category deleted"}
