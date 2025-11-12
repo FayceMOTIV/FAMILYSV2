@@ -427,7 +427,7 @@ export const OrdersManagement = () => {
                           {getNextStatus(order.status) === 'completed' && '🎉 TERMINE'}
                         </Button>
                       )}
-                      {order.status !== 'cancelled' && order.status !== 'completed' && (
+                      {order.status !== 'canceled' && order.status !== 'completed' && (
                         <Button
                           onClick={() => updateOrderStatus(order.id, 'cancelled')}
                           variant="outline"
