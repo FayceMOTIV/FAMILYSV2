@@ -27,29 +27,7 @@ export const Options = () => {
   };
 
   const handleOpenModal = (option = null) => {
-    if (option) {
-      setEditingOption(option);
-      setFormData({
-        name: option.name,
-        description: option.description || '',
-        type: option.type,
-        is_required: option.is_required,
-        max_choices: option.max_choices || 1,
-        price: option.price,
-        choices: option.choices || []
-      });
-    } else {
-      setEditingOption(null);
-      setFormData({
-        name: '',
-        description: '',
-        type: 'single',
-        is_required: false,
-        max_choices: 1,
-        price: 0,
-        choices: []
-      });
-    }
+    setEditingOption(option);
     setShowModal(true);
   };
 
