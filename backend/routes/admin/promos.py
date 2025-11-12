@@ -7,11 +7,13 @@ from database import db
 
 router = APIRouter(prefix="/promos", tags=["admin-promos"])
 
-@router.get("", response_model=List[Promo])
-async def get_promos(current_user: dict = Security(require_manager_or_admin)):
-    restaurant_id = current_user.get("restaurant_id")
+@router.get("")  # response_model=List[Promo]
+async def get_promos():  # current_user: dict = Security(require_manager_or_admin)
+    restaurant_id = "default"  # current_user.get("restaurant_id")
     promos = await db.promos.find({"restaurant_id": restaurant_id}).to_list(length=None)
-    return [Promo(**p) for p in promos]
+    for p in promos:
+        p.pop("_id", None)
+    return {"promos": promos}
 
 @router.post("", response_model=Promo, status_code=status.HTTP_201_CREATED)
 async def create_promo(promo_create: PromoCreate, current_user: dict = Security(require_manager_or_admin)):
