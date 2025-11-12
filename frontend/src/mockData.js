@@ -378,6 +378,15 @@ export const mockUser = {
       ],
       total: 31.80,
       status: 'completed'
+    },
+    {
+      id: 'order-9',
+      date: '2025-05-30T19:45:00',
+      items: [
+        { productId: 'burger-1', name: 'Le King', quantity: 1, price: 9.90 }
+      ],
+      total: 9.90,
+      status: 'completed'
     }
   ]
 };
