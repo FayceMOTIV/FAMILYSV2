@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { Button } from './Button';
 import { Input, Label, Select } from './Input';
+import { ImageUpload } from './ImageUpload';
 import { productsAPI, categoriesAPI } from '../services/api';
+import axios from 'axios';
+
+const API_URL = process.env.REACT_APP_API_URL || 'https://family-manage-2.preview.emergentagent.com';
 
 export const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
   const [loading, setLoading] = useState(false);
