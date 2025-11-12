@@ -422,7 +422,7 @@ export const OrdersManagement = () => {
                           onClick={() => updateOrderStatus(order.id, getNextStatus(order.status))}
                           className="flex-1 py-4 text-lg font-bold"
                         >
-                          {getNextStatus(order.status) === 'preparing' && '🔥 EN COURS DE PREPARATION'}
+                          {getNextStatus(order.status) === 'in_preparation' && '🔥 EN COURS DE PREPARATION'}
                           {getNextStatus(order.status) === 'ready' && '✅ PRETE'}
                           {getNextStatus(order.status) === 'completed' && '🎉 TERMINE'}
                         </Button>
