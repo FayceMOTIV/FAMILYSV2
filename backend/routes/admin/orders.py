@@ -68,7 +68,7 @@ async def get_order(
     
     return Order(**order)
 
-@router.patch("/{order_id}/status", response_model=Order)
+@router.patch("/{order_id}/status")  # response_model=Order  # TEMPORAIREMENT SANS VALIDATION
 async def update_order_status(
     order_id: str,
     status_update: OrderStatusUpdate
@@ -76,22 +76,6 @@ async def update_order_status(
 ):
     """Update order status."""
     restaurant_id = "default"  # current_user.get("restaurant_id")
-    
-    # Validate status
-    valid_statuses = [
-        OrderStatus.NEW,
-        OrderStatus.IN_PREPARATION,
-        OrderStatus.OUT_FOR_DELIVERY,
-        OrderStatus.READY,
-        OrderStatus.COMPLETED,
-        OrderStatus.CANCELED
-    ]
-    
-    if status_update.status not in valid_statuses:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid status. Must be one of: {', '.join(valid_statuses)}"
-        )
     
     # Check if order exists
     existing = await db.orders.find_one({
@@ -132,8 +116,8 @@ async def update_order_status(
         )
     
     # Get updated order
-    updated_order = await db.orders.find_one({"id": order_id})
-    return Order(**updated_order)
+    updated_order = await db.orders.find_one({"id": order_id}, {"_id": 0})
+    return {"success": True, "order": updated_order}
 
 @router.post("/{order_id}/payment")
 async def update_order_payment(
