@@ -103,6 +103,11 @@ admin_router.include_router(admin_options.router)
 app.include_router(api_router)
 app.include_router(admin_router)
 
+# Serve uploaded files
+UPLOAD_DIR = Path("/app/backend/uploads")
+UPLOAD_DIR.mkdir(exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
