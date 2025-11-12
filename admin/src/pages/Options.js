@@ -31,21 +31,6 @@ export const Options = () => {
     setShowModal(true);
   };
 
-  const handleSaveOption = async () => {
-    try {
-      if (editingOption) {
-        await axios.put(`${API_URL}/api/v1/admin/options/${editingOption.id}`, formData);
-      } else {
-        await axios.post(`${API_URL}/api/v1/admin/options`, formData);
-      }
-      await loadOptions();
-      setShowModal(false);
-      alert('✅ Option enregistrée!');
-    } catch (error) {
-      console.error('Erreur sauvegarde:', error);
-      alert('Erreur lors de la sauvegarde');
-    }
-  };
 
   const handleDeleteOption = async (optionId) => {
     if (!window.confirm('Supprimer cette option ?')) return;
@@ -60,18 +45,6 @@ export const Options = () => {
     }
   };
 
-  const handleAddChoice = () => {
-    if (!newChoice.name) {
-      alert('Nom du choix requis');
-      return;
-    }
-    
-    setFormData({
-      ...formData,
-      choices: [...formData.choices, { ...newChoice, id: Date.now().toString() }]
-    });
-    setNewChoice({ name: '', price: 0 });
-  };
 
   const handleRemoveChoice = (choiceId) => {
     setFormData({
