@@ -17,12 +17,12 @@ export const OrdersManagement = () => {
   const [previousNewOrdersCount, setPreviousNewOrdersCount] = useState(0);
 
   const tabs = [
-    { id: 'new', label: 'Nouvelles commandes', icon: Package, color: 'bg-red-500', status: 'pending' },
-    { id: 'preparing', label: 'En cours de préparation', icon: Clock, color: 'bg-orange-500', status: 'preparing' },
-    { id: 'delivering', label: 'En cours de livraison', icon: Truck, color: 'bg-blue-500', status: 'delivering' },
-    { id: 'ready', label: 'Prête à être récupérée', icon: CheckCircle, color: 'bg-purple-500', status: 'ready' },
+    { id: 'new', label: 'Nouvelles', icon: Package, color: 'bg-red-500', status: 'new' },
+    { id: 'preparing', label: 'En Préparation', icon: Clock, color: 'bg-orange-500', status: 'in_preparation' },
+    { id: 'ready', label: 'Prête', icon: CheckCircle, color: 'bg-purple-500', status: 'ready' },
+    { id: 'delivering', label: 'En Livraison', icon: Truck, color: 'bg-blue-500', status: 'out_for_delivery' },
     { id: 'completed', label: 'Terminées', icon: CheckCircle, color: 'bg-green-500', status: 'completed' },
-    { id: 'cancelled', label: 'Annulées', icon: XCircle, color: 'bg-gray-500', status: 'cancelled' }
+    { id: 'cancelled', label: 'Annulées', icon: XCircle, color: 'bg-gray-500', status: 'canceled' }
   ];
 
   useEffect(() => {
