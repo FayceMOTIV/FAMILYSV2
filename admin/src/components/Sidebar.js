@@ -27,6 +27,7 @@ const menuItems = [
   { name: 'Historique & Résultats', path: '/admin/ai-marketing/history', icon: History, indent: true },
   { name: 'Paramètres IA', path: '/admin/ai-marketing/settings', icon: Sliders, indent: true },
   { name: 'Produits', path: '/admin/products', icon: Package },
+  { name: 'Options', path: '/admin/options', icon: Sliders },
   { name: 'Commandes', path: '/admin/orders', icon: ShoppingCart },
   { name: 'Catégories', path: '/admin/categories', icon: FolderOpen },
   { name: 'Promos', path: '/admin/promos', icon: Tag },
