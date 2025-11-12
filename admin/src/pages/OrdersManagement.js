@@ -124,18 +124,29 @@ export const OrdersManagement = () => {
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
+      // Mise à jour optimiste: modifier l'état local immédiatement
+      setOrders(prevOrders => 
+        prevOrders.map(order => 
+          order.id === orderId 
+            ? { ...order, status: newStatus }
+            : order
+        )
+      );
+      
+      // Envoyer la requête au backend
       await axios.patch(`${API_URL}/api/v1/admin/orders/${orderId}/status`, { status: newStatus });
       
-      // Basculer automatiquement vers l'onglet correspondant au nouveau statut
+      // Basculer vers le nouvel onglet SANS recharger (l'état local est déjà à jour)
       const newTab = tabs.find(t => t.status === newStatus);
       if (newTab) {
         setActiveTab(newTab.id);
-      } else {
-        loadOrders();
       }
+      
     } catch (error) {
       console.error('Erreur mise à jour statut:', error);
       alert('Erreur lors de la mise à jour du statut');
+      // En cas d'erreur, recharger pour avoir l'état correct
+      loadOrders();
     }
   };
 
