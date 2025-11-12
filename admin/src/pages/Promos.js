@@ -138,6 +138,17 @@ export const Promos = () => {
           </div>
         )}
       </div>
+
+      {/* Modal */}
+      <PromoModal
+        isOpen={showModal}
+        onClose={() => {
+          setShowModal(false);
+          setEditingPromo(null);
+        }}
+        promo={editingPromo}
+        onSuccess={loadPromos}
+      />
     </div>
   );
 };
