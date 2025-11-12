@@ -52,7 +52,7 @@ async def create_complete_test_data():
             "restaurant_id": restaurant_id,
             "name": "🥤 Boissons",
             "description": "Sodas, jus, et boissons chaudes",
-            "image_url": "/uploads/categories/drinks.jpg",
+            "image": "/uploads/categories/drinks.jpg",
             "display_order": 3,
             "is_active": True,
             "created_at": datetime.now(timezone.utc).isoformat()
