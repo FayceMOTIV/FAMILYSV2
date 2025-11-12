@@ -19,11 +19,37 @@ export const Promos = () => {
   const loadPromos = async () => {
     try {
       const response = await promosAPI.getAll();
-      setPromos(response.data);
+      setPromos(response.data.promos || response.data || []);
     } catch (error) {
       console.error('Failed to load promos:', error);
+      setPromos([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Supprimer cette promotion ?')) return;
+    
+    try {
+      await promosAPI.delete(id);
+      loadPromos();
+    } catch (error) {
+      alert('❌ Erreur lors de la suppression');
+    }
+  };
+
+  const handleToggle = async (promo) => {
+    try {
+      const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+      await fetch(`${API_URL}/api/v1/admin/promos/${promo.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_active: !promo.is_active })
+      });
+      loadPromos();
+    } catch (error) {
+      alert('❌ Erreur lors de la mise à jour');
     }
   };
 
