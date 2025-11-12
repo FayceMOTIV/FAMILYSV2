@@ -39,6 +39,31 @@ async def send_notification(notif_id: str):  # current_user: dict = Security(req
     
     # Simulate sending (real implementation would use FCM, SendGrid, etc.)
     await db.notifications.update_one(
+
+@router.put("/{notif_id}")
+async def update_notification(notif_id: str, notif_update: NotificationUpdate):
+    """Update notification."""
+    restaurant_id = "default"
+    
+    existing = await db.notifications.find_one({
+        "id": notif_id,
+        "restaurant_id": restaurant_id
+    })
+    
+    if not existing:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    
+    update_data = notif_update.model_dump(exclude_unset=True)
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.notifications.update_one(
+        {"id": notif_id},
+        {"$set": update_data}
+    )
+    
+    updated = await db.notifications.find_one({"id": notif_id}, {"_id": 0})
+    return {"success": True, "notification": updated}
+
         {"id": notif_id},
         {"$set": {
             "status": "sent",
