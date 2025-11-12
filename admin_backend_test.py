@@ -815,10 +815,9 @@ class AdminBackendTester:
                 "description": "Promotion de test avec 50% de réduction",
                 "discount_type": "percentage",
                 "discount_value": 50.0,
-                "start_date": datetime.now(timezone.utc).isoformat(),
-                "end_date": datetime.now(timezone.utc).replace(month=12).isoformat(),
-                "is_active": True,
-                "min_order_amount": 20.0
+                "start_date": datetime.now(timezone.utc).date().isoformat(),
+                "end_date": datetime.now(timezone.utc).replace(month=12).date().isoformat(),
+                "min_purchase": 20.0
             }
             
             async with self.session.post(
