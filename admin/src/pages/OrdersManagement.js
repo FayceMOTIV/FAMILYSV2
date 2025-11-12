@@ -30,7 +30,7 @@ export const OrdersManagement = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Polling pour nouvelles commandes (toutes les 10 secondes)
+  // Polling pour nouvelles commandes (toutes les 30 secondes)
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
@@ -44,17 +44,15 @@ export const OrdersManagement = () => {
         
         setPreviousNewOrdersCount(newOrders.length);
         
-        // Recharger les commandes de l'onglet actif
-        if (activeTab) {
-          loadOrders();
-        }
+        // Recharger silencieusement en arrière-plan sans bloquer l'UI
+        loadOrders();
       } catch (error) {
         console.error('Erreur polling commandes:', error);
       }
-    }, 10000); // 10 secondes
+    }, 30000); // 30 secondes
 
     return () => clearInterval(interval);
-  }, [previousNewOrdersCount, activeTab]);
+  }, [previousNewOrdersCount]);
 
   const playNotificationSound = () => {
     // Créer un son de bip avec Web Audio API
