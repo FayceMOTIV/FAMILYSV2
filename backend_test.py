@@ -557,6 +557,107 @@ class BackendTester:
             self.log_result(test_name, False, f"Exception: {str(e)}")
             return False
 
+    async def test_paid_order_cancellation(self) -> bool:
+        """Test that cancelled orders retain payment information."""
+        test_name = "Paid Order Cancellation Retention"
+        
+        try:
+            # Get a fresh order to test with
+            async with self.session.get(
+                f"{self.base_url}/api/v1/admin/orders",
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status != 200:
+                    self.log_result(test_name, False, "Could not get orders for test")
+                    return False
+                
+                data = await response.json()
+                if not data.get("orders"):
+                    self.log_result(test_name, False, "No orders available for test")
+                    return False
+                
+                # Find an order that's not already cancelled
+                test_order_id = None
+                for order in data["orders"]:
+                    if order.get("status") != "canceled":
+                        test_order_id = order.get("id")
+                        break
+                
+                if not test_order_id:
+                    self.log_result(test_name, False, "No non-cancelled orders available for test")
+                    return False
+            
+            # First, record payment for this order
+            payment_data = {
+                "payment_method": "card",
+                "payment_status": "paid",
+                "amount_received": 30.00,
+                "change_given": 0.00
+            }
+            
+            async with self.session.post(
+                f"{self.base_url}/api/v1/admin/orders/{test_order_id}/payment",
+                json=payment_data,
+                headers={"Content-Type": "application/json"}
+            ) as payment_response:
+                
+                if payment_response.status != 200:
+                    self.log_result(test_name, False, "Could not record payment for test")
+                    return False
+            
+            # Now cancel the order
+            cancellation_data = {
+                "status": "canceled",
+                "cancellation_reason": "Test cancellation after payment"
+            }
+            
+            async with self.session.patch(
+                f"{self.base_url}/api/v1/admin/orders/{test_order_id}/status",
+                json=cancellation_data,
+                headers={"Content-Type": "application/json"}
+            ) as cancel_response:
+                
+                if cancel_response.status != 200:
+                    self.log_result(test_name, False, "Could not cancel order for test")
+                    return False
+            
+            # Verify the cancelled order still has payment information
+            async with self.session.get(
+                f"{self.base_url}/api/v1/admin/orders",
+                headers={"Content-Type": "application/json"}
+            ) as verify_response:
+                
+                if verify_response.status == 200:
+                    verify_data = await verify_response.json()
+                    cancelled_order = None
+                    for order in verify_data.get("orders", []):
+                        if order.get("id") == test_order_id:
+                            cancelled_order = order
+                            break
+                    
+                    if cancelled_order:
+                        if (cancelled_order.get("status") == "canceled" and
+                            cancelled_order.get("payment_method") == "card" and
+                            cancelled_order.get("payment_status") == "paid" and
+                            cancelled_order.get("amount_received") == 30.0 and
+                            cancelled_order.get("cancellation_reason") == "Test cancellation after payment"):
+                            self.log_result(test_name, True, f"Cancelled order {test_order_id} retained all payment information correctly")
+                            return True
+                        else:
+                            self.log_result(test_name, False, f"Cancelled order missing payment info: status={cancelled_order.get('status')}, payment_method={cancelled_order.get('payment_method')}, payment_status={cancelled_order.get('payment_status')}")
+                            return False
+                    else:
+                        self.log_result(test_name, False, f"Could not find cancelled order {test_order_id}")
+                        return False
+                else:
+                    self.log_result(test_name, False, f"Could not verify cancelled order: HTTP {verify_response.status}")
+                    return False
+                    
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
     async def run_all_tests(self):
         """Run all backend tests."""
         print(f"🚀 Starting Backend API Tests for: {self.base_url}")
