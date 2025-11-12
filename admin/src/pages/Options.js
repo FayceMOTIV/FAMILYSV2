@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Header } from '../components/Header';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/Card';
 import { Button } from '../components/Button';
-import { Input, Label } from '../components/Input';
-import { Modal } from '../components/Modal';
-import { Plus, Edit, Trash2, Save, X, ListPlus } from 'lucide-react';
+import { OptionModal } from '../components/OptionModal';
+import { Plus, Edit, Trash2 } from 'lucide-react';
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://resto-dashboard-21.preview.emergentagent.com';
