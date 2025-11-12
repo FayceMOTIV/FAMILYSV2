@@ -42,6 +42,7 @@ export const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
         vat_rate: product.vat_rate?.toString() || '10',
         image_url: product.image_url || '',
         tags: product.tags || [],
+        option_ids: product.option_ids || [],
         is_available: product.is_available ?? true,
         is_out_of_stock: product.is_out_of_stock ?? false,
       });
@@ -55,6 +56,7 @@ export const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
         vat_rate: '10',
         image_url: '',
         tags: [],
+        option_ids: [],
         is_available: true,
         is_out_of_stock: false,
       });
