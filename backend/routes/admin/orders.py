@@ -119,6 +119,41 @@ async def update_order_status(
     updated_order = await db.orders.find_one({"id": order_id})
     return Order(**updated_order)
 
+@router.post("/{order_id}/payment")
+async def update_order_payment(
+    order_id: str,
+    payment_update: PaymentUpdate,
+    current_user: dict = Security(require_manager_or_admin)
+):
+    """Update order payment status and method."""
+    restaurant_id = current_user.get("restaurant_id")
+    
+    # Check if order exists
+    existing = await db.orders.find_one({
+        "id": order_id,
+        "restaurant_id": restaurant_id
+    })
+    
+    if not existing:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Order not found"
+        )
+    
+    # Update payment
+    await db.orders.update_one(
+        {"id": order_id},
+        {
+            "$set": {
+                "payment_method": payment_update.payment_method,
+                "payment_status": payment_update.payment_status,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+        }
+    )
+    
+    return {"success": True, "message": "Payment updated successfully"}
+
 @router.get("/stats/summary")
 async def get_orders_summary(current_user: dict = Security(require_manager_or_admin)):
     """Get orders summary statistics."""
