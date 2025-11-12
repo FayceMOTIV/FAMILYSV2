@@ -125,3 +125,5 @@ async def delete_product(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Product not found"
         )
+    
+    return {"success": True, "message": "Product deleted"}
