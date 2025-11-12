@@ -325,26 +325,39 @@ export const OrdersManagement = () => {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex space-x-2">
-                    {getNextStatus(order.status) && (
-                      <Button
-                        onClick={() => updateOrderStatus(order.id, getNextStatus(order.status))}
-                        className="flex-1 py-4 text-lg font-bold"
-                      >
-                        {getNextStatus(order.status) === 'preparing' && '▶️ Préparer'}
-                        {getNextStatus(order.status) === 'ready' && '✅ Prête'}
-                        {getNextStatus(order.status) === 'completed' && '🎉 Terminer'}
-                      </Button>
-                    )}
-                    {order.status !== 'cancelled' && order.status !== 'completed' && (
-                      <Button
-                        onClick={() => updateOrderStatus(order.id, 'cancelled')}
-                        variant="outline"
-                        className="px-6 border-2 border-red-500 text-red-600 hover:bg-red-50"
-                      >
-                        ❌
-                      </Button>
-                    )}
+                  <div className="space-y-2">
+                    {/* Bouton Imprimer */}
+                    <Button
+                      onClick={() => printOrder(order)}
+                      variant="outline"
+                      className="w-full border-2 border-blue-500 text-blue-600 hover:bg-blue-50 py-3"
+                    >
+                      <Printer className="w-5 h-5 mr-2" />
+                      🖨️ Imprimer
+                    </Button>
+
+                    {/* Boutons de changement de statut */}
+                    <div className="flex space-x-2">
+                      {getNextStatus(order.status) && (
+                        <Button
+                          onClick={() => updateOrderStatus(order.id, getNextStatus(order.status))}
+                          className="flex-1 py-4 text-lg font-bold"
+                        >
+                          {getNextStatus(order.status) === 'preparing' && '🔥 EN COURS DE PREPARATION'}
+                          {getNextStatus(order.status) === 'ready' && '✅ PRETE'}
+                          {getNextStatus(order.status) === 'completed' && '🎉 TERMINE'}
+                        </Button>
+                      )}
+                      {order.status !== 'cancelled' && order.status !== 'completed' && (
+                        <Button
+                          onClick={() => updateOrderStatus(order.id, 'cancelled')}
+                          variant="outline"
+                          className="px-6 border-2 border-red-500 text-red-600 hover:bg-red-50"
+                        >
+                          ❌
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
