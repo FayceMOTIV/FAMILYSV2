@@ -148,20 +148,10 @@ export const OrdersManagement = () => {
     }
   };
 
-  const handlePayment = async (orderId, paymentMethod) => {
-    try {
-      await axios.post(`${API_URL}/api/v1/admin/orders/${orderId}/payment`, {
-        payment_method: paymentMethod,
-        payment_status: 'paid'
-      });
-      setShowPaymentModal(false);
-      setSelectedOrder(null);
-      loadOrders();
-      alert('✅ Paiement enregistré!');
-    } catch (error) {
-      console.error('Erreur paiement:', error);
-      alert('Erreur lors de l\'enregistrement du paiement');
-    }
+  const handlePaymentSuccess = () => {
+    setShowPaymentModal(false);
+    setSelectedOrder(null);
+    loadOrders();
   };
 
   const printOrder = (order) => {
