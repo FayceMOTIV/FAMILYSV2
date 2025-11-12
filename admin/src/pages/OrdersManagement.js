@@ -446,55 +446,15 @@ export const OrdersManagement = () => {
       </div>
 
       {/* Modal Paiement */}
-      {showPaymentModal && selectedOrder && (
-        <Modal onClose={() => setShowPaymentModal(false)} title="💳 Enregistrer le paiement">
-          <div className="space-y-4">
-            <div className="text-center mb-6">
-              <p className="text-4xl font-black text-gray-800">{selectedOrder.total}€</p>
-              <p className="text-gray-600">Commande #{selectedOrder.id?.slice(0, 8)}</p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <Button
-                onClick={() => handlePayment(selectedOrder.id, 'cash')}
-                className="py-8 bg-green-600 hover:bg-green-700 text-xl font-bold"
-              >
-                <DollarSign className="w-8 h-8 mb-2" />
-                Espèces
-              </Button>
-              <Button
-                onClick={() => handlePayment(selectedOrder.id, 'card')}
-                className="py-8 bg-blue-600 hover:bg-blue-700 text-xl font-bold"
-              >
-                <CreditCard className="w-8 h-8 mb-2" />
-                Carte
-              </Button>
-              <Button
-                onClick={() => handlePayment(selectedOrder.id, 'mobile')}
-                className="py-8 bg-purple-600 hover:bg-purple-700 text-xl font-bold"
-              >
-                📱
-                Mobile
-              </Button>
-              <Button
-                onClick={() => handlePayment(selectedOrder.id, 'online')}
-                className="py-8 bg-orange-600 hover:bg-orange-700 text-xl font-bold"
-              >
-                💻
-                En ligne
-              </Button>
-            </div>
-
-            <Button
-              onClick={() => setShowPaymentModal(false)}
-              variant="outline"
-              className="w-full mt-4"
-            >
-              Annuler
-            </Button>
-          </div>
-        </Modal>
-      )}
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => {
+          setShowPaymentModal(false);
+          setSelectedOrder(null);
+        }}
+        order={selectedOrder}
+        onSuccess={handlePaymentSuccess}
+      />
     </div>
   );
 };
