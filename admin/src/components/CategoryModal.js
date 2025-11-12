@@ -108,16 +108,11 @@ export const CategoryModal = ({ isOpen, onClose, category, onSuccess }) => {
           />
         </div>
 
-        <div>
-          <Label htmlFor="image">URL Image</Label>
-          <Input
-            id="image"
-            type="url"
-            value={formData.image}
-            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-            placeholder="https://..."
-          />
-        </div>
+        <ImageUpload
+          currentImage={formData.image}
+          onImageChange={(url) => setFormData({ ...formData, image: url })}
+          label="Image de la catégorie"
+        />
 
         <div>
           <Label htmlFor="icon">Icône (Lucide)</Label>
