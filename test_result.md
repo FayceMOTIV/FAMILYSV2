@@ -495,8 +495,34 @@ test_plan:
         - agent: "testing"
         - comment: "✅ AI MARKETING WORKING: Disabled authentication for debug as requested. GET /campaigns/all returns campaign data, POST /campaigns/generate creates new campaigns. AI marketing functionality confirmed."
 
+  - task: "Payment Processing System"
+    implemented: true
+    working: "NA"
+    file: "/app/admin/src/components/PaymentModal.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implemented comprehensive PaymentModal component with: payment method selection (Cash, Card, Mobile, Online), amount received input, automatic change calculation, order total display, payment recording via backend API. Integrated into OrdersManagement.js. Modal includes all payment details and calculates change for cash payments."
+  
+  - task: "Order Cancellation with Reason"
+    implemented: true
+    working: "NA"
+    file: "/app/admin/src/components/CancellationModal.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implemented CancellationModal component with: reason input (required), common reasons selection, cancellation reason storage in order record. Updated backend OrderStatusUpdate model to include optional cancellation_reason field. Backend endpoint now saves cancellation reason to MongoDB. Integrated into OrdersManagement.js to show modal before cancelling orders."
+
 agent_communication:
     - agent: "testing"
     - message: "Starting comprehensive backend API testing for ALL admin endpoints. Testing Categories, Products, Options, Orders, Notifications, Promos, Upload, and AI Marketing with full CRUD operations on https://resto-backoffice-1.preview.emergentagent.com"
     - agent: "testing"
     - message: "COMPREHENSIVE ADMIN BACKEND TESTING COMPLETED - RESULTS: 8/8 endpoint groups working correctly ✅. Categories ✅, Products ✅, Options ✅, Orders ✅, Notifications ✅, Promos ✅ (after date fix), Upload ✅, AI Marketing ✅ (after auth disable). Fixed syntax error in notifications.py and date serialization in promos.py. All 28 individual endpoint tests passing. Full back office functionality confirmed."
+    - agent: "main"
+    - message: "Implemented Payment Processing System and Order Cancellation modals. Need to test: 1) Payment modal flow (recording payment with different methods, change calculation for cash), 2) Cancellation modal flow (recording reason, saving to order record). Both features integrated into OrdersManagement page. Backend endpoints updated to support cancellation_reason field."
