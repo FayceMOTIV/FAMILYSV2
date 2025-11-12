@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Header } from '../components/Header';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
+import { NotificationModal } from '../components/NotificationModal';
 import { notificationsAPI } from '../services/api';
-import { Bell, Plus, Send } from 'lucide-react';
+import { Bell, Plus, Send, Clock, Check, Edit2, Trash2, Calendar } from 'lucide-react';
 
 export const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
