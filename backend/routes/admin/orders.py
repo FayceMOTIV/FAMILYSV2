@@ -102,9 +102,9 @@ async def update_order_status(
     
     # Envoyer notification selon le statut
     notification_map = {
-        "preparing": "order_preparing",
+        "in_preparation": "order_preparing",
         "ready": "order_ready",
-        "delivering": "order_delivering",
+        "out_for_delivery": "order_delivering",
         "completed": "order_completed"
     }
     
