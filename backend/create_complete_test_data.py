@@ -42,7 +42,7 @@ async def create_complete_test_data():
             "restaurant_id": restaurant_id,
             "name": "🍟 Accompagnements",
             "description": "Frites, nuggets, onion rings...",
-            "image_url": "/uploads/categories/sides.jpg",
+            "image": "/uploads/categories/sides.jpg",
             "display_order": 2,
             "is_active": True,
             "created_at": datetime.now(timezone.utc).isoformat()
