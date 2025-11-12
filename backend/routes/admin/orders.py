@@ -16,7 +16,7 @@ class PaymentUpdate(BaseModel):
     payment_status: str
 
 
-@router.get("", response_model=List[Order])
+@router.get("")  # response_model=List[Order]  # TEMPORAIREMENT SANS VALIDATION
 async def get_orders(
     status: Optional[str] = None,
     date_from: Optional[str] = None,
@@ -43,9 +43,9 @@ async def get_orders(
             "$lte": date_to
         }
     
-    orders = await db.orders.find(query).sort("created_at", -1).skip(skip).limit(limit).to_list(length=None)
+    orders = await db.orders.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(length=None)
     
-    return [Order(**o) for o in orders]
+    return {"orders": orders}
 
 @router.get("/{order_id}", response_model=Order)
 async def get_order(
