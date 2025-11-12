@@ -33,7 +33,7 @@ export const OrdersManagement = () => {
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/v1/admin/orders?status=pending`);
+        const response = await axios.get(`${API_URL}/api/v1/admin/orders?status=new`);
         const newOrders = response.data.orders || [];
         
         // Si nouvelle commande détectée, jouer le son
