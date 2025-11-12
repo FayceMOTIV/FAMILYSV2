@@ -19,9 +19,10 @@ export const Products = () => {
   const loadProducts = async () => {
     try {
       const response = await productsAPI.getAll();
-      setProducts(response.data);
+      setProducts(response.data.products || []);
     } catch (error) {
       console.error('Failed to load products:', error);
+      setProducts([]);
     } finally {
       setLoading(false);
     }
