@@ -332,7 +332,7 @@ export const OrdersManagement = () => {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {filteredOrders.map((order) => (
-              <Card key={order.id} className="hover:shadow-2xl transition-shadow">
+              <Card key={order.id} className="hover:shadow-2xl transition-all duration-300 animate-fadeIn">
                 <CardContent className="p-6">
                   {/* Header */}
                   <div className="flex justify-between items-start mb-4">
