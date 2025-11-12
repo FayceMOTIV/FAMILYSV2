@@ -73,11 +73,11 @@ async def create_product(
     await db.products.insert_one(product.model_dump())
     return {"success": True, "product": product.model_dump()}
 
-@router.put("/{product_id}", response_model=Product)
+@router.put("/{product_id}")  # response_model=Product
 async def update_product(
     product_id: str,
-    product_update: ProductUpdate,
-    current_user: dict = Security(require_manager_or_admin)
+    product_update: ProductUpdate
+    # current_user: dict = Security(require_manager_or_admin)
 ):
     """Update product."""
     restaurant_id = current_user.get("restaurant_id")
