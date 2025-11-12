@@ -71,11 +71,35 @@ export const Notifications = () => {
 
   return (
     <div>
-      <Header title="Notifications" />
+      <Header title="🔔 Notifications" subtitle="Communiquez avec vos clients" />
       <div className="p-8">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-bold">{notifications.length} notifications</h3>
-          <Button><Plus className="w-4 h-4 mr-2" />Créer une notification</Button>
+          <div className="flex gap-2">
+            <Button 
+              variant={activeTab === 'all' ? 'primary' : 'outline'}
+              onClick={() => setActiveTab('all')}
+            >
+              Toutes ({notifications.length})
+            </Button>
+            <Button 
+              variant={activeTab === 'scheduled' ? 'primary' : 'outline'}
+              onClick={() => setActiveTab('scheduled')}
+            >
+              <Clock className="w-4 h-4 mr-1" />
+              Programmées ({scheduled.length})
+            </Button>
+            <Button 
+              variant={activeTab === 'sent' ? 'primary' : 'outline'}
+              onClick={() => setActiveTab('sent')}
+            >
+              <Check className="w-4 h-4 mr-1" />
+              Envoyées ({sent.length})
+            </Button>
+          </div>
+          <Button onClick={() => setShowModal(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Créer une notification
+          </Button>
         </div>
 
         {notifications.length === 0 ? (
