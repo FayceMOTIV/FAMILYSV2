@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the Back Office AI Assistant endpoints to verify CORS fix and AI integration. Backend URL: https://resto-dashboard-21.preview.emergentagent.com. Test login, AI chat, marketing generation, sales analysis, and promo suggestion endpoints."
+user_problem_statement: "Test ALL back office admin endpoints for Family's restaurant. Backend URL: https://resto-dashboard-21.preview.emergentagent.com. Test Categories, Products, Options, Orders, Notifications, Promos, Upload, and AI Marketing endpoints with full CRUD operations."
 
 backend:
   - task: "Admin Authentication Login"
