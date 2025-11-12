@@ -62,7 +62,7 @@ async def create_complete_test_data():
             "restaurant_id": restaurant_id,
             "name": "🍰 Desserts",
             "description": "Douceurs et pâtisseries maison",
-            "image_url": "/uploads/categories/desserts.jpg",
+            "image": "/uploads/categories/desserts.jpg",
             "display_order": 4,
             "is_active": True,
             "created_at": datetime.now(timezone.utc).isoformat()
