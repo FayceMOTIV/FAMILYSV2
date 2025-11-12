@@ -320,6 +320,64 @@ export const mockUser = {
       ],
       total: 27.80,
       status: 'completed'
+    },
+    {
+      id: 'order-3',
+      date: '2025-07-05T20:00:00',
+      items: [
+        { productId: 'burger-2', name: 'Double Cheese', quantity: 1, price: 11.90 },
+        { productId: 'side-1', name: 'Frites', quantity: 1, price: 3.50 }
+      ],
+      total: 15.40,
+      status: 'completed'
+    },
+    {
+      id: 'order-4',
+      date: '2025-06-28T18:45:00',
+      items: [
+        { productId: 'menu-2', name: 'Menu Double', quantity: 1, price: 14.90 }
+      ],
+      total: 14.90,
+      status: 'completed'
+    },
+    {
+      id: 'order-5',
+      date: '2025-06-20T19:30:00',
+      items: [
+        { productId: 'burger-1', name: 'Le King', quantity: 2, price: 19.80 },
+        { productId: 'dessert-1', name: 'Tiramisu', quantity: 2, price: 9.80 }
+      ],
+      total: 29.60,
+      status: 'completed'
+    },
+    {
+      id: 'order-6',
+      date: '2025-06-15T21:00:00',
+      items: [
+        { productId: 'menu-1', name: 'Menu King', quantity: 3, price: 41.70 }
+      ],
+      total: 41.70,
+      status: 'completed'
+    },
+    {
+      id: 'order-7',
+      date: '2025-06-10T19:00:00',
+      items: [
+        { productId: 'burger-3', name: 'Bacon BBQ', quantity: 1, price: 12.50 },
+        { productId: 'side-2', name: 'Onion Rings', quantity: 1, price: 4.50 },
+        { productId: 'drink-1', name: 'Limonade', quantity: 2, price: 7.00 }
+      ],
+      total: 24.00,
+      status: 'completed'
+    },
+    {
+      id: 'order-8',
+      date: '2025-06-05T20:15:00',
+      items: [
+        { productId: 'menu-3', name: 'Menu Bacon', quantity: 2, price: 31.80 }
+      ],
+      total: 31.80,
+      status: 'completed'
     }
   ]
 };
