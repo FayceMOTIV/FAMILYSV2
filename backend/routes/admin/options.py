@@ -32,7 +32,7 @@ async def create_option(option_create: OptionCreate):
         **option_create.model_dump()
     )
     
-    await db.product_options.insert_one(option.model_dump())
+    await db.options.insert_one(option.model_dump())
     
     return {"success": True, "option": option.model_dump()}
 
