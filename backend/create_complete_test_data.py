@@ -32,7 +32,7 @@ async def create_complete_test_data():
             "restaurant_id": restaurant_id,
             "name": "🍔 Burgers",
             "description": "Nos burgers signature au bœuf premium",
-            "image_url": "/uploads/categories/burgers.jpg",
+            "image": "/uploads/categories/burgers.jpg",
             "display_order": 1,
             "is_active": True,
             "created_at": datetime.now(timezone.utc).isoformat()
