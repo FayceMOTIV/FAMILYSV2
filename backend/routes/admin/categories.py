@@ -20,13 +20,13 @@ async def get_categories():  # current_user: dict = Security(require_manager_or_
     
     return {"categories": categories}
 
-@router.post("", response_model=Category, status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED)  # response_model=Category
 async def create_category(
-    category_create: CategoryCreate,
-    current_user: dict = Security(require_manager_or_admin)
+    category_create: CategoryCreate
+    # current_user: dict = Security(require_manager_or_admin)
 ):
     """Create new category."""
-    restaurant_id = current_user.get("restaurant_id")
+    restaurant_id = "default"  # current_user.get("restaurant_id")
     
     category = Category(
         restaurant_id=restaurant_id,
@@ -34,7 +34,7 @@ async def create_category(
     )
     
     await db.categories.insert_one(category.model_dump())
-    return category
+    return {"success": True, "category": category.model_dump()}
 
 @router.put("/{category_id}", response_model=Category)
 async def update_category(
