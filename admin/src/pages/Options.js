@@ -65,7 +65,7 @@ export const Options = () => {
         {options.length === 0 ? (
           <Card>
             <CardContent className="text-center py-20">
-              <ListPlus className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+              <Plus className="w-16 h-16 mx-auto text-gray-400 mb-4" />
               <h3 className="text-xl font-bold text-gray-600 mb-2">Aucune option</h3>
               <p className="text-gray-500 mb-4">
                 Créez des options (taille, sauce, accompagnement...) pour enrichir vos produits
