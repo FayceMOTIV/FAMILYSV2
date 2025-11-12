@@ -32,12 +32,40 @@ export const Notifications = () => {
   const handleSend = async (id) => {
     try {
       await notificationsAPI.send(id);
-      alert('Notification envoyée !');
+      alert('✅ Notification envoyée !');
       loadNotifications();
     } catch (error) {
-      alert('Erreur lors de l\'envoi');
+      alert('❌ Erreur lors de l\'envoi');
     }
   };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Supprimer cette notification ?')) return;
+    
+    try {
+      await notificationsAPI.delete(id);
+      loadNotifications();
+    } catch (error) {
+      alert('❌ Erreur lors de la suppression');
+    }
+  };
+
+  // Filter notifications
+  const now = new Date();
+  const scheduled = notifications.filter(n => {
+    if (!n.scheduled_for) return false;
+    return new Date(n.scheduled_for) > now;
+  });
+  const sent = notifications.filter(n => {
+    if (!n.scheduled_for) return true;
+    return new Date(n.scheduled_for) <= now;
+  });
+
+  const displayedNotifications = activeTab === 'all' 
+    ? notifications 
+    : activeTab === 'scheduled' 
+    ? scheduled 
+    : sent;
 
   if (loading) return <div><Header title="Notifications" /><div className="p-8">Chargement...</div></div>;
 
