@@ -173,6 +173,17 @@ export const Notifications = () => {
           </div>
         )}
       </div>
+
+      {/* Modal */}
+      <NotificationModal
+        isOpen={showModal}
+        onClose={() => {
+          setShowModal(false);
+          setEditingNotification(null);
+        }}
+        notification={editingNotification}
+        onSuccess={loadNotifications}
+      />
     </div>
   );
 };
