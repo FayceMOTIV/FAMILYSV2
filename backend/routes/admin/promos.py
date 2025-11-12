@@ -20,11 +20,15 @@ async def create_promo(promo_create: PromoCreate):  # current_user: dict = Secur
     restaurant_id = "default"  # current_user.get("restaurant_id")
     promo = Promo(restaurant_id=restaurant_id, **promo_create.model_dump())
     promo_dict = promo.model_dump()
-    # Convert datetime
+    # Convert datetime and date objects
     if isinstance(promo_dict.get('created_at'), datetime):
         promo_dict['created_at'] = promo_dict['created_at'].isoformat()
     if isinstance(promo_dict.get('updated_at'), datetime):
         promo_dict['updated_at'] = promo_dict['updated_at'].isoformat()
+    if promo_dict.get('start_date'):
+        promo_dict['start_date'] = promo_dict['start_date'].isoformat() if hasattr(promo_dict['start_date'], 'isoformat') else str(promo_dict['start_date'])
+    if promo_dict.get('end_date'):
+        promo_dict['end_date'] = promo_dict['end_date'].isoformat() if hasattr(promo_dict['end_date'], 'isoformat') else str(promo_dict['end_date'])
     await db.promos.insert_one(promo_dict)
     promo_dict.pop("_id", None)
     return {"success": True, "promo": promo_dict}
