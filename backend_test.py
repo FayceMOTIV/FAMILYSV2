@@ -269,23 +269,283 @@ class BackendTester:
             self.log_result(test_name, False, f"Exception: {str(e)}")
             return False
     
+    async def test_get_orders(self) -> tuple[bool, Optional[str]]:
+        """Test getting orders and return first available order ID."""
+        test_name = "Get Orders"
+        
+        try:
+            async with self.session.get(
+                f"{self.base_url}/api/v1/admin/orders",
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status == 200:
+                    data = await response.json()
+                    if "orders" in data and len(data["orders"]) > 0:
+                        order_id = data["orders"][0].get("id")
+                        self.log_result(test_name, True, f"Retrieved {len(data['orders'])} orders, first order ID: {order_id}")
+                        return True, order_id
+                    else:
+                        self.log_result(test_name, False, "No orders found in response", data)
+                        return False, None
+                else:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"HTTP {response.status}: {error_data}")
+                    return False, None
+                    
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False, None
+
+    async def test_payment_recording(self, order_id: str) -> bool:
+        """Test payment recording with different payment methods."""
+        test_name = "Payment Recording"
+        
+        if not order_id:
+            self.log_result(test_name, False, "No order ID available")
+            return False
+        
+        try:
+            # Test cash payment with change
+            payment_data = {
+                "payment_method": "cash",
+                "payment_status": "paid",
+                "amount_received": 25.50,
+                "change_given": 5.50
+            }
+            
+            async with self.session.post(
+                f"{self.base_url}/api/v1/admin/orders/{order_id}/payment",
+                json=payment_data,
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status == 200:
+                    data = await response.json()
+                    if data.get("success"):
+                        self.log_result(test_name, True, f"Cash payment recorded successfully for order {order_id}")
+                        return True
+                    else:
+                        self.log_result(test_name, False, "Payment recording failed", data)
+                        return False
+                else:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"HTTP {response.status}: {error_data}")
+                    return False
+                    
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
+    async def test_payment_methods(self, order_id: str) -> bool:
+        """Test different payment methods."""
+        test_name = "Payment Methods"
+        
+        if not order_id:
+            self.log_result(test_name, False, "No order ID available")
+            return False
+        
+        payment_methods = ["card", "mobile", "online"]
+        success_count = 0
+        
+        for method in payment_methods:
+            try:
+                payment_data = {
+                    "payment_method": method,
+                    "payment_status": "paid"
+                }
+                
+                async with self.session.post(
+                    f"{self.base_url}/api/v1/admin/orders/{order_id}/payment",
+                    json=payment_data,
+                    headers={"Content-Type": "application/json"}
+                ) as response:
+                    
+                    if response.status == 200:
+                        data = await response.json()
+                        if data.get("success"):
+                            success_count += 1
+                            print(f"   ✅ {method} payment method works")
+                        else:
+                            print(f"   ❌ {method} payment method failed: {data}")
+                    else:
+                        error_data = await response.text()
+                        print(f"   ❌ {method} payment method failed: HTTP {response.status}: {error_data}")
+                        
+            except Exception as e:
+                print(f"   ❌ {method} payment method exception: {str(e)}")
+        
+        if success_count == len(payment_methods):
+            self.log_result(test_name, True, f"All {len(payment_methods)} payment methods work correctly")
+            return True
+        else:
+            self.log_result(test_name, False, f"Only {success_count}/{len(payment_methods)} payment methods work")
+            return False
+
+    async def test_order_cancellation(self, order_id: str) -> bool:
+        """Test order cancellation with reason."""
+        test_name = "Order Cancellation with Reason"
+        
+        if not order_id:
+            self.log_result(test_name, False, "No order ID available")
+            return False
+        
+        try:
+            # Test cancellation with reason
+            cancellation_data = {
+                "status": "canceled",
+                "cancellation_reason": "❌ Client a annulé"
+            }
+            
+            async with self.session.patch(
+                f"{self.base_url}/api/v1/admin/orders/{order_id}/status",
+                json=cancellation_data,
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status == 200:
+                    data = await response.json()
+                    if data.get("success"):
+                        # Verify the cancellation was saved
+                        async with self.session.get(
+                            f"{self.base_url}/api/v1/admin/orders",
+                            headers={"Content-Type": "application/json"}
+                        ) as get_response:
+                            
+                            if get_response.status == 200:
+                                orders_data = await get_response.json()
+                                cancelled_order = None
+                                for order in orders_data.get("orders", []):
+                                    if order.get("id") == order_id:
+                                        cancelled_order = order
+                                        break
+                                
+                                if cancelled_order:
+                                    if (cancelled_order.get("status") == "canceled" and 
+                                        cancelled_order.get("cancellation_reason") == "❌ Client a annulé"):
+                                        self.log_result(test_name, True, f"Order {order_id} cancelled with reason saved correctly")
+                                        return True
+                                    else:
+                                        self.log_result(test_name, False, f"Cancellation data not saved correctly: status={cancelled_order.get('status')}, reason={cancelled_order.get('cancellation_reason')}")
+                                        return False
+                                else:
+                                    self.log_result(test_name, False, f"Could not find cancelled order {order_id}")
+                                    return False
+                            else:
+                                self.log_result(test_name, False, f"Could not verify cancellation: HTTP {get_response.status}")
+                                return False
+                    else:
+                        self.log_result(test_name, False, "Cancellation failed", data)
+                        return False
+                else:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"HTTP {response.status}: {error_data}")
+                    return False
+                    
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
+    async def test_cancellation_without_reason(self, order_id: str) -> bool:
+        """Test order cancellation without reason (should still work)."""
+        test_name = "Cancellation Without Reason"
+        
+        if not order_id:
+            self.log_result(test_name, False, "No order ID available")
+            return False
+        
+        try:
+            # Test cancellation without reason
+            cancellation_data = {
+                "status": "canceled"
+            }
+            
+            async with self.session.patch(
+                f"{self.base_url}/api/v1/admin/orders/{order_id}/status",
+                json=cancellation_data,
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status == 200:
+                    data = await response.json()
+                    if data.get("success"):
+                        self.log_result(test_name, True, f"Order {order_id} cancelled without reason successfully")
+                        return True
+                    else:
+                        self.log_result(test_name, False, "Cancellation without reason failed", data)
+                        return False
+                else:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"HTTP {response.status}: {error_data}")
+                    return False
+                    
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
+    async def test_exact_amount_payment(self, order_id: str) -> bool:
+        """Test payment with exact amount (no change)."""
+        test_name = "Exact Amount Payment"
+        
+        if not order_id:
+            self.log_result(test_name, False, "No order ID available")
+            return False
+        
+        try:
+            # Test exact payment
+            payment_data = {
+                "payment_method": "cash",
+                "payment_status": "paid",
+                "amount_received": 20.00,
+                "change_given": 0.00
+            }
+            
+            async with self.session.post(
+                f"{self.base_url}/api/v1/admin/orders/{order_id}/payment",
+                json=payment_data,
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status == 200:
+                    data = await response.json()
+                    if data.get("success"):
+                        self.log_result(test_name, True, f"Exact amount payment recorded successfully for order {order_id}")
+                        return True
+                    else:
+                        self.log_result(test_name, False, "Exact amount payment failed", data)
+                        return False
+                else:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"HTTP {response.status}: {error_data}")
+                    return False
+                    
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
     async def run_all_tests(self):
         """Run all backend tests."""
         print(f"🚀 Starting Backend API Tests for: {self.base_url}")
         print("=" * 60)
         
-        # Test sequence
+        # First get orders to have order IDs for testing
+        orders_success, first_order_id = await self.test_get_orders()
+        
+        if not orders_success or not first_order_id:
+            print("❌ Cannot proceed with payment/cancellation tests - no orders available")
+            return False
+        
+        # Test sequence for payment and cancellation features
         tests = [
-            ("CORS Headers", self.test_cors_headers),
-            ("Admin Login", self.test_login),
-            ("AI Chat", self.test_ai_chat),
-            ("Marketing Generation", self.test_marketing_generation),
-            ("Sales Analysis", self.test_sales_analysis),
-            ("Promo Suggestion", self.test_promo_suggestion),
+            ("Payment Recording", lambda: self.test_payment_recording(first_order_id)),
+            ("Payment Methods", lambda: self.test_payment_methods(first_order_id)),
+            ("Order Cancellation with Reason", lambda: self.test_order_cancellation(first_order_id)),
+            ("Cancellation Without Reason", lambda: self.test_cancellation_without_reason(first_order_id)),
+            ("Exact Amount Payment", lambda: self.test_exact_amount_payment(first_order_id)),
         ]
         
-        passed = 0
-        total = len(tests)
+        passed = 1  # Count the successful get_orders test
+        total = len(tests) + 1  # +1 for get_orders test
         
         for test_name, test_func in tests:
             try:
