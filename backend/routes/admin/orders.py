@@ -8,6 +8,12 @@ from database import db
 
 router = APIRouter(prefix="/orders", tags=["admin-orders"])
 
+from pydantic import BaseModel
+
+class PaymentUpdate(BaseModel):
+    payment_method: str
+    payment_status: str
+
 
 @router.get("", response_model=List[Order])
 async def get_orders(
