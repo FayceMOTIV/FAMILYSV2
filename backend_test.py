@@ -677,6 +677,7 @@ class BackendTester:
             ("Order Cancellation with Reason", lambda: self.test_order_cancellation(first_order_id)),
             ("Cancellation Without Reason", lambda: self.test_cancellation_without_reason(first_order_id)),
             ("Exact Amount Payment", lambda: self.test_exact_amount_payment(first_order_id)),
+            ("Paid Order Cancellation Retention", self.test_paid_order_cancellation),
         ]
         
         passed = 1  # Count the successful get_orders test
