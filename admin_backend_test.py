@@ -225,18 +225,10 @@ class AdminBackendTester:
                 "name": "Test Burger Royal",
                 "slug": f"test-burger-royal-{uuid.uuid4().hex[:8]}",
                 "description": "Un burger royal de test",
-                "price": 12.90,
+                "base_price": 12.90,
                 "category": "burgers",
-                "image": "/uploads/test-burger.jpg",
-                "is_available": True,
-                "preparation_time": 15,
-                "allergens": ["gluten", "lactose"],
-                "nutritional_info": {
-                    "calories": 650,
-                    "protein": 35,
-                    "carbs": 45,
-                    "fat": 28
-                }
+                "image_url": "/uploads/test-burger.jpg",
+                "tags": ["test"]
             }
             
             async with self.session.post(
