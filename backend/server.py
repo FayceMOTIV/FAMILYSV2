@@ -23,6 +23,8 @@ from routes.admin import notifications as admin_notifications
 from routes.admin import reservations as admin_reservations
 from routes.admin import settings as admin_settings
 from routes.admin import ai_marketing as admin_ai_marketing
+from routes.admin import upload as admin_upload
+from routes.admin import options as admin_options
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
