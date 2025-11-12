@@ -258,10 +258,10 @@ export const OrdersManagement = () => {
 
   const getNextStatus = (currentStatus) => {
     const statusFlow = {
-      'pending': 'preparing',
-      'preparing': 'ready',
+      'new': 'in_preparation',
+      'in_preparation': 'ready',
       'ready': 'completed',
-      'delivering': 'completed'
+      'out_for_delivery': 'completed'
     };
     return statusFlow[currentStatus];
   };
