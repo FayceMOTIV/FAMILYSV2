@@ -75,6 +75,108 @@ export const OrdersManagement = () => {
     }
   };
 
+  const printOrder = (order) => {
+    // ESC/POS commands for 80MM thermal printer
+    const ESC = '\x1B';
+    const GS = '\x1D';
+    
+    let receipt = '';
+    
+    // Initialize printer
+    receipt += ESC + '@';
+    
+    // Center align + Bold + Double size
+    receipt += ESC + 'a' + '\x01'; // Center
+    receipt += ESC + 'E' + '\x01'; // Bold on
+    receipt += GS + '!' + '\x11'; // Double width and height
+    
+    receipt += "FAMILY'S\n";
+    receipt += "Original Burger\n";
+    
+    // Normal size
+    receipt += GS + '!' + '\x00';
+    receipt += ESC + 'E' + '\x00'; // Bold off
+    receipt += '\n';
+    
+    // Left align
+    receipt += ESC + 'a' + '\x00';
+    
+    // Order info
+    receipt += '================================\n';
+    receipt += `COMMANDE #${order.id?.slice(0, 8)}\n`;
+    receipt += `Date: ${formatDate(order.created_at)}\n`;
+    receipt += '================================\n\n';
+    
+    // Customer
+    receipt += ESC + 'E' + '\x01'; // Bold on
+    receipt += `Client: ${order.customer_name || 'Client'}\n`;
+    receipt += ESC + 'E' + '\x00'; // Bold off
+    if (order.customer_phone) {
+      receipt += `Tel: ${order.customer_phone}\n`;
+    }
+    receipt += '\n';
+    
+    // Order type
+    receipt += `Type: ${order.order_type === 'delivery' ? 'LIVRAISON' : 'A EMPORTER'}\n`;
+    receipt += '\n';
+    
+    // Items
+    receipt += '--------------------------------\n';
+    receipt += ESC + 'E' + '\x01'; // Bold on
+    receipt += 'ARTICLES:\n';
+    receipt += ESC + 'E' + '\x00'; // Bold off
+    receipt += '--------------------------------\n';
+    
+    order.items?.forEach((item) => {
+      receipt += `${item.quantity}x ${item.name}\n`;
+      if (item.notes) {
+        receipt += `   >> ${item.notes}\n`;
+      }
+      receipt += `   ${item.total_price}€\n\n`;
+    });
+    
+    receipt += '--------------------------------\n';
+    
+    // Total
+    receipt += ESC + 'E' + '\x01'; // Bold on
+    receipt += GS + '!' + '\x11'; // Double size
+    receipt += `TOTAL: ${order.total}€\n`;
+    receipt += GS + '!' + '\x00'; // Normal size
+    receipt += ESC + 'E' + '\x00'; // Bold off
+    
+    receipt += '================================\n';
+    receipt += ESC + 'a' + '\x01'; // Center
+    receipt += '\nMerci de votre commande!\n';
+    receipt += 'Bon appetit!\n\n';
+    
+    // Cut paper
+    receipt += GS + 'V' + '\x00';
+    
+    // Create a blob with the receipt data
+    const blob = new Blob([receipt], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    
+    // Try to open print dialog
+    const printWindow = window.open(url, '_blank', 'width=302,height=500');
+    if (printWindow) {
+      printWindow.onload = () => {
+        printWindow.print();
+        setTimeout(() => {
+          URL.revokeObjectURL(url);
+          printWindow.close();
+        }, 100);
+      };
+    } else {
+      // Fallback: download the receipt
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `commande-${order.id?.slice(0, 8)}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+      alert('📄 Fichier de commande téléchargé. Ouvrez-le avec votre logiciel d\'impression thermique.');
+    }
+  };
+
   const getNextStatus = (currentStatus) => {
     const statusFlow = {
       'pending': 'preparing',
