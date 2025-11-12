@@ -27,7 +27,9 @@ async def get_customers(
         ]
     
     customers = await db.customers.find(query).skip(skip).limit(limit).to_list(length=None)
-    return [Customer(**c) for c in customers]
+    for c in customers:
+        c.pop("_id", None)
+    return {"customers": customers}
 
 @router.post("", response_model=Customer, status_code=status.HTTP_201_CREATED)
 async def create_customer(customer_create: CustomerCreate, current_user: dict = Security(require_manager_or_admin)):
