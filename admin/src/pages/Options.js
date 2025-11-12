@@ -46,13 +46,6 @@ export const Options = () => {
   };
 
 
-  const handleRemoveChoice = (choiceId) => {
-    setFormData({
-      ...formData,
-      choices: formData.choices.filter(c => c.id !== choiceId)
-    });
-  };
-
   return (
     <div>
       <Header 
