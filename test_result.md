@@ -359,9 +359,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "AI Sales Analysis"
-    - "AI Promo Suggestion"
-    - "CORS Configuration"
+    - "Payment Processing System"
+    - "Order Cancellation with Reason"
   stuck_tasks:
     - "AI Sales Analysis"
     - "AI Promo Suggestion"
