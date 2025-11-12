@@ -5,6 +5,7 @@ from middleware.auth import require_manager_or_admin
 from datetime import datetime, timezone
 
 from database import db
+from services.notification_service import send_order_notification
 
 router = APIRouter(prefix="/orders", tags=["admin-orders"])
 
