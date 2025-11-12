@@ -15,6 +15,7 @@ export const OrdersManagement = () => {
   const [loading, setLoading] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showCancellationModal, setShowCancellationModal] = useState(false);
   const [previousNewOrdersCount, setPreviousNewOrdersCount] = useState(0);
 
   const tabs = [
