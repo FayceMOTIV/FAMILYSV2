@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Header } from '../components/Header';
 import { Card, CardContent } from '../components/Card';
 import { Button } from '../components/Button';
-import { Modal } from '../components/Modal';
-import { Package, Clock, Truck, CheckCircle, XCircle, CreditCard, DollarSign, Loader, Printer } from 'lucide-react';
+import { PaymentModal } from '../components/PaymentModal';
+import { Package, Clock, Truck, CheckCircle, XCircle, CreditCard, Loader, Printer } from 'lucide-react';
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://resto-backoffice-1.preview.emergentagent.com';
