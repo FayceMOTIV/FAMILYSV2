@@ -80,7 +80,7 @@ async def update_product(
     # current_user: dict = Security(require_manager_or_admin)
 ):
     """Update product."""
-    restaurant_id = current_user.get("restaurant_id")
+    restaurant_id = "default"  # current_user.get("restaurant_id")
     
     # Get existing product
     existing = await db.products.find_one({
@@ -96,7 +96,7 @@ async def update_product(
     
     # Update fields
     update_data = product_update.model_dump(exclude_unset=True)
-    update_data["updated_at"] = datetime.now(timezone.utc)
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
     
     await db.products.update_one(
         {"id": product_id},
@@ -104,8 +104,8 @@ async def update_product(
     )
     
     # Get updated product
-    updated_product = await db.products.find_one({"id": product_id})
-    return Product(**updated_product)
+    updated_product = await db.products.find_one({"id": product_id}, {"_id": 0})
+    return {"success": True, "product": updated_product}
 
 @router.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_product(
