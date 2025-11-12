@@ -57,7 +57,7 @@ async def update_category(
         )
     
     update_data = category_update.model_dump(exclude_unset=True)
-    update_data["updated_at"] = datetime.now(timezone.utc)
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
     
     await db.categories.update_one(
         {"id": category_id},
