@@ -156,6 +156,39 @@ export const OrdersManagement = () => {
     loadOrders();
   };
 
+  const handleCancelOrder = async (reason) => {
+    if (!selectedOrder) return;
+    
+    try {
+      // Mise à jour optimiste
+      setOrders(prevOrders => 
+        prevOrders.map(order => 
+          order.id === selectedOrder.id 
+            ? { ...order, status: 'canceled', cancellation_reason: reason }
+            : order
+        )
+      );
+      
+      // Envoyer la requête au backend
+      await axios.patch(`${API_URL}/api/v1/admin/orders/${selectedOrder.id}/status`, { 
+        status: 'canceled',
+        cancellation_reason: reason 
+      });
+      
+      setShowCancellationModal(false);
+      setSelectedOrder(null);
+      
+      // Basculer vers l'onglet annulés
+      setActiveTab('cancelled');
+      
+    } catch (error) {
+      console.error('Erreur annulation commande:', error);
+      alert('❌ Erreur lors de l\'annulation de la commande');
+      // Recharger en cas d'erreur
+      loadOrders();
+    }
+  };
+
   const printOrder = (order) => {
     // ESC/POS commands for 80MM thermal printer
     const ESC = '\x1B';
