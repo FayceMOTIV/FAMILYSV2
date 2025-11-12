@@ -110,7 +110,7 @@ export const OrdersManagement = () => {
   const loadOrders = async () => {
     setLoading(true);
     try {
-      // Charger TOUTES les commandes (pas de filtre de statut)
+      // Charger toutes les commandes sans filtre
       const response = await axios.get(`${API_URL}/api/v1/admin/orders`);
       setOrders(response.data.orders || []);
     } catch (error) {
