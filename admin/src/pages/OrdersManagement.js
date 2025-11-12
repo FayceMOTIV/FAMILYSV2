@@ -110,8 +110,8 @@ export const OrdersManagement = () => {
   const loadOrders = async () => {
     setLoading(true);
     try {
-      const currentTab = tabs.find(t => t.id === activeTab);
-      const response = await axios.get(`${API_URL}/api/v1/admin/orders?status=${currentTab.status}`);
+      // Charger TOUTES les commandes (pas de filtre de statut)
+      const response = await axios.get(`${API_URL}/api/v1/admin/orders`);
       setOrders(response.data.orders || []);
     } catch (error) {
       console.error('Erreur chargement commandes:', error);
