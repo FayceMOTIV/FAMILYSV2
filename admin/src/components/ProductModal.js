@@ -214,15 +214,60 @@ export const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
           </div>
         </div>
 
+        <ImageUpload
+          currentImage={formData.image_url}
+          onImageChange={(url) => setFormData({ ...formData, image_url: url })}
+          label="Image du produit"
+        />
+
+        {/* Sélection des options */}
         <div>
-          <Label htmlFor="image_url">URL Image</Label>
-          <Input
-            id="image_url"
-            type="url"
-            value={formData.image_url}
-            onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-            placeholder="https://..."
-          />
+          <Label>Options du produit</Label>
+          <p className="text-xs text-gray-500 mb-3">
+            Sélectionnez les options que le client pourra choisir pour ce produit
+          </p>
+          <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-3">
+            {options.map((option) => (
+              <label key={option.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.option_ids.includes(option.id)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setFormData({
+                        ...formData,
+                        option_ids: [...formData.option_ids, option.id]
+                      });
+                    } else {
+                      setFormData({
+                        ...formData,
+                        option_ids: formData.option_ids.filter(id => id !== option.id)
+                      });
+                    }
+                  }}
+                  className="w-4 h-4"
+                />
+                <div className="flex-1">
+                  <span className="font-semibold text-sm">{option.name}</span>
+                  <span className={`ml-2 px-2 py-0.5 rounded text-xs ${
+                    option.is_required 
+                      ? 'bg-red-100 text-red-700' 
+                      : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    {option.is_required ? 'Obligatoire' : 'Optionnel'}
+                  </span>
+                  <span className="ml-2 text-xs text-gray-500">
+                    ({option.choices?.length || 0} choix)
+                  </span>
+                </div>
+              </label>
+            ))}
+          </div>
+          {formData.option_ids.length > 0 && (
+            <p className="text-sm text-green-600 mt-2">
+              ✅ {formData.option_ids.length} option(s) sélectionnée(s)
+            </p>
+          )}
         </div>
 
         <div className="flex items-center space-x-6">
