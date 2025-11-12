@@ -63,3 +63,4 @@ class OrderCreate(BaseModel):
 
 class OrderStatusUpdate(BaseModel):
     status: str
+    cancellation_reason: Optional[str] = None
