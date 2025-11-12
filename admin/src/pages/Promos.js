@@ -61,7 +61,10 @@ export const Promos = () => {
       <div className="p-8">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-bold">{promos.length} promotions</h3>
-          <Button><Plus className="w-4 h-4 mr-2" />Créer une promo</Button>
+          <Button onClick={() => setShowModal(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Créer une promo
+          </Button>
         </div>
 
         {promos.length === 0 ? (
