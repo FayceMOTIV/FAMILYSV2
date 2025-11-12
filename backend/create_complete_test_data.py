@@ -72,7 +72,7 @@ async def create_complete_test_data():
             "restaurant_id": restaurant_id,
             "name": "🥗 Salades",
             "description": "Salades fraîches et complètes",
-            "image_url": "/uploads/categories/salads.jpg",
+            "image": "/uploads/categories/salads.jpg",
             "display_order": 5,
             "is_active": True,
             "created_at": datetime.now(timezone.utc).isoformat()
