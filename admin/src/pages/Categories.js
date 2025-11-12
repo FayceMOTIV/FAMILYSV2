@@ -19,9 +19,10 @@ export const Categories = () => {
   const loadCategories = async () => {
     try {
       const response = await categoriesAPI.getAll();
-      setCategories(response.data);
+      setCategories(response.data.categories || []);
     } catch (error) {
       console.error('Failed to load categories:', error);
+      setCategories([]);
     } finally {
       setLoading(false);
     }
