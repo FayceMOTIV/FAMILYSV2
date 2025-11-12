@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { Button } from './Button';
 import { Input, Label } from './Input';
+import { ImageUpload } from './ImageUpload';
 import { categoriesAPI } from '../services/api';
 
 export const CategoryModal = ({ isOpen, onClose, category, onSuccess }) => {
