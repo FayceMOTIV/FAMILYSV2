@@ -14,6 +14,7 @@ export const OrdersManagement = () => {
   const [loading, setLoading] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [previousNewOrdersCount, setPreviousNewOrdersCount] = useState(0);
 
   const tabs = [
     { id: 'new', label: 'Nouvelles commandes', icon: Package, color: 'bg-red-500', status: 'pending' },
