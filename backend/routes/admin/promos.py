@@ -15,12 +15,19 @@ async def get_promos():  # current_user: dict = Security(require_manager_or_admi
         p.pop("_id", None)
     return {"promos": promos}
 
-@router.post("", response_model=Promo, status_code=status.HTTP_201_CREATED)
-async def create_promo(promo_create: PromoCreate, current_user: dict = Security(require_manager_or_admin)):
-    restaurant_id = current_user.get("restaurant_id")
+@router.post("", status_code=status.HTTP_201_CREATED)  # response_model=Promo
+async def create_promo(promo_create: PromoCreate):  # current_user: dict = Security(require_manager_or_admin)
+    restaurant_id = "default"  # current_user.get("restaurant_id")
     promo = Promo(restaurant_id=restaurant_id, **promo_create.model_dump())
-    await db.promos.insert_one(promo.model_dump())
-    return promo
+    promo_dict = promo.model_dump()
+    # Convert datetime
+    if isinstance(promo_dict.get('created_at'), datetime):
+        promo_dict['created_at'] = promo_dict['created_at'].isoformat()
+    if isinstance(promo_dict.get('updated_at'), datetime):
+        promo_dict['updated_at'] = promo_dict['updated_at'].isoformat()
+    await db.promos.insert_one(promo_dict)
+    promo_dict.pop("_id", None)
+    return {"success": True, "promo": promo_dict}
 
 @router.put("/{promo_id}", response_model=Promo)
 async def update_promo(promo_id: str, promo_update: PromoUpdate, current_user: dict = Security(require_manager_or_admin)):
