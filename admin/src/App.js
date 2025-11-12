@@ -16,6 +16,7 @@ import { Reservations } from './pages/Reservations';
 import { AICampaigns } from './pages/AICampaigns';
 import { CampaignHistory } from './pages/CampaignHistory';
 import { AIMarketingSettings } from './pages/AIMarketingSettings';
+import { Options } from './pages/Options';
 
 function App() {
   return (
