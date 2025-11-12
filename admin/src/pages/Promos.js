@@ -9,6 +9,8 @@ import { Plus, Tag, Edit2, Trash2, ToggleLeft, ToggleRight } from 'lucide-react'
 export const Promos = () => {
   const [promos, setPromos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [editingPromo, setEditingPromo] = useState(null);
 
   useEffect(() => {
     loadPromos();
