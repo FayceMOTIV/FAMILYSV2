@@ -158,7 +158,6 @@ export const Options = () => {
 
       {/* Modal Création/Édition */}
       <OptionModal
-      <OptionModal
         isOpen={showModal}
         onClose={() => {
           setShowModal(false);
