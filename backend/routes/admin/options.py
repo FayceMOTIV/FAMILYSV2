@@ -90,7 +90,7 @@ async def get_option(option_id: str):
     """Get single option."""
     restaurant_id = "default"
     
-    option = await db.product_options.find_one({
+    option = await db.options.find_one({
         "id": option_id,
         "restaurant_id": restaurant_id
     }, {"_id": 0})
