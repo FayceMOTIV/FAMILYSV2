@@ -66,9 +66,18 @@ export const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
   const loadCategories = async () => {
     try {
       const response = await categoriesAPI.getAll();
-      setCategories(response.data);
+      setCategories(response.data.categories || []);
     } catch (error) {
       console.error('Failed to load categories:', error);
+    }
+  };
+
+  const loadOptions = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/v1/admin/options`);
+      setOptions(response.data.options || []);
+    } catch (error) {
+      console.error('Failed to load options:', error);
     }
   };
 
