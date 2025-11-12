@@ -15,10 +15,10 @@ async def get_categories():  # current_user: dict = Security(require_manager_or_
     restaurant_id = "default"  # current_user.get("restaurant_id")
     
     categories = await db.categories.find(
-        {"restaurant_id": restaurant_id}
+        {"restaurant_id": restaurant_id}, {"_id": 0}
     ).sort("order", 1).to_list(length=None)
     
-    return [Category(**c) for c in categories]
+    return {"categories": categories}
 
 @router.post("", response_model=Category, status_code=status.HTTP_201_CREATED)
 async def create_category(
