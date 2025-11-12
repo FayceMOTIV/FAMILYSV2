@@ -493,6 +493,17 @@ export const OrdersManagement = () => {
         order={selectedOrder}
         onSuccess={handlePaymentSuccess}
       />
+
+      {/* Modal Annulation */}
+      <CancellationModal
+        isOpen={showCancellationModal}
+        onClose={() => {
+          setShowCancellationModal(false);
+          setSelectedOrder(null);
+        }}
+        order={selectedOrder}
+        onConfirm={handleCancelOrder}
+      />
     </div>
   );
 };
