@@ -39,6 +39,15 @@ async def send_notification(notif_id: str):  # current_user: dict = Security(req
     
     # Simulate sending (real implementation would use FCM, SendGrid, etc.)
     await db.notifications.update_one(
+        {"id": notif_id},
+        {"$set": {
+            "status": "sent",
+            "sent_at": datetime.now(timezone.utc).isoformat(),
+            "sent_count": 1  # Mock
+        }}
+    )
+    
+    return {"message": "Notification sent", "sent_count": 1}
 
 @router.put("/{notif_id}")
 async def update_notification(notif_id: str, notif_update: NotificationUpdate):
@@ -63,16 +72,6 @@ async def update_notification(notif_id: str, notif_update: NotificationUpdate):
     
     updated = await db.notifications.find_one({"id": notif_id}, {"_id": 0})
     return {"success": True, "notification": updated}
-
-        {"id": notif_id},
-        {"$set": {
-            "status": "sent",
-            "sent_at": datetime.now(timezone.utc).isoformat(),
-            "sent_count": 1  # Mock
-        }}
-    )
-    
-    return {"message": "Notification sent", "sent_count": 1}
 
 @router.delete("/{notif_id}")
 async def delete_notification(notif_id: str):  # current_user: dict = Security(require_manager_or_admin)
