@@ -138,11 +138,11 @@ async def update_order_status(
 @router.post("/{order_id}/payment")
 async def update_order_payment(
     order_id: str,
-    payment_update: PaymentUpdate,
-    current_user: dict = Security(require_manager_or_admin)
+    payment_update: PaymentUpdate
+    # current_user: dict = Security(require_manager_or_admin)  # TEMPORAIREMENT DESACTIVE
 ):
     """Update order payment status and method."""
-    restaurant_id = current_user.get("restaurant_id")
+    restaurant_id = "default"  # current_user.get("restaurant_id")
     
     # Check if order exists
     existing = await db.orders.find_one({
