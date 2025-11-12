@@ -77,7 +77,7 @@ export const Products = () => {
               <h4 className="font-bold text-lg mb-2">{product.name}</h4>
               <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
               <div className="flex items-center justify-between">
-                <span className="text-2xl font-black text-primary">{product.base_price.toFixed(2)}€</span>
+                <span className="text-2xl font-black text-primary">{(product.price || product.base_price || 0).toFixed(2)}€</span>
                 <div className="flex space-x-2">
                   <Button size="sm" variant="outline" onClick={() => {
                     setEditingProduct(product);
