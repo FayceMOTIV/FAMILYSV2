@@ -11,6 +11,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'https://family-manage-2.previe
 export const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [options, setOptions] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
@@ -20,12 +21,14 @@ export const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
     vat_rate: '10',
     image_url: '',
     tags: [],
+    option_ids: [],
     is_available: true,
     is_out_of_stock: false,
   });
 
   useEffect(() => {
     loadCategories();
+    loadOptions();
   }, []);
 
   useEffect(() => {
