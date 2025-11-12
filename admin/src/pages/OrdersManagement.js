@@ -27,7 +27,8 @@ export const OrdersManagement = () => {
 
   useEffect(() => {
     loadOrders();
-  }, [activeTab]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Polling pour nouvelles commandes (toutes les 10 secondes)
   useEffect(() => {
