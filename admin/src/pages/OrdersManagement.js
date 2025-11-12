@@ -45,7 +45,14 @@ export const OrdersManagement = () => {
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
       await axios.patch(`${API_URL}/api/v1/admin/orders/${orderId}/status`, { status: newStatus });
-      loadOrders();
+      
+      // Basculer automatiquement vers l'onglet correspondant au nouveau statut
+      const newTab = tabs.find(t => t.status === newStatus);
+      if (newTab) {
+        setActiveTab(newTab.id);
+      } else {
+        loadOrders();
+      }
     } catch (error) {
       console.error('Erreur mise à jour statut:', error);
       alert('Erreur lors de la mise à jour du statut');
