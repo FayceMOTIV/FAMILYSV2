@@ -9,6 +9,9 @@ import { Bell, Plus, Send, Clock, Check, Edit2, Trash2, Calendar } from 'lucide-
 export const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [editingNotification, setEditingNotification] = useState(null);
+  const [activeTab, setActiveTab] = useState('all');  // 'all', 'scheduled', 'sent'
 
   useEffect(() => {
     loadNotifications();
