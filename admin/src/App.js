@@ -5,7 +5,7 @@ import { Layout } from './components/Layout';
 import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { Products } from './pages/Products';
-import { Orders } from './pages/Orders';
+import { OrdersManagement } from './pages/OrdersManagement';
 import { Categories } from './pages/Categories';
 import { Settings } from './pages/Settings';
 import { AIAssistant } from './pages/AIAssistant';
