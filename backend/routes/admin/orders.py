@@ -14,6 +14,8 @@ from pydantic import BaseModel
 class PaymentUpdate(BaseModel):
     payment_method: str
     payment_status: str
+    amount_received: Optional[float] = None
+    change_given: Optional[float] = None
 
 
 @router.get("")  # response_model=List[Order]  # TEMPORAIREMENT SANS VALIDATION
