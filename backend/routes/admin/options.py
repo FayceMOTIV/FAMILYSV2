@@ -72,7 +72,7 @@ async def delete_option(option_id: str):
     """Delete product option."""
     restaurant_id = "default"
     
-    result = await db.product_options.delete_one({
+    result = await db.options.delete_one({
         "id": option_id,
         "restaurant_id": restaurant_id
     })
