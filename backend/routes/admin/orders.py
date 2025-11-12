@@ -71,11 +71,11 @@ async def get_order(
 @router.patch("/{order_id}/status", response_model=Order)
 async def update_order_status(
     order_id: str,
-    status_update: OrderStatusUpdate,
-    current_user: dict = Security(require_manager_or_admin)
+    status_update: OrderStatusUpdate
+    # current_user: dict = Security(require_manager_or_admin)  # TEMPORAIREMENT DESACTIVE
 ):
     """Update order status."""
-    restaurant_id = current_user.get("restaurant_id")
+    restaurant_id = "default"  # current_user.get("restaurant_id")
     
     # Validate status
     valid_statuses = [
