@@ -102,31 +102,74 @@ export const Notifications = () => {
           </Button>
         </div>
 
-        {notifications.length === 0 ? (
+        {displayedNotifications.length === 0 ? (
           <Card className="text-center py-12">
             <Bell className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">Aucune notification - Créez-en pour communiquer avec vos clients !</p>
+            <p className="text-gray-500">
+              {activeTab === 'scheduled' 
+                ? 'Aucune notification programmée' 
+                : activeTab === 'sent'
+                ? 'Aucune notification envoyée'
+                : 'Aucune notification - Créez-en pour communiquer avec vos clients !'}
+            </p>
           </Card>
         ) : (
           <div className="space-y-4">
-            {notifications.map((notif) => (
-              <Card key={notif.id}>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h4 className="font-bold mb-1">{notif.title}</h4>
-                    <p className="text-sm text-gray-600 mb-2">{notif.message}</p>
-                    <span className={`text-xs px-2 py-1 rounded ${notif.status === 'sent' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
-                      {notif.status}
-                    </span>
+            {displayedNotifications.map((notif) => {
+              const isScheduled = notif.scheduled_for && new Date(notif.scheduled_for) > now;
+              const scheduledDate = notif.scheduled_for ? new Date(notif.scheduled_for) : null;
+              
+              return (
+                <Card key={notif.id}>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-2xl">{notif.icon || '🔔'}</span>
+                        <h4 className="font-bold">{notif.title}</h4>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-3">{notif.message}</p>
+                      
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {isScheduled ? (
+                          <span className="text-xs px-2 py-1 rounded bg-blue-100 text-blue-700 flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            Programmée: {scheduledDate?.toLocaleString('fr-FR')}
+                          </span>
+                        ) : (
+                          <span className="text-xs px-2 py-1 rounded bg-green-100 text-green-700 flex items-center gap-1">
+                            <Check className="w-3 h-3" />
+                            Envoyée
+                          </span>
+                        )}
+                        
+                        <span className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-700">
+                          {notif.target_type === 'all' ? 'Tous les clients' : notif.target_type}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      {isScheduled && (
+                        <>
+                          <Button size="sm" variant="outline" onClick={() => {
+                            setEditingNotification(notif);
+                            setShowModal(true);
+                          }}>
+                            <Edit2 className="w-4 h-4" />
+                          </Button>
+                          <Button size="sm" onClick={() => handleSend(notif.id)}>
+                            <Send className="w-4 h-4" />
+                          </Button>
+                        </>
+                      )}
+                      <Button size="sm" variant="danger" onClick={() => handleDelete(notif.id)}>
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
-                  {notif.status === 'draft' && (
-                    <Button size="sm" onClick={() => handleSend(notif.id)}>
-                      <Send className="w-4 h-4 mr-1" />Envoyer
-                    </Button>
-                  )}
-                </div>
-              </Card>
-            ))}
+                </Card>
+              );
+            })}
           </div>
         )}
       </div>
