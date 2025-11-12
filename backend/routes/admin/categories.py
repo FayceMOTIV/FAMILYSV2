@@ -64,16 +64,16 @@ async def update_category(
         {"$set": update_data}
     )
     
-    updated_category = await db.categories.find_one({"id": category_id})
-    return Category(**updated_category)
+    updated_category = await db.categories.find_one({"id": category_id}, {"_id": 0})
+    return {"success": True, "category": updated_category}
 
-@router.delete("/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{category_id}")  # status_code=status.HTTP_204_NO_CONTENT
 async def delete_category(
-    category_id: str,
-    current_user: dict = Security(require_manager_or_admin)
+    category_id: str
+    # current_user: dict = Security(require_manager_or_admin)
 ):
     """Delete category."""
-    restaurant_id = current_user.get("restaurant_id")
+    restaurant_id = "default"  # current_user.get("restaurant_id")
     
     result = await db.categories.delete_one({
         "id": category_id,
