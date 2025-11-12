@@ -116,6 +116,21 @@ async def update_order_status(
         }
     )
     
+    # Envoyer notification selon le statut
+    notification_map = {
+        "preparing": "order_preparing",
+        "ready": "order_ready",
+        "delivering": "order_delivering",
+        "completed": "order_completed"
+    }
+    
+    if status_update.status in notification_map:
+        await send_order_notification(
+            order_id=order_id,
+            notification_type=notification_map[status_update.status],
+            restaurant_id=restaurant_id
+        )
+    
     # Get updated order
     updated_order = await db.orders.find_one({"id": order_id})
     return Order(**updated_order)
