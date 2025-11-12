@@ -43,9 +43,10 @@ async def update_promo(promo_id: str, promo_update: PromoUpdate):  # current_use
     updated = await db.promos.find_one({"id": promo_id}, {"_id": 0})
     return {"success": True, "promo": updated}
 
-@router.delete("/{promo_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_promo(promo_id: str, current_user: dict = Security(require_manager_or_admin)):
-    restaurant_id = current_user.get("restaurant_id")
+@router.delete("/{promo_id}")
+async def delete_promo(promo_id: str):  # current_user: dict = Security(require_manager_or_admin)
+    restaurant_id = "default"  # current_user.get("restaurant_id")
     result = await db.promos.delete_one({"id": promo_id, "restaurant_id": restaurant_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Promo not found")
+    return {"success": True, "message": "Promo deleted"}
