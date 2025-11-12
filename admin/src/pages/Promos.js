@@ -73,18 +73,65 @@ export const Promos = () => {
             <p className="text-gray-500">Aucune promotion - Créez-en une ou utilisez l'IA pour générer des suggestions !</p>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {promos.map((promo) => (
               <Card key={promo.id}>
-                <h4 className="font-bold text-lg mb-2">{promo.title}</h4>
-                <p className="text-sm text-gray-600 mb-3">{promo.description}</p>
-                <div className="flex items-center justify-between">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <code className="text-lg font-bold bg-gray-100 px-3 py-1 rounded">
+                        {promo.code}
+                      </code>
+                      <span className={`text-xs px-2 py-1 rounded ${promo.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                        {promo.is_active ? '✅ Active' : '⏸️ Inactive'}
+                      </span>
+                    </div>
+                    <h4 className="font-medium text-gray-700">{promo.description}</h4>
+                  </div>
                   <span className="text-2xl font-black text-primary">
                     {promo.discount_type === 'percentage' ? `${promo.discount_value}%` : `${promo.discount_value}€`}
                   </span>
-                  <span className={`text-xs px-2 py-1 rounded ${promo.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
-                    {promo.is_active ? 'Active' : 'Inactive'}
-                  </span>
+                </div>
+                
+                <div className="text-xs text-gray-500 space-y-1 mb-4">
+                  {promo.min_order_amount > 0 && (
+                    <div>💰 Commande minimum: {promo.min_order_amount}€</div>
+                  )}
+                  {promo.usage_count !== undefined && (
+                    <div>📊 Utilisations: {promo.usage_count}</div>
+                  )}
+                  {promo.valid_until && (
+                    <div>📅 Valide jusqu'au: {new Date(promo.valid_until).toLocaleDateString('fr-FR')}</div>
+                  )}
+                </div>
+
+                <div className="flex gap-2">
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={() => handleToggle(promo)}
+                    className="flex-1"
+                  >
+                    {promo.is_active ? <ToggleRight className="w-4 h-4 mr-1" /> : <ToggleLeft className="w-4 h-4 mr-1" />}
+                    {promo.is_active ? 'Désactiver' : 'Activer'}
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={() => {
+                      setEditingPromo(promo);
+                      setShowModal(true);
+                    }}
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="danger" 
+                    onClick={() => handleDelete(promo.id)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </div>
               </Card>
             ))}
