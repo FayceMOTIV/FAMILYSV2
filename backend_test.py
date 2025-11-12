@@ -298,15 +298,15 @@ class BackendTester:
             return False, None
 
     async def test_payment_recording(self, order_id: str) -> bool:
-        """Test payment recording with different payment methods."""
-        test_name = "Payment Recording"
+        """Test payment recording with amount_received and change_given fields."""
+        test_name = "Payment Recording with Amount Details"
         
         if not order_id:
             self.log_result(test_name, False, "No order ID available")
             return False
         
         try:
-            # Test cash payment with change
+            # Test cash payment with change - including amount_received and change_given
             payment_data = {
                 "payment_method": "cash",
                 "payment_status": "paid",
@@ -323,8 +323,42 @@ class BackendTester:
                 if response.status == 200:
                     data = await response.json()
                     if data.get("success"):
-                        self.log_result(test_name, True, f"Cash payment recorded successfully for order {order_id}")
-                        return True
+                        # Verify the payment details were saved by getting the order
+                        async with self.session.get(
+                            f"{self.base_url}/api/v1/admin/orders",
+                            headers={"Content-Type": "application/json"}
+                        ) as get_response:
+                            
+                            if get_response.status == 200:
+                                orders_data = await get_response.json()
+                                updated_order = None
+                                for order in orders_data.get("orders", []):
+                                    if order.get("id") == order_id:
+                                        updated_order = order
+                                        break
+                                
+                                if updated_order:
+                                    payment_method = updated_order.get("payment_method")
+                                    payment_status = updated_order.get("payment_status")
+                                    amount_received = updated_order.get("amount_received")
+                                    change_given = updated_order.get("change_given")
+                                    
+                                    if (payment_method == "cash" and payment_status == "paid"):
+                                        if amount_received is not None and change_given is not None:
+                                            self.log_result(test_name, True, f"Payment recorded with all details: method={payment_method}, status={payment_status}, amount_received={amount_received}, change_given={change_given}")
+                                            return True
+                                        else:
+                                            self.log_result(test_name, False, f"Payment recorded but amount_received and change_given fields missing. Only method={payment_method}, status={payment_status} saved")
+                                            return False
+                                    else:
+                                        self.log_result(test_name, False, f"Payment details not saved correctly: method={payment_method}, status={payment_status}")
+                                        return False
+                                else:
+                                    self.log_result(test_name, False, f"Could not find updated order {order_id}")
+                                    return False
+                            else:
+                                self.log_result(test_name, False, f"Could not verify payment details: HTTP {get_response.status}")
+                                return False
                     else:
                         self.log_result(test_name, False, "Payment recording failed", data)
                         return False
