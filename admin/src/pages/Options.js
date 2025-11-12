@@ -206,8 +206,8 @@ export const Options = () => {
       </div>
 
       {/* Modal Création/Édition */}
-      {showModal && (
-        <Modal
+      <OptionModal
+        isOpen={showModal}
           onClose={() => setShowModal(false)}
           title={editingOption ? '✏️ Modifier l\'option' : '➕ Nouvelle option'}
         >
