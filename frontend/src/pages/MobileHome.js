@@ -6,6 +6,7 @@ import { Button } from '../components/ui/button';
 import { useApp } from '../context/AppContext';
 import CountdownBanner from '../components/CountdownBanner';
 import PromotionBanner from '../components/PromotionBanner';
+import PromoBadge from '../components/PromoBadge';
 
 const MobileHome = () => {
   const navigate = useNavigate();
