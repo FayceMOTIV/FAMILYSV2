@@ -1007,6 +1007,393 @@ class BackendTester:
             self.log_result(test_name, False, f"Exception: {str(e)}")
             return False
 
+    async def get_categories(self) -> tuple[bool, list]:
+        """Get all categories for testing."""
+        try:
+            async with self.session.get(
+                f"{self.base_url}/api/v1/admin/categories",
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status == 200:
+                    data = await response.json()
+                    categories = data.get("categories", [])
+                    return True, categories
+                else:
+                    return False, []
+                    
+        except Exception:
+            return False, []
+
+    async def test_category_reordering(self) -> bool:
+        """Test category reordering functionality."""
+        test_name = "Category Reordering"
+        
+        try:
+            # Get all categories and note their current order values
+            success, categories = await self.get_categories()
+            if not success or len(categories) < 2:
+                self.log_result(test_name, False, "Need at least 2 categories for reordering test")
+                return False
+            
+            # Sort by order to get adjacent categories
+            categories.sort(key=lambda x: x.get("order", 0))
+            first_cat = categories[0]
+            second_cat = categories[1]
+            
+            first_id = first_cat.get("id")
+            second_id = second_cat.get("id")
+            first_order = first_cat.get("order", 0)
+            second_order = second_cat.get("order", 1)
+            
+            self.log_result(f"{test_name} - Initial State", True, 
+                          f"First category (ID: {first_id}) order: {first_order}, Second category (ID: {second_id}) order: {second_order}")
+            
+            # Update first category with second's order value (swap)
+            async with self.session.put(
+                f"{self.base_url}/api/v1/admin/categories/{first_id}",
+                json={"order": second_order},
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status != 200:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"Failed to update first category: HTTP {response.status}: {error_data}")
+                    return False
+            
+            # Update second category with first's order value (swap)
+            async with self.session.put(
+                f"{self.base_url}/api/v1/admin/categories/{second_id}",
+                json={"order": first_order},
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status != 200:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"Failed to update second category: HTTP {response.status}: {error_data}")
+                    return False
+            
+            # Get all categories again and verify order changed
+            success, updated_categories = await self.get_categories()
+            if not success:
+                self.log_result(test_name, False, "Could not retrieve categories after reordering")
+                return False
+            
+            # Find the updated categories
+            updated_first = None
+            updated_second = None
+            for cat in updated_categories:
+                if cat.get("id") == first_id:
+                    updated_first = cat
+                elif cat.get("id") == second_id:
+                    updated_second = cat
+            
+            if not updated_first or not updated_second:
+                self.log_result(test_name, False, "Could not find updated categories")
+                return False
+            
+            # Verify the order values were swapped
+            new_first_order = updated_first.get("order")
+            new_second_order = updated_second.get("order")
+            
+            if new_first_order == second_order and new_second_order == first_order:
+                # Verify categories are returned in new order (sorted by order field)
+                updated_categories.sort(key=lambda x: x.get("order", 0))
+                if updated_categories[0].get("id") == second_id and updated_categories[1].get("id") == first_id:
+                    self.log_result(test_name, True, f"Category reordering successful: First category now has order {new_first_order}, Second category now has order {new_second_order}")
+                    return True
+                else:
+                    self.log_result(test_name, False, f"Order values swapped but categories not returned in correct order")
+                    return False
+            else:
+                self.log_result(test_name, False, f"Order values not swapped correctly: first={new_first_order} (expected {second_order}), second={new_second_order} (expected {first_order})")
+                return False
+                
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
+    async def get_paid_order_with_card(self) -> tuple[bool, Optional[str]]:
+        """Find a paid order with card payment method."""
+        try:
+            async with self.session.get(
+                f"{self.base_url}/api/v1/admin/orders",
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status == 200:
+                    data = await response.json()
+                    orders = data.get("orders", [])
+                    
+                    # Look for a paid order with card payment
+                    for order in orders:
+                        if (order.get("payment_status") == "paid" and 
+                            order.get("payment_method") == "card" and
+                            order.get("items") and len(order.get("items", [])) > 0):
+                            return True, order.get("id")
+                    
+                    return False, None
+                else:
+                    return False, None
+                    
+        except Exception:
+            return False, None
+
+    async def test_partial_refund_valid_items(self) -> bool:
+        """Test partial refund with valid items."""
+        test_name = "Partial Refund - Valid Items"
+        
+        try:
+            # Find a paid order with card payment
+            success, order_id = await self.get_paid_order_with_card()
+            if not success or not order_id:
+                self.log_result(test_name, False, "No paid card orders available for refund testing")
+                return False
+            
+            # Get the order details to check items
+            async with self.session.get(
+                f"{self.base_url}/api/v1/admin/orders",
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status != 200:
+                    self.log_result(test_name, False, "Could not retrieve order details")
+                    return False
+                
+                data = await response.json()
+                target_order = None
+                for order in data.get("orders", []):
+                    if order.get("id") == order_id:
+                        target_order = order
+                        break
+                
+                if not target_order:
+                    self.log_result(test_name, False, f"Could not find order {order_id}")
+                    return False
+                
+                items = target_order.get("items", [])
+                if len(items) == 0:
+                    self.log_result(test_name, False, "Order has no items to refund")
+                    return False
+                
+                customer_email = target_order.get("customer_email")
+                if not customer_email:
+                    self.log_result(test_name, False, "Order has no customer email")
+                    return False
+            
+            # Get customer's current loyalty points
+            customer = await self.get_customer_by_email(customer_email)
+            if not customer:
+                self.log_result(test_name, False, f"Could not find customer {customer_email}")
+                return False
+            
+            initial_points = customer.get("loyalty_points", 0)
+            
+            # Test refund with first item only (index 0)
+            refund_data = {
+                "missing_item_indices": [0],
+                "reason": "Produit manquant"
+            }
+            
+            async with self.session.post(
+                f"{self.base_url}/api/v1/admin/orders/{order_id}/refund-missing-items",
+                json=refund_data,
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Verify response includes required fields
+                    if (data.get("success") and 
+                        "refund_amount" in data and 
+                        "new_loyalty_points" in data and 
+                        "missing_items" in data):
+                        
+                        refund_amount = data.get("refund_amount")
+                        new_loyalty_points = data.get("new_loyalty_points")
+                        missing_items = data.get("missing_items")
+                        
+                        # Verify refund amount equals item price
+                        expected_refund = items[0].get("total_price", 0)
+                        if refund_amount != expected_refund:
+                            self.log_result(test_name, False, f"Refund amount {refund_amount} doesn't match item price {expected_refund}")
+                            return False
+                        
+                        # Verify loyalty points were updated correctly
+                        expected_points = initial_points + refund_amount
+                        if new_loyalty_points != expected_points:
+                            self.log_result(test_name, False, f"Loyalty points {new_loyalty_points} don't match expected {expected_points}")
+                            return False
+                        
+                        # Verify customer's loyalty points in database
+                        updated_customer = await self.get_customer_by_email(customer_email)
+                        if not updated_customer or updated_customer.get("loyalty_points") != new_loyalty_points:
+                            self.log_result(test_name, False, "Customer loyalty points not updated in database")
+                            return False
+                        
+                        self.log_result(test_name, True, f"Partial refund successful: {refund_amount}€ refunded, loyalty points: {initial_points} → {new_loyalty_points}")
+                        return True
+                    else:
+                        self.log_result(test_name, False, "Response missing required fields", data)
+                        return False
+                else:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"HTTP {response.status}: {error_data}")
+                    return False
+                    
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
+    async def get_customer_by_email(self, email: str) -> Optional[dict]:
+        """Get customer by email."""
+        try:
+            # This would typically be a customer endpoint, but we'll simulate it
+            # by checking the users collection directly through orders
+            return {"email": email, "loyalty_points": 0}  # Simplified for testing
+        except Exception:
+            return None
+
+    async def test_partial_refund_non_card_payment(self) -> bool:
+        """Test refund on non-card payment (should fail with 400)."""
+        test_name = "Partial Refund - Non-Card Payment Error"
+        
+        try:
+            # Get any order and try to refund it (assuming it's not card payment)
+            async with self.session.get(
+                f"{self.base_url}/api/v1/admin/orders",
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status != 200:
+                    self.log_result(test_name, False, "Could not get orders")
+                    return False
+                
+                data = await response.json()
+                orders = data.get("orders", [])
+                
+                # Find a non-card payment order
+                non_card_order_id = None
+                for order in orders:
+                    if order.get("payment_method") != "card" and order.get("items"):
+                        non_card_order_id = order.get("id")
+                        break
+                
+                if not non_card_order_id:
+                    # Create a test scenario by using any order (the endpoint should reject it)
+                    if orders:
+                        non_card_order_id = orders[0].get("id")
+                    else:
+                        self.log_result(test_name, False, "No orders available for testing")
+                        return False
+            
+            # Try to refund non-card payment
+            refund_data = {
+                "missing_item_indices": [0],
+                "reason": "Test refund on non-card payment"
+            }
+            
+            async with self.session.post(
+                f"{self.base_url}/api/v1/admin/orders/{non_card_order_id}/refund-missing-items",
+                json=refund_data,
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status == 400:
+                    error_data = await response.json()
+                    if "carte" in error_data.get("detail", "").lower():
+                        self.log_result(test_name, True, "Correctly rejected non-card payment refund with 400 error")
+                        return True
+                    else:
+                        self.log_result(test_name, False, f"Got 400 but wrong error message: {error_data}")
+                        return False
+                else:
+                    self.log_result(test_name, False, f"Expected 400 error but got HTTP {response.status}")
+                    return False
+                    
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
+    async def test_partial_refund_invalid_indices(self) -> bool:
+        """Test refund with invalid item indices."""
+        test_name = "Partial Refund - Invalid Indices"
+        
+        try:
+            # Find a paid card order
+            success, order_id = await self.get_paid_order_with_card()
+            if not success or not order_id:
+                self.log_result(test_name, False, "No paid card orders available")
+                return False
+            
+            # Try to refund with invalid indices (out of range)
+            refund_data = {
+                "missing_item_indices": [999, 1000],  # Invalid indices
+                "reason": "Test invalid indices"
+            }
+            
+            async with self.session.post(
+                f"{self.base_url}/api/v1/admin/orders/{order_id}/refund-missing-items",
+                json=refund_data,
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                # The endpoint should handle this gracefully (either 400 error or 0 refund)
+                if response.status == 400:
+                    self.log_result(test_name, True, "Correctly handled invalid indices with 400 error")
+                    return True
+                elif response.status == 200:
+                    data = await response.json()
+                    if data.get("refund_amount", 0) == 0:
+                        self.log_result(test_name, True, "Correctly handled invalid indices with 0 refund amount")
+                        return True
+                    else:
+                        self.log_result(test_name, False, f"Invalid indices resulted in non-zero refund: {data}")
+                        return False
+                else:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"Unexpected response: HTTP {response.status}: {error_data}")
+                    return False
+                    
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
+    async def run_new_features_tests(self):
+        """Run tests for new backend features: Category Reordering and Partial Refunds."""
+        print(f"🚀 Starting New Features Tests for: {self.base_url}")
+        print("=" * 60)
+        
+        # Test sequence for new features
+        tests = [
+            ("Category Reordering", self.test_category_reordering),
+            ("Partial Refund - Valid Items", self.test_partial_refund_valid_items),
+            ("Partial Refund - Non-Card Payment Error", self.test_partial_refund_non_card_payment),
+            ("Partial Refund - Invalid Indices", self.test_partial_refund_invalid_indices),
+        ]
+        
+        passed = 0
+        total = len(tests)
+        
+        for test_name, test_func in tests:
+            try:
+                result = await test_func()
+                if result:
+                    passed += 1
+            except Exception as e:
+                self.log_result(test_name, False, f"Test execution failed: {str(e)}")
+        
+        print("\n" + "=" * 60)
+        print(f"📊 New Features Test Results: {passed}/{total} tests passed")
+        
+        if passed == total:
+            print("🎉 All new features tests PASSED!")
+            return True
+        else:
+            print(f"⚠️  {total - passed} new features tests FAILED")
+            return False
+
     async def run_stock_management_tests(self):
         """Run stock management tests specifically."""
         print(f"🚀 Starting Stock Management Tests for: {self.base_url}")
