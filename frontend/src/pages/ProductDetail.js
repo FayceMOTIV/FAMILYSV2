@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Star, ShoppingBag, ChevronLeft, Plus, Minus } from 'lucide-react';
-import { products, productOptions } from '../mockData';
+import { Star, ShoppingBag, ChevronLeft, Plus, Minus, AlertCircle } from 'lucide-react';
+import { productsAPI, optionsAPI } from '../services/api';
 import { useApp } from '../context/AppContext';
 import { Button } from '../components/ui/button';
 import { toast } from '../hooks/use-toast';
@@ -13,13 +13,38 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const { addToCart, toggleFavorite, isFavorite } = useApp();
 
-  const product = products.find(p => p.slug === slug);
-  const options = productOptions[product?.id] || [];
-
+  const [product, setProduct] = useState(null);
+  const [options, setOptions] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [selectedOptions, setSelectedOptions] = useState({});
   const [productNotes, setProductNotes] = useState('');
   const [showAnimation, setShowAnimation] = useState(false);
+
+  // Load product and options from API
+  useEffect(() => {
+    const loadProduct = async () => {
+      try {
+        const productData = await productsAPI.getBySlug(slug);
+        setProduct(productData);
+        
+        // Load options if product has option_ids
+        if (productData.option_ids && productData.option_ids.length > 0) {
+          const optionsData = await optionsAPI.getAll();
+          const productOptions = optionsData.options.filter(opt => 
+            productData.option_ids.includes(opt.id)
+          );
+          setOptions(productOptions);
+        }
+      } catch (error) {
+        console.error('Error loading product:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadProduct();
+  }, [slug]);
 
   if (!product) {
     return (
