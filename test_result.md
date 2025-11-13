@@ -366,12 +366,11 @@ frontend:
 metadata:
   created_by: "testing_agent"
   version: "1.0"
-  test_sequence: 2
+  test_sequence: 3
 
 test_plan:
   current_focus:
-    - "Payment Processing System"
-    - "Order Cancellation with Reason"
+    - "Granular Stock Management System"
   stuck_tasks:
     - "AI Sales Analysis"
     - "AI Promo Suggestion"
