@@ -45,6 +45,27 @@ export const Options = () => {
     }
   };
 
+  const handleDuplicateOption = async (option) => {
+    if (!window.confirm(`Dupliquer l'option "${option.name}" ?`)) return;
+    
+    try {
+      const duplicatedOption = {
+        ...option,
+        name: `${option.name} (copie)`,
+      };
+      
+      // Remove the id so backend creates a new one
+      delete duplicatedOption.id;
+      
+      await axios.post(`${API_URL}/api/v1/admin/options`, duplicatedOption);
+      await loadOptions();
+      alert('✅ Option dupliquée avec succès !');
+    } catch (error) {
+      console.error('Erreur duplication:', error);
+      alert('Erreur lors de la duplication');
+    }
+  };
+
 
   return (
     <div>
