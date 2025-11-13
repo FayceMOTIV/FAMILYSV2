@@ -26,8 +26,8 @@ async def get_settings():  # current_user: dict = Security(require_admin)
     return RestaurantSettings(**settings)
 
 @router.put("", response_model=RestaurantSettings)
-async def update_settings(settings_update: SettingsUpdate, current_user: dict = Security(require_admin)):
-    restaurant_id = current_user.get("restaurant_id")
+async def update_settings(settings_update: SettingsUpdate):  # current_user: dict = Security(require_admin)
+    restaurant_id = "default"  # current_user.get("restaurant_id")
     
     update_data = settings_update.model_dump(exclude_unset=True)
     update_data["updated_at"] = datetime.now(timezone.utc)
