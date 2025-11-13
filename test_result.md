@@ -539,15 +539,18 @@ test_plan:
 
   - task: "Advanced Promotions Engine V2"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/routes/admin/promotions.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Implemented complete promotions engine overhaul with 15 promotion types: BOGO, PERCENT_ITEM, PERCENT_CATEGORY, FIXED_ITEM, FIXED_CATEGORY, CONDITIONAL_DISCOUNT, THRESHOLD, SHIPPING_FREE, NEW_CUSTOMER, INACTIVE_CUSTOMER, LOYALTY_MULTIPLIER, HAPPY_HOUR, FLASH, SEASONAL, PROMO_CODE. Backend includes: 1) New Promotion model with comprehensive fields (models/promotion.py), 2) PromotionEngine service with calculation logic (services/promotion_engine.py), 3) Full CRUD API routes (routes/admin/promotions.py), 4) Simulation endpoint for testing, 5) Analytics endpoints, 6) Calendar view endpoint, 7) Automated test suite (tests/test_promotions.py) with 13 test scenarios. Frontend scaffolded: PromotionsV2.js page, PromotionWizard.js multi-step form, PromotionCalendar.js, PromotionSimulator.js. Need comprehensive backend testing: all CRUD operations, simulation endpoint, promotion calculation logic for all types, priority/stacking system, condition checking (time, date, cart amount, customer type)."
+        - working: true
+        - agent: "testing"
+        - comment: "✅ ADVANCED PROMOTIONS ENGINE V2 WORKS PERFECTLY: Comprehensive testing completed on all promotion endpoints and functionality. 1) CRUD Operations ✅: GET /promotions (list with filters), GET /{id} (single), POST (create), PUT /{id} (update), DELETE /{id} (delete) all working correctly with proper validation and error handling. 2) Automated Test Suite ✅: GET /test/run-all endpoint successfully runs all 14 promotion calculation tests with 100% success rate, testing BOGO, percent item/category, conditional discount, threshold, shipping free, new customer, inactive customer, happy hour, flash, loyalty multiplier, promo code, and priority/stacking logic. 3) Simulation Engine ✅: POST /simulate endpoint correctly applies promotions to sample cart data with proper discount calculations and promotion stacking behavior. 4) Analytics Dashboard ✅: GET /analytics/overview returns comprehensive metrics including active promotions count, usage statistics, revenue tracking, and top performing promotions. 5) Calendar View ✅: GET /calendar endpoint provides properly formatted promotion events for calendar display with date filtering support. 6) Special Scenarios ✅: Successfully tested BOGO creation, Happy Hour with time restrictions (15h-18h), promo code promotions (TEST10), priority system (higher priority applies first), stacking vs non-stackable behavior, and proper ISO date/time serialization. Fixed route ordering issue where /{promotion_id} was conflicting with /calendar endpoint. All 15 promotion types implemented with comprehensive business logic, condition checking, and discount calculations. Promotion engine fully operational for Family's restaurant back office."
 
   - task: "Payment Processing System"
     implemented: true
