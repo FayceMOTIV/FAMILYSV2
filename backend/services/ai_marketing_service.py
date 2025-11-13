@@ -273,26 +273,93 @@ Réponds UNIQUEMENT avec le JSON, rien d'autre."""
                 await asyncio.sleep(retry_delay)
             else:
                 print(f"⚠️ Toutes les tentatives ont échoué, utilisation du fallback")
-        # Fallback: générer une campagne par défaut
-        return [{
+        # Fallback intelligent: générer 3 campagnes basées sur les données
+        fallback_campaigns = []
+        
+        # Campagne 1: Booster le CA si en baisse
+        if data.get("ca_trend") == "baisse":
+            fallback_campaigns.append({
+                "restaurant_id": data["restaurant_id"],
+                "name": "Flash Sale Week-end 🔥",
+                "promo_type_v2": "flash",
+                "product_ids": [],
+                "category_ids": [],
+                "message": "📊 Le CA est en baisse cette semaine (-{:.1f}%). Je propose une offre flash ce week-end pour relancer les ventes ! 🚀".format(abs(data.get("ca_evolution_percent", 0))),
+                "start_date": (datetime.now(timezone.utc) + timedelta(days=2)).strftime("%Y-%m-%d"),
+                "end_date": (datetime.now(timezone.utc) + timedelta(days=3)).strftime("%Y-%m-%d"),
+                "discount_type": "percentage",
+                "discount_value": 15,
+                "start_time": None,
+                "end_time": None,
+                "days_active": ["sat", "sun"],
+                "badge_text": "-15% Flash 🔥",
+                "badge_color": "#FF6B35",
+                "impact_estimate": {
+                    "ca_increase": "+18%",
+                    "difficulty": "facile",
+                    "duration": "2 jours",
+                    "target_customers": 50
+                },
+                "source_promo_analysis": "Basé sur la baisse du CA cette semaine, offre flash pour stimuler les ventes",
+                "status": "pending"
+            })
+        
+        # Campagne 2: Réactiver clients inactifs
+        if data.get("inactive_customers_count", 0) > 10:
+            fallback_campaigns.append({
+                "restaurant_id": data["restaurant_id"],
+                "name": "Retour gagnant 🎁",
+                "promo_type_v2": "inactive_customer",
+                "product_ids": [],
+                "category_ids": [],
+                "message": "👋 Tu as {} clients inactifs ! Offre leur -25% pour les faire revenir. Un client qui revient = fidélité garantie ! 💰".format(data["inactive_customers_count"]),
+                "start_date": (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%Y-%m-%d"),
+                "end_date": (datetime.now(timezone.utc) + timedelta(days=7)).strftime("%Y-%m-%d"),
+                "discount_type": "percentage",
+                "discount_value": 25,
+                "start_time": None,
+                "end_time": None,
+                "days_active": [],
+                "badge_text": "Bon retour -25% 🎁",
+                "badge_color": "#4CAF50",
+                "impact_estimate": {
+                    "ca_increase": "+12%",
+                    "difficulty": "moyen",
+                    "duration": "7 jours",
+                    "target_customers": data["inactive_customers_count"]
+                },
+                "source_promo_analysis": f"Ciblage de {data['inactive_customers_count']} clients inactifs pour réactivation",
+                "status": "pending"
+            })
+        
+        # Campagne 3: Happy Hour pour augmenter le panier moyen
+        fallback_campaigns.append({
             "restaurant_id": data["restaurant_id"],
-            "name": "Offre Week-end Desserts 🍰",
-            "type": "produit",
+            "name": "Happy Hour Burgers 🍔",
+            "promo_type_v2": "happy_hour",
             "product_ids": [],
             "category_ids": [],
-            "message": "👀 Les ventes de desserts peuvent être boostées ! Je te propose une offre -20% ce week-end pour attirer plus de gourmands. 🔥",
-            "start_date": (datetime.now(timezone.utc) + timedelta(days=2)).strftime("%Y-%m-%d"),
-            "end_date": (datetime.now(timezone.utc) + timedelta(days=4)).strftime("%Y-%m-%d"),
+            "message": "⏰ Les après-midis sont calmes ? Lance un Happy Hour 15h-18h sur les burgers pour booster le creux ! 🍔",
+            "start_date": (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%Y-%m-%d"),
+            "end_date": (datetime.now(timezone.utc) + timedelta(days=7)).strftime("%Y-%m-%d"),
             "discount_type": "percentage",
             "discount_value": 20,
-            "target_hours": None,
+            "start_time": "15:00",
+            "end_time": "18:00",
+            "days_active": ["mon", "tue", "wed", "thu", "fri"],
+            "badge_text": "Happy Hour -20% 🍔",
+            "badge_color": "#FFC107",
             "impact_estimate": {
-                "ca_increase": "+15%",
+                "ca_increase": "+14%",
                 "difficulty": "facile",
-                "duration": "3 jours"
+                "duration": "7 jours",
+                "target_customers": 30
             },
+            "source_promo_analysis": "Happy Hour pour remplir les horaires creux de l'après-midi",
             "status": "pending"
-        }]
+        })
+        
+        return fallback_campaigns[:max_suggestions]
 
 async def calculate_campaign_results(campaign_id: str, restaurant_id: str) -> Dict:
     """Calcule les résultats réels d'une campagne validée."""
