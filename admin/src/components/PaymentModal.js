@@ -177,20 +177,25 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
               min="0"
               value={amountReceived}
               onChange={(e) => setAmountReceived(e.target.value)}
-              className="flex-1 px-4 py-3 border rounded-lg text-lg"
+              disabled={isPaymentLocked}
+              className={`flex-1 px-4 py-3 border rounded-lg text-lg ${isPaymentLocked ? 'bg-gray-100 cursor-not-allowed' : ''}`}
               placeholder={`${order.total.toFixed(2)}€`}
             />
             <Button
               type="button"
               variant="outline"
               onClick={handleAppoint}
+              disabled={isPaymentLocked}
               className="px-6"
             >
               💵 Appoint
             </Button>
           </div>
           <p className="text-xs text-gray-500 mt-1">
-            Laissez vide si paiement exact, ou entrez le montant remis par le client
+            {isPaymentLocked 
+              ? '🔒 Ce champ ne peut pas être modifié pour les paiements en ligne'
+              : 'Laissez vide si paiement exact, ou entrez le montant remis par le client'
+            }
           </p>
         </div>
 
