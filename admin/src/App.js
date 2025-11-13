@@ -39,6 +39,7 @@ function App() {
             <Route path="products" element={<Products />} />
             <Route path="options" element={<Options />} />
             <Route path="orders" element={<OrdersManagement />} />
+            <Route path="revenue" element={<Revenue />} />
             <Route path="categories" element={<Categories />} />
             <Route path="promos" element={<Promos />} />
             <Route path="customers" element={<Customers />} />
