@@ -15,7 +15,8 @@ import {
   Zap,
   History,
   Sliders,
-  Menu
+  Menu,
+  DollarSign
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { cn } from '../utils/cn';
