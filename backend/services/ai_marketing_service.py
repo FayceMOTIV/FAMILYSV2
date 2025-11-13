@@ -431,5 +431,5 @@ Ton : motivant, concis, actionnable. Ajoute des emojis pertinents."""
         
         response = await chat.send_message(UserMessage(text=prompt))
         return response.strip()
-    except:
+    except Exception:
         return f"📊 Cette semaine : {len(accepted)} campagnes activées sur {len(campaigns)} proposées. Gain estimé : +{total_ca_gain}€. Continue comme ça ! 🔥"
