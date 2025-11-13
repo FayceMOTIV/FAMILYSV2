@@ -3,7 +3,7 @@ import { Modal } from './Modal';
 import { Button } from './Button';
 import { X } from 'lucide-react';
 
-export const NotificationModal = ({ isOpen, onClose, notification, onSuccess }) => {
+export const NotificationModal = ({ isOpen, onClose, notification, segments, onSuccess }) => {
   const [formData, setFormData] = useState({
     title: '',
     message: '',
