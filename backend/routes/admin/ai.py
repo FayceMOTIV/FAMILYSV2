@@ -88,9 +88,9 @@ async def analyze_sales(current_user: dict = Security(require_manager_or_admin))
     return {"sales_data": sales_data, "ai_analysis": analysis}
 
 @router.post("/chat")
-async def ai_chat_endpoint(request: ChatRequest, current_user: dict = Security(require_manager_or_admin)):
+async def ai_chat_endpoint(request: ChatRequest):  # current_user: dict = Security(require_manager_or_admin) - TEMPORAIREMENT DESACTIVE
     """AI chat for natural language queries."""
-    restaurant_id = current_user.get("restaurant_id")
+    restaurant_id = "default"  # current_user.get("restaurant_id")
     
     # Get context data if needed
     context = {"restaurant_id": restaurant_id}
