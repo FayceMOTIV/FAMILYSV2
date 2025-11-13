@@ -1484,8 +1484,8 @@ class BackendTester:
 async def main():
     """Main test runner."""
     async with BackendTester() as tester:
-        # Run stock management tests as requested
-        success = await tester.run_stock_management_tests()
+        # Run new features tests as requested in the review
+        success = await tester.run_new_features_tests()
         return 0 if success else 1
 
 if __name__ == "__main__":
