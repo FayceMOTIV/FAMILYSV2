@@ -89,11 +89,47 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="medium">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">💳 Enregistrer le paiement</h2>
+        <h2 className="text-2xl font-bold">
+          {isModifyingPayment ? '✏️ Modifier le paiement' : '💳 Enregistrer le paiement'}
+        </h2>
         <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
           <X className="w-6 h-6" />
         </button>
       </div>
+
+      {/* Avertissement paiement verrouillé */}
+      {isPaymentLocked && (
+        <div className="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-lg">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl">🔒</span>
+            <div>
+              <h3 className="font-bold text-red-800 mb-1">Paiement non modifiable</h3>
+              <p className="text-sm text-red-700">
+                Ce paiement a été effectué en ligne (CB/Apple Pay/Google Pay). 
+                Il ne peut pas être modifié depuis le back office.
+              </p>
+              <p className="text-xs text-red-600 mt-2">
+                💡 Pour un remboursement, utilisez le système de remboursement sur carte de fidélité.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Info modification paiement physique */}
+      {isModifyingPayment && !isPaymentLocked && (
+        <div className="mb-6 p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl">⚠️</span>
+            <div>
+              <h3 className="font-bold text-yellow-800 mb-1">Modification du paiement</h3>
+              <p className="text-sm text-yellow-700">
+                Vous êtes sur le point de modifier un paiement déjà enregistré (espèces/chèque/ticket resto).
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Montant de la commande */}
