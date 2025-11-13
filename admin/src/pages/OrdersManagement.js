@@ -634,6 +634,19 @@ export const OrdersManagement = () => {
                     )}
                   </div>
 
+                  {/* Raison d'annulation (si annulée) */}
+                  {order.status === 'canceled' && order.cancellation_reason && (
+                    <div className="mb-4 p-3 bg-red-50 border-2 border-red-200 rounded-lg">
+                      <div className="flex items-start gap-2">
+                        <XCircle className="w-5 h-5 text-red-600 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-bold text-red-800">Raison d'annulation:</p>
+                          <p className="text-sm text-red-700 mt-1">{order.cancellation_reason}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Paiement */}
                   <div className="mb-4">
                     {order.payment_status === 'paid' ? (
