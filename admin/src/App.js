@@ -37,6 +37,7 @@ function App() {
             <Route path="ai-marketing/campaigns" element={<AICampaigns />} />
             <Route path="ai-marketing/history" element={<CampaignHistory />} />
             <Route path="ai-marketing/settings" element={<AIMarketingSettings />} />
+            <Route path="ai-marketing-temp" element={<AIMarketingTemp />} />
             <Route path="menu" element={<MenuManagement />} />
             <Route path="products" element={<Products />} />
             <Route path="options" element={<Options />} />
