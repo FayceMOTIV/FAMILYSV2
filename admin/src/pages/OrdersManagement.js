@@ -525,6 +525,20 @@ export const OrdersManagement = () => {
                             <CreditCard className="w-4 h-4" />
                           </Button>
                         )}
+                        {order.payment_status === 'paid' && order.status !== 'canceled' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setSelectedOrder(order);
+                              setShowRefundModal(true);
+                            }}
+                            className="border-purple-500 text-purple-600 hover:bg-purple-50"
+                            title="Remboursement partiel"
+                          >
+                            <DollarSign className="w-4 h-4" />
+                          </Button>
+                        )}
                         {order.status !== 'canceled' && order.status !== 'completed' && (
                           <Button
                             size="sm"
