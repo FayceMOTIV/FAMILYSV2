@@ -535,7 +535,7 @@ export const OrdersManagement = () => {
                             <CreditCard className="w-4 h-4" />
                           </Button>
                         )}
-                        {order.payment_status === 'paid' && order.status !== 'canceled' && (
+                        {order.payment_status === 'paid' && order.status !== 'canceled' && order.status !== 'completed' && (
                           <Button
                             size="sm"
                             variant="outline"
