@@ -102,9 +102,20 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test ALL back office admin endpoints for Family's restaurant. Backend URL: https://diner-admin.preview.emergentagent.com. Test Categories, Products, Options, Orders, Notifications, Promos, Upload, and AI Marketing endpoints with full CRUD operations."
+user_problem_statement: "Continue implementing back office features for Family's restaurant: Stock Management, Category Reordering, Kiosk Mode, Partial Refunds. Backend URL: https://diner-admin.preview.emergentagent.com"
 
 backend:
+  - task: "Granular Stock Management System"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/routes/admin/stock.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implemented stock management API endpoint at POST /api/v1/admin/products/{product_id}/stock-status with 4 status options: '2h' (2 hour outage), 'today' (until midnight), 'indefinite' (no auto-restock), 'available' (back in stock). Backend saves stock_status, stock_resume_at timestamp, and is_out_of_stock flag to product record. Frontend UI implemented in MenuManagement.js with dropdown menu showing all 4 options with icons. Need to test API endpoint functionality."
   - task: "Admin Authentication Login"
     implemented: true
     working: true
