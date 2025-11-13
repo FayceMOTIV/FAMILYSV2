@@ -167,12 +167,48 @@ const MobileCart = ({ isOpen, onClose }) => {
               </div>
             )}
 
+            {/* Promotions Applied */}
+            {promotionResult && promotionResult.applied_promotions && promotionResult.applied_promotions.length > 0 && (
+              <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-green-200 dark:border-green-700 rounded-2xl p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Sparkles className="w-5 h-5 text-green-600 dark:text-green-400" />
+                  <span className="font-bold text-green-800 dark:text-green-200">Promotions appliquées</span>
+                </div>
+                <div className="space-y-2">
+                  {promotionResult.applied_promotions.map((promo, idx) => (
+                    <div key={idx} className="flex justify-between items-center text-sm">
+                      <div className="flex items-center gap-2">
+                        <span className="text-green-700 dark:text-green-300">{promo.name}</span>
+                        {promo.badge && (
+                          <span className="text-xs bg-green-200 dark:bg-green-800 text-green-800 dark:text-green-100 px-2 py-0.5 rounded-full">
+                            {promo.badge}
+                          </span>
+                        )}
+                      </div>
+                      <span className="font-bold text-green-700 dark:text-green-300">
+                        -{promo.discount?.toFixed(2)}€
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Price Details */}
             <div className="space-y-2">
               <div className="flex justify-between text-gray-600 dark:text-gray-400">
                 <span>Sous-total</span>
                 <span>{subtotal.toFixed(2)}€</span>
               </div>
+              {promoDiscount > 0 && (
+                <div className="flex justify-between text-green-600 dark:text-green-400 font-semibold">
+                  <span className="flex items-center gap-1">
+                    <Sparkles className="w-4 h-4" />
+                    Promotions
+                  </span>
+                  <span>-{promoDiscount.toFixed(2)}€</span>
+                </div>
+              )}
               {cashbackUsed > 0 && (
                 <div className="flex justify-between text-[#C62828] dark:text-[#FFD54F] font-semibold">
                   <span>Cashback utilisé</span>
