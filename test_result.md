@@ -166,9 +166,9 @@ backend:
 
   - task: "AI Chat Endpoint"
     implemented: true
-    working: true
+    working: false
     file: "/app/backend/routes/admin/ai.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
@@ -178,6 +178,9 @@ backend:
         - working: true
         - agent: "testing"
         - comment: "✅ AI CHAT WORKS: Backend logs show successful 200 OK responses for AI chat requests. Emergent LLM integration working with GPT-5. Some timeout issues during testing due to slow AI responses but endpoint is functional."
+        - working: false
+        - agent: "testing"
+        - comment: "❌ AI CHAT TIMEOUT ISSUE: Comprehensive testing shows AI chat endpoint consistently experiencing timeout/connection issues. Likely external LLM service connectivity problem. Endpoint exists and is properly implemented but fails to respond reliably during testing."
 
   - task: "AI Marketing Generation"
     implemented: true
