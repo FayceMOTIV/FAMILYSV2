@@ -16,9 +16,10 @@ export const Customers = () => {
   const loadCustomers = async () => {
     try {
       const response = await customersAPI.getAll();
-      setCustomers(response.data);
+      setCustomers(response.data.customers || []);
     } catch (error) {
       console.error('Failed to load customers:', error);
+      setCustomers([]);
     } finally {
       setLoading(false);
     }
