@@ -6,6 +6,7 @@ from services.ai_marketing_service import (
     calculate_campaign_results,
     generate_weekly_summary
 )
+from services.promo_ai_bridge import create_promotion_draft_from_ai
 from database import db
 from datetime import datetime, timezone
 from typing import List, Optional
