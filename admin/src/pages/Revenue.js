@@ -133,10 +133,11 @@ export const Revenue = () => {
   ];
 
   const paymentMethods = [
-    { key: 'cash', label: 'Espèces', icon: Wallet, color: 'green', amount: stats.cash },
-    { key: 'card', label: 'Carte Bancaire', icon: CreditCard, color: 'blue', amount: stats.card },
-    { key: 'mobile', label: 'Paiement Mobile', icon: Smartphone, color: 'purple', amount: stats.mobile },
-    { key: 'online', label: 'En Ligne', icon: TrendingUp, color: 'orange', amount: stats.online }
+    { key: 'card_restaurant', label: 'CB (restaurant)', icon: CreditCard, color: 'blue', amount: stats.card_restaurant },
+    { key: 'online', label: 'Paiement en ligne', icon: TrendingUp, color: 'purple', amount: stats.online },
+    { key: 'ticket_resto', label: 'Ticket Restaurant', icon: Wallet, color: 'orange', amount: stats.ticket_resto },
+    { key: 'check', label: 'Chèque bancaire', icon: CreditCard, color: 'indigo', amount: stats.check },
+    { key: 'cash', label: 'Espèce', icon: Wallet, color: 'green', amount: stats.cash }
   ];
 
   if (loading) {
