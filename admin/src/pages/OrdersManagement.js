@@ -673,7 +673,7 @@ export const OrdersManagement = () => {
                               ✏️ Modifier le paiement
                             </Button>
                           )}
-                          {order.status !== 'canceled' && (
+                          {order.status !== 'canceled' && order.status !== 'completed' && (
                             <Button
                               onClick={() => {
                                 setSelectedOrder(order);
