@@ -416,12 +416,28 @@ export const OrdersManagement = () => {
                   {/* Paiement */}
                   <div className="mb-4">
                     {order.payment_status === 'paid' ? (
-                      <div className="flex items-center space-x-2 p-3 bg-green-50 rounded-lg">
-                        <CheckCircle className="w-5 h-5 text-green-600" />
-                        <div>
-                          <p className="font-bold text-green-700">Payé</p>
-                          <p className="text-sm text-gray-600 capitalize">{order.payment_method}</p>
+                      <div>
+                        <div className="flex items-center space-x-2 p-3 bg-green-50 rounded-lg mb-2">
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                          <div className="flex-1">
+                            <p className="font-bold text-green-700">Payé</p>
+                            <p className="text-sm text-gray-600 capitalize">{order.payment_method}</p>
+                          </div>
                         </div>
+                        {/* Bouton modifier paiement (seulement pour paiements physiques) */}
+                        {!['card', 'mobile', 'online', 'apple_pay', 'google_pay'].includes(order.payment_method) && (
+                          <Button
+                            onClick={() => {
+                              setSelectedOrder(order);
+                              setShowPaymentModal(true);
+                            }}
+                            variant="outline"
+                            size="sm"
+                            className="w-full border border-blue-300 text-blue-600 hover:bg-blue-50 text-xs"
+                          >
+                            ✏️ Modifier le paiement
+                          </Button>
+                        )}
                       </div>
                     ) : (
                       <Button
