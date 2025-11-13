@@ -70,9 +70,14 @@ export const Sidebar = () => {
                 cn(
                   'flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200',
                   item.indent && 'pl-8',
+                  item.highlight && 'border-2 border-orange-300',
                   isActive
-                    ? 'bg-primary text-white font-semibold'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    ? item.highlight 
+                      ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold shadow-lg'
+                      : 'bg-primary text-white font-semibold'
+                    : item.highlight
+                      ? 'bg-gradient-to-r from-orange-50 to-red-50 text-orange-700 font-bold hover:from-orange-100 hover:to-red-100'
+                      : 'text-gray-700 hover:bg-gray-100'
                 )
               }
             >
