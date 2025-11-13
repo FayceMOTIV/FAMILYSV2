@@ -851,7 +851,7 @@ export const OrdersManagement = () => {
               {getNextStatus(selectedOrder.status) && (
                 <Button
                   onClick={() => {
-                    updateOrderStatus(selectedOrder.id, getNextStatus(selectedOrder.status));
+                    requestStatusChange(selectedOrder.id, selectedOrder.status, getNextStatus(selectedOrder.status));
                     setShowDetailModal(false);
                   }}
                   className="w-full py-4 text-lg font-bold"
