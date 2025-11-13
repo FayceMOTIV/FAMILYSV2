@@ -10,7 +10,6 @@ import PromotionBanner from '../components/PromotionBanner';
 const MobileHome = () => {
   const navigate = useNavigate();
   const { toggleFavorite, isFavorite, setIsCartOpen } = useApp();
-  const [currentPromo, setCurrentPromo] = useState(0);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
