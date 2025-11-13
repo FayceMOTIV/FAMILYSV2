@@ -56,7 +56,10 @@ export const PromoModal = ({ isOpen, onClose, promo, onSuccess }) => {
       // Prepare data
       const data = {
         ...formData,
-        discount_value: parseFloat(formData.discount_value),
+        // For BOGO and free_delivery, set discount_value to 100
+        discount_value: ['bogo', 'free_delivery'].includes(formData.discount_type) 
+          ? 100 
+          : parseFloat(formData.discount_value),
         min_order_amount: parseFloat(formData.min_order_amount),
         max_uses: formData.max_uses ? parseInt(formData.max_uses) : null,
         valid_from: formData.valid_from ? new Date(formData.valid_from).toISOString() : new Date().toISOString(),
