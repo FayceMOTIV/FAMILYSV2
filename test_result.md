@@ -584,15 +584,18 @@ test_plan:
 
   - task: "Promotions Engine V2 Frontend"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/admin/src/pages/PromotionsV2.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Implemented complete Promotions Engine V2 frontend in admin panel at /admin/promotions route. Features include: 1) Analytics dashboard with 4 cards (Active Promos, Usage Count, Revenue, Total Discounts), 2) Tab navigation (Liste, Calendrier, Simulateur), 3) Promotions list view with cards showing type badges, discount values, date ranges, usage counts, and action buttons, 4) 3-step PromotionWizard for creating/editing promotions with 11 promotion types, 5) PromotionCalendar component showing promotions on calendar dates, 6) PromotionSimulator for testing cart scenarios with promotion calculations. All components integrated with backend API endpoints. Need comprehensive frontend testing of all UI components, wizard flow, calendar view, simulator functionality, and API integrations."
+        - working: false
+        - agent: "testing"
+        - comment: "❌ ADMIN PANEL ACCESS ISSUE: Unable to access the Promotions Engine V2 frontend due to deployment/routing problems. Investigation findings: 1) Admin service is running correctly on port 3002 and serving proper HTML content (verified via localhost curl), 2) External URL https://resto-admin-11.preview.emergentagent.com:3002 is not accessible (connection timeout), 3) Main URL https://resto-admin-11.preview.emergentagent.com/admin redirects to customer-facing website instead of admin panel, 4) Admin build is correct with proper React components and routing configuration, 5) Backend API endpoints are working (confirmed in previous tests). ROOT CAUSE: External proxy/load balancer is not configured to route admin panel traffic properly. The admin panel exists and is built correctly, but cannot be accessed from external URLs. RESOLUTION NEEDED: Configure external routing to admin panel or provide correct access URL for testing."
 
 agent_communication:
     - agent: "testing"
