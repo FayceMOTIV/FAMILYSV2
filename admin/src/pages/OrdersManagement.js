@@ -384,7 +384,125 @@ export const OrdersManagement = () => {
           <div className="text-center py-20">
             <p className="text-2xl font-bold text-gray-400">Pas de commandes pour le moment</p>
           </div>
+        ) : viewMode === 'list' ? (
+          /* Vue Liste (compacte en ligne) */
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b-2 border-gray-200">
+                <tr>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">N° Commande</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Client</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Heure de récupération</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Type</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Montant</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700">Paiement</th>
+                  <th className="px-6 py-4 text-center text-sm font-bold text-gray-700">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {filteredOrders.map((order) => (
+                  <tr 
+                    key={order.id} 
+                    className="hover:bg-gray-50 transition-colors cursor-pointer"
+                    onClick={() => {
+                      setSelectedOrder(order);
+                      setShowDetailModal(true);
+                    }}
+                  >
+                    <td className="px-6 py-4">
+                      <div className="font-bold text-lg text-primary">#{order.order_number || order.id?.slice(0, 8)}</div>
+                      <div className="text-xs text-gray-500">{formatDate(order.created_at)}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="font-semibold text-gray-800">
+                        {order.customer_name || order.customer_email || 'Client'}
+                      </div>
+                      {order.customer_phone && (
+                        <div className="text-sm text-gray-500">{order.customer_phone}</div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="font-semibold text-gray-800">
+                        {order.pickup_time || order.delivery_time || 'Dès que possible'}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      {order.order_type === 'delivery' ? (
+                        <span className="flex items-center gap-1 text-blue-600 font-semibold">
+                          <Truck className="w-4 h-4" />
+                          Livraison
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-1 text-purple-600 font-semibold">
+                          <Package className="w-4 h-4" />
+                          À emporter
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-xl font-black text-gray-800">{order.total.toFixed(2)}€</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      {order.payment_status === 'paid' ? (
+                        <span className="flex items-center gap-2 text-green-600 font-semibold">
+                          <CheckCircle className="w-4 h-4" />
+                          Payé
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-2 text-orange-600 font-semibold">
+                          <Clock className="w-4 h-4" />
+                          En attente
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-center space-x-2" onClick={(e) => e.stopPropagation()}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => printOrder(order)}
+                          className="border-blue-500 text-blue-600 hover:bg-blue-50"
+                          title="Imprimer"
+                        >
+                          <Printer className="w-4 h-4" />
+                        </Button>
+                        {order.payment_status !== 'paid' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setSelectedOrder(order);
+                              setShowPaymentModal(true);
+                            }}
+                            className="border-green-500 text-green-600 hover:bg-green-50"
+                            title="Paiement"
+                          >
+                            <CreditCard className="w-4 h-4" />
+                          </Button>
+                        )}
+                        {order.status !== 'canceled' && order.status !== 'completed' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setSelectedOrder(order);
+                              setShowCancellationModal(true);
+                            }}
+                            className="border-red-500 text-red-600 hover:bg-red-50"
+                            title="Annuler"
+                          >
+                            <XCircle className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : (
+          /* Vue Cartes (détaillée) */
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {filteredOrders.map((order) => (
               <Card key={order.id} className="hover:shadow-2xl transition-all duration-300 animate-fadeIn">
