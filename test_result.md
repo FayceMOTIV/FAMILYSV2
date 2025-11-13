@@ -584,9 +584,9 @@ test_plan:
 
   - task: "Promotions Engine V2 Frontend"
     implemented: true
-    working: false
+    working: true
     file: "/app/admin/src/pages/PromotionsV2.js"
-    stuck_count: 1
+    stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
@@ -596,6 +596,9 @@ test_plan:
         - working: false
         - agent: "testing"
         - comment: "❌ ADMIN PANEL ACCESS ISSUE: Unable to access the Promotions Engine V2 frontend due to deployment/routing problems. Investigation findings: 1) Admin service is running correctly on port 3002 and serving proper HTML content (verified via localhost curl), 2) External URL https://resto-admin-11.preview.emergentagent.com:3002 is not accessible (connection timeout), 3) Main URL https://resto-admin-11.preview.emergentagent.com/admin redirects to customer-facing website instead of admin panel, 4) Admin build is correct with proper React components and routing configuration, 5) Backend API endpoints are working (confirmed in previous tests). ROOT CAUSE: External proxy/load balancer is not configured to route admin panel traffic properly. The admin panel exists and is built correctly, but cannot be accessed from external URLs. RESOLUTION NEEDED: Configure external routing to admin panel or provide correct access URL for testing."
+        - working: true
+        - agent: "testing"
+        - comment: "✅ PROMOTIONS ENGINE V2 FRONTEND WORKS PERFECTLY: Comprehensive testing completed successfully on all requested features. ADMIN PANEL ACCESS RESOLVED: Now accessible at https://resto-admin-11.preview.emergentagent.com/admin/promotions. 1) NAVIGATION ✅: Successfully navigated to Promotions page via sidebar menu, page loads with title '🎯 Promotions & Offres'. 2) ANALYTICS CARDS ✅: All 4 cards display correctly (Active Promos: 2, Usage Count: 0, Revenue: 0€, Total Discounts: 0€) with proper gradient backgrounds and icons. 3) TAB NAVIGATION ✅: All 3 tabs working (📋 Liste, 📅 Calendrier, 👁️ Simulateur) with proper component switching. 4) PROMOTIONS LIST VIEW ✅: Cards display correctly with type badges (⚡ Flash, 🍻 Happy Hour), names, descriptions, discount values (15%), badge text (-15% 🔥), date ranges, and action buttons (Edit, Duplicate, Delete). 5) 3-STEP WIZARD ✅: Complete promotion creation flow working - Step 1 (Type & Targeting): 11 promotion types available, filled 'Test Happy Hour' with 15% discount. Step 2 (Conditions & Limits): Set dates, Happy Hour times (15:00-18:00), selected Mon/Tue days, priority 10, stackable option. Step 3 (Display & Activation): Badge text, status selection, preview section shows all data. Successfully created and saved new promotion. 6) CALENDAR VIEW ✅: Displays November 2025 calendar with promotion badges on correct dates, proper color coding, promotion names visible on calendar cells. 7) SIMULATOR ✅: Cart building works (added Burger 10€ + Fries 5€ = 15€ total), simulation engine calculates and displays results with original amount, applied promotions, and final total. 8) EDIT & DELETE ✅: Edit functionality opens wizard with pre-filled data, successfully modified promotion name, duplicate creates copy with '(copie)' suffix. 9) VISUAL QUALITY ✅: Responsive design works on desktop (1920x1080), tablet (768x1024), and mobile (390x844), 30 SVG icons rendering correctly, button hover effects working, proper loading states. ALL SUCCESS CRITERIA MET: CRUD operations, 3-step wizard completion, calendar display, simulator calculations, analytics updates, no console errors, visually consistent and responsive UI. Promotions Engine V2 frontend fully operational for Family's restaurant back office."
 
 agent_communication:
     - agent: "testing"
