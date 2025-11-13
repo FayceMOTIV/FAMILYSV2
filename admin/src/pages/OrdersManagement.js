@@ -732,15 +732,15 @@ export const OrdersManagement = () => {
 
                     {/* Boutons de changement de statut */}
                     <div className="flex space-x-2">
-                      {getNextStatus(order.status) && (
+                      {getNextStatus(order.status, order.order_type) && (
                         <Button
-                          onClick={() => requestStatusChange(order.id, order.status, getNextStatus(order.status))}
+                          onClick={() => requestStatusChange(order.id, order.status, getNextStatus(order.status, order.order_type))}
                           className="flex-1 py-4 text-lg font-bold"
                         >
-                          {getNextStatus(order.status) === 'in_preparation' && '🔥 EN COURS DE PREPARATION'}
-                          {getNextStatus(order.status) === 'ready' && '✅ PRETE'}
-                          {getNextStatus(order.status) === 'out_for_delivery' && '🚚 EN LIVRAISON'}
-                          {getNextStatus(order.status) === 'completed' && (order.status === 'out_for_delivery' ? '📦 LIVREE' : '🎉 TERMINE')}
+                          {getNextStatus(order.status, order.order_type) === 'in_preparation' && '🔥 EN COURS DE PREPARATION'}
+                          {getNextStatus(order.status, order.order_type) === 'ready' && '✅ PRETE'}
+                          {getNextStatus(order.status, order.order_type) === 'out_for_delivery' && '🚚 PARTI POUR LA LIVRAISON'}
+                          {getNextStatus(order.status, order.order_type) === 'completed' && (order.status === 'out_for_delivery' ? '📦 LIVREE' : '🎉 TERMINE')}
                         </Button>
                       )}
                       {order.status !== 'canceled' && order.status !== 'completed' && (
