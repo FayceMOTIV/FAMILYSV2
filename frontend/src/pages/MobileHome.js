@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Star, Award, Flame } from 'lucide-react';
-import { products, promotions, categories } from '../mockData';
+import { productsAPI, categoriesAPI } from '../services/api';
+import { promotions } from '../mockData';
 import { Button } from '../components/ui/button';
 import { useApp } from '../context/AppContext';
 import CountdownBanner from '../components/CountdownBanner';
@@ -10,8 +11,34 @@ const MobileHome = () => {
   const navigate = useNavigate();
   const { toggleFavorite, isFavorite, setIsCartOpen } = useApp();
   const [currentPromo, setCurrentPromo] = useState(0);
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const bestSellers = products.filter(p => p.tags.includes('best-seller')).slice(0, 4);
+  // Load products and categories from API
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [productsRes, categoriesRes] = await Promise.all([
+          productsAPI.getAll(),
+          categoriesAPI.getAll()
+        ]);
+        
+        // Filter only available products
+        const availableProducts = (productsRes.products || []).filter(p => p.is_available !== false);
+        setProducts(availableProducts);
+        setCategories(categoriesRes.categories || []);
+      } catch (error) {
+        console.error('Error loading data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadData();
+  }, []);
+
+  const bestSellers = products.filter(p => p.tags && p.tags.includes('best-seller')).slice(0, 4);
 
   React.useEffect(() => {
     const interval = setInterval(() => {
