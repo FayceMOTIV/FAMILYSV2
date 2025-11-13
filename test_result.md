@@ -119,6 +119,30 @@ backend:
         - working: true
         - agent: "testing"
         - comment: "✅ GRANULAR STOCK MANAGEMENT WORKS PERFECTLY: Comprehensive testing completed on all 4 stock status options. 1) '2h' status: Sets stock_resume_at to exactly 2 hours from current time (7200 seconds), is_out_of_stock=true ✅. 2) 'today' status: Sets stock_resume_at to 23:59:59 of current day, is_out_of_stock=true ✅. 3) 'indefinite' status: Sets stock_resume_at=null, is_out_of_stock=true ✅. 4) 'available' status: Sets stock_resume_at=null, is_out_of_stock=false ✅. All timestamps in correct ISO format with UTC timezone. Stock changes persist correctly in MongoDB. GET /api/v1/admin/products returns updated stock information including is_out_of_stock, stock_resume_at, and stock_status fields. All 5 test cases passed: status transitions, timestamp calculations, database persistence, and API response verification."
+
+  - task: "Category Reordering System"
+    implemented: true
+    working: "NA"
+    file: "/app/admin/src/pages/MenuManagement.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implemented category reordering with up/down arrow buttons in MenuManagement.js. Categories are displayed sorted by 'order' field. Up/Down buttons swap order values between adjacent categories. Backend already supports 'order' field in Category model. Frontend shows category position number (#1, #2, etc). First category has Up button disabled, last category has Down button disabled. Need to test reordering functionality."
+
+  - task: "Partial Refunds System"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/routes/admin/refunds.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implemented partial refund system for paid orders. Backend endpoint POST /api/v1/admin/orders/{order_id}/refund-missing-items accepts list of item indices to refund. Refund amount is credited to customer's loyalty card balance. Frontend RefundModal component created with checkbox selection for items, reason dropdown, and refund total calculation. Integrated into OrdersManagement with purple 'Remboursement partiel' button shown only for paid orders. Modal shows order info, allows multiple item selection, displays refund total, and creates loyalty transaction. Need to test: 1) Item selection and total calculation, 2) Backend refund processing, 3) Loyalty balance update, 4) Transaction creation."
   - task: "Admin Authentication Login"
     implemented: true
     working: true
