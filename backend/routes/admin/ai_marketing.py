@@ -103,23 +103,15 @@ async def validate_campaign(
         }}
     )
     
-    # Si acceptée, créer la promo en brouillon
+    # Si acceptée, créer la promo V2 en brouillon via le pont
+    promo_result = None
     if validation.accepted:
-        promo_data = {
-            "id": campaign_id,  # Même ID pour lier campagne et promo
-            "restaurant_id": restaurant_id,
-            "title": campaign["name"],
-            "description": campaign["message"],
-            "discount_type": campaign["discount_type"],
-            "discount_value": campaign["discount_value"],
-            "start_date": campaign["start_date"],
-            "end_date": campaign["end_date"],
-            "is_active": False,  # Brouillon
-            "target_hours": campaign.get("target_hours"),
-            "created_by_ai": True,
-            "created_at": datetime.now(timezone.utc).isoformat()
-        }
-        await db.promos.insert_one(promo_data)
+        try:
+            promo_result = await create_promotion_draft_from_ai(campaign_id)
+        except Exception as e:
+            print(f"Erreur création promo V2 depuis campagne IA: {str(e)}")
+            # Continue quand même pour marquer la campagne comme acceptée
+            promo_result = {"success": False, "error": str(e)}
     
     # Créer un résultat
     result = AICampaignResult(
