@@ -342,13 +342,19 @@ export const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
                         </button>
                         
                         {/* Détails des choix */}
-                        {showOptionsDetails[option.id] && option.choices && (
+                        {showOptionsDetails[option.id] && (
                           <div className="mt-2 pl-4 border-l-2 border-blue-200">
-                            {option.choices.map((choice, idx) => (
+                            {option.choices && option.choices.map((choice, idx) => (
                               <div key={idx} className="text-xs text-gray-600 py-1">
                                 • {choice.name} {choice.price_modifier > 0 && `(+${choice.price_modifier.toFixed(2)}€)`}
                               </div>
                             ))}
+                            {option.internal_comment && (
+                              <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs">
+                                <span className="font-semibold text-yellow-800">📝 Note interne :</span>
+                                <span className="text-yellow-700 ml-1">{option.internal_comment}</span>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
