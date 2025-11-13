@@ -133,44 +133,8 @@ const MobileHome = () => {
         />
       </section>
 
-      {/* Promotions Carousel */}
-      <section className="px-4 relative z-20 mb-8">
-        <div className="bg-white dark:bg-[#1a1a1a] rounded-[32px] shadow-2xl overflow-hidden">
-          <div className="relative h-48">
-            {promotions.map((promo, idx) => (
-              <div
-                key={promo.id}
-                className={`absolute inset-0 transition-opacity duration-1000 ${
-                  idx === currentPromo ? 'opacity-100' : 'opacity-0'
-                }`}
-              >
-                <img
-                  src={promo.imageUrl}
-                  alt={promo.title}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex items-end">
-                  <div className="p-6 text-white w-full">
-                    <h3 className="text-xl font-bold mb-1">{promo.title}</h3>
-                    <p className="text-sm text-white/90">{promo.description}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-center space-x-2 py-3 bg-white dark:bg-[#1a1a1a]">
-            {promotions.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => setCurrentPromo(idx)}
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  idx === currentPromo ? 'bg-[#C62828] w-8' : 'bg-gray-300 dark:bg-gray-600 w-2'
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Dynamic Promotion Banners */}
+      <PromotionBanner />
 
       {/* Categories - Horizontal Scroll */}
       <section className="px-4 mb-8">
