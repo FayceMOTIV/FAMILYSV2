@@ -4,7 +4,7 @@ import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { ProductModal } from '../components/ProductModal';
 import { productsAPI } from '../services/api';
-import { Plus, Edit2, Trash2, Package } from 'lucide-react';
+import { Plus, Edit2, Trash2, Package, Copy } from 'lucide-react';
 
 export const Products = () => {
   const [products, setProducts] = useState([]);
