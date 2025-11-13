@@ -99,6 +99,7 @@ admin_router.include_router(admin_settings.router)
 admin_router.include_router(admin_ai_marketing.router)
 admin_router.include_router(admin_upload.router)
 admin_router.include_router(admin_options.router)
+admin_router.include_router(admin_refunds.router)
 
 # Include the routers in the main app
 app.include_router(api_router)
