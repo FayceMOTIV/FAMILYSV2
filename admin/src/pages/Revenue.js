@@ -272,13 +272,18 @@ export const Revenue = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-3 py-1 rounded-full text-xs font-bold ${
                           order.payment_method === 'cash' ? 'bg-green-100 text-green-700' :
-                          order.payment_method === 'card' ? 'bg-blue-100 text-blue-700' :
-                          'bg-purple-100 text-purple-700'
+                          order.payment_method === 'card_restaurant' ? 'bg-blue-100 text-blue-700' :
+                          order.payment_method === 'online' ? 'bg-purple-100 text-purple-700' :
+                          order.payment_method === 'ticket_resto' ? 'bg-orange-100 text-orange-700' :
+                          order.payment_method === 'check' ? 'bg-indigo-100 text-indigo-700' :
+                          'bg-gray-100 text-gray-700'
                         }`}>
-                          {order.payment_method === 'cash' ? '💵 Espèces' :
-                           order.payment_method === 'card' ? '💳 Carte' :
-                           order.payment_method === 'mobile' ? '📱 Mobile' :
-                           '🌐 En ligne'}
+                          {order.payment_method === 'cash' ? '💵 Espèce' :
+                           order.payment_method === 'card_restaurant' ? '💳 CB (restaurant)' :
+                           order.payment_method === 'online' ? '🌐 Paiement en ligne' :
+                           order.payment_method === 'ticket_resto' ? '🎫 Ticket Restaurant' :
+                           order.payment_method === 'check' ? '📝 Chèque bancaire' :
+                           order.payment_method}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
