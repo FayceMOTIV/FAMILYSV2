@@ -272,7 +272,7 @@ Réponds UNIQUEMENT avec le JSON, rien d'autre."""
             if attempt < max_retries - 1:
                 await asyncio.sleep(retry_delay)
             else:
-                print(f"⚠️ Toutes les tentatives ont échoué, utilisation du fallback")
+                print("⚠️ Toutes les tentatives ont échoué, utilisation du fallback")
         # Fallback intelligent: générer 3 campagnes basées sur les données
         fallback_campaigns = []
         
