@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Star, Search, X, ShoppingBag } from 'lucide-react';
-import { products, categories } from '../mockData';
+import { Star, Search, X, ShoppingBag, AlertCircle } from 'lucide-react';
+import { productsAPI, categoriesAPI } from '../services/api';
 import { useApp } from '../context/AppContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -13,8 +13,34 @@ const MobileMenu = () => {
   
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const cartCount = getCartItemsCount();
+
+  // Load products and categories from API
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [productsRes, categoriesRes] = await Promise.all([
+          productsAPI.getAll(),
+          categoriesAPI.getAll()
+        ]);
+        
+        // Filter only available products (is_available = true)
+        const availableProducts = (productsRes.products || []).filter(p => p.is_available !== false);
+        setProducts(availableProducts);
+        setCategories(categoriesRes.categories || []);
+      } catch (error) {
+        console.error('Error loading data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadData();
+  }, []);
 
   const filteredProducts = useMemo(() => {
     let filtered = products;
@@ -31,7 +57,7 @@ const MobileMenu = () => {
     }
 
     return filtered;
-  }, [selectedCategory, searchQuery]);
+  }, [products, selectedCategory, searchQuery]);
 
   const handleProductClick = (product) => {
     navigate(`/product/${product.slug}`);
