@@ -104,16 +104,25 @@ export const Options = () => {
                 <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50">
                   <CardTitle className="flex items-center justify-between">
                     <span className="text-lg font-bold">{option.name}</span>
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-1">
                       <button
                         onClick={() => handleOpenModal(option)}
                         className="p-2 hover:bg-white rounded-lg transition-colors"
+                        title="Modifier"
                       >
                         <Edit className="w-4 h-4 text-blue-600" />
                       </button>
                       <button
+                        onClick={() => handleDuplicateOption(option)}
+                        className="p-2 hover:bg-white rounded-lg transition-colors"
+                        title="Dupliquer"
+                      >
+                        <Copy className="w-4 h-4 text-green-600" />
+                      </button>
+                      <button
                         onClick={() => handleDeleteOption(option.id)}
                         className="p-2 hover:bg-white rounded-lg transition-colors"
+                        title="Supprimer"
                       >
                         <Trash2 className="w-4 h-4 text-red-600" />
                       </button>
