@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { Button } from './Button';
-import { X } from 'lucide-react';
+import { X, Sparkles } from 'lucide-react';
+import axios from 'axios';
 
 export const NotificationModal = ({ isOpen, onClose, notification, segments, onSuccess }) => {
   const [formData, setFormData] = useState({
