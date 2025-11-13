@@ -9,10 +9,12 @@ export const NotificationModal = ({ isOpen, onClose, notification, onSuccess }) 
     message: '',
     icon: '🔔',
     target_type: 'all',
+    target_segment: null,
     scheduled_for: ''
   });
   
   const [loading, setLoading] = useState(false);
+  const preSelectedSegment = notification?.target_segment || null;
 
   useEffect(() => {
     if (notification) {
@@ -20,7 +22,8 @@ export const NotificationModal = ({ isOpen, onClose, notification, onSuccess }) 
         title: notification.title || '',
         message: notification.message || '',
         icon: notification.icon || '🔔',
-        target_type: notification.target_type || 'all',
+        target_type: notification.target_type || (notification.target_segment ? 'segment' : 'all'),
+        target_segment: notification.target_segment || null,
         scheduled_for: notification.scheduled_for || ''
       });
     } else {
@@ -29,6 +32,7 @@ export const NotificationModal = ({ isOpen, onClose, notification, onSuccess }) 
         message: '',
         icon: '🔔',
         target_type: 'all',
+        target_segment: null,
         scheduled_for: ''
       });
     }
