@@ -14,7 +14,8 @@ import {
   Calendar,
   Zap,
   History,
-  Sliders
+  Sliders,
+  Menu
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { cn } from '../utils/cn';
