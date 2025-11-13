@@ -332,7 +332,8 @@ export const MenuManagement = () => {
                     </Button>
                   </div>
                 </Card>
-              ))}
+              );
+              })}
             </div>
           </div>
         )}
