@@ -38,6 +38,7 @@ class SettingsUpdate(BaseModel):
     secondary_color: Optional[str] = None
     opening_hours: Optional[Dict] = None
     order_cutoff_minutes: Optional[int] = None
+    preparation_time_minutes: Optional[int] = None
     enable_delivery: Optional[bool] = None
     enable_takeaway: Optional[bool] = None
     enable_onsite: Optional[bool] = None
