@@ -9,6 +9,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'https://diner-admin.preview.em
 export const RefundModal = ({ isOpen, onClose, order, onSuccess }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [reason, setReason] = useState('Produit manquant');
+  const [customReason, setCustomReason] = useState('');
   const [loading, setLoading] = useState(false);
 
   if (!order) return null;
