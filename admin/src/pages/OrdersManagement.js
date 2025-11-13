@@ -325,6 +325,12 @@ export const OrdersManagement = () => {
         confirmText: 'Oui, elle est prête',
         type: 'success'
       },
+      'ready_to_out_for_delivery': {
+        title: '🚚 Partir pour la livraison ?',
+        message: 'Le livreur prend la commande. Le client recevra une notification que son livreur est en route.',
+        confirmText: 'Oui, partir livrer',
+        type: 'info'
+      },
       'ready_to_completed': {
         title: '🎉 Terminer la commande ?',
         message: 'Cette commande sera marquée comme terminée et archivée. Cette action est définitive.',
@@ -332,8 +338,8 @@ export const OrdersManagement = () => {
         type: 'success'
       },
       'out_for_delivery_to_completed': {
-        title: '🎉 Livraison terminée ?',
-        message: 'Confirmez-vous que la commande a été livrée avec succès ?',
+        title: '📦 Livraison terminée ?',
+        message: 'Le livreur confirme que la commande a été livrée avec succès au client.',
         confirmText: 'Oui, livrée',
         type: 'success'
       }
