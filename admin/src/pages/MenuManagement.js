@@ -104,6 +104,23 @@ export const MenuManagement = () => {
     }
   };
 
+  const handleStockStatus = async (productId, status) => {
+    try {
+      await axios.post(`${API_URL}/api/v1/admin/products/${productId}/stock-status`, { status });
+      loadProducts();
+      
+      const messages = {
+        '2h': '⏰ Produit en rupture pour 2 heures',
+        'today': '📅 Produit en rupture jusqu\'à minuit',
+        'indefinite': '🚫 Produit en rupture indéfinie',
+        'available': '✅ Produit remis en stock'
+      };
+      alert(messages[status]);
+    } catch (error) {
+      alert('❌ Erreur lors de la mise à jour du stock');
+    }
+  };
+
   const handleDeleteCategory = async (id) => {
     if (!window.confirm('Supprimer cette catégorie ?')) return;
     try {
