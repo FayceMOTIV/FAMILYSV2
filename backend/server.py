@@ -19,6 +19,7 @@ from routes.admin import categories as admin_categories
 from routes.admin import orders as admin_orders
 from routes.admin import ai as admin_ai
 from routes.admin import promos as admin_promos
+from routes.admin import promotions as admin_promotions
 from routes.admin import customers as admin_customers
 from routes.admin import notifications as admin_notifications
 from routes.admin import reservations as admin_reservations
