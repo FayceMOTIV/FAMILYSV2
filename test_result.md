@@ -410,6 +410,14 @@ test_plan:
     - "CORS Configuration"
   test_all: false
   test_priority: "high_first"
+  completed_features:
+    - "Promotions Engine V2 Frontend"
+    - "Advanced Promotions Engine V2"
+    - "Granular Stock Management System"
+    - "Category Reordering System"
+    - "Partial Refunds System"
+    - "Payment Processing System"
+    - "Order Cancellation with Reason"
 
   - task: "Admin Categories CRUD"
     implemented: true
