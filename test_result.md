@@ -373,7 +373,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Granular Stock Management System"
+    []
   stuck_tasks:
     - "AI Sales Analysis"
     - "AI Promo Suggestion"
