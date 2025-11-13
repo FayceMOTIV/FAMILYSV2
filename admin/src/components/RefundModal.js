@@ -44,11 +44,13 @@ export const RefundModal = ({ isOpen, onClose, order, onSuccess }) => {
     setLoading(true);
 
     try {
+      const finalReason = reason === 'Autre' && customReason ? customReason : reason;
+      
       const response = await axios.post(
         `${API_URL}/api/v1/admin/orders/${order.id}/refund-missing-items`,
         {
           missing_item_indices: selectedItems,
-          reason: reason
+          reason: finalReason
         }
       );
 
