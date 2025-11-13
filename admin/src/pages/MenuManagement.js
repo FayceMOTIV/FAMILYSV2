@@ -265,7 +265,21 @@ export const MenuManagement = () => {
         {activeTab === 'products' && (
           <div>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">🍔 Produits ({products.length})</h2>
+              <div>
+                <h2 className="text-2xl font-bold">🍔 Produits ({products.length})</h2>
+                <div className="flex items-center gap-2 mt-2">
+                  <input
+                    type="checkbox"
+                    id="outOfStockFilter"
+                    checked={showOutOfStockOnly}
+                    onChange={(e) => setShowOutOfStockOnly(e.target.checked)}
+                    className="w-4 h-4"
+                  />
+                  <label htmlFor="outOfStockFilter" className="text-sm font-medium text-gray-700 cursor-pointer">
+                    🚫 Afficher uniquement les produits en rupture
+                  </label>
+                </div>
+              </div>
               <Button 
                 onClick={() => {
                   setEditingProduct(null);
@@ -278,7 +292,9 @@ export const MenuManagement = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {products.map((product) => {
+              {products
+                .filter(product => !showOutOfStockOnly || product.is_out_of_stock)
+                .map((product) => {
                 const price = product.base_price || product.basePrice || 0;
                 let imageUrl = product.image_url || product.image;
                 // Si l'URL est relative, construire l'URL complète
