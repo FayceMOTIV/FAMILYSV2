@@ -48,6 +48,16 @@ body {
     overscroll-behavior-y: contain;
 }
 
+/* Hide regular badge when promo badge is present */
+.promo-badge-fallback:has(+ [class*="promo"]) {
+    display: none;
+}
+
+/* Only show regular badge if no sibling promo badge */
+.relative:has(> [class*="PromoBadge"]) > .promo-badge-fallback {
+    display: none;
+}
+
 @layer base {
   :root {
         --background: 0 0% 100%;
