@@ -19,6 +19,7 @@ import { CampaignHistory } from './pages/CampaignHistory';
 import { AIMarketingSettings } from './pages/AIMarketingSettings';
 import { Options } from './pages/Options';
 import { MenuManagement } from './pages/MenuManagement';
+import { OrdersKiosk } from './pages/OrdersKiosk';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/admin/login" element={<Login />} />
+          <Route path="/admin/kiosk" element={<OrdersKiosk />} />
           <Route path="/admin" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="ai" element={<AIAssistant />} />
