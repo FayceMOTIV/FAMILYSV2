@@ -293,21 +293,23 @@ export const MenuManagement = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {categories.map((category) => (
-                <Card key={category.id}>
-                  {category.image_url ? (
-                    <img
-                      src={category.image_url}
-                      alt={category.name}
-                      className="w-full h-40 object-cover rounded-lg mb-4"
-                    />
-                  ) : (
-                    <div className="w-full h-40 bg-gradient-to-br from-orange-100 to-red-100 rounded-lg mb-4 flex items-center justify-center">
-                      <FolderOpen className="w-12 h-12 text-orange-400" />
-                    </div>
-                  )}
-                  <h4 className="font-bold text-lg mb-2">{category.name}</h4>
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">{category.description}</p>
+              {categories.map((category) => {
+                const imageUrl = category.image_url || category.image;
+                return (
+                  <Card key={category.id}>
+                    {imageUrl ? (
+                      <img
+                        src={imageUrl}
+                        alt={category.name}
+                        className="w-full h-40 object-cover rounded-lg mb-4"
+                      />
+                    ) : (
+                      <div className="w-full h-40 bg-gradient-to-br from-orange-100 to-red-100 rounded-lg mb-4 flex items-center justify-center">
+                        <FolderOpen className="w-12 h-12 text-orange-400" />
+                      </div>
+                    )}
+                    <h4 className="font-bold text-lg mb-2">{category.name}</h4>
+                    <p className="text-sm text-gray-600 mb-4 line-clamp-2">{category.description}</p>
                   <div className="flex space-x-2">
                     <Button 
                       size="sm" 
