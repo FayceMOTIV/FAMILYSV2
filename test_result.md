@@ -582,6 +582,18 @@ test_plan:
         - agent: "testing"
         - comment: "✅ ORDER CANCELLATION WORKS: Cancellation with reason tracking fully functional. PATCH /api/v1/admin/orders/{order_id}/status endpoint properly saves cancellation_reason to MongoDB. Tested cancellation with and without reason (both work). Verified that cancelled orders retain payment information if they were already paid. All edge cases working correctly."
 
+  - task: "Promotions Engine V2 Frontend"
+    implemented: true
+    working: "NA"
+    file: "/app/admin/src/pages/PromotionsV2.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implemented complete Promotions Engine V2 frontend in admin panel at /admin/promotions route. Features include: 1) Analytics dashboard with 4 cards (Active Promos, Usage Count, Revenue, Total Discounts), 2) Tab navigation (Liste, Calendrier, Simulateur), 3) Promotions list view with cards showing type badges, discount values, date ranges, usage counts, and action buttons, 4) 3-step PromotionWizard for creating/editing promotions with 11 promotion types, 5) PromotionCalendar component showing promotions on calendar dates, 6) PromotionSimulator for testing cart scenarios with promotion calculations. All components integrated with backend API endpoints. Need comprehensive frontend testing of all UI components, wizard flow, calendar view, simulator functionality, and API integrations."
+
 agent_communication:
     - agent: "testing"
     - message: "Starting comprehensive backend API testing for ALL admin endpoints. Testing Categories, Products, Options, Orders, Notifications, Promos, Upload, and AI Marketing with full CRUD operations on https://resto-admin-11.preview.emergentagent.com"
@@ -603,3 +615,5 @@ agent_communication:
     - message: "Starting PHASE 3: TESTS AUTOMATIQUES for new Promotions Engine V2. Complete backend foundation implemented with 15 promotion types, comprehensive calculation logic, and automated test suite. Need to validate: 1) All CRUD operations on /api/v1/admin/promotions endpoints (GET, POST, PUT, DELETE), 2) Promotion simulation endpoint with cart/customer data, 3) All 13 promotion type calculations (BOGO, percent item/category, conditional, threshold, etc.), 4) Condition checking (time windows, days active, customer targeting, cart thresholds), 5) Priority and stacking logic, 6) Analytics and calendar endpoints. Automated test file ready at /app/backend/tests/test_promotions.py with comprehensive test coverage."
     - agent: "testing"
     - message: "ADVANCED PROMOTIONS ENGINE V2 TESTING COMPLETED ✅: Comprehensive backend testing performed on all promotion endpoints and functionality. Results: 6/6 test suites passed including CRUD operations, automated test suite (14/14 tests passed), simulation engine, analytics dashboard, calendar view, and special scenarios (BOGO, Happy Hour, promo codes, priority system, stacking behavior, date/time serialization). Fixed critical route ordering issue where /{promotion_id} was conflicting with /calendar endpoint by moving specific routes before parameterized routes. All 15 promotion types working correctly with proper business logic, condition checking, discount calculations, and API responses. Promotion engine fully operational and ready for production use in Family's restaurant back office system."
+    - agent: "testing"
+    - message: "Starting comprehensive frontend testing of Promotions Engine V2 in admin panel at https://resto-admin-11.preview.emergentagent.com/admin/promotions. Testing all UI components: analytics dashboard, tab navigation, promotions list view, 3-step wizard, calendar view, simulator functionality, and API integrations. Will verify all 10 test scenarios from review request including navigation, list display, wizard flow, calendar rendering, simulator cart building, and error handling."
