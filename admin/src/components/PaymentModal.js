@@ -144,16 +144,18 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
           <div className="grid grid-cols-2 gap-3">
             {paymentMethods.map(method => {
               const Icon = method.icon;
+              const isDisabled = isPaymentLocked;
               return (
                 <button
                   key={method.id}
                   type="button"
-                  onClick={() => setPaymentMethod(method.id)}
+                  onClick={() => !isDisabled && setPaymentMethod(method.id)}
+                  disabled={isDisabled}
                   className={`p-4 border-2 rounded-lg flex flex-col items-center gap-2 transition-all ${
                     paymentMethod === method.id
                       ? 'border-primary bg-primary/10 text-primary'
                       : 'border-gray-200 hover:border-gray-300'
-                  }`}
+                  } ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <Icon className="w-6 h-6" />
                   <span className="text-sm font-medium">{method.label}</span>
