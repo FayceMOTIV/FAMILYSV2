@@ -44,14 +44,29 @@ export const Customers = () => {
         ) : (
           <div className="space-y-4">
             {customers.map((customer) => (
-              <Card key={customer.id} className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-bold">{customer.name}</h4>
-                  <p className="text-sm text-gray-600">{customer.email}</p>
+              <Card key={customer.id} className="flex items-center justify-between p-4">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-xl">
+                    {customer.name?.charAt(0)?.toUpperCase() || '?'}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-lg">{customer.name || 'Client inconnu'}</h4>
+                    <p className="text-sm text-gray-600">{customer.email}</p>
+                    {customer.phone && (
+                      <p className="text-xs text-gray-500 mt-1">📱 {customer.phone}</p>
+                    )}
+                  </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-black text-primary">{customer.total_spent.toFixed(2)}€</p>
-                  <p className="text-sm text-gray-500">{customer.total_orders} commandes</p>
+                  <p className="text-2xl font-black text-primary">
+                    {(customer.total_spent || 0).toFixed(2)}€
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {customer.total_orders || 0} commandes
+                  </p>
+                  <p className="text-xs text-green-600 font-semibold mt-1">
+                    💰 {(customer.loyalty_points || 0).toFixed(2)}€ fidélité
+                  </p>
                 </div>
               </Card>
             ))}
