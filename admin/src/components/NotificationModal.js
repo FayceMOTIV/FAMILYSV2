@@ -15,6 +15,7 @@ export const NotificationModal = ({ isOpen, onClose, notification, segments, onS
   });
   
   const [loading, setLoading] = useState(false);
+  const [generatingAI, setGeneratingAI] = useState(false);
   const preSelectedSegment = notification?.target_segment || null;
 
   useEffect(() => {
