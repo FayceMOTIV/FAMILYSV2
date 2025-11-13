@@ -204,8 +204,16 @@ const MobileMenu = () => {
                         </div>
                       </div>
                     )}
+                    {/* Promo Badge - Has priority over other badges */}
+                    {!isOutOfStock && (
+                      <PromoBadge 
+                        productId={product.id} 
+                        categoryId={product.category}
+                      />
+                    )}
+                    {/* Show regular tag badge only if no promo */}
                     {!isOutOfStock && product.tags && product.tags.length > 0 && (
-                      <div className="absolute top-2 left-2">
+                      <div className="absolute top-2 left-2 promo-badge-fallback">
                         <span className={`px-2 py-1 rounded-full text-xs font-bold ${getBadgeColor(product.tags[0])}`}>
                           {getBadgeLabel(product.tags[0])}
                         </span>
