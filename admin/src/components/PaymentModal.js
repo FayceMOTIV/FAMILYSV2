@@ -41,10 +41,12 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
   }, [amountReceived, order]);
 
   const paymentMethods = [
-    { id: 'card', label: 'Carte bancaire', icon: CreditCard },
-    { id: 'cash', label: 'Espèces', icon: Banknote },
-    { id: 'mobile', label: 'Mobile (Apple/Google Pay)', icon: Smartphone },
-    { id: 'online', label: 'Paiement en ligne', icon: Globe }
+    { id: 'card', label: 'Carte bancaire', icon: CreditCard, online: true },
+    { id: 'cash', label: 'Espèces', icon: Banknote, online: false },
+    { id: 'mobile', label: 'Mobile (Apple/Google Pay)', icon: Smartphone, online: true },
+    { id: 'online', label: 'Paiement en ligne', icon: Globe, online: true },
+    { id: 'check', label: 'Chèque', icon: CreditCard, online: false },
+    { id: 'ticket_resto', label: 'Ticket Restaurant', icon: CreditCard, online: false }
   ];
 
   const handleAppoint = () => {
