@@ -18,6 +18,7 @@ export const OrdersManagement = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showCancellationModal, setShowCancellationModal] = useState(false);
+  const [showRefundModal, setShowRefundModal] = useState(false);
   const [previousNewOrdersCount, setPreviousNewOrdersCount] = useState(0);
   const [viewMode, setViewMode] = useState('cards'); // 'cards' ou 'list'
   const [showDetailModal, setShowDetailModal] = useState(false);
