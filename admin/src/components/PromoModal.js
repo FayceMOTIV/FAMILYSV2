@@ -123,9 +123,12 @@ export const PromoModal = ({ isOpen, onClose, promo, onSuccess }) => {
               value={formData.discount_type}
               onChange={(e) => setFormData({...formData, discount_type: e.target.value})}
               className="w-full px-4 py-2 border rounded-lg"
+              required
             >
-              <option value="percentage">Pourcentage (%)</option>
-              <option value="fixed">Montant fixe (€)</option>
+              <option value="percentage">💯 Pourcentage (%)</option>
+              <option value="fixed">💶 Montant fixe (€)</option>
+              <option value="bogo">🎁 BOGO (Achetez 1, obtenez 1 gratuit)</option>
+              <option value="free_delivery">🚚 Livraison gratuite</option>
             </select>
           </div>
         </div>
