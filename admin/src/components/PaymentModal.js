@@ -41,12 +41,11 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
   }, [amountReceived, order]);
 
   const paymentMethods = [
-    { id: 'card', label: 'Carte bancaire', icon: CreditCard, online: true },
-    { id: 'cash', label: 'Espèces', icon: Banknote, online: false },
-    { id: 'mobile', label: 'Mobile (Apple/Google Pay)', icon: Smartphone, online: true },
-    { id: 'online', label: 'Paiement en ligne', icon: Globe, online: true },
-    { id: 'check', label: 'Chèque', icon: CreditCard, online: false },
-    { id: 'ticket_resto', label: 'Ticket Restaurant', icon: CreditCard, online: false }
+    { id: 'card_restaurant', label: 'CB (payé au restaurant)', icon: CreditCard, online: false },
+    { id: 'online', label: 'PAIEMENT EN LIGNE', icon: Globe, online: true },
+    { id: 'ticket_resto', label: 'TICKET RESTAURANT', icon: CreditCard, online: false },
+    { id: 'check', label: 'CHEQUE BANCAIRE', icon: CreditCard, online: false },
+    { id: 'cash', label: 'ESPECE', icon: Banknote, online: false }
   ];
 
   const handleAppoint = () => {
