@@ -107,19 +107,19 @@ Tous les backends fonctionnent, testez-les:
 curl "https://resto-dashboard-21.preview.emergentagant.com/api/v1/admin/categories"
 
 # Products  
-curl "https://resto-backoffice-1.preview.emergentagent.com/api/v1/admin/products"
+curl "https://diner-admin.preview.emergentagent.com/api/v1/admin/products"
 
 # Options
-curl "https://resto-backoffice-1.preview.emergentagent.com/api/v1/admin/options"
+curl "https://diner-admin.preview.emergentagent.com/api/v1/admin/options"
 
 # Orders
-curl "https://resto-backoffice-1.preview.emergentagent.com/api/v1/admin/orders"
+curl "https://diner-admin.preview.emergentagent.com/api/v1/admin/orders"
 
 # Notifications
-curl "https://resto-backoffice-1.preview.emergentagent.com/api/v1/admin/notifications"
+curl "https://diner-admin.preview.emergentagent.com/api/v1/admin/notifications"
 
 # Promos
-curl "https://resto-backoffice-1.preview.emergentagent.com/api/v1/admin/promos"
+curl "https://diner-admin.preview.emergentagent.com/api/v1/admin/promos"
 ```
 
 ---

@@ -11,7 +11,7 @@ import sys
 from typing import Dict, Optional
 
 # Backend URL from environment
-BACKEND_URL = "https://resto-backoffice-1.preview.emergentagent.com"
+BACKEND_URL = "https://diner-admin.preview.emergentagent.com"
 
 class BackendTester:
     def __init__(self):
@@ -241,7 +241,7 @@ class BackendTester:
         try:
             # Test preflight request
             headers = {
-                "Origin": "https://resto-backoffice-1.preview.emergentagent.com",
+                "Origin": "https://diner-admin.preview.emergentagent.com",
                 "Access-Control-Request-Method": "POST",
                 "Access-Control-Request-Headers": "authorization,content-type"
             }

@@ -3,7 +3,7 @@ import { Clock, Truck, CheckCircle, Package, Printer, XCircle } from 'lucide-rea
 import axios from 'axios';
 import useNotificationSound from '../hooks/useNotificationSound';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://resto-backoffice-1.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_API_URL || 'https://diner-admin.preview.emergentagent.com';
 
 export const OrdersKiosk = () => {
   const [orders, setOrders] = useState([]);

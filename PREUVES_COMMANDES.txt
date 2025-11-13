@@ -19,7 +19,7 @@ Date: 12 novembre 2025 18:50
 
 2. TEST API BACKEND
 -------------------
-Commande: curl "https://resto-backoffice-1.preview.emergentagent.com/api/v1/admin/orders"
+Commande: curl "https://diner-admin.preview.emergentagent.com/api/v1/admin/orders"
 
 Résultat: ✅ 50 commandes retournées
 Exemples:
@@ -54,7 +54,7 @@ OPTION 3: Tester les commandes via l'API directement
 -------------------------
 Ouvrez un terminal et tapez:
 
-curl "https://resto-backoffice-1.preview.emergentagent.com/api/v1/admin/orders" | jq '.orders | length'
+curl "https://diner-admin.preview.emergentagent.com/api/v1/admin/orders" | jq '.orders | length'
 
 Vous verrez: 50
 

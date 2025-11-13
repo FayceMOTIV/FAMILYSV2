@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test ALL back office admin endpoints for Family's restaurant. Backend URL: https://resto-backoffice-1.preview.emergentagent.com. Test Categories, Products, Options, Orders, Notifications, Promos, Upload, and AI Marketing endpoints with full CRUD operations."
+user_problem_statement: "Test ALL back office admin endpoints for Family's restaurant. Backend URL: https://diner-admin.preview.emergentagent.com. Test Categories, Products, Options, Orders, Notifications, Promos, Upload, and AI Marketing endpoints with full CRUD operations."
 
 backend:
   - task: "Admin Authentication Login"
@@ -193,7 +193,7 @@ backend:
         - comment: "Testing CORS headers and configuration"
         - working: false
         - agent: "testing"
-        - comment: "❌ CORS MISCONFIGURATION: CORS_ORIGINS in .env is set to 'http://localhost:3000,http://localhost:3001' but production URL is https://resto-backoffice-1.preview.emergentagent.com. This will cause CORS errors for frontend requests from production domain. Need to update CORS_ORIGINS to include production URL."
+        - comment: "❌ CORS MISCONFIGURATION: CORS_ORIGINS in .env is set to 'http://localhost:3000,http://localhost:3001' but production URL is https://diner-admin.preview.emergentagent.com. This will cause CORS errors for frontend requests from production domain. Need to update CORS_ORIGINS to include production URL."
 
 frontend:
   - task: "Splash Screen & Animations"
@@ -526,7 +526,7 @@ test_plan:
 
 agent_communication:
     - agent: "testing"
-    - message: "Starting comprehensive backend API testing for ALL admin endpoints. Testing Categories, Products, Options, Orders, Notifications, Promos, Upload, and AI Marketing with full CRUD operations on https://resto-backoffice-1.preview.emergentagent.com"
+    - message: "Starting comprehensive backend API testing for ALL admin endpoints. Testing Categories, Products, Options, Orders, Notifications, Promos, Upload, and AI Marketing with full CRUD operations on https://diner-admin.preview.emergentagent.com"
     - agent: "testing"
     - message: "COMPREHENSIVE ADMIN BACKEND TESTING COMPLETED - RESULTS: 8/8 endpoint groups working correctly ✅. Categories ✅, Products ✅, Options ✅, Orders ✅, Notifications ✅, Promos ✅ (after date fix), Upload ✅, AI Marketing ✅ (after auth disable). Fixed syntax error in notifications.py and date serialization in promos.py. All 28 individual endpoint tests passing. Full back office functionality confirmed."
     - agent: "main"
