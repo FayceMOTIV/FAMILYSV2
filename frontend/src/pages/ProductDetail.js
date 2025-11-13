@@ -46,16 +46,31 @@ const ProductDetail = () => {
     loadProduct();
   }, [slug]);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] dark:bg-[#121212]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#C62828] mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] dark:bg-[#121212]">
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Produit non trouvé</h2>
+          <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Produit non trouvé</h2>
           <Button onClick={() => navigate('/menu')}>Retour au menu</Button>
         </div>
       </div>
     );
   }
+
+  const isOutOfStock = product.is_out_of_stock || false;
+  const imageUrl = product.image_url || product.image || product.imageUrl;
+  const basePrice = product.base_price || product.basePrice || 0;
 
   const handleOptionChange = (groupId, optionId, isMulti) => {
     if (isMulti) {
