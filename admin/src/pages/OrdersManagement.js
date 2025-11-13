@@ -576,14 +576,18 @@ export const OrdersManagement = () => {
                     {order.items?.map((item, idx) => (
                       <div key={idx} className="flex justify-between items-center p-2 bg-gray-50 rounded">
                         <div className="flex-1">
-                          <p className="font-semibold text-gray-800">{item.name}</p>
+                          <p className="font-semibold text-gray-800">
+                            <span className="inline-block bg-primary text-white px-2 py-0.5 rounded-full text-sm font-bold mr-2">
+                              x{item.quantity}
+                            </span>
+                            {item.name}
+                          </p>
                           {item.notes && (
-                            <p className="text-xs text-gray-500">📝 {item.notes}</p>
+                            <p className="text-xs text-gray-500 ml-12">📝 {item.notes}</p>
                           )}
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-gray-800">x{item.quantity}</p>
-                          <p className="text-sm text-gray-600">{item.total_price}€</p>
+                          <p className="text-sm font-bold text-gray-800">{item.total_price?.toFixed(2)}€</p>
                         </div>
                       </div>
                     ))}
