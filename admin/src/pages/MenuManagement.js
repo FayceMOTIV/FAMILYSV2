@@ -36,6 +36,18 @@ export const MenuManagement = () => {
     loadData();
   }, []);
 
+  // Close stock menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (openStockMenu && !e.target.closest('.relative')) {
+        setOpenStockMenu(null);
+      }
+    };
+    
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [openStockMenu]);
+
   const loadData = async () => {
     setLoading(true);
     try {
