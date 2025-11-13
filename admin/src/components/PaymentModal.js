@@ -129,8 +129,8 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
 
         {/* Mode de paiement */}
         <div>
-          <label className="block text-sm font-medium mb-3">Mode de paiement *</label>
-          <div className="grid grid-cols-2 gap-3">
+          <label className="block text-xs font-medium mb-2">Mode de paiement *</label>
+          <div className="grid grid-cols-3 gap-2">
             {paymentMethods.map(method => {
               const Icon = method.icon;
               const isDisabled = isPaymentLocked;
@@ -140,14 +140,14 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
                   type="button"
                   onClick={() => !isDisabled && setPaymentMethod(method.id)}
                   disabled={isDisabled}
-                  className={`p-4 border-2 rounded-lg flex flex-col items-center gap-2 transition-all ${
+                  className={`p-2 border-2 rounded flex flex-col items-center gap-1 transition-all ${
                     paymentMethod === method.id
                       ? 'border-primary bg-primary/10 text-primary'
                       : 'border-gray-200 hover:border-gray-300'
                   } ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  <Icon className="w-6 h-6" />
-                  <span className="text-sm font-medium">{method.label}</span>
+                  <Icon className="w-5 h-5" />
+                  <span className="text-xs font-medium text-center leading-tight">{method.label}</span>
                 </button>
               );
             })}
@@ -156,7 +156,7 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
 
         {/* Montant reçu (pour espèces principalement) */}
         <div>
-          <label className="block text-sm font-medium mb-2">
+          <label className="block text-xs font-medium mb-1">
             Montant reçu {paymentMethod === 'cash' && '(Espèces)'}
           </label>
           <div className="flex gap-2">
@@ -167,7 +167,7 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
               value={amountReceived}
               onChange={(e) => setAmountReceived(e.target.value)}
               disabled={isPaymentLocked}
-              className={`flex-1 px-4 py-3 border rounded-lg text-lg ${isPaymentLocked ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+              className={`flex-1 px-3 py-2 border rounded text-base ${isPaymentLocked ? 'bg-gray-100 cursor-not-allowed' : ''}`}
               placeholder={`${order.total.toFixed(2)}€`}
             />
             <Button
@@ -175,17 +175,11 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
               variant="outline"
               onClick={handleAppoint}
               disabled={isPaymentLocked}
-              className="px-6"
+              size="sm"
             >
               💵 Appoint
             </Button>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
-            {isPaymentLocked 
-              ? '🔒 Ce champ ne peut pas être modifié pour les paiements en ligne'
-              : 'Laissez vide si paiement exact, ou entrez le montant remis par le client'
-            }
-          </p>
         </div>
 
         {/* Monnaie à rendre */}
