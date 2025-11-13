@@ -60,19 +60,21 @@ export const Categories = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories.map((category) => (
-            <Card key={category.id}>
-              {category.image ? (
-                <img
-                  src={category.image}
-                  alt={category.name}
-                  className="w-full h-32 object-cover rounded-lg mb-4"
-                />
-              ) : (
-                <div className="w-full h-32 bg-gray-100 rounded-lg mb-4 flex items-center justify-center">
-                  <FolderOpen className="w-12 h-12 text-gray-400" />
-                </div>
-              )}
+          {categories.map((category) => {
+            const imageUrl = category.image_url || category.image;
+            return (
+              <Card key={category.id}>
+                {imageUrl ? (
+                  <img
+                    src={imageUrl}
+                    alt={category.name}
+                    className="w-full h-32 object-cover rounded-lg mb-4"
+                  />
+                ) : (
+                  <div className="w-full h-32 bg-gray-100 rounded-lg mb-4 flex items-center justify-center">
+                    <FolderOpen className="w-12 h-12 text-gray-400" />
+                  </div>
+                )}
               <div className="flex items-center justify-between">
                 <h4 className="font-bold text-lg">{category.name}</h4>
                 <div className="flex space-x-2">
