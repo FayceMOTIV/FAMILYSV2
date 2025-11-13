@@ -658,6 +658,355 @@ class BackendTester:
             self.log_result(test_name, False, f"Exception: {str(e)}")
             return False
 
+    async def get_test_product_id(self) -> Optional[str]:
+        """Get a product ID for stock testing."""
+        try:
+            async with self.session.get(
+                f"{self.base_url}/api/v1/admin/products",
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status == 200:
+                    data = await response.json()
+                    products = data.get("products", [])
+                    if products:
+                        return products[0].get("id")
+                return None
+                
+        except Exception:
+            return None
+
+    async def test_stock_status_2h(self, product_id: str) -> bool:
+        """Test setting product out of stock for 2 hours."""
+        test_name = "Stock Status - 2 Hours"
+        
+        if not product_id:
+            self.log_result(test_name, False, "No product ID available")
+            return False
+        
+        try:
+            stock_data = {"status": "2h"}
+            
+            async with self.session.post(
+                f"{self.base_url}/api/v1/admin/products/{product_id}/stock-status",
+                json=stock_data,
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status == 200:
+                    data = await response.json()
+                    if data.get("success") and data.get("resume_at"):
+                        # Verify the product is updated
+                        async with self.session.get(
+                            f"{self.base_url}/api/v1/admin/products",
+                            headers={"Content-Type": "application/json"}
+                        ) as get_response:
+                            
+                            if get_response.status == 200:
+                                products_data = await get_response.json()
+                                updated_product = None
+                                for product in products_data.get("products", []):
+                                    if product.get("id") == product_id:
+                                        updated_product = product
+                                        break
+                                
+                                if updated_product:
+                                    stock_resume_at = updated_product.get("stock_resume_at")
+                                    is_out_of_stock = updated_product.get("is_out_of_stock")
+                                    
+                                    if stock_resume_at and is_out_of_stock:
+                                        # Parse and verify timestamp is ~2 hours from now
+                                        from datetime import datetime, timezone
+                                        resume_time = datetime.fromisoformat(stock_resume_at.replace('Z', '+00:00'))
+                                        now = datetime.now(timezone.utc)
+                                        time_diff = (resume_time - now).total_seconds()
+                                        
+                                        # Should be approximately 2 hours (7200 seconds), allow 60 second tolerance
+                                        if 7140 <= time_diff <= 7260:
+                                            self.log_result(test_name, True, f"Product set to out of stock for 2h, resume at: {stock_resume_at}")
+                                            return True
+                                        else:
+                                            self.log_result(test_name, False, f"Incorrect resume time: {time_diff} seconds from now (expected ~7200)")
+                                            return False
+                                    else:
+                                        self.log_result(test_name, False, f"Stock fields not set correctly: resume_at={stock_resume_at}, is_out_of_stock={is_out_of_stock}")
+                                        return False
+                                else:
+                                    self.log_result(test_name, False, f"Could not find updated product {product_id}")
+                                    return False
+                            else:
+                                self.log_result(test_name, False, f"Could not verify product update: HTTP {get_response.status}")
+                                return False
+                    else:
+                        self.log_result(test_name, False, "Stock update failed", data)
+                        return False
+                else:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"HTTP {response.status}: {error_data}")
+                    return False
+                    
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
+    async def test_stock_status_today(self, product_id: str) -> bool:
+        """Test setting product out of stock until midnight."""
+        test_name = "Stock Status - Today"
+        
+        if not product_id:
+            self.log_result(test_name, False, "No product ID available")
+            return False
+        
+        try:
+            stock_data = {"status": "today"}
+            
+            async with self.session.post(
+                f"{self.base_url}/api/v1/admin/products/{product_id}/stock-status",
+                json=stock_data,
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status == 200:
+                    data = await response.json()
+                    if data.get("success") and data.get("resume_at"):
+                        # Verify the product is updated
+                        async with self.session.get(
+                            f"{self.base_url}/api/v1/admin/products",
+                            headers={"Content-Type": "application/json"}
+                        ) as get_response:
+                            
+                            if get_response.status == 200:
+                                products_data = await get_response.json()
+                                updated_product = None
+                                for product in products_data.get("products", []):
+                                    if product.get("id") == product_id:
+                                        updated_product = product
+                                        break
+                                
+                                if updated_product:
+                                    stock_resume_at = updated_product.get("stock_resume_at")
+                                    is_out_of_stock = updated_product.get("is_out_of_stock")
+                                    
+                                    if stock_resume_at and is_out_of_stock:
+                                        # Verify timestamp is set to 23:59:59 of current day
+                                        from datetime import datetime, timezone
+                                        resume_time = datetime.fromisoformat(stock_resume_at.replace('Z', '+00:00'))
+                                        
+                                        if resume_time.hour == 23 and resume_time.minute == 59 and resume_time.second == 59:
+                                            self.log_result(test_name, True, f"Product set to out of stock until midnight: {stock_resume_at}")
+                                            return True
+                                        else:
+                                            self.log_result(test_name, False, f"Incorrect midnight time: {resume_time.hour}:{resume_time.minute}:{resume_time.second}")
+                                            return False
+                                    else:
+                                        self.log_result(test_name, False, f"Stock fields not set correctly: resume_at={stock_resume_at}, is_out_of_stock={is_out_of_stock}")
+                                        return False
+                                else:
+                                    self.log_result(test_name, False, f"Could not find updated product {product_id}")
+                                    return False
+                            else:
+                                self.log_result(test_name, False, f"Could not verify product update: HTTP {get_response.status}")
+                                return False
+                    else:
+                        self.log_result(test_name, False, "Stock update failed", data)
+                        return False
+                else:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"HTTP {response.status}: {error_data}")
+                    return False
+                    
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
+    async def test_stock_status_indefinite(self, product_id: str) -> bool:
+        """Test setting product out of stock indefinitely."""
+        test_name = "Stock Status - Indefinite"
+        
+        if not product_id:
+            self.log_result(test_name, False, "No product ID available")
+            return False
+        
+        try:
+            stock_data = {"status": "indefinite"}
+            
+            async with self.session.post(
+                f"{self.base_url}/api/v1/admin/products/{product_id}/stock-status",
+                json=stock_data,
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status == 200:
+                    data = await response.json()
+                    if data.get("success"):
+                        # Verify the product is updated
+                        async with self.session.get(
+                            f"{self.base_url}/api/v1/admin/products",
+                            headers={"Content-Type": "application/json"}
+                        ) as get_response:
+                            
+                            if get_response.status == 200:
+                                products_data = await get_response.json()
+                                updated_product = None
+                                for product in products_data.get("products", []):
+                                    if product.get("id") == product_id:
+                                        updated_product = product
+                                        break
+                                
+                                if updated_product:
+                                    stock_resume_at = updated_product.get("stock_resume_at")
+                                    is_out_of_stock = updated_product.get("is_out_of_stock")
+                                    
+                                    if stock_resume_at is None and is_out_of_stock:
+                                        self.log_result(test_name, True, f"Product set to out of stock indefinitely (no resume time)")
+                                        return True
+                                    else:
+                                        self.log_result(test_name, False, f"Stock fields not set correctly: resume_at={stock_resume_at}, is_out_of_stock={is_out_of_stock}")
+                                        return False
+                                else:
+                                    self.log_result(test_name, False, f"Could not find updated product {product_id}")
+                                    return False
+                            else:
+                                self.log_result(test_name, False, f"Could not verify product update: HTTP {get_response.status}")
+                                return False
+                    else:
+                        self.log_result(test_name, False, "Stock update failed", data)
+                        return False
+                else:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"HTTP {response.status}: {error_data}")
+                    return False
+                    
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
+    async def test_stock_status_available(self, product_id: str) -> bool:
+        """Test setting product back to available."""
+        test_name = "Stock Status - Available"
+        
+        if not product_id:
+            self.log_result(test_name, False, "No product ID available")
+            return False
+        
+        try:
+            stock_data = {"status": "available"}
+            
+            async with self.session.post(
+                f"{self.base_url}/api/v1/admin/products/{product_id}/stock-status",
+                json=stock_data,
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status == 200:
+                    data = await response.json()
+                    if data.get("success"):
+                        # Verify the product is updated
+                        async with self.session.get(
+                            f"{self.base_url}/api/v1/admin/products",
+                            headers={"Content-Type": "application/json"}
+                        ) as get_response:
+                            
+                            if get_response.status == 200:
+                                products_data = await get_response.json()
+                                updated_product = None
+                                for product in products_data.get("products", []):
+                                    if product.get("id") == product_id:
+                                        updated_product = product
+                                        break
+                                
+                                if updated_product:
+                                    stock_resume_at = updated_product.get("stock_resume_at")
+                                    is_out_of_stock = updated_product.get("is_out_of_stock")
+                                    
+                                    if stock_resume_at is None and not is_out_of_stock:
+                                        self.log_result(test_name, True, f"Product set back to available (in stock)")
+                                        return True
+                                    else:
+                                        self.log_result(test_name, False, f"Stock fields not set correctly: resume_at={stock_resume_at}, is_out_of_stock={is_out_of_stock}")
+                                        return False
+                                else:
+                                    self.log_result(test_name, False, f"Could not find updated product {product_id}")
+                                    return False
+                            else:
+                                self.log_result(test_name, False, f"Could not verify product update: HTTP {get_response.status}")
+                                return False
+                    else:
+                        self.log_result(test_name, False, "Stock update failed", data)
+                        return False
+                else:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"HTTP {response.status}: {error_data}")
+                    return False
+                    
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
+    async def test_stock_persistence(self, product_id: str) -> bool:
+        """Test that stock changes persist correctly in database."""
+        test_name = "Stock Persistence Verification"
+        
+        if not product_id:
+            self.log_result(test_name, False, "No product ID available")
+            return False
+        
+        try:
+            # Set to 2h status first
+            stock_data = {"status": "2h"}
+            
+            async with self.session.post(
+                f"{self.base_url}/api/v1/admin/products/{product_id}/stock-status",
+                json=stock_data,
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status != 200:
+                    self.log_result(test_name, False, "Could not set initial stock status")
+                    return False
+            
+            # Wait a moment then verify persistence
+            import asyncio
+            await asyncio.sleep(1)
+            
+            # Get product details multiple times to verify persistence
+            for i in range(3):
+                async with self.session.get(
+                    f"{self.base_url}/api/v1/admin/products",
+                    headers={"Content-Type": "application/json"}
+                ) as get_response:
+                    
+                    if get_response.status == 200:
+                        products_data = await get_response.json()
+                        updated_product = None
+                        for product in products_data.get("products", []):
+                            if product.get("id") == product_id:
+                                updated_product = product
+                                break
+                        
+                        if updated_product:
+                            stock_resume_at = updated_product.get("stock_resume_at")
+                            is_out_of_stock = updated_product.get("is_out_of_stock")
+                            
+                            if not (stock_resume_at and is_out_of_stock):
+                                self.log_result(test_name, False, f"Stock data not persistent on attempt {i+1}")
+                                return False
+                        else:
+                            self.log_result(test_name, False, f"Product not found on attempt {i+1}")
+                            return False
+                    else:
+                        self.log_result(test_name, False, f"Could not get products on attempt {i+1}")
+                        return False
+                
+                await asyncio.sleep(0.5)
+            
+            self.log_result(test_name, True, "Stock data persists correctly across multiple requests")
+            return True
+                    
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
     async def run_all_tests(self):
         """Run all backend tests."""
         print(f"🚀 Starting Backend API Tests for: {self.base_url}")
