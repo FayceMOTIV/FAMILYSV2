@@ -712,6 +712,20 @@ export const OrdersManagement = () => {
         onConfirm={handleCancelOrder}
       />
 
+      {/* Modal Confirmation Changement Statut */}
+      <ConfirmationModal
+        isOpen={showConfirmationModal}
+        onClose={() => {
+          setShowConfirmationModal(false);
+          setPendingStatusChange(null);
+        }}
+        onConfirm={updateOrderStatus}
+        title={pendingStatusChange ? getStatusChangeConfirmation(pendingStatusChange.currentStatus, pendingStatusChange.newStatus).title : ''}
+        message={pendingStatusChange ? getStatusChangeConfirmation(pendingStatusChange.currentStatus, pendingStatusChange.newStatus).message : ''}
+        confirmText={pendingStatusChange ? getStatusChangeConfirmation(pendingStatusChange.currentStatus, pendingStatusChange.newStatus).confirmText : 'Confirmer'}
+        type={pendingStatusChange ? getStatusChangeConfirmation(pendingStatusChange.currentStatus, pendingStatusChange.newStatus).type : 'warning'}
+      />
+
       {/* Modal Détail Commande (Vue Liste) */}
       {showDetailModal && selectedOrder && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
