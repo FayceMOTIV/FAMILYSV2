@@ -96,8 +96,9 @@ export const Revenue = () => {
     const stats = {
       total: 0,
       cash: 0,
-      card: 0,
-      mobile: 0,
+      card_restaurant: 0,
+      ticket_resto: 0,
+      check: 0,
       online: 0,
       orderCount: orders.length
     };
@@ -109,11 +110,13 @@ export const Revenue = () => {
       const method = order.payment_method?.toLowerCase() || 'cash';
       if (method === 'cash') {
         stats.cash += amount;
-      } else if (method === 'card') {
-        stats.card += amount;
-      } else if (['mobile', 'apple_pay', 'google_pay'].includes(method)) {
-        stats.mobile += amount;
-      } else {
+      } else if (method === 'card_restaurant') {
+        stats.card_restaurant += amount;
+      } else if (method === 'ticket_resto') {
+        stats.ticket_resto += amount;
+      } else if (method === 'check') {
+        stats.check += amount;
+      } else if (method === 'online') {
         stats.online += amount;
       }
     });
