@@ -57,13 +57,13 @@ async def convert_ai_campaign_to_promotion_v2(campaign: Dict[str, Any]) -> Promo
         try:
             hours, minutes = campaign["start_time"].split(":")
             start_time_obj = time(int(hours), int(minutes))
-        except:
+        except (ValueError, AttributeError):
             pass
     if campaign.get("end_time"):
         try:
             hours, minutes = campaign["end_time"].split(":")
             end_time_obj = time(int(hours), int(minutes))
-        except:
+        except (ValueError, AttributeError):
             pass
     
     # Créer la promotion V2
