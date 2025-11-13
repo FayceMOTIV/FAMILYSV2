@@ -397,7 +397,8 @@ metadata:
 
 test_plan:
   current_focus:
-    []
+    - "Category Reordering System"
+    - "Partial Refunds System"
   stuck_tasks:
     - "AI Sales Analysis"
     - "AI Promo Suggestion"
