@@ -147,21 +147,44 @@ export const PromoModal = ({ isOpen, onClose, promo, onSuccess }) => {
         </div>
 
         <div className="grid grid-cols-3 gap-4">
-          {/* Discount Value */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Valeur * {formData.discount_type === 'percentage' ? '(%)' : '(€)'}
-            </label>
-            <input
-              type="number"
-              step="0.01"
-              min="0"
-              value={formData.discount_value}
-              onChange={(e) => setFormData({...formData, discount_value: e.target.value})}
-              className="w-full px-4 py-2 border rounded-lg"
-              required
-            />
-          </div>
+          {/* Discount Value - Hide for BOGO and Free Delivery */}
+          {!['bogo', 'free_delivery'].includes(formData.discount_type) && (
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Valeur * {formData.discount_type === 'percentage' ? '(%)' : '(€)'}
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.discount_value}
+                onChange={(e) => setFormData({...formData, discount_value: e.target.value})}
+                className="w-full px-4 py-2 border rounded-lg"
+                required
+              />
+            </div>
+          )}
+          
+          {/* Info for BOGO and Free Delivery */}
+          {formData.discount_type === 'bogo' && (
+            <div className="col-span-3">
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  🎁 <strong>BOGO:</strong> Le client obtient le 2ème article identique gratuitement
+                </p>
+              </div>
+            </div>
+          )}
+          
+          {formData.discount_type === 'free_delivery' && (
+            <div className="col-span-3">
+              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-sm text-green-800">
+                  🚚 <strong>Livraison gratuite:</strong> Les frais de livraison seront offerts
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Min Order Amount */}
           <div>
