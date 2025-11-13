@@ -443,8 +443,12 @@ export const MenuManagement = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {categories.map((category) => {
+              {[...categories].sort((a, b) => (a.order || 0) - (b.order || 0)).map((category, index) => {
                 const imageUrl = category.image_url || category.image;
+                const sortedCategories = [...categories].sort((a, b) => (a.order || 0) - (b.order || 0));
+                const isFirst = index === 0;
+                const isLast = index === sortedCategories.length - 1;
+                
                 return (
                   <Card key={category.id}>
                     {imageUrl ? (
@@ -458,29 +462,58 @@ export const MenuManagement = () => {
                         <FolderOpen className="w-12 h-12 text-orange-400" />
                       </div>
                     )}
-                    <h4 className="font-bold text-lg mb-2">{category.name}</h4>
+                    <div className="flex items-start justify-between mb-2">
+                      <h4 className="font-bold text-lg">{category.name}</h4>
+                      <span className="text-xs bg-gray-100 px-2 py-1 rounded">#{index + 1}</span>
+                    </div>
                     <p className="text-sm text-gray-600 mb-4 line-clamp-2">{category.description}</p>
-                  <div className="flex space-x-2">
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      onClick={() => {
-                        setEditingCategory(category);
-                        setShowCategoryModal(true);
-                      }}
-                      className="flex-1"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="danger" 
-                      onClick={() => handleDeleteCategory(category.id)}
-                      className="flex-1"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
+                    
+                    {/* Reorder buttons */}
+                    <div className="flex space-x-2 mb-2">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => handleMoveCategoryUp(category, index)}
+                        disabled={isFirst}
+                        className="flex-1"
+                        title="Monter"
+                      >
+                        <ArrowUp className="w-4 h-4" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => handleMoveCategoryDown(category, index)}
+                        disabled={isLast}
+                        className="flex-1"
+                        title="Descendre"
+                      >
+                        <ArrowDown className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    
+                    {/* Edit and Delete buttons */}
+                    <div className="flex space-x-2">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => {
+                          setEditingCategory(category);
+                          setShowCategoryModal(true);
+                        }}
+                        className="flex-1"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="danger" 
+                        onClick={() => handleDeleteCategory(category.id)}
+                        className="flex-1"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
                 </Card>
               );
               })}
