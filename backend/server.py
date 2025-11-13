@@ -129,6 +129,23 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+@app.on_event("startup")
+async def startup_scheduler():
+    """Démarre le scheduler IA Marketing au démarrage de l'app"""
+    from services.scheduler_service import start_scheduler
+    try:
+        start_scheduler()
+        logger.info("✅ Scheduler IA Marketing démarré avec succès")
+    except Exception as e:
+        logger.error(f"❌ Erreur démarrage scheduler: {str(e)}")
+
 @app.on_event("shutdown")
-async def shutdown_db_client():
+async def shutdown_services():
+    """Arrête les services au shutdown"""
+    from services.scheduler_service import stop_scheduler
+    try:
+        stop_scheduler()
+        logger.info("🛑 Scheduler IA Marketing arrêté")
+    except:
+        pass
     close_db()
