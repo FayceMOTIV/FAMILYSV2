@@ -6,7 +6,7 @@ import { ProductModal } from '../components/ProductModal';
 import { CategoryModal } from '../components/CategoryModal';
 import { OptionModal } from '../components/OptionModal';
 import { productsAPI, categoriesAPI } from '../services/api';
-import { Plus, Edit2, Trash2, Package, Copy, FolderOpen, Sliders, Edit } from 'lucide-react';
+import { Plus, Edit2, Trash2, Package, Copy, FolderOpen, Sliders, Edit, MoreVertical, Clock, Calendar, XCircle, CheckCircle } from 'lucide-react';
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://resto-backoffice-1.preview.emergentagent.com';
