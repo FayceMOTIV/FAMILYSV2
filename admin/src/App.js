@@ -43,6 +43,7 @@ function App() {
             <Route path="revenue" element={<Revenue />} />
             <Route path="categories" element={<Categories />} />
             <Route path="promos" element={<Promos />} />
+            <Route path="promotions" element={<PromotionsV2 />} />
             <Route path="customers" element={<Customers />} />
             <Route path="notifications" element={<Notifications />} />
             <Route path="reservations" element={<Reservations />} />
