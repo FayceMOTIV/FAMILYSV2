@@ -9,11 +9,20 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
   const [change, setChange] = useState(0);
   const [loading, setLoading] = useState(false);
 
+  // Paiements en ligne (non modifiables)
+  const onlinePaymentMethods = ['card', 'mobile', 'online', 'apple_pay', 'google_pay'];
+  
+  // Vérifier si le paiement est déjà enregistré et s'il est modifiable
+  const isPaymentLocked = order?.payment_status === 'paid' && 
+                          onlinePaymentMethods.includes(order?.payment_method);
+  
+  const isModifyingPayment = order?.payment_status === 'paid';
+
   useEffect(() => {
     if (order && isOpen) {
       setPaymentMethod(order.payment_method || 'card');
-      setAmountReceived('');
-      setChange(0);
+      setAmountReceived(order.amount_received?.toString() || '');
+      setChange(order.change_given || 0);
     }
   }, [order, isOpen]);
 
