@@ -1827,46 +1827,101 @@ class BackendTester:
 
     async def run_all_tests(self):
         """Run all backend tests."""
-        print(f"🚀 Starting Backend API Tests for: {self.base_url}")
+        print("🚀 Starting AI Marketing ↔ Promotions V2 Bridge Testing...")
+        print(f"Backend URL: {self.base_url}")
         print("=" * 60)
         
-        # First get orders to have order IDs for testing
-        orders_success, first_order_id = await self.test_get_orders()
+        # Test login first
+        login_success = await self.test_login()
+        if not login_success:
+            print("❌ Login failed - cannot continue with authenticated tests")
+            return
         
-        if not orders_success or not first_order_id:
-            print("❌ Cannot proceed with payment/cancellation tests - no orders available")
-            return False
+        # Test AI Marketing ↔ Promotions V2 Bridge System
+        print("\n🤖 Testing AI Marketing ↔ Promotions V2 Bridge System...")
+        await self.test_ai_campaign_generation()
         
-        # Test sequence for payment and cancellation features
-        tests = [
-            ("Payment Recording", lambda: self.test_payment_recording(first_order_id)),
-            ("Payment Methods", lambda: self.test_payment_methods(first_order_id)),
-            ("Order Cancellation with Reason", lambda: self.test_order_cancellation(first_order_id)),
-            ("Cancellation Without Reason", lambda: self.test_cancellation_without_reason(first_order_id)),
-            ("Exact Amount Payment", lambda: self.test_exact_amount_payment(first_order_id)),
-            ("Paid Order Cancellation Retention", self.test_paid_order_cancellation),
-        ]
+        pending_success, campaign_id = await self.test_get_pending_campaigns()
         
-        passed = 1  # Count the successful get_orders test
-        total = len(tests) + 1  # +1 for get_orders test
+        if pending_success and campaign_id:
+            # Test accepting a campaign
+            accept_success, promotion_id = await self.test_validate_campaign_accept(campaign_id)
+            
+            if accept_success and promotion_id:
+                await self.test_verify_promotion_v2_draft(promotion_id)
+            
+            # Test refusing another campaign (if available)
+            # Get another campaign for refusal test
+            pending_success2, campaign_id2 = await self.test_get_pending_campaigns()
+            if pending_success2 and campaign_id2 and campaign_id2 != campaign_id:
+                await self.test_validate_campaign_refuse(campaign_id2)
         
-        for test_name, test_func in tests:
-            try:
-                result = await test_func()
-                if result:
-                    passed += 1
-            except Exception as e:
-                self.log_result(test_name, False, f"Test execution failed: {str(e)}")
+        await self.test_ai_marketing_stats()
+        await self.test_nightly_job_trigger()
         
+        # Test basic endpoints
+        print("\n🔧 Testing Basic AI Endpoints...")
+        await self.test_cors_headers()
+        await self.test_ai_chat()
+        await self.test_marketing_generation()
+        await self.test_sales_analysis()
+        await self.test_promo_suggestion()
+        
+        # Test order management
+        print("\n📦 Testing Order Management...")
+        orders_success, order_id = await self.test_get_orders()
+        if orders_success and order_id:
+            await self.test_payment_recording(order_id)
+            await self.test_payment_methods(order_id)
+            await self.test_order_cancellation(order_id)
+            await self.test_cancellation_without_reason(order_id)
+            await self.test_exact_amount_payment(order_id)
+        
+        await self.test_paid_order_cancellation()
+        
+        # Test stock management
+        print("\n📦 Testing Stock Management...")
+        product_id = await self.get_test_product_id()
+        if product_id:
+            await self.test_stock_status_2h(product_id)
+            await self.test_stock_status_today(product_id)
+            await self.test_stock_status_indefinite(product_id)
+            await self.test_stock_status_available(product_id)
+            await self.test_stock_persistence(product_id)
+        
+        # Test category reordering
+        print("\n📂 Testing Category Management...")
+        await self.test_category_reordering()
+        
+        # Test partial refunds
+        print("\n💰 Testing Partial Refunds...")
+        await self.test_partial_refund_valid_items()
+        await self.test_partial_refund_non_card_payment()
+        await self.test_partial_refund_invalid_indices()
+        
+        # Print summary
         print("\n" + "=" * 60)
-        print(f"📊 Test Results: {passed}/{total} tests passed")
+        print("📊 TEST SUMMARY")
+        print("=" * 60)
         
-        if passed == total:
-            print("🎉 All tests PASSED!")
-            return True
+        passed = sum(1 for result in self.test_results if result["success"])
+        total = len(self.test_results)
+        
+        print(f"Total Tests: {total}")
+        print(f"Passed: {passed}")
+        print(f"Failed: {total - passed}")
+        print(f"Success Rate: {(passed/total*100):.1f}%")
+        
+        # Show failed tests
+        failed_tests = [result for result in self.test_results if not result["success"]]
+        if failed_tests:
+            print("\n❌ FAILED TESTS:")
+            for test in failed_tests:
+                print(f"  - {test['test']}: {test['message']}")
         else:
-            print(f"⚠️  {total - passed} tests FAILED")
-            return False
+            print("\n✅ ALL TESTS PASSED!")
+        
+        print("=" * 60)
 
     async def test_promotions_crud(self) -> bool:
         """Test all CRUD operations on promotions endpoints."""
