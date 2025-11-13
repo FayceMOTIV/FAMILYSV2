@@ -660,7 +660,7 @@ export const OrdersManagement = () => {
                         </div>
                         {/* Boutons actions paiement */}
                         <div className="space-y-2">
-                          {!['card', 'mobile', 'online', 'apple_pay', 'google_pay'].includes(order.payment_method) && (
+                          {!['online'].includes(order.payment_method) && (
                             <Button
                               onClick={() => {
                                 setSelectedOrder(order);
