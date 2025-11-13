@@ -193,36 +193,16 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
           </div>
         )}
 
-        {/* Récapitulatif */}
-        <div className="border-t pt-4">
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Commande #{order.order_number}</span>
-              <span className="font-medium">{order.total.toFixed(2)}€</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Mode de paiement</span>
-              <span className="font-medium">
-                {paymentMethods.find(m => m.id === paymentMethod)?.label}
-              </span>
-            </div>
-            {amountReceived && parseFloat(amountReceived) !== order.total && (
-              <div className="flex justify-between text-green-600">
-                <span>Montant reçu</span>
-                <span className="font-medium">{parseFloat(amountReceived).toFixed(2)}€</span>
-              </div>
-            )}
+        {/* Récapitulatif compact */}
+        <div className="border-t pt-2">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-gray-600">#{order.order_number}</span>
+            <span className="font-bold text-lg">{order.total.toFixed(2)}€</span>
           </div>
         </div>
 
-        {/* Note importante */}
-        <div className="bg-yellow-50 border border-yellow-200 p-3 rounded text-xs text-yellow-800">
-          ℹ️ Le montant de <strong>{order.total.toFixed(2)}€</strong> sera enregistré dans le chiffre d'affaires, 
-          pas le montant reçu.
-        </div>
-
         {/* Buttons */}
-        <div className="flex space-x-3 pt-2">
+        <div className="flex space-x-2 pt-2">
           <Button type="button" variant="outline" onClick={onClose} className="flex-1">
             {isPaymentLocked ? 'Fermer' : 'Annuler'}
           </Button>
