@@ -22,6 +22,7 @@ import { Options } from './pages/Options';
 import { MenuManagement } from './pages/MenuManagement';
 import { OrdersKiosk } from './pages/OrdersKiosk';
 import { Revenue } from './pages/Revenue';
+import AIMarketingTemp from './pages/AIMarketingTemp';
 
 function App() {
   return (
