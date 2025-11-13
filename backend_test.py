@@ -1007,6 +1007,50 @@ class BackendTester:
             self.log_result(test_name, False, f"Exception: {str(e)}")
             return False
 
+    async def run_stock_management_tests(self):
+        """Run stock management tests specifically."""
+        print(f"🚀 Starting Stock Management Tests for: {self.base_url}")
+        print("=" * 60)
+        
+        # Get a product ID for testing
+        product_id = await self.get_test_product_id()
+        
+        if not product_id:
+            print("❌ Cannot proceed with stock tests - no products available")
+            return False
+        
+        print(f"📦 Testing with product ID: {product_id}")
+        
+        # Test sequence for stock management features
+        tests = [
+            ("Stock Status - 2 Hours", lambda: self.test_stock_status_2h(product_id)),
+            ("Stock Status - Today", lambda: self.test_stock_status_today(product_id)),
+            ("Stock Status - Indefinite", lambda: self.test_stock_status_indefinite(product_id)),
+            ("Stock Status - Available", lambda: self.test_stock_status_available(product_id)),
+            ("Stock Persistence", lambda: self.test_stock_persistence(product_id)),
+        ]
+        
+        passed = 0
+        total = len(tests)
+        
+        for test_name, test_func in tests:
+            try:
+                result = await test_func()
+                if result:
+                    passed += 1
+            except Exception as e:
+                self.log_result(test_name, False, f"Test execution failed: {str(e)}")
+        
+        print("\n" + "=" * 60)
+        print(f"📊 Stock Management Test Results: {passed}/{total} tests passed")
+        
+        if passed == total:
+            print("🎉 All stock management tests PASSED!")
+            return True
+        else:
+            print(f"⚠️  {total - passed} stock management tests FAILED")
+            return False
+
     async def run_all_tests(self):
         """Run all backend tests."""
         print(f"🚀 Starting Backend API Tests for: {self.base_url}")
