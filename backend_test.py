@@ -1505,11 +1505,495 @@ class BackendTester:
             print(f"⚠️  {total - passed} tests FAILED")
             return False
 
+    async def test_promotions_crud(self) -> bool:
+        """Test all CRUD operations on promotions endpoints."""
+        test_name = "Promotions CRUD Operations"
+        
+        try:
+            # Test GET /api/v1/admin/promotions - List all promotions
+            async with self.session.get(
+                f"{self.base_url}/api/v1/admin/promotions",
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status != 200:
+                    error_data = await response.text()
+                    self.log_result(test_name + " - GET List", False, f"HTTP {response.status}: {error_data}")
+                    return False
+                
+                data = await response.json()
+                if "promotions" not in data:
+                    self.log_result(test_name + " - GET List", False, "No promotions field in response")
+                    return False
+                
+                promotions_count = len(data.get("promotions", []))
+                self.log_result(test_name + " - GET List", True, f"Retrieved {promotions_count} promotions")
+            
+            # Test POST /api/v1/admin/promotions - Create new promotion
+            from datetime import date, time, timedelta
+            
+            new_promotion = {
+                "name": "Test BOGO Burger",
+                "description": "Buy 1 get 1 free burger promotion for testing",
+                "type": "bogo",
+                "eligible_products": ["test-product-1"],
+                "discount_type": "free_item",
+                "discount_value": 100,
+                "bogo_buy_quantity": 1,
+                "bogo_get_quantity": 1,
+                "start_date": date.today().isoformat(),
+                "end_date": (date.today() + timedelta(days=30)).isoformat(),
+                "priority": 5,
+                "stackable": False
+            }
+            
+            async with self.session.post(
+                f"{self.base_url}/api/v1/admin/promotions",
+                json=new_promotion,
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status != 201:
+                    error_data = await response.text()
+                    self.log_result(test_name + " - POST Create", False, f"HTTP {response.status}: {error_data}")
+                    return False
+                
+                data = await response.json()
+                if not data.get("success") or "promotion" not in data:
+                    self.log_result(test_name + " - POST Create", False, "Invalid create response")
+                    return False
+                
+                created_promotion = data["promotion"]
+                promotion_id = created_promotion.get("id")
+                
+                if not promotion_id:
+                    self.log_result(test_name + " - POST Create", False, "No promotion ID in response")
+                    return False
+                
+                self.log_result(test_name + " - POST Create", True, f"Created promotion with ID: {promotion_id}")
+            
+            # Test GET /api/v1/admin/promotions/{promotion_id} - Get single promotion
+            async with self.session.get(
+                f"{self.base_url}/api/v1/admin/promotions/{promotion_id}",
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status != 200:
+                    error_data = await response.text()
+                    self.log_result(test_name + " - GET Single", False, f"HTTP {response.status}: {error_data}")
+                    return False
+                
+                data = await response.json()
+                if "promotion" not in data:
+                    self.log_result(test_name + " - GET Single", False, "No promotion field in response")
+                    return False
+                
+                promotion = data["promotion"]
+                if promotion.get("id") != promotion_id:
+                    self.log_result(test_name + " - GET Single", False, "Promotion ID mismatch")
+                    return False
+                
+                self.log_result(test_name + " - GET Single", True, f"Retrieved promotion: {promotion.get('name')}")
+            
+            # Test PUT /api/v1/admin/promotions/{promotion_id} - Update promotion
+            update_data = {
+                "name": "Updated Test BOGO Burger",
+                "description": "Updated description for testing",
+                "discount_value": 50
+            }
+            
+            async with self.session.put(
+                f"{self.base_url}/api/v1/admin/promotions/{promotion_id}",
+                json=update_data,
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status != 200:
+                    error_data = await response.text()
+                    self.log_result(test_name + " - PUT Update", False, f"HTTP {response.status}: {error_data}")
+                    return False
+                
+                data = await response.json()
+                if not data.get("success"):
+                    self.log_result(test_name + " - PUT Update", False, "Update failed")
+                    return False
+                
+                updated_promotion = data.get("promotion", {})
+                if updated_promotion.get("name") != "Updated Test BOGO Burger":
+                    self.log_result(test_name + " - PUT Update", False, "Update not reflected")
+                    return False
+                
+                self.log_result(test_name + " - PUT Update", True, "Promotion updated successfully")
+            
+            # Test DELETE /api/v1/admin/promotions/{promotion_id} - Delete promotion
+            async with self.session.delete(
+                f"{self.base_url}/api/v1/admin/promotions/{promotion_id}",
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status != 200:
+                    error_data = await response.text()
+                    self.log_result(test_name + " - DELETE", False, f"HTTP {response.status}: {error_data}")
+                    return False
+                
+                data = await response.json()
+                if not data.get("success"):
+                    self.log_result(test_name + " - DELETE", False, "Delete failed")
+                    return False
+                
+                self.log_result(test_name + " - DELETE", True, "Promotion deleted successfully")
+            
+            # Verify deletion by trying to get the deleted promotion
+            async with self.session.get(
+                f"{self.base_url}/api/v1/admin/promotions/{promotion_id}",
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status == 404:
+                    self.log_result(test_name + " - DELETE Verification", True, "Promotion properly deleted (404)")
+                else:
+                    self.log_result(test_name + " - DELETE Verification", False, f"Promotion still exists: HTTP {response.status}")
+                    return False
+            
+            return True
+            
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
+    async def test_promotions_automated_tests(self) -> bool:
+        """Test the automated test suite endpoint."""
+        test_name = "Promotions Automated Tests"
+        
+        try:
+            async with self.session.get(
+                f"{self.base_url}/api/v1/admin/promotions/test/run-all",
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status != 200:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"HTTP {response.status}: {error_data}")
+                    return False
+                
+                data = await response.json()
+                
+                if not data.get("success"):
+                    self.log_result(test_name, False, "Automated tests failed")
+                    return False
+                
+                total_tests = data.get("total_tests", 0)
+                passed = data.get("passed", 0)
+                failed = data.get("failed", 0)
+                success_rate = data.get("success_rate", 0)
+                
+                if total_tests == 0:
+                    self.log_result(test_name, False, "No tests were run")
+                    return False
+                
+                if success_rate >= 80:  # Allow some tolerance
+                    self.log_result(test_name, True, f"Automated tests passed: {passed}/{total_tests} ({success_rate:.1f}% success rate)")
+                    return True
+                else:
+                    self.log_result(test_name, False, f"Low success rate: {passed}/{total_tests} ({success_rate:.1f}%)")
+                    
+                    # Log failed tests for debugging
+                    results = data.get("results", [])
+                    failed_tests = [r for r in results if not r.get("passed")]
+                    for failed_test in failed_tests[:3]:  # Show first 3 failures
+                        print(f"   Failed: {failed_test.get('test')} - {failed_test.get('message')}")
+                    
+                    return False
+                    
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
+    async def test_promotions_simulation(self) -> bool:
+        """Test promotion simulation endpoint with sample data."""
+        test_name = "Promotions Simulation"
+        
+        try:
+            # Create a test promotion first
+            from datetime import date, timedelta
+            
+            test_promotion = {
+                "name": "Test Happy Hour",
+                "description": "20% off during happy hour",
+                "type": "happy_hour",
+                "discount_type": "percentage",
+                "discount_value": 20,
+                "start_date": date.today().isoformat(),
+                "end_date": (date.today() + timedelta(days=7)).isoformat(),
+                "start_time": "15:00:00",
+                "end_time": "18:00:00",
+                "days_active": ["mon", "tue", "wed", "thu", "fri"]
+            }
+            
+            # Create the promotion
+            async with self.session.post(
+                f"{self.base_url}/api/v1/admin/promotions",
+                json=test_promotion,
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status != 201:
+                    self.log_result(test_name + " - Setup", False, "Could not create test promotion")
+                    return False
+                
+                promo_data = await response.json()
+                promotion_id = promo_data.get("promotion", {}).get("id")
+            
+            # Test simulation with sample cart
+            simulation_data = {
+                "cart": {
+                    "items": [
+                        {
+                            "product_id": "burger-classic",
+                            "name": "Classic Burger",
+                            "price": 12.50,
+                            "quantity": 2,
+                            "category_id": "burgers"
+                        },
+                        {
+                            "product_id": "fries-large",
+                            "name": "Large Fries",
+                            "price": 4.50,
+                            "quantity": 1,
+                            "category_id": "sides"
+                        }
+                    ],
+                    "total": 29.50,
+                    "delivery_fee": 3.50
+                },
+                "customer": {
+                    "id": "test-customer",
+                    "email": "test@example.com",
+                    "orders_count": 5,
+                    "last_order_date": "2024-01-01T12:00:00Z"
+                },
+                "promo_code": None
+            }
+            
+            async with self.session.post(
+                f"{self.base_url}/api/v1/admin/promotions/simulate",
+                json=simulation_data,
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status != 200:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"HTTP {response.status}: {error_data}")
+                    return False
+                
+                data = await response.json()
+                
+                if not data.get("success"):
+                    self.log_result(test_name, False, "Simulation failed")
+                    return False
+                
+                simulation = data.get("simulation", {})
+                
+                # Verify simulation response structure
+                required_fields = ["original_total", "total_discount", "final_total", "applied_promotions"]
+                for field in required_fields:
+                    if field not in simulation:
+                        self.log_result(test_name, False, f"Missing field in simulation: {field}")
+                        return False
+                
+                original_total = simulation.get("original_total", 0)
+                total_discount = simulation.get("total_discount", 0)
+                final_total = simulation.get("final_total", 0)
+                applied_promotions = simulation.get("applied_promotions", [])
+                
+                # Basic validation
+                if original_total != 29.50:
+                    self.log_result(test_name, False, f"Original total mismatch: expected 29.50, got {original_total}")
+                    return False
+                
+                if final_total != (original_total - total_discount):
+                    self.log_result(test_name, False, "Final total calculation incorrect")
+                    return False
+                
+                self.log_result(test_name, True, f"Simulation successful: {len(applied_promotions)} promotions applied, {total_discount}€ discount")
+            
+            # Clean up - delete test promotion
+            if promotion_id:
+                await self.session.delete(
+                    f"{self.base_url}/api/v1/admin/promotions/{promotion_id}",
+                    headers={"Content-Type": "application/json"}
+                )
+            
+            return True
+            
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
+    async def test_promotions_analytics(self) -> bool:
+        """Test promotions analytics endpoint."""
+        test_name = "Promotions Analytics"
+        
+        try:
+            async with self.session.get(
+                f"{self.base_url}/api/v1/admin/promotions/analytics/overview",
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status != 200:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"HTTP {response.status}: {error_data}")
+                    return False
+                
+                data = await response.json()
+                
+                # Verify analytics response structure
+                required_fields = [
+                    "active_promotions", "total_usage", "total_revenue", 
+                    "total_discount", "average_cart", "top_promotions"
+                ]
+                
+                for field in required_fields:
+                    if field not in data:
+                        self.log_result(test_name, False, f"Missing analytics field: {field}")
+                        return False
+                
+                active_promotions = data.get("active_promotions", 0)
+                total_usage = data.get("total_usage", 0)
+                total_revenue = data.get("total_revenue", 0)
+                total_discount = data.get("total_discount", 0)
+                average_cart = data.get("average_cart", 0)
+                top_promotions = data.get("top_promotions", [])
+                
+                # Validate data types
+                if not isinstance(active_promotions, int):
+                    self.log_result(test_name, False, "active_promotions should be integer")
+                    return False
+                
+                if not isinstance(total_usage, int):
+                    self.log_result(test_name, False, "total_usage should be integer")
+                    return False
+                
+                if not isinstance(top_promotions, list):
+                    self.log_result(test_name, False, "top_promotions should be list")
+                    return False
+                
+                # Validate calculations
+                if total_usage > 0 and total_revenue > 0:
+                    expected_avg = total_revenue / total_usage
+                    if abs(average_cart - expected_avg) > 0.01:
+                        self.log_result(test_name, False, "Average cart calculation incorrect")
+                        return False
+                
+                self.log_result(test_name, True, f"Analytics retrieved: {active_promotions} active, {total_usage} uses, {len(top_promotions)} top promos")
+                return True
+                
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
+    async def test_promotions_calendar(self) -> bool:
+        """Test promotions calendar endpoint."""
+        test_name = "Promotions Calendar"
+        
+        try:
+            # Test without date filters
+            async with self.session.get(
+                f"{self.base_url}/api/v1/admin/promotions/calendar",
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status != 200:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"HTTP {response.status}: {error_data}")
+                    return False
+                
+                data = await response.json()
+                
+                if "events" not in data:
+                    self.log_result(test_name, False, "No events field in calendar response")
+                    return False
+                
+                events = data.get("events", [])
+                
+                # Validate event structure if events exist
+                if events:
+                    first_event = events[0]
+                    required_event_fields = ["id", "title", "start", "end", "type"]
+                    
+                    for field in required_event_fields:
+                        if field not in first_event:
+                            self.log_result(test_name, False, f"Missing event field: {field}")
+                            return False
+                
+                self.log_result(test_name + " - No Filters", True, f"Calendar retrieved: {len(events)} events")
+            
+            # Test with date filters
+            from datetime import date, timedelta
+            
+            start_date = date.today().isoformat()
+            end_date = (date.today() + timedelta(days=30)).isoformat()
+            
+            async with self.session.get(
+                f"{self.base_url}/api/v1/admin/promotions/calendar?start_date={start_date}&end_date={end_date}",
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status != 200:
+                    error_data = await response.text()
+                    self.log_result(test_name + " - With Filters", False, f"HTTP {response.status}: {error_data}")
+                    return False
+                
+                data = await response.json()
+                filtered_events = data.get("events", [])
+                
+                self.log_result(test_name + " - With Filters", True, f"Filtered calendar: {len(filtered_events)} events")
+                return True
+                
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
+    async def run_promotions_tests(self) -> bool:
+        """Run all promotions engine tests."""
+        print(f"\n{'='*60}")
+        print("🎯 ADVANCED PROMOTIONS ENGINE V2 TESTING")
+        print(f"{'='*60}\n")
+        
+        tests = [
+            ("Promotions CRUD", self.test_promotions_crud),
+            ("Automated Test Suite", self.test_promotions_automated_tests),
+            ("Promotion Simulation", self.test_promotions_simulation),
+            ("Analytics Overview", self.test_promotions_analytics),
+            ("Calendar View", self.test_promotions_calendar),
+        ]
+        
+        passed = 0
+        total = len(tests)
+        
+        for test_name, test_func in tests:
+            try:
+                result = await test_func()
+                if result:
+                    passed += 1
+            except Exception as e:
+                self.log_result(test_name, False, f"Test execution failed: {str(e)}")
+        
+        print(f"\n{'='*60}")
+        print(f"📊 Promotions Test Results: {passed}/{total} tests passed")
+        
+        if passed == total:
+            print("🎉 All promotions tests PASSED!")
+            return True
+        else:
+            print(f"⚠️  {total - passed} promotions tests FAILED")
+            return False
+
 async def main():
     """Main test runner."""
     async with BackendTester() as tester:
-        # Run new features tests as requested in the review
-        success = await tester.run_new_features_tests()
+        # Run promotions tests as requested in the review
+        success = await tester.run_promotions_tests()
         return 0 if success else 1
 
 if __name__ == "__main__":
