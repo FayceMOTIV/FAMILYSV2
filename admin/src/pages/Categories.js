@@ -93,7 +93,8 @@ export const Categories = () => {
                 {category.is_active ? 'Active' : 'Inactive'}
               </span>
             </Card>
-          ))}
+          );
+          })}
         </div>
 
         {categories.length === 0 && (
