@@ -22,7 +22,7 @@ async def generate_campaigns(
     request: GenerateCampaignsRequest
     # current_user: dict = Security(require_manager_or_admin)  # TEMPORAIREMENT DESACTIVE
 ):
-    """Génère de nouvelles campagnes IA."""
+    """Génère de nouvelles campagnes IA manuellement."""
     restaurant_id = "default"  # current_user.get("restaurant_id", "default")
     
     # Récupérer les paramètres
@@ -45,6 +45,22 @@ async def generate_campaigns(
         "campaigns_generated": len(saved_campaigns),
         "campaigns": saved_campaigns
     }
+
+@router.post("/campaigns/trigger-nightly-job")
+async def trigger_nightly_job(
+    # current_user: dict = Security(require_manager_or_admin)  # TEMPORAIREMENT DESACTIVE
+):
+    """Déclenche manuellement le job nocturne (pour tests)."""
+    from services.scheduler_service import trigger_manual_generation
+    
+    try:
+        await trigger_manual_generation()
+        return {
+            "success": True,
+            "message": "Job nocturne déclenché manuellement"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur: {str(e)}")
 
 @router.get("/campaigns/pending")
 async def get_pending_campaigns(current_user: dict = Security(require_manager_or_admin)):
