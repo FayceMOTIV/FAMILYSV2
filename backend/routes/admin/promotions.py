@@ -274,3 +274,25 @@ async def log_promotion_usage(
     except Exception as e:
         logger.error(f"Error logging usage: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/test/run-all")
+async def run_automated_tests():
+    """Lance tous les tests automatiques des promotions"""
+    try:
+        from tests.test_promotions import run_promotion_tests
+        results = await run_promotion_tests(db)
+        
+        total = len(results)
+        passed = sum(1 for r in results if r["passed"])
+        
+        return {
+            "success": True,
+            "total_tests": total,
+            "passed": passed,
+            "failed": total - passed,
+            "success_rate": (passed / total * 100) if total > 0 else 0,
+            "results": results
+        }
+    except Exception as e:
+        logger.error(f"Error running tests: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
