@@ -175,7 +175,20 @@ Consignes:
 
         {/* Message */}
         <div>
-          <label className="block text-sm font-medium mb-2">Message *</label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium">Message *</label>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={handleGenerateWithAI}
+              disabled={generatingAI || !formData.title || !formData.message}
+              className="text-purple-600 border-purple-300 hover:bg-purple-50"
+            >
+              <Sparkles className="w-4 h-4 mr-1" />
+              {generatingAI ? 'Génération...' : 'Améliorer avec l\'IA'}
+            </Button>
+          </div>
           <textarea
             value={formData.message}
             onChange={(e) => setFormData({...formData, message: e.target.value})}
@@ -184,6 +197,9 @@ Consignes:
             placeholder="Profitez de 20% de réduction sur tous nos burgers..."
             required
           />
+          <p className="text-xs text-gray-500 mt-1">
+            💡 Remplissez le titre et le message, puis cliquez sur "Améliorer avec l'IA"
+          </p>
         </div>
 
         {/* Target Type - Hidden when segment is pre-selected */}
