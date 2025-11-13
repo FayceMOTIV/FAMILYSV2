@@ -86,11 +86,17 @@ export const Products = () => {
             // Support both "price" and "base_price" fields
             const price = product.price || product.base_price || 0;
             
+            // Construire l'URL complète si nécessaire
+            let imageUrl = product.image_url || product.image;
+            if (imageUrl && imageUrl.startsWith('/')) {
+              imageUrl = `${API_URL}${imageUrl}`;
+            }
+            
             return (
               <Card key={product.id}>
-                {(product.image_url || product.image) ? (
+                {imageUrl ? (
                   <img
-                    src={product.image_url || product.image}
+                    src={imageUrl}
                     alt={product.name}
                     className="w-full h-48 object-cover rounded-lg mb-4"
                   />
