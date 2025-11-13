@@ -668,6 +668,160 @@ export const OrdersManagement = () => {
         order={selectedOrder}
         onConfirm={handleCancelOrder}
       />
+
+      {/* Modal Détail Commande (Vue Liste) */}
+      {showDetailModal && selectedOrder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b p-6 flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800">
+                  Commande #{selectedOrder.order_number || selectedOrder.id?.slice(0, 8)}
+                </h2>
+                <p className="text-sm text-gray-500">{formatDate(selectedOrder.created_at)}</p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowDetailModal(false);
+                  setSelectedOrder(null);
+                }}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <XCircle className="w-8 h-8" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* Client */}
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h3 className="text-sm font-bold text-gray-600 mb-2">👤 Client</h3>
+                <p className="font-bold text-lg text-gray-800">{selectedOrder.customer_name || 'Client'}</p>
+                {selectedOrder.customer_email && (
+                  <p className="text-sm text-gray-600">📧 {selectedOrder.customer_email}</p>
+                )}
+                {selectedOrder.customer_phone && (
+                  <p className="text-sm text-gray-600">📱 {selectedOrder.customer_phone}</p>
+                )}
+              </div>
+
+              {/* Type & Heure */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-purple-50 p-4 rounded-lg">
+                  <h3 className="text-sm font-bold text-gray-600 mb-2">📦 Type</h3>
+                  {selectedOrder.order_type === 'delivery' ? (
+                    <span className="flex items-center gap-2 text-blue-600 font-bold">
+                      <Truck className="w-5 h-5" />
+                      Livraison
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2 text-purple-600 font-bold">
+                      <Package className="w-5 h-5" />
+                      À emporter
+                    </span>
+                  )}
+                </div>
+                <div className="bg-orange-50 p-4 rounded-lg">
+                  <h3 className="text-sm font-bold text-gray-600 mb-2">🕐 Heure</h3>
+                  <p className="font-bold text-gray-800">
+                    {selectedOrder.pickup_time || selectedOrder.delivery_time || 'Dès que possible'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Articles */}
+              <div>
+                <h3 className="text-sm font-bold text-gray-600 mb-3">🍽️ Articles commandés</h3>
+                <div className="space-y-2">
+                  {selectedOrder.items?.map((item, idx) => (
+                    <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                      <div className="flex-1">
+                        <p className="font-semibold text-gray-800">{item.name}</p>
+                        {item.notes && (
+                          <p className="text-xs text-gray-500 mt-1">📝 {item.notes}</p>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-gray-800">x{item.quantity}</p>
+                        <p className="text-sm text-gray-600">{item.total_price?.toFixed(2)}€</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Notes */}
+              {selectedOrder.notes && (
+                <div className="bg-yellow-50 p-4 rounded-lg">
+                  <h3 className="text-sm font-bold text-gray-600 mb-2">📝 Notes</h3>
+                  <p className="text-gray-800">{selectedOrder.notes}</p>
+                </div>
+              )}
+
+              {/* Paiement */}
+              <div className="bg-green-50 p-4 rounded-lg">
+                <h3 className="text-sm font-bold text-gray-600 mb-2">💳 Paiement</h3>
+                <div className="flex items-center justify-between">
+                  <div>
+                    {selectedOrder.payment_status === 'paid' ? (
+                      <span className="flex items-center gap-2 text-green-600 font-bold">
+                        <CheckCircle className="w-5 h-5" />
+                        Payé ({selectedOrder.payment_method})
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-2 text-orange-600 font-bold">
+                        <Clock className="w-5 h-5" />
+                        En attente
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-3xl font-black text-gray-800">
+                    {selectedOrder.total.toFixed(2)}€
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex space-x-3 pt-4 border-t">
+                <Button
+                  onClick={() => printOrder(selectedOrder)}
+                  variant="outline"
+                  className="flex-1 border-2 border-blue-500 text-blue-600 hover:bg-blue-50 py-3"
+                >
+                  <Printer className="w-5 h-5 mr-2" />
+                  Imprimer
+                </Button>
+                {selectedOrder.payment_status !== 'paid' && (
+                  <Button
+                    onClick={() => {
+                      setShowDetailModal(false);
+                      setShowPaymentModal(true);
+                    }}
+                    className="flex-1 py-3"
+                  >
+                    <CreditCard className="w-5 h-5 mr-2" />
+                    Enregistrer paiement
+                  </Button>
+                )}
+              </div>
+
+              {/* Changement de statut */}
+              {getNextStatus(selectedOrder.status) && (
+                <Button
+                  onClick={() => {
+                    updateOrderStatus(selectedOrder.id, getNextStatus(selectedOrder.status));
+                    setShowDetailModal(false);
+                  }}
+                  className="w-full py-4 text-lg font-bold"
+                >
+                  {getNextStatus(selectedOrder.status) === 'in_preparation' && '🔥 PASSER EN PRÉPARATION'}
+                  {getNextStatus(selectedOrder.status) === 'ready' && '✅ MARQUER COMME PRÊTE'}
+                  {getNextStatus(selectedOrder.status) === 'completed' && '🎉 MARQUER COMME TERMINÉE'}
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
