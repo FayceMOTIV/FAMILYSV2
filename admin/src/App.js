@@ -18,6 +18,7 @@ import { AICampaigns } from './pages/AICampaigns';
 import { CampaignHistory } from './pages/CampaignHistory';
 import { AIMarketingSettings } from './pages/AIMarketingSettings';
 import { Options } from './pages/Options';
+import { MenuManagement } from './pages/MenuManagement';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
             <Route path="ai-marketing/campaigns" element={<AICampaigns />} />
             <Route path="ai-marketing/history" element={<CampaignHistory />} />
             <Route path="ai-marketing/settings" element={<AIMarketingSettings />} />
+            <Route path="menu" element={<MenuManagement />} />
             <Route path="products" element={<Products />} />
             <Route path="options" element={<Options />} />
             <Route path="orders" element={<OrdersManagement />} />
