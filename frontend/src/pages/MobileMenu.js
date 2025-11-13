@@ -5,6 +5,7 @@ import { productsAPI, categoriesAPI } from '../services/api';
 import { useApp } from '../context/AppContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
+import PromoBadge from '../components/PromoBadge';
 
 const MobileMenu = () => {
   const navigate = useNavigate();
