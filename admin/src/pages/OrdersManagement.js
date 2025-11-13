@@ -358,7 +358,17 @@ export const OrdersManagement = () => {
   };
 
   const currentTab = tabs.find(t => t.id === activeTab);
-  const filteredOrders = orders.filter(o => o.status === currentTab.status);
+  const filteredOrders = orders.filter(o => {
+    // Filtre par statut
+    if (o.status !== currentTab.status) return false;
+    
+    // Pour l'onglet "En Livraison", afficher SEULEMENT les commandes de type delivery
+    if (currentTab.status === 'out_for_delivery' && o.order_type !== 'delivery') {
+      return false;
+    }
+    
+    return true;
+  });
 
   return (
     <div className="min-h-screen bg-gray-100">
