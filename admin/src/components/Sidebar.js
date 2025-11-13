@@ -30,6 +30,7 @@ const menuItems = [
   { name: 'Paramètres IA', path: '/admin/ai-marketing/settings', icon: Sliders, indent: true },
   { name: 'Gestion du Menu', path: '/admin/menu', icon: Menu, highlight: true },
   { name: 'Commandes', path: '/admin/orders', icon: ShoppingCart },
+  { name: 'Chiffre d\'Affaires', path: '/admin/revenue', icon: DollarSign },
   { name: 'Promos', path: '/admin/promos', icon: Tag },
   { name: 'Clients', path: '/admin/customers', icon: Users },
   { name: 'Notifications', path: '/admin/notifications', icon: Bell },
