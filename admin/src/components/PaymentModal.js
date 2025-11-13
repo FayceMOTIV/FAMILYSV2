@@ -87,12 +87,12 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="medium">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-lg font-bold">
           {isModifyingPayment ? '✏️ Modifier le paiement' : '💳 Enregistrer le paiement'}
         </h2>
         <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-          <X className="w-6 h-6" />
+          <X className="w-5 h-5" />
         </button>
       </div>
 
