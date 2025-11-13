@@ -635,20 +635,36 @@ export const OrdersManagement = () => {
                             <p className="text-sm text-gray-600 capitalize">{order.payment_method}</p>
                           </div>
                         </div>
-                        {/* Bouton modifier paiement (seulement pour paiements physiques) */}
-                        {!['card', 'mobile', 'online', 'apple_pay', 'google_pay'].includes(order.payment_method) && (
-                          <Button
-                            onClick={() => {
-                              setSelectedOrder(order);
-                              setShowPaymentModal(true);
-                            }}
-                            variant="outline"
-                            size="sm"
-                            className="w-full border border-blue-300 text-blue-600 hover:bg-blue-50 text-xs"
-                          >
-                            ✏️ Modifier le paiement
-                          </Button>
-                        )}
+                        {/* Boutons actions paiement */}
+                        <div className="space-y-2">
+                          {!['card', 'mobile', 'online', 'apple_pay', 'google_pay'].includes(order.payment_method) && (
+                            <Button
+                              onClick={() => {
+                                setSelectedOrder(order);
+                                setShowPaymentModal(true);
+                              }}
+                              variant="outline"
+                              size="sm"
+                              className="w-full border border-blue-300 text-blue-600 hover:bg-blue-50 text-xs"
+                            >
+                              ✏️ Modifier le paiement
+                            </Button>
+                          )}
+                          {order.status !== 'canceled' && (
+                            <Button
+                              onClick={() => {
+                                setSelectedOrder(order);
+                                setShowRefundModal(true);
+                              }}
+                              variant="outline"
+                              size="sm"
+                              className="w-full border border-purple-300 text-purple-600 hover:bg-purple-50 text-xs"
+                            >
+                              <DollarSign className="w-3 h-3 mr-1" />
+                              Remboursement partiel
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     ) : (
                       <Button
