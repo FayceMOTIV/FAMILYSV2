@@ -7,6 +7,7 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    internal_comment: '',
     type: 'single',
     is_required: false,
     max_choices: '',
