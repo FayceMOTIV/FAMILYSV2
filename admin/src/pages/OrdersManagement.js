@@ -306,6 +306,43 @@ export const OrdersManagement = () => {
     return statusFlow[currentStatus];
   };
 
+  const getStatusChangeConfirmation = (currentStatus, nextStatus) => {
+    const confirmations = {
+      'new_to_in_preparation': {
+        title: '🔥 Commencer la préparation ?',
+        message: 'Vous êtes sur le point de marquer cette commande comme "En cours de préparation". Le client sera notifié.',
+        confirmText: 'Oui, commencer',
+        type: 'warning'
+      },
+      'in_preparation_to_ready': {
+        title: '✅ Commande prête ?',
+        message: 'La commande est-elle prête à être récupérée ou livrée ? Le client recevra une notification.',
+        confirmText: 'Oui, elle est prête',
+        type: 'success'
+      },
+      'ready_to_completed': {
+        title: '🎉 Terminer la commande ?',
+        message: 'Cette commande sera marquée comme terminée et archivée. Cette action est définitive.',
+        confirmText: 'Oui, terminer',
+        type: 'success'
+      },
+      'out_for_delivery_to_completed': {
+        title: '🎉 Livraison terminée ?',
+        message: 'Confirmez-vous que la commande a été livrée avec succès ?',
+        confirmText: 'Oui, livrée',
+        type: 'success'
+      }
+    };
+
+    const key = `${currentStatus}_to_${nextStatus}`;
+    return confirmations[key] || {
+      title: '⚠️ Confirmer le changement',
+      message: `Voulez-vous vraiment changer le statut de cette commande ?`,
+      confirmText: 'Confirmer',
+      type: 'warning'
+    };
+  };
+
   const formatDate = (dateStr) => {
     return new Date(dateStr).toLocaleString('fr-FR', {
       day: '2-digit',
