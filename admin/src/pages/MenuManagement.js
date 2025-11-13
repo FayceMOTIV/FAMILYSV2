@@ -255,15 +255,35 @@ export const MenuManagement = () => {
                     )}
                     <h4 className="font-bold text-lg mb-2">{product.name}</h4>
                     <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
+                    
+                    {/* Stock Status Badge */}
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-2xl font-black text-primary">{price.toFixed(2)}€</span>
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                        product.is_available ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
-                      }`}>
-                        {product.is_available ? 'Disponible' : 'Indisponible'}
-                      </span>
+                      {product.is_out_of_stock ? (
+                        <div className="flex flex-col items-end">
+                          <span className="px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700">
+                            🚫 Rupture
+                          </span>
+                          {product.stock_resume_at && (
+                            <span className="text-xs text-gray-500 mt-1">
+                              {new Date(product.stock_resume_at).toLocaleString('fr-FR', { 
+                                month: 'short', 
+                                day: 'numeric', 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              })}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
+                          ✅ En stock
+                        </span>
+                      )}
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
+                    
+                    {/* Action Buttons */}
+                    <div className="grid grid-cols-2 gap-2 mb-2">
                       <Button 
                         size="sm" 
                         variant="outline" 
@@ -283,15 +303,78 @@ export const MenuManagement = () => {
                       >
                         <Copy className="w-4 h-4" />
                       </Button>
+                    </div>
+                    
+                    {/* Stock Management Dropdown */}
+                    <div className="relative mb-2">
                       <Button 
                         size="sm" 
-                        variant="danger" 
-                        onClick={() => handleDeleteProduct(product.id)}
-                        title="Supprimer"
+                        variant="outline"
+                        onClick={() => setOpenStockMenu(openStockMenu === product.id ? null : product.id)}
+                        className="w-full"
+                        title="Gérer le stock"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Clock className="w-4 h-4 mr-2" />
+                        Gérer le stock
                       </Button>
+                      
+                      {openStockMenu === product.id && (
+                        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
+                          <button
+                            onClick={() => {
+                              handleStockStatus(product.id, '2h');
+                              setOpenStockMenu(null);
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center"
+                          >
+                            <Clock className="w-4 h-4 mr-2 text-orange-500" />
+                            Rupture 2 heures
+                          </button>
+                          <button
+                            onClick={() => {
+                              handleStockStatus(product.id, 'today');
+                              setOpenStockMenu(null);
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center"
+                          >
+                            <Calendar className="w-4 h-4 mr-2 text-blue-500" />
+                            Rupture aujourd'hui
+                          </button>
+                          <button
+                            onClick={() => {
+                              handleStockStatus(product.id, 'indefinite');
+                              setOpenStockMenu(null);
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center border-b"
+                          >
+                            <XCircle className="w-4 h-4 mr-2 text-red-500" />
+                            Rupture indéfinie
+                          </button>
+                          <button
+                            onClick={() => {
+                              handleStockStatus(product.id, 'available');
+                              setOpenStockMenu(null);
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center text-green-600 font-bold"
+                          >
+                            <CheckCircle className="w-4 h-4 mr-2" />
+                            Remettre en stock
+                          </button>
+                        </div>
+                      )}
                     </div>
+                    
+                    {/* Delete Button */}
+                    <Button 
+                      size="sm" 
+                      variant="danger" 
+                      onClick={() => handleDeleteProduct(product.id)}
+                      title="Supprimer"
+                      className="w-full"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Supprimer
+                    </Button>
                   </Card>
                 );
               })}
