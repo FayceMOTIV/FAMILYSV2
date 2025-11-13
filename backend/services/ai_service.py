@@ -120,7 +120,7 @@ Format strict JSON."""
         
         try:
             result = json.loads(response)
-        except:
+        except (json.JSONDecodeError, ValueError):
             result = {
                 "title": "Promo suggérée",
                 "description": response[:200],
