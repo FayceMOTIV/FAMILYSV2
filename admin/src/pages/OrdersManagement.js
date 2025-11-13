@@ -718,6 +718,21 @@ export const OrdersManagement = () => {
         onConfirm={handleCancelOrder}
       />
 
+      {/* Modal Remboursement Partiel */}
+      <RefundModal
+        isOpen={showRefundModal}
+        onClose={() => {
+          setShowRefundModal(false);
+          setSelectedOrder(null);
+        }}
+        order={selectedOrder}
+        onSuccess={() => {
+          loadOrders();
+          setShowRefundModal(false);
+          setSelectedOrder(null);
+        }}
+      />
+
       {/* Modal Confirmation Changement Statut */}
       <ConfirmationModal
         isOpen={showConfirmationModal}
