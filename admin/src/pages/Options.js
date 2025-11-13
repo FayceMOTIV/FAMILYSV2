@@ -134,6 +134,13 @@ export const Options = () => {
                     <p className="text-sm text-gray-600">{option.description}</p>
                   )}
                   
+                  {option.internal_comment && (
+                    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
+                      <p className="text-xs font-semibold text-yellow-800 mb-1">📝 Commentaire interne</p>
+                      <p className="text-sm text-yellow-700">{option.internal_comment}</p>
+                    </div>
+                  )}
+                  
                   <div className="flex items-center space-x-2 text-sm">
                     <span className={`px-3 py-1 rounded-full font-bold ${
                       option.type === 'single' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'
