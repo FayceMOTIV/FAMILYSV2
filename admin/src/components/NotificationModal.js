@@ -40,6 +40,53 @@ export const NotificationModal = ({ isOpen, onClose, notification, segments, onS
     }
   }, [notification, isOpen]);
 
+  const handleGenerateWithAI = async () => {
+    if (!formData.title || !formData.message) {
+      alert('Veuillez remplir le titre et le message avant de générer avec l\'IA');
+      return;
+    }
+
+    setGeneratingAI(true);
+    try {
+      const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+      const response = await axios.post(`${API_URL}/api/v1/admin/ai/chat`, {
+        question: `Améliore ce message de notification pour un restaurant :
+Titre: ${formData.title}
+Message: ${formData.message}
+
+Consignes:
+- Rend le titre plus accrocheur et engageant (max 50 caractères)
+- Améliore le message pour être plus persuasif et inciter à l'action (max 150 caractères)
+- Garde le même ton et le même sujet
+- Réponds UNIQUEMENT au format JSON: {"title": "nouveau titre", "message": "nouveau message"}`
+      });
+
+      const aiResponse = response.data.response || response.data.answer;
+      
+      // Tenter de parser la réponse JSON
+      try {
+        const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const improved = JSON.parse(jsonMatch[0]);
+          setFormData({
+            ...formData,
+            title: improved.title || formData.title,
+            message: improved.message || formData.message
+          });
+          alert('✅ Texte amélioré par l\'IA !');
+        }
+      } catch (parseError) {
+        console.error('Error parsing AI response:', parseError);
+        alert('⚠️ Réponse IA reçue mais format inattendu. Veuillez réessayer.');
+      }
+    } catch (error) {
+      console.error('Error generating with AI:', error);
+      alert('❌ Erreur lors de la génération IA');
+    } finally {
+      setGeneratingAI(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
