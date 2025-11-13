@@ -241,11 +241,18 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
         {/* Buttons */}
         <div className="flex space-x-3 pt-2">
           <Button type="button" variant="outline" onClick={onClose} className="flex-1">
-            Annuler
+            {isPaymentLocked ? 'Fermer' : 'Annuler'}
           </Button>
-          <Button type="submit" disabled={loading} className="flex-1">
-            {loading ? 'Enregistrement...' : '✅ Enregistrer le paiement'}
-          </Button>
+          {!isPaymentLocked && (
+            <Button type="submit" disabled={loading} className="flex-1">
+              {loading 
+                ? 'Enregistrement...' 
+                : isModifyingPayment 
+                  ? '✏️ Modifier le paiement'
+                  : '✅ Enregistrer le paiement'
+              }
+            </Button>
+          )}
         </div>
       </form>
     </Modal>
