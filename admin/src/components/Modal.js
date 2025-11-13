@@ -31,20 +31,22 @@ export const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
       />
 
       {/* Modal */}
-      <div className={cn('relative bg-white rounded-2xl shadow-2xl w-full', sizes[size])}>
+      <div className={cn('relative bg-white rounded-xl shadow-2xl w-full', sizes[size])}>
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <X className="w-5 h-5 text-gray-600" />
-          </button>
-        </div>
+        {title && (
+          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+            <h2 className="text-xl font-bold text-gray-900">{title}</h2>
+            <button
+              onClick={onClose}
+              className="p-1 hover:bg-gray-100 rounded transition-colors"
+            >
+              <X className="w-5 h-5 text-gray-600" />
+            </button>
+          </div>
+        )}
 
         {/* Content */}
-        <div className="p-6 max-h-[70vh] overflow-y-auto">
+        <div className="p-4 max-h-[75vh] overflow-y-auto">
           {children}
         </div>
       </div>
