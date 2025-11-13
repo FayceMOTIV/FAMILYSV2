@@ -230,36 +230,48 @@ Analyse ces données et génère {max_suggestions} campagnes marketing pertinent
 
 Réponds UNIQUEMENT avec le JSON, rien d'autre."""
 
-    try:
-        chat = LlmChat(
-            api_key=EMERGENT_LLM_KEY,
-            session_id=f"ai-marketing-{data['restaurant_id']}",
-            system_message="Tu es un expert en marketing restaurant. Tu génères des campagnes pertinentes en JSON."
-        ).with_model("openai", "gpt-5")
-        
-        user_message = UserMessage(text=prompt)
-        response = await chat.send_message(user_message)
-        
-        # Parser la réponse JSON
-        response_clean = response.strip()
-        if response_clean.startswith("```json"):
-            response_clean = response_clean[7:]
-        if response_clean.startswith("```"):
-            response_clean = response_clean[3:]
-        if response_clean.endswith("```"):
-            response_clean = response_clean[:-3]
-        
-        campaigns = json.loads(response_clean.strip())
-        
-        # Ajouter restaurant_id et status
-        for campaign in campaigns:
-            campaign["restaurant_id"] = data["restaurant_id"]
-            campaign["status"] = "pending"
-        
-        return campaigns
-        
-    except Exception as e:
-        print(f"Erreur génération campagnes IA: {str(e)}")
+    # Retry logic avec 3 tentatives
+    max_retries = 3
+    retry_delay = 2
+    
+    for attempt in range(max_retries):
+        try:
+            print(f"🤖 Tentative {attempt + 1}/{max_retries} de génération IA...")
+            
+            chat = LlmChat(
+                api_key=EMERGENT_LLM_KEY,
+                session_id=f"ai-marketing-{data['restaurant_id']}-{attempt}",
+                system_message="Tu es un expert en marketing restaurant. Tu génères des campagnes pertinentes en JSON."
+            ).with_model("openai", "gpt-5")
+            
+            user_message = UserMessage(text=prompt)
+            response = await chat.send_message(user_message)
+            
+            # Parser la réponse JSON
+            response_clean = response.strip()
+            if response_clean.startswith("```json"):
+                response_clean = response_clean[7:]
+            if response_clean.startswith("```"):
+                response_clean = response_clean[3:]
+            if response_clean.endswith("```"):
+                response_clean = response_clean[:-3]
+            
+            campaigns = json.loads(response_clean.strip())
+            
+            # Ajouter restaurant_id et status
+            for campaign in campaigns:
+                campaign["restaurant_id"] = data["restaurant_id"]
+                campaign["status"] = "pending"
+            
+            print(f"✅ Génération IA réussie: {len(campaigns)} campagnes")
+            return campaigns
+            
+        except Exception as e:
+            print(f"❌ Tentative {attempt + 1} échouée: {str(e)}")
+            if attempt < max_retries - 1:
+                await asyncio.sleep(retry_delay)
+            else:
+                print(f"⚠️ Toutes les tentatives ont échoué, utilisation du fallback")
         # Fallback: générer une campagne par défaut
         return [{
             "restaurant_id": data["restaurant_id"],
