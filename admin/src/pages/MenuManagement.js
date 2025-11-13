@@ -145,6 +145,38 @@ export const MenuManagement = () => {
     }
   };
 
+  const handleMoveCategoryUp = async (category, index) => {
+    if (index === 0) return; // Already at top
+    
+    const sortedCategories = [...categories].sort((a, b) => (a.order || 0) - (b.order || 0));
+    const prevCategory = sortedCategories[index - 1];
+    
+    try {
+      // Swap orders
+      await categoriesAPI.update(category.id, { order: prevCategory.order || 0 });
+      await categoriesAPI.update(prevCategory.id, { order: category.order || 0 });
+      loadCategories();
+    } catch (error) {
+      alert('Erreur lors du déplacement');
+    }
+  };
+
+  const handleMoveCategoryDown = async (category, index) => {
+    const sortedCategories = [...categories].sort((a, b) => (a.order || 0) - (b.order || 0));
+    if (index === sortedCategories.length - 1) return; // Already at bottom
+    
+    const nextCategory = sortedCategories[index + 1];
+    
+    try {
+      // Swap orders
+      await categoriesAPI.update(category.id, { order: nextCategory.order || 0 });
+      await categoriesAPI.update(nextCategory.id, { order: category.order || 0 });
+      loadCategories();
+    } catch (error) {
+      alert('Erreur lors du déplacement');
+    }
+  };
+
   const handleDeleteOption = async (optionId) => {
     if (!window.confirm('Supprimer cette option ?')) return;
     try {
