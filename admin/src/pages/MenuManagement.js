@@ -322,19 +322,61 @@ export const MenuManagement = () => {
                       <span className="text-2xl font-black text-primary">{price.toFixed(2)}€</span>
                       {product.is_out_of_stock ? (
                         <div className="flex flex-col items-end">
-                          <span className="px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700">
-                            🚫 Rupture
-                          </span>
-                          {product.stock_resume_at && (
-                            <span className="text-xs text-gray-500 mt-1">
-                              {new Date(product.stock_resume_at).toLocaleString('fr-FR', { 
-                                month: 'short', 
-                                day: 'numeric', 
-                                hour: '2-digit', 
-                                minute: '2-digit' 
-                              })}
-                            </span>
-                          )}
+                          {(() => {
+                            const now = new Date();
+                            const resumeAt = product.stock_resume_at ? new Date(product.stock_resume_at) : null;
+                            
+                            if (!resumeAt) {
+                              // Rupture indéfinie
+                              return (
+                                <span className="px-3 py-1 rounded-full text-xs font-bold bg-gray-700 text-white">
+                                  ⛔ Rupture indéfinie
+                                </span>
+                              );
+                            }
+                            
+                            const diffHours = (resumeAt - now) / (1000 * 60 * 60);
+                            const isToday = resumeAt.toDateString() === now.toDateString();
+                            const isTomorrow = resumeAt.toDateString() === new Date(now.getTime() + 24*60*60*1000).toDateString();
+                            
+                            if (diffHours <= 2.5 && diffHours > 0) {
+                              // Rupture 2H
+                              return (
+                                <>
+                                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-700">
+                                    ⏰ Rupture 2H
+                                  </span>
+                                  <span className="text-xs text-gray-500 mt-1">
+                                    Retour {resumeAt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                  </span>
+                                </>
+                              );
+                            } else if (isToday || (isTomorrow && resumeAt.getHours() === 0)) {
+                              // Rupture aujourd'hui (jusqu'à minuit)
+                              return (
+                                <>
+                                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700">
+                                    📅 Rupture journée
+                                  </span>
+                                  <span className="text-xs text-gray-500 mt-1">
+                                    Retour demain
+                                  </span>
+                                </>
+                              );
+                            } else {
+                              // Autre (date future)
+                              return (
+                                <>
+                                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700">
+                                    🚫 Rupture
+                                  </span>
+                                  <span className="text-xs text-gray-500 mt-1">
+                                    {resumeAt.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} {resumeAt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                  </span>
+                                </>
+                              );
+                            }
+                          })()}
                         </div>
                       ) : (
                         <span className="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
