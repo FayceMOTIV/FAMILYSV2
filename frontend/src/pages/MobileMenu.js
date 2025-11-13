@@ -169,66 +169,98 @@ const MobileMenu = () => {
 
       {/* Products List */}
       <div className="px-4 py-4 space-y-4">
-        {filteredProducts.map((product) => (
-          <div
-            key={product.id}
-            onClick={() => handleProductClick(product)}
-            className="bg-white dark:bg-[#1a1a1a] rounded-[32px] overflow-hidden shadow-lg active:scale-98 transition-all duration-200"
-          >
-            <div className="flex items-center p-4 space-x-4">
-              <div className="relative flex-shrink-0">
-                <img
-                  src={product.imageUrl}
-                  alt={product.name}
-                  className="w-28 h-28 object-cover rounded-3xl"
-                />
-                {product.tags.length > 0 && (
-                  <div className="absolute top-2 left-2">
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${getBadgeColor(product.tags[0])}`}>
-                      {getBadgeLabel(product.tags[0])}
-                    </span>
+        {loading ? (
+          <div className="text-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#C62828] mx-auto mb-4"></div>
+            <p className="text-gray-600 dark:text-gray-400">Chargement des produits...</p>
+          </div>
+        ) : (
+          filteredProducts.map((product) => {
+            const imageUrl = product.image_url || product.image || product.imageUrl;
+            const price = product.base_price || product.basePrice || 0;
+            const isOutOfStock = product.is_out_of_stock || false;
+            
+            return (
+              <div
+                key={product.id}
+                onClick={() => !isOutOfStock && handleProductClick(product)}
+                className={`bg-white dark:bg-[#1a1a1a] rounded-[32px] overflow-hidden shadow-lg transition-all duration-200 ${
+                  isOutOfStock ? 'opacity-75' : 'active:scale-98'
+                }`}
+              >
+                <div className="flex items-center p-4 space-x-4">
+                  <div className="relative flex-shrink-0">
+                    <img
+                      src={imageUrl}
+                      alt={product.name}
+                      className={`w-28 h-28 object-cover rounded-3xl ${isOutOfStock ? 'grayscale' : ''}`}
+                    />
+                    {isOutOfStock && (
+                      <div className="absolute inset-0 bg-black/50 rounded-3xl flex items-center justify-center">
+                        <div className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" />
+                          Indisponible
+                        </div>
+                      </div>
+                    )}
+                    {!isOutOfStock && product.tags && product.tags.length > 0 && (
+                      <div className="absolute top-2 left-2">
+                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${getBadgeColor(product.tags[0])}`}>
+                          {getBadgeLabel(product.tags[0])}
+                        </span>
+                      </div>
+                    )}
+                    {!isOutOfStock && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFavorite(product.id);
+                        }}
+                        className="absolute bottom-2 right-2 w-9 h-9 bg-white/95 dark:bg-black/70 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+                      >
+                        <Star
+                          className={`w-5 h-5 ${
+                            isFavorite(product.id)
+                              ? 'fill-[#C62828] text-[#C62828]'
+                              : 'text-gray-600 dark:text-gray-300'
+                          }`}
+                        />
+                      </button>
+                    )}
                   </div>
-                )}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFavorite(product.id);
-                  }}
-                  className="absolute bottom-2 right-2 w-9 h-9 bg-white/95 dark:bg-black/70 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform"
-                >
-                  <Star
-                    className={`w-5 h-5 ${
-                      isFavorite(product.id)
-                        ? 'fill-[#C62828] text-[#C62828]'
-                        : 'text-gray-600 dark:text-gray-300'
-                    }`}
-                  />
-                </button>
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-lg text-gray-800 dark:text-white mb-1 truncate">{product.name}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">
-                  {product.description}
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-black text-[#C62828] dark:text-[#FFD54F]">
-                    {product.basePrice.toFixed(2)}€
-                  </span>
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleProductClick(product);
-                    }}
-                    size="sm"
-                    className="bg-[#C62828] hover:bg-[#8B0000] text-white rounded-full px-6 py-5 font-bold active:scale-95"
-                  >
-                    +
-                  </Button>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-lg text-gray-800 dark:text-white mb-1 truncate">{product.name}</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">
+                      {product.description}
+                    </p>
+                    {isOutOfStock && (
+                      <div className="bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 text-xs font-semibold px-3 py-1 rounded-full inline-block mb-2">
+                        Temporairement indisponible
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <span className="text-2xl font-black text-[#C62828] dark:text-[#FFD54F]">
+                        {price.toFixed(2)}€
+                      </span>
+                      {!isOutOfStock && (
+                        <Button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleProductClick(product);
+                          }}
+                          size="sm"
+                          className="bg-[#C62828] hover:bg-[#8B0000] text-white rounded-full px-6 py-5 font-bold active:scale-95"
+                        >
+                          +
+                        </Button>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        ))}
+            );
+          })
+        )}
 
         {filteredProducts.length === 0 && (
           <div className="text-center py-20">
