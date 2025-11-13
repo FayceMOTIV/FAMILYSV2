@@ -402,9 +402,7 @@ metadata:
   test_sequence: 3
 
 test_plan:
-  current_focus:
-    - "Category Reordering System"
-    - "Partial Refunds System"
+  current_focus: []
   stuck_tasks:
     - "AI Sales Analysis"
     - "AI Promo Suggestion"
