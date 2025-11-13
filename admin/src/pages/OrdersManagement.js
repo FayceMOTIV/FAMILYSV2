@@ -661,7 +661,7 @@ export const OrdersManagement = () => {
                     <div className="flex space-x-2">
                       {getNextStatus(order.status) && (
                         <Button
-                          onClick={() => updateOrderStatus(order.id, getNextStatus(order.status))}
+                          onClick={() => requestStatusChange(order.id, order.status, getNextStatus(order.status))}
                           className="flex-1 py-4 text-lg font-bold"
                         >
                           {getNextStatus(order.status) === 'in_preparation' && '🔥 EN COURS DE PREPARATION'}
