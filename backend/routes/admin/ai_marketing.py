@@ -126,7 +126,9 @@ async def validate_campaign(
         "success": True,
         "campaign_id": campaign_id,
         "status": new_status,
-        "promo_created": validation.accepted
+        "promo_created": validation.accepted,
+        "promo_v2_result": promo_result,
+        "promotion_id": promo_result.get("promotion_id") if promo_result else None
     }
 
 @router.get("/campaigns/{campaign_id}/results")
