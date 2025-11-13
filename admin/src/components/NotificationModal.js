@@ -50,10 +50,18 @@ export const NotificationModal = ({ isOpen, onClose, notification, onSuccess }) 
       
       const method = notification ? 'PUT' : 'POST';
       
+      // Prepare data to send
+      const dataToSend = {
+        ...formData,
+        // If segment is pre-selected, ensure it's included
+        target_segment: preSelectedSegment || formData.target_segment,
+        target_type: preSelectedSegment ? 'segment' : formData.target_type
+      };
+      
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(dataToSend)
       });
 
       if (!response.ok) throw new Error('Failed to save notification');
