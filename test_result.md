@@ -403,11 +403,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Backend API Optimization"
+    - "AI Marketing ↔ Promotions V2 Bridge System"
   stuck_tasks:
     - "AI Sales Analysis"
     - "AI Promo Suggestion"
     - "CORS Configuration"
+    - "AI Marketing ↔ Promotions V2 Bridge System"
   test_all: false
   test_priority: "high_first"
   completed_features:
