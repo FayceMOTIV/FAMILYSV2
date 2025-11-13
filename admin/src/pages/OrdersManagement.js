@@ -380,7 +380,15 @@ export const OrdersManagement = () => {
           <div className="flex space-x-3 min-w-max">
             {tabs.map((tab) => {
               const Icon = tab.icon;
-              const count = orders.filter(o => o.status === tab.status).length;
+              // Appliquer le même filtre que pour l'affichage
+              const count = orders.filter(o => {
+                if (o.status !== tab.status) return false;
+                // Pour "En Livraison", compter seulement les commandes delivery
+                if (tab.status === 'out_for_delivery' && o.order_type !== 'delivery') {
+                  return false;
+                }
+                return true;
+              }).length;
               return (
                 <button
                   key={tab.id}
