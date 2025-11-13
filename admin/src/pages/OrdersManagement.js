@@ -301,11 +301,11 @@ export const OrdersManagement = () => {
     }
   };
 
-  const getNextStatus = (currentStatus) => {
+  const getNextStatus = (currentStatus, orderType) => {
     const statusFlow = {
       'new': 'in_preparation',
       'in_preparation': 'ready',
-      'ready': 'completed',
+      'ready': orderType === 'delivery' ? 'out_for_delivery' : 'completed',
       'out_for_delivery': 'completed'
     };
     return statusFlow[currentStatus];
