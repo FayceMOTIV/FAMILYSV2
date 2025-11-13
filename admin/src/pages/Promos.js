@@ -75,20 +75,32 @@ export const Promos = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {promos.map((promo) => (
-              <Card key={promo.id}>
+              <Card key={promo.id} className={`${
+                promo.is_active 
+                  ? 'border-2 border-green-500 bg-green-50' 
+                  : 'border-2 border-red-300 bg-red-50'
+              }`}>
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <code className="text-lg font-bold bg-gray-100 px-3 py-1 rounded">
+                      <code className={`text-lg font-bold px-3 py-1 rounded ${
+                        promo.is_active ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'
+                      }`}>
                         {promo.code}
                       </code>
-                      <span className={`text-xs px-2 py-1 rounded ${promo.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
-                        {promo.is_active ? '✅ Active' : '⏸️ Inactive'}
+                      <span className={`text-xs font-bold px-3 py-1 rounded ${
+                        promo.is_active ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
+                      }`}>
+                        {promo.is_active ? '✅ ACTIVE' : '❌ INACTIVE'}
                       </span>
                     </div>
-                    <h4 className="font-medium text-gray-700">{promo.description}</h4>
+                    <h4 className={`font-medium ${
+                      promo.is_active ? 'text-green-900' : 'text-red-900'
+                    }`}>{promo.description}</h4>
                   </div>
-                  <span className="text-2xl font-black text-primary">
+                  <span className={`text-2xl font-black ${
+                    promo.is_active ? 'text-green-700' : 'text-red-700'
+                  }`}>
                     {promo.discount_type === 'percentage' ? `${promo.discount_value}%` : `${promo.discount_value}€`}
                   </span>
                 </div>
