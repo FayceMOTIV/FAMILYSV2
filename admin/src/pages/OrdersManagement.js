@@ -321,28 +321,56 @@ export const OrdersManagement = () => {
       
       {/* Onglets */}
       <div className="p-4 bg-white border-b overflow-x-auto">
-        <div className="flex space-x-3 min-w-max">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const count = orders.filter(o => o.status === tab.status).length;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-3 px-6 py-4 rounded-xl font-bold text-white transition-all transform ${
-                  activeTab === tab.id 
-                    ? `${tab.color} scale-105 shadow-xl` 
-                    : 'bg-gray-300 hover:bg-gray-400 scale-95'
-                }`}
-              >
-                <Icon className="w-6 h-6" />
-                <div className="text-left">
-                  <div className="text-sm">{tab.label}</div>
-                  <div className="text-2xl font-black">{count}</div>
-                </div>
-              </button>
-            );
-          })}
+        <div className="flex justify-between items-center">
+          <div className="flex space-x-3 min-w-max">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const count = orders.filter(o => o.status === tab.status).length;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center space-x-3 px-6 py-4 rounded-xl font-bold text-white transition-all transform ${
+                    activeTab === tab.id 
+                      ? `${tab.color} scale-105 shadow-xl` 
+                      : 'bg-gray-300 hover:bg-gray-400 scale-95'
+                  }`}
+                >
+                  <Icon className="w-6 h-6" />
+                  <div className="text-left">
+                    <div className="text-sm">{tab.label}</div>
+                    <div className="text-2xl font-black">{count}</div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+          
+          {/* Boutons de vue */}
+          <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => setViewMode('cards')}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-all ${
+                viewMode === 'cards' 
+                  ? 'bg-white text-primary font-bold shadow' 
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              <Grid className="w-5 h-5" />
+              <span>Cartes</span>
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-all ${
+                viewMode === 'list' 
+                  ? 'bg-white text-primary font-bold shadow' 
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              <List className="w-5 h-5" />
+              <span>Liste</span>
+            </button>
+          </div>
         </div>
       </div>
 
