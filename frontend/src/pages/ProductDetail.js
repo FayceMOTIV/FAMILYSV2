@@ -87,20 +87,20 @@ const ProductDetail = () => {
   };
 
   const calculateTotalPrice = useMemo(() => {
-    let total = product.basePrice;
+    let total = basePrice;
     
     options.forEach(group => {
       const selected = selectedOptions[group.id] || [];
       selected.forEach(optId => {
-        const option = group.options.find(o => o.id === optId);
-        if (option) {
-          total += option.deltaPrice;
+        const choice = group.choices?.find(c => c.id === optId);
+        if (choice && choice.price_modifier) {
+          total += choice.price_modifier;
         }
       });
     });
     
     return total * quantity;
-  }, [product.basePrice, selectedOptions, quantity, options]);
+  }, [basePrice, selectedOptions, quantity, options]);
 
   const handleAddToCart = () => {
     // Validate required options
