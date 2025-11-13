@@ -100,6 +100,23 @@ async def collect_restaurant_data(restaurant_id: str) -> Dict:
     total_ca_week = sum(o.get("total", 0) for o in recent_orders)
     total_ca_prev = sum(o.get("total", 0) for o in previous_month_orders)
     
+    # Analyser les performances des promos
+    promo_performance = {}
+    for promo in past_promos:
+        promo_id = promo.get("id")
+        usage = [log for log in promotion_usage_logs if log.get("promotion_id") == promo_id]
+        if usage:
+            promo_performance[promo_id] = {
+                "name": promo.get("name") or promo.get("title", "Unknown"),
+                "type": promo.get("type", "unknown"),
+                "usage_count": len(usage),
+                "total_discount": sum(log.get("discount_amount", 0) for log in usage),
+                "total_revenue": sum(log.get("original_amount", 0) for log in usage)
+            }
+    
+    # Top 3 meilleures promos
+    top_promos = sorted(promo_performance.values(), key=lambda x: x["total_revenue"], reverse=True)[:3]
+    
     return {
         "restaurant_id": restaurant_id,
         "period": "7 derniers jours",
@@ -107,10 +124,13 @@ async def collect_restaurant_data(restaurant_id: str) -> Dict:
         "total_ca": round(total_ca_week, 2),
         "avg_basket": round(total_ca_week / len(recent_orders), 2) if recent_orders else 0,
         "ca_trend": "hausse" if total_ca_week > total_ca_prev else "baisse",
+        "ca_evolution_percent": round(((total_ca_week - total_ca_prev) / total_ca_prev * 100), 1) if total_ca_prev > 0 else 0,
         "product_sales": dict(sorted(product_sales.items(), key=lambda x: x[1]["revenue"], reverse=True)[:10]),
         "category_sales": category_sales,
         "inactive_customers_count": len(inactive_customers),
         "past_promos_count": len(past_promos),
+        "promotion_usage_logs_count": len(promotion_usage_logs),
+        "top_performing_promos": top_promos,
         "products_count": len(products),
         "categories_count": len(categories)
     }
