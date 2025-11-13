@@ -36,6 +36,14 @@ export const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
     loadOptions();
   }, []);
 
+  // Recharger les catégories et options à chaque ouverture du modal
+  useEffect(() => {
+    if (isOpen) {
+      loadCategories();
+      loadOptions();
+    }
+  }, [isOpen]);
+
   useEffect(() => {
     if (product) {
       const productData = {
