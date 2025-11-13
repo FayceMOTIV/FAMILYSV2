@@ -536,6 +536,18 @@ test_plan:
         - agent: "testing"
         - comment: "✅ AI MARKETING WORKING: Disabled authentication for debug as requested. GET /campaigns/all returns campaign data, POST /campaigns/generate creates new campaigns. AI marketing functionality confirmed."
 
+  - task: "Advanced Promotions Engine V2"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/routes/admin/promotions.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implemented complete promotions engine overhaul with 15 promotion types: BOGO, PERCENT_ITEM, PERCENT_CATEGORY, FIXED_ITEM, FIXED_CATEGORY, CONDITIONAL_DISCOUNT, THRESHOLD, SHIPPING_FREE, NEW_CUSTOMER, INACTIVE_CUSTOMER, LOYALTY_MULTIPLIER, HAPPY_HOUR, FLASH, SEASONAL, PROMO_CODE. Backend includes: 1) New Promotion model with comprehensive fields (models/promotion.py), 2) PromotionEngine service with calculation logic (services/promotion_engine.py), 3) Full CRUD API routes (routes/admin/promotions.py), 4) Simulation endpoint for testing, 5) Analytics endpoints, 6) Calendar view endpoint, 7) Automated test suite (tests/test_promotions.py) with 13 test scenarios. Frontend scaffolded: PromotionsV2.js page, PromotionWizard.js multi-step form, PromotionCalendar.js, PromotionSimulator.js. Need comprehensive backend testing: all CRUD operations, simulation endpoint, promotion calculation logic for all types, priority/stacking system, condition checking (time, date, cart amount, customer type)."
+
   - task: "Payment Processing System"
     implemented: true
     working: true
