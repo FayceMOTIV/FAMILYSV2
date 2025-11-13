@@ -967,17 +967,18 @@ export const OrdersManagement = () => {
               </div>
 
               {/* Changement de statut */}
-              {getNextStatus(selectedOrder.status) && (
+              {getNextStatus(selectedOrder.status, selectedOrder.order_type) && (
                 <Button
                   onClick={() => {
-                    requestStatusChange(selectedOrder.id, selectedOrder.status, getNextStatus(selectedOrder.status));
+                    requestStatusChange(selectedOrder.id, selectedOrder.status, getNextStatus(selectedOrder.status, selectedOrder.order_type));
                     setShowDetailModal(false);
                   }}
                   className="w-full py-4 text-lg font-bold"
                 >
-                  {getNextStatus(selectedOrder.status) === 'in_preparation' && '🔥 PASSER EN PRÉPARATION'}
-                  {getNextStatus(selectedOrder.status) === 'ready' && '✅ MARQUER COMME PRÊTE'}
-                  {getNextStatus(selectedOrder.status) === 'completed' && '🎉 MARQUER COMME TERMINÉE'}
+                  {getNextStatus(selectedOrder.status, selectedOrder.order_type) === 'in_preparation' && '🔥 PASSER EN PRÉPARATION'}
+                  {getNextStatus(selectedOrder.status, selectedOrder.order_type) === 'ready' && '✅ MARQUER COMME PRÊTE'}
+                  {getNextStatus(selectedOrder.status, selectedOrder.order_type) === 'out_for_delivery' && '🚚 PARTI POUR LA LIVRAISON'}
+                  {getNextStatus(selectedOrder.status, selectedOrder.order_type) === 'completed' && '🎉 MARQUER COMME TERMINÉE'}
                 </Button>
               )}
             </div>
