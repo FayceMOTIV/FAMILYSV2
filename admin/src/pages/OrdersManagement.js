@@ -20,6 +20,8 @@ export const OrdersManagement = () => {
   const [previousNewOrdersCount, setPreviousNewOrdersCount] = useState(0);
   const [viewMode, setViewMode] = useState('cards'); // 'cards' ou 'list'
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [pendingStatusChange, setPendingStatusChange] = useState(null);
 
   const tabs = [
     { id: 'new', label: 'Nouvelles', icon: Package, color: 'bg-red-500', status: 'new' },
