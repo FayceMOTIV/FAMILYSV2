@@ -145,16 +145,23 @@ async def generate_campaigns_with_ai(data: Dict, settings: Dict) -> List[Dict]:
     prompt = f"""Tu es l'assistant marketing IA du restaurant Family's. 
 Analyse ces données et génère {max_suggestions} campagnes marketing pertinentes.
 
-**Données :**
+**Données de performance :**
 - Commandes : {data['total_orders']}
-- CA : {data['total_ca']}€
+- CA : {data['total_ca']}€ ({data.get('ca_evolution_percent', 0):+.1f}% vs période précédente)
 - Panier moyen : {data['avg_basket']}€
 - Tendance : {data['ca_trend']}
 - Clients inactifs : {data['inactive_customers_count']}
-- Promos passées : {data['past_promos_count']}
+- Promos passées (ancien + nouveau moteur) : {data['past_promos_count']}
+- Logs d'utilisation promos : {data.get('promotion_usage_logs_count', 0)}
+
+**Top 3 promos les plus performantes :**
+{json.dumps(data.get('top_performing_promos', []), indent=2, ensure_ascii=False)}
 
 **Top produits vendus :**
 {json.dumps(data['product_sales'], indent=2, ensure_ascii=False)}
+
+**Ventes par catégorie :**
+{json.dumps(data['category_sales'], indent=2, ensure_ascii=False)}
 
 **Objectifs prioritaires :** {', '.join(priority_objectives)}
 **Types d'offres autorisées :** {', '.join(allowed_types)}
