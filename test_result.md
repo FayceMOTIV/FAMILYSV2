@@ -403,7 +403,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Advanced Promotions Engine V2"
+    - "Backend API Optimization"
   stuck_tasks:
     - "AI Sales Analysis"
     - "AI Promo Suggestion"
