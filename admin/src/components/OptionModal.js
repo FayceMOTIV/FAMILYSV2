@@ -143,6 +143,23 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
           />
         </div>
 
+        {/* Commentaire interne */}
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            Commentaire interne (non visible par le client)
+          </label>
+          <textarea
+            value={formData.internal_comment}
+            onChange={(e) => setFormData({...formData, internal_comment: e.target.value})}
+            className="w-full px-4 py-2 border rounded-lg bg-yellow-50"
+            rows="2"
+            placeholder="Notes internes, instructions pour le personnel..."
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            ℹ️ Ce commentaire est uniquement visible dans le back office, pas dans l'application client
+          </p>
+        </div>
+
         <div className="grid grid-cols-2 gap-4">
           {/* Type */}
           <div>
