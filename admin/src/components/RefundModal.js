@@ -149,6 +149,20 @@ export const RefundModal = ({ isOpen, onClose, order, onSuccess }) => {
             <option value="Erreur de commande">Erreur de commande</option>
             <option value="Autre">Autre</option>
           </select>
+          
+          {/* Custom reason if "Autre" selected */}
+          {reason === 'Autre' && (
+            <div className="mt-2">
+              <textarea
+                value={customReason}
+                onChange={(e) => setCustomReason(e.target.value)}
+                placeholder="Précisez la raison..."
+                className="w-full px-4 py-2 border rounded-lg"
+                rows="3"
+                required
+              />
+            </div>
+          )}
         </div>
 
         {/* Total refund */}
