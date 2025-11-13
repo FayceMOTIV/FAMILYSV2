@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { X, ShoppingBag, Award, ChevronLeft } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, ShoppingBag, Award, ChevronLeft, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { Button } from './ui/button';
 import SwipeableCartItem from './SwipeableCartItem';
 import EmptyState from './EmptyState';
+import { promotionsAPI } from '../services/promotionsAPI';
 
 const MobileCart = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
