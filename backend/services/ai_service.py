@@ -55,7 +55,7 @@ Format strict JSON."""
         # Parse JSON response
         try:
             result = json.loads(response)
-        except:
+        except (json.JSONDecodeError, ValueError):
             # If not valid JSON, structure it
             result = {
                 "insights": [response[:200]],
