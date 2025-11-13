@@ -98,34 +98,24 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
 
       {/* Avertissement paiement verrouillé */}
       {isPaymentLocked && (
-        <div className="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-lg">
-          <div className="flex items-start gap-3">
-            <span className="text-2xl">🔒</span>
-            <div>
-              <h3 className="font-bold text-red-800 mb-1">Paiement non modifiable</h3>
-              <p className="text-sm text-red-700">
-                Ce paiement a été effectué en ligne (CB/Apple Pay/Google Pay). 
-                Il ne peut pas être modifié depuis le back office.
-              </p>
-              <p className="text-xs text-red-600 mt-2">
-                💡 Pour un remboursement, utilisez le système de remboursement sur carte de fidélité.
-              </p>
-            </div>
+        <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">🔒</span>
+            <p className="text-xs text-red-700 font-medium">
+              Paiement en ligne non modifiable
+            </p>
           </div>
         </div>
       )}
 
       {/* Info modification paiement physique */}
       {isModifyingPayment && !isPaymentLocked && (
-        <div className="mb-6 p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg">
-          <div className="flex items-start gap-3">
-            <span className="text-2xl">⚠️</span>
-            <div>
-              <h3 className="font-bold text-yellow-800 mb-1">Modification du paiement</h3>
-              <p className="text-sm text-yellow-700">
-                Vous êtes sur le point de modifier un paiement déjà enregistré (espèces/chèque/ticket resto).
-              </p>
-            </div>
+        <div className="mb-3 p-2 bg-yellow-50 border border-yellow-200 rounded">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">⚠️</span>
+            <p className="text-xs text-yellow-700 font-medium">
+              Modification d'un paiement existant
+            </p>
           </div>
         </div>
       )}
