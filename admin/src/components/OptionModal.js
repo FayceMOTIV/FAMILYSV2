@@ -21,6 +21,7 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
       setFormData({
         name: option.name || '',
         description: option.description || '',
+        internal_comment: option.internal_comment || '',
         type: option.type || 'single',
         is_required: option.is_required || false,
         max_choices: option.max_choices || '',
@@ -30,6 +31,7 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
       setFormData({
         name: '',
         description: '',
+        internal_comment: '',
         type: 'single',
         is_required: false,
         max_choices: '',
