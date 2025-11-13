@@ -1462,6 +1462,369 @@ class BackendTester:
             print(f"⚠️  {total - passed} stock management tests FAILED")
             return False
 
+    async def test_ai_campaign_generation(self) -> bool:
+        """Test AI campaign generation (manual trigger)."""
+        test_name = "AI Campaign Generation"
+        
+        try:
+            campaign_data = {"force_regenerate": False}
+            
+            async with self.session.post(
+                f"{self.base_url}/api/v1/admin/ai-marketing/campaigns/generate",
+                json=campaign_data,
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status == 200:
+                    data = await response.json()
+                    if (data.get("success") and 
+                        "campaigns_generated" in data and 
+                        "campaigns" in data):
+                        
+                        campaigns = data.get("campaigns", [])
+                        if len(campaigns) >= 1:  # Should generate 3-5 campaigns but accept 1+ for testing
+                            # Check V2-compatible fields in first campaign
+                            first_campaign = campaigns[0]
+                            required_fields = [
+                                "promo_type_v2", "badge_text", "badge_color",
+                                "start_time", "end_time", "days_active",
+                                "source_promo_analysis"
+                            ]
+                            
+                            missing_fields = [field for field in required_fields 
+                                            if field not in first_campaign]
+                            
+                            if not missing_fields:
+                                self.log_result(test_name, True, 
+                                              f"Generated {len(campaigns)} campaigns with V2-compatible fields")
+                                return True
+                            else:
+                                self.log_result(test_name, False, 
+                                              f"Missing V2 fields: {missing_fields}")
+                                return False
+                        else:
+                            self.log_result(test_name, False, 
+                                          f"Only generated {len(campaigns)} campaigns (expected 1+)")
+                            return False
+                    else:
+                        self.log_result(test_name, False, "Invalid response structure", data)
+                        return False
+                else:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"HTTP {response.status}: {error_data}")
+                    return False
+                    
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
+    async def test_get_pending_campaigns(self) -> tuple[bool, Optional[str]]:
+        """Test getting pending campaigns and return first campaign ID."""
+        test_name = "Get Pending Campaigns"
+        
+        try:
+            async with self.session.get(
+                f"{self.base_url}/api/v1/admin/ai-marketing/campaigns/all?status=pending",
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status == 200:
+                    data = await response.json()
+                    campaigns = data.get("campaigns", [])
+                    
+                    if campaigns:
+                        first_campaign = campaigns[0]
+                        campaign_id = first_campaign.get("id")
+                        
+                        # Verify required fields
+                        required_fields = ["promo_type_v2", "badge_text", "badge_color"]
+                        missing_fields = [field for field in required_fields 
+                                        if field not in first_campaign]
+                        
+                        if not missing_fields:
+                            self.log_result(test_name, True, 
+                                          f"Retrieved {len(campaigns)} pending campaigns with required fields")
+                            return True, campaign_id
+                        else:
+                            self.log_result(test_name, False, 
+                                          f"Campaigns missing required fields: {missing_fields}")
+                            return False, None
+                    else:
+                        self.log_result(test_name, False, "No pending campaigns found")
+                        return False, None
+                else:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"HTTP {response.status}: {error_data}")
+                    return False, None
+                    
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False, None
+
+    async def test_validate_campaign_accept(self, campaign_id: str) -> tuple[bool, Optional[str]]:
+        """Test accepting a campaign and auto-creating promotion V2 draft."""
+        test_name = "Validate Campaign (Accept) → Auto-Create Promotion V2"
+        
+        if not campaign_id:
+            self.log_result(test_name, False, "No campaign ID available")
+            return False, None
+        
+        try:
+            validation_data = {
+                "accepted": True,
+                "notes": "Test validation"
+            }
+            
+            headers = {
+                "Authorization": f"Bearer {self.auth_token}",
+                "Content-Type": "application/json"
+            }
+            
+            async with self.session.post(
+                f"{self.base_url}/api/v1/admin/ai-marketing/campaigns/{campaign_id}/validate",
+                json=validation_data,
+                headers=headers
+            ) as response:
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    if (data.get("success") and 
+                        data.get("status") == "accepted" and
+                        data.get("promo_created") and
+                        "promotion_id" in data):
+                        
+                        promotion_id = data.get("promotion_id")
+                        self.log_result(test_name, True, 
+                                      f"Campaign accepted and promotion V2 draft created: {promotion_id}")
+                        return True, promotion_id
+                    else:
+                        self.log_result(test_name, False, 
+                                      "Campaign accepted but promotion not created", data)
+                        return False, None
+                else:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"HTTP {response.status}: {error_data}")
+                    return False, None
+                    
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False, None
+
+    async def test_verify_promotion_v2_draft(self, promotion_id: str) -> bool:
+        """Test verifying the created promotion V2 draft."""
+        test_name = "Verify Promotion V2 Draft Created"
+        
+        if not promotion_id:
+            self.log_result(test_name, False, "No promotion ID available")
+            return False
+        
+        try:
+            async with self.session.get(
+                f"{self.base_url}/api/v1/admin/promotions?status_filter=draft",
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status == 200:
+                    data = await response.json()
+                    promotions = data.get("promotions", [])
+                    
+                    # Find the AI-created promotion
+                    ai_promotion = None
+                    for promo in promotions:
+                        if (promo.get("id") == promotion_id and
+                            promo.get("analytics", {}).get("created_by_ai")):
+                            ai_promotion = promo
+                            break
+                    
+                    if ai_promotion:
+                        # Verify required fields
+                        if (ai_promotion.get("status") == "draft" and
+                            ai_promotion.get("is_active") == False and
+                            ai_promotion.get("analytics", {}).get("created_by_ai") == True):
+                            
+                            self.log_result(test_name, True, 
+                                          f"AI-created promotion found with correct draft status")
+                            return True
+                        else:
+                            self.log_result(test_name, False, 
+                                          f"Promotion found but incorrect fields: status={ai_promotion.get('status')}, is_active={ai_promotion.get('is_active')}")
+                            return False
+                    else:
+                        self.log_result(test_name, False, 
+                                      f"AI-created promotion {promotion_id} not found in drafts")
+                        return False
+                else:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"HTTP {response.status}: {error_data}")
+                    return False
+                    
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
+    async def test_validate_campaign_refuse(self, campaign_id: str) -> bool:
+        """Test refusing a campaign (should NOT create promotion)."""
+        test_name = "Validate Campaign (Refuse)"
+        
+        if not campaign_id:
+            self.log_result(test_name, False, "No campaign ID available")
+            return False
+        
+        try:
+            validation_data = {
+                "accepted": False,
+                "notes": "Not relevant"
+            }
+            
+            headers = {
+                "Authorization": f"Bearer {self.auth_token}",
+                "Content-Type": "application/json"
+            }
+            
+            async with self.session.post(
+                f"{self.base_url}/api/v1/admin/ai-marketing/campaigns/{campaign_id}/validate",
+                json=validation_data,
+                headers=headers
+            ) as response:
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    if (data.get("success") and 
+                        data.get("status") == "refused" and
+                        not data.get("promo_created") and
+                        not data.get("promotion_id")):
+                        
+                        self.log_result(test_name, True, "Campaign refused and no promotion created")
+                        return True
+                    else:
+                        self.log_result(test_name, False, 
+                                      "Campaign refused but unexpected promotion creation", data)
+                        return False
+                else:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"HTTP {response.status}: {error_data}")
+                    return False
+                    
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
+    async def test_ai_marketing_stats(self) -> bool:
+        """Test AI marketing stats endpoint."""
+        test_name = "AI Marketing Stats"
+        
+        try:
+            headers = {
+                "Authorization": f"Bearer {self.auth_token}",
+                "Content-Type": "application/json"
+            }
+            
+            async with self.session.get(
+                f"{self.base_url}/api/v1/admin/ai-marketing/stats",
+                headers=headers
+            ) as response:
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    required_fields = [
+                        "total_campaigns", "accepted", "refused", "pending",
+                        "acceptance_rate", "weekly_summary"
+                    ]
+                    
+                    missing_fields = [field for field in required_fields 
+                                    if field not in data]
+                    
+                    if not missing_fields:
+                        self.log_result(test_name, True, 
+                                      f"Stats retrieved: {data.get('total_campaigns')} campaigns, {data.get('acceptance_rate')}% acceptance rate")
+                        return True
+                    else:
+                        self.log_result(test_name, False, 
+                                      f"Missing stats fields: {missing_fields}")
+                        return False
+                else:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"HTTP {response.status}: {error_data}")
+                    return False
+                    
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
+    async def test_nightly_job_trigger(self) -> bool:
+        """Test manual trigger of nightly job."""
+        test_name = "Nightly Job Manual Trigger"
+        
+        try:
+            async with self.session.post(
+                f"{self.base_url}/api/v1/admin/ai-marketing/campaigns/trigger-nightly-job",
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    if data.get("success"):
+                        self.log_result(test_name, True, "Nightly job triggered successfully")
+                        return True
+                    else:
+                        self.log_result(test_name, False, "Nightly job trigger failed", data)
+                        return False
+                else:
+                    error_data = await response.text()
+                    self.log_result(test_name, False, f"HTTP {response.status}: {error_data}")
+                    return False
+                    
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
+    async def test_integration_full_flow(self) -> bool:
+        """Test full integration flow: Generate → Get → Accept → Verify."""
+        test_name = "Integration Test: Full Flow"
+        
+        try:
+            print("\n🔄 Running Full Integration Flow Test...")
+            
+            # Step 1: Generate campaigns
+            print("   Step 1: Generating campaigns...")
+            generation_success = await self.test_ai_campaign_generation()
+            if not generation_success:
+                self.log_result(test_name, False, "Campaign generation failed")
+                return False
+            
+            # Step 2: Get pending campaigns
+            print("   Step 2: Getting pending campaigns...")
+            pending_success, campaign_id = await self.test_get_pending_campaigns()
+            if not pending_success or not campaign_id:
+                self.log_result(test_name, False, "No pending campaigns available")
+                return False
+            
+            # Step 3: Accept campaign
+            print("   Step 3: Accepting campaign...")
+            accept_success, promotion_id = await self.test_validate_campaign_accept(campaign_id)
+            if not accept_success or not promotion_id:
+                self.log_result(test_name, False, "Campaign acceptance failed")
+                return False
+            
+            # Step 4: Verify promotion created
+            print("   Step 4: Verifying promotion created...")
+            verify_success = await self.test_verify_promotion_v2_draft(promotion_id)
+            if not verify_success:
+                self.log_result(test_name, False, "Promotion verification failed")
+                return False
+            
+            self.log_result(test_name, True, 
+                          f"Full flow completed: Campaign {campaign_id} → Promotion {promotion_id}")
+            return True
+            
+        except Exception as e:
+            self.log_result(test_name, False, f"Exception: {str(e)}")
+            return False
+
     async def run_all_tests(self):
         """Run all backend tests."""
         print(f"🚀 Starting Backend API Tests for: {self.base_url}")
