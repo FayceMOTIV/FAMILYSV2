@@ -19,6 +19,7 @@ export const MenuManagement = () => {
   const [showProductModal, setShowProductModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [openStockMenu, setOpenStockMenu] = useState(null);
+  const [showOutOfStockOnly, setShowOutOfStockOnly] = useState(false);
   
   // Categories state
   const [categories, setCategories] = useState([]);
