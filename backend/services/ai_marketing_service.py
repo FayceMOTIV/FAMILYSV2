@@ -210,13 +210,23 @@ Analyse ces données et génère {max_suggestions} campagnes marketing pertinent
 ]
 ```
 
-**Consignes :**
-- 3 à 5 campagnes max
-- Messages courts, motivants, avec emojis pertinents
-- Dates réalistes (prochains jours/week-end)
-- Impact estimé réaliste
-- Cibler les problèmes détectés (baisse ventes, clients inactifs, etc.)
-- Ton humain et encourageant
+**Consignes IMPORTANTES :**
+- Génère {max_suggestions} campagnes pertinentes basées sur l'analyse des données
+- Messages courts, motivants, avec emojis pertinents (🍔🍰⭐🔥💰)
+- Dates réalistes : commence dans 1-3 jours, durée 2-5 jours max
+- Pour Happy Hour : utilise start_time/end_time (format HH:MM)
+- Pour jours spécifiques : utilise days_active (mon, tue, wed, thu, fri, sat, sun)
+- badge_text doit être court et impactant (ex: "-20% 🔥", "BOGO 🎁", "x2 ⭐")
+- Impact estimé réaliste basé sur l'historique
+- PRIORISE les problèmes détectés :
+  * CA en baisse → promo flash ou threshold
+  * Produits peu vendus → promo sur ces produits
+  * Clients inactifs → promo réactivation
+  * Panier faible → promo threshold
+  * Week-end → Happy Hour
+- Analyse les top_performing_promos pour reproduire ce qui marche
+- source_promo_analysis OBLIGATOIRE : explique le raisonnement
+- Ton humain, encourageant, comme un conseiller marketing expert
 
 Réponds UNIQUEMENT avec le JSON, rien d'autre."""
 
