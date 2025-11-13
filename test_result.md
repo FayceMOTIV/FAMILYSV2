@@ -402,7 +402,8 @@ metadata:
   test_sequence: 3
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Advanced Promotions Engine V2"
   stuck_tasks:
     - "AI Sales Analysis"
     - "AI Promo Suggestion"
