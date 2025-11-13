@@ -725,7 +725,8 @@ export const OrdersManagement = () => {
                         >
                           {getNextStatus(order.status) === 'in_preparation' && '🔥 EN COURS DE PREPARATION'}
                           {getNextStatus(order.status) === 'ready' && '✅ PRETE'}
-                          {getNextStatus(order.status) === 'completed' && '🎉 TERMINE'}
+                          {getNextStatus(order.status) === 'out_for_delivery' && '🚚 EN LIVRAISON'}
+                          {getNextStatus(order.status) === 'completed' && (order.status === 'out_for_delivery' ? '📦 LIVREE' : '🎉 TERMINE')}
                         </Button>
                       )}
                       {order.status !== 'canceled' && order.status !== 'completed' && (
