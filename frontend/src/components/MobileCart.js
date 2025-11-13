@@ -11,6 +11,8 @@ const MobileCart = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const { cart, removeFromCart, updateCartQuantity, getCartTotal, user, loyaltyStamps } = useApp();
   const [useCashback, setUseCashback] = useState(false);
+  const [promotionResult, setPromotionResult] = useState(null);
+  const [loadingPromo, setLoadingPromo] = useState(false);
 
   // Calcul du cashback disponible
   const totalSpent = user?.orderHistory?.reduce((sum, order) => sum + order.total, 0) || 0;
@@ -18,8 +20,47 @@ const MobileCart = ({ isOpen, onClose }) => {
   const canUseCashback = cashbackBalance >= 10;
 
   const subtotal = getCartTotal();
-  const cashbackUsed = useCashback && canUseCashback ? Math.min(cashbackBalance, subtotal) : 0;
-  const total = subtotal - cashbackUsed;
+  
+  // Calculate promotions when cart changes
+  useEffect(() => {
+    const calculatePromotions = async () => {
+      if (cart.length === 0) {
+        setPromotionResult(null);
+        return;
+      }
+
+      setLoadingPromo(true);
+      try {
+        // Build cart object for API
+        const cartData = {
+          items: cart.map(item => ({
+            product_id: item.product?.id || item.id,
+            name: item.product?.name || item.name,
+            price: item.totalPrice / item.quantity,
+            quantity: item.quantity,
+            category_id: item.product?.category || item.category
+          })),
+          total: subtotal,
+          delivery_fee: 0
+        };
+
+        const result = await promotionsAPI.simulate(cartData, user);
+        setPromotionResult(result);
+      } catch (error) {
+        console.error('Error calculating promotions:', error);
+        setPromotionResult(null);
+      } finally {
+        setLoadingPromo(false);
+      }
+    };
+
+    calculatePromotions();
+  }, [cart, subtotal, user]);
+
+  const promoDiscount = promotionResult?.total_discount || 0;
+  const subtotalAfterPromo = subtotal - promoDiscount;
+  const cashbackUsed = useCashback && canUseCashback ? Math.min(cashbackBalance, subtotalAfterPromo) : 0;
+  const total = subtotalAfterPromo - cashbackUsed;
 
   const handleCheckout = () => {
     onClose();
