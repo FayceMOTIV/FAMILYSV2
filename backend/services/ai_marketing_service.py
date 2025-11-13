@@ -43,11 +43,22 @@ async def collect_restaurant_data(restaurant_id: str) -> Dict:
     # Catégories
     categories = await db.categories.find({"restaurant_id": restaurant_id}).to_list(length=None)
     
-    # Promos passées
-    past_promos = await db.promos.find({
+    # Promos passées (ancienne table + nouvelle table promotions V2)
+    past_promos_old = await db.promos.find({
         "restaurant_id": restaurant_id,
         "end_date": {"$lt": datetime.now(timezone.utc).isoformat()}
     }).to_list(length=None)
+    
+    past_promos_v2 = await db.promotions.find({
+        "restaurant_id": restaurant_id,
+        "end_date": {"$lt": datetime.now(timezone.utc).date().isoformat()}
+    }).to_list(length=None)
+    
+    # Combiner les deux
+    past_promos = past_promos_old + past_promos_v2
+    
+    # Usage des promotions V2
+    promotion_usage_logs = await db.promotion_usage_log.find({}).to_list(length=None)
     
     # Clients
     customers = await db.customers.find({"restaurant_id": restaurant_id}).to_list(length=None)
