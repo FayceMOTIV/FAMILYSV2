@@ -15,6 +15,7 @@ class RestaurantSettings(BaseModel):
     secondary_color: str = "#FFD54F"
     opening_hours: Dict[str, Dict] = Field(default_factory=dict)
     order_cutoff_minutes: int = 20
+    preparation_time_minutes: int = 15  # Temps de préparation par créneau
     enable_delivery: bool = True
     enable_takeaway: bool = True
     enable_onsite: bool = True
