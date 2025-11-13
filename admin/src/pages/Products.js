@@ -39,6 +39,27 @@ export const Products = () => {
     }
   };
 
+  const handleDuplicate = async (product) => {
+    if (!window.confirm(`Dupliquer "${product.name}" ?`)) return;
+    
+    try {
+      const duplicatedProduct = {
+        ...product,
+        name: `${product.name} (copie)`,
+        slug: `${product.slug}-copie-${Date.now()}`,
+      };
+      
+      // Remove the id so backend creates a new one
+      delete duplicatedProduct.id;
+      
+      await productsAPI.create(duplicatedProduct);
+      loadProducts();
+      alert('✅ Produit dupliqué avec succès !');
+    } catch (error) {
+      alert('Erreur lors de la duplication');
+    }
+  };
+
   if (loading) {
     return (
       <div>
