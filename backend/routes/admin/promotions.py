@@ -236,6 +236,23 @@ async def get_promotions_calendar(
         logger.error(f"Error getting calendar: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.get("/{promotion_id}")
+async def get_promotion(promotion_id: str):
+    """Récupère une promotion par ID"""
+    try:
+        promo = await db.promotions.find_one({"id": promotion_id, "restaurant_id": RESTAURANT_ID})
+        
+        if not promo:
+            raise HTTPException(status_code=404, detail="Promotion not found")
+        
+        promo.pop("_id", None)
+        return {"promotion": promo}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting promotion: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.post("/{promotion_id}/log-usage")
 async def log_promotion_usage(
     promotion_id: str,
