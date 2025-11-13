@@ -232,6 +232,25 @@ Consignes:
           </div>
         )}
 
+        {/* Segment Selection - Show when "segment" is selected */}
+        {!preSelectedSegment && formData.target_type === 'segment' && (
+          <div>
+            <label className="block text-sm font-medium mb-2">Choisir un segment *</label>
+            <select
+              value={formData.target_segment || ''}
+              onChange={(e) => setFormData({...formData, target_segment: e.target.value})}
+              className="w-full px-4 py-2 border rounded-lg"
+              required
+            >
+              <option value="">-- Sélectionnez un segment --</option>
+              <option value="new">✨ Nouveaux clients</option>
+              <option value="regulars">⭐ Clients réguliers</option>
+              <option value="vip">💎 Clients VIP (&gt;500€)</option>
+              <option value="inactive">💤 Inactifs (30j)</option>
+            </select>
+          </div>
+        )}
+
         {/* Scheduled For */}
         <div>
           <label className="block text-sm font-medium mb-2">
