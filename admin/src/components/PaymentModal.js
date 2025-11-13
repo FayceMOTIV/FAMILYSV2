@@ -10,7 +10,7 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
   const [loading, setLoading] = useState(false);
 
   // Paiements en ligne (non modifiables)
-  const onlinePaymentMethods = ['card', 'mobile', 'online', 'apple_pay', 'google_pay'];
+  const onlinePaymentMethods = ['online'];
   
   // Vérifier si le paiement est déjà enregistré et s'il est modifiable
   const isPaymentLocked = order?.payment_status === 'paid' && 
@@ -20,7 +20,7 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
 
   useEffect(() => {
     if (order && isOpen) {
-      setPaymentMethod(order.payment_method || 'card');
+      setPaymentMethod(order.payment_method || 'cash');
       setAmountReceived(order.amount_received?.toString() || '');
       setChange(order.change_given || 0);
     }
