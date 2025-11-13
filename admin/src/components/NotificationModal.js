@@ -129,19 +129,35 @@ export const NotificationModal = ({ isOpen, onClose, notification, onSuccess }) 
           />
         </div>
 
-        {/* Target Type */}
-        <div>
-          <label className="block text-sm font-medium mb-2">Destinataires</label>
-          <select
-            value={formData.target_type}
-            onChange={(e) => setFormData({...formData, target_type: e.target.value})}
-            className="w-full px-4 py-2 border rounded-lg"
-          >
-            <option value="all">Tous les clients</option>
-            <option value="segment">Segment spécifique</option>
-            <option value="individual">Client individuel</option>
-          </select>
-        </div>
+        {/* Target Type - Hidden when segment is pre-selected */}
+        {preSelectedSegment ? (
+          <div>
+            <label className="block text-sm font-medium mb-2">Destinataires</label>
+            <div className="w-full px-4 py-3 border-2 border-primary bg-primary/5 rounded-lg font-medium text-primary">
+              {preSelectedSegment === 'all' && '👥 Tous les clients'}
+              {preSelectedSegment === 'new' && '✨ Nouveaux clients'}
+              {preSelectedSegment === 'regulars' && '⭐ Clients réguliers'}
+              {preSelectedSegment === 'vip' && '💎 Clients VIP (>500€)'}
+              {preSelectedSegment === 'inactive' && '💤 Inactifs (30j)'}
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              Segment sélectionné depuis la page Notifications
+            </p>
+          </div>
+        ) : (
+          <div>
+            <label className="block text-sm font-medium mb-2">Destinataires</label>
+            <select
+              value={formData.target_type}
+              onChange={(e) => setFormData({...formData, target_type: e.target.value})}
+              className="w-full px-4 py-2 border rounded-lg"
+            >
+              <option value="all">Tous les clients</option>
+              <option value="segment">Segment spécifique</option>
+              <option value="individual">Client individuel</option>
+            </select>
+          </div>
+        )}
 
         {/* Scheduled For */}
         <div>
