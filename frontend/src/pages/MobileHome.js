@@ -186,6 +186,10 @@ const MobileHome = () => {
                     alt={product.name}
                     className="w-28 h-28 object-cover rounded-3xl"
                   />
+                  <PromoBadge 
+                    productId={product.id} 
+                    categoryId={product.category}
+                  />
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
