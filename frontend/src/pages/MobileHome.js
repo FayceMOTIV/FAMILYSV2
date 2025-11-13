@@ -39,13 +39,6 @@ const MobileHome = () => {
 
   const bestSellers = products.filter(p => p.tags && p.tags.includes('best-seller')).slice(0, 4);
 
-  React.useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentPromo((prev) => (prev + 1) % promotions.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
-
   const handleProductClick = (product) => {
     navigate(`/product/${product.slug}`);
   };
