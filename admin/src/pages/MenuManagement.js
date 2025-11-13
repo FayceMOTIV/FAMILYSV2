@@ -217,11 +217,16 @@ export const MenuManagement = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {products.map((product) => {
                 const price = product.base_price || product.basePrice || 0;
+                let imageUrl = product.image_url || product.image;
+                // Si l'URL est relative, construire l'URL complète
+                if (imageUrl && imageUrl.startsWith('/')) {
+                  imageUrl = `${API_URL}${imageUrl}`;
+                }
                 return (
                   <Card key={product.id}>
-                    {(product.image_url || product.image) ? (
+                    {imageUrl ? (
                       <img
-                        src={product.image_url || product.image}
+                        src={imageUrl}
                         alt={product.name}
                         className="w-full h-48 object-cover rounded-lg mb-4"
                       />
