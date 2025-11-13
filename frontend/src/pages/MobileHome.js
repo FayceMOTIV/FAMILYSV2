@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Star, Award, Flame } from 'lucide-react';
 import { productsAPI, categoriesAPI } from '../services/api';
-import { promotions } from '../mockData';
 import { Button } from '../components/ui/button';
 import { useApp } from '../context/AppContext';
 import CountdownBanner from '../components/CountdownBanner';
+import PromotionBanner from '../components/PromotionBanner';
 
 const MobileHome = () => {
   const navigate = useNavigate();
