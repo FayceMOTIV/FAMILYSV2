@@ -17,6 +17,7 @@ export const NotificationModal = ({ isOpen, onClose, notification, segments, onS
   const [loading, setLoading] = useState(false);
   const [generatingAI, setGeneratingAI] = useState(false);
   const preSelectedSegment = notification?.target_segment || null;
+  const isEditMode = !!notification;
 
   useEffect(() => {
     if (notification) {
@@ -74,6 +75,8 @@ Consignes:
             message: improved.message || formData.message
           });
           alert('✅ Texte amélioré par l\'IA !');
+        } else {
+          alert('⚠️ Réponse IA reçue mais format inattendu. Veuillez réessayer.');
         }
       } catch (parseError) {
         console.error('Error parsing AI response:', parseError);
@@ -81,7 +84,7 @@ Consignes:
       }
     } catch (error) {
       console.error('Error generating with AI:', error);
-      alert('❌ Erreur lors de la génération IA');
+      alert('❌ Erreur lors de la génération IA: ' + (error.response?.data?.detail || error.message));
     } finally {
       setGeneratingAI(false);
     }
@@ -93,11 +96,11 @@ Consignes:
 
     try {
       const API_URL = process.env.REACT_APP_BACKEND_URL || '';
-      const url = notification 
+      const url = isEditMode 
         ? `${API_URL}/api/v1/admin/notifications/${notification.id}`
         : `${API_URL}/api/v1/admin/notifications`;
       
-      const method = notification ? 'PUT' : 'POST';
+      const method = isEditMode ? 'PUT' : 'POST';
       
       // Prepare data to send
       const dataToSend = {
@@ -115,11 +118,12 @@ Consignes:
 
       if (!response.ok) throw new Error('Failed to save notification');
 
+      alert(isEditMode ? '✅ Notification modifiée' : '✅ Notification créée');
       onSuccess?.();
       onClose();
     } catch (error) {
       console.error('Error saving notification:', error);
-      alert('Erreur lors de la sauvegarde');
+      alert('❌ Erreur lors de la sauvegarde');
     } finally {
       setLoading(false);
     }
@@ -131,7 +135,7 @@ Consignes:
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold">
-          {notification ? 'Modifier la notification' : 'Créer une notification'}
+          {isEditMode ? 'Modifier la notification' : 'Créer une notification'}
         </h2>
         <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
           <X className="w-6 h-6" />
@@ -198,63 +202,58 @@ Consignes:
             required
           />
           <p className="text-xs text-gray-500 mt-1">
-            💡 Remplissez le titre et le message, puis cliquez sur "Améliorer avec l'IA"
+            Le message sera envoyé tel quel aux clients
           </p>
         </div>
 
-        {/* Target Type - Hidden when segment is pre-selected */}
-        {preSelectedSegment ? (
+        {/* Target Type - Only if no pre-selected segment */}
+        {!preSelectedSegment && (
           <div>
-            <label className="block text-sm font-medium mb-2">Destinataires</label>
-            <div className="w-full px-4 py-3 border-2 border-primary bg-primary/5 rounded-lg font-medium text-primary">
-              {preSelectedSegment === 'all' && '👥 Tous les clients'}
-              {preSelectedSegment === 'new' && '✨ Nouveaux clients'}
-              {preSelectedSegment === 'regulars' && '⭐ Clients réguliers'}
-              {preSelectedSegment === 'vip' && '💎 Clients VIP (>500€)'}
-              {preSelectedSegment === 'inactive' && '💤 Inactifs (30j)'}
-            </div>
-            <p className="text-xs text-gray-500 mt-1">
-              Segment sélectionné depuis la page Notifications
-            </p>
-          </div>
-        ) : (
-          <div>
-            <label className="block text-sm font-medium mb-2">Destinataires</label>
+            <label className="block text-sm font-medium mb-2">Ciblage</label>
             <select
               value={formData.target_type}
-              onChange={(e) => setFormData({...formData, target_type: e.target.value})}
+              onChange={(e) => setFormData({...formData, target_type: e.target.value, target_segment: e.target.value === 'all' ? null : formData.target_segment})}
               className="w-full px-4 py-2 border rounded-lg"
             >
               <option value="all">Tous les clients</option>
               <option value="segment">Segment spécifique</option>
-              <option value="individual">Client individuel</option>
             </select>
           </div>
         )}
 
-        {/* Segment Selection - Show when "segment" is selected */}
-        {!preSelectedSegment && formData.target_type === 'segment' && (
+        {/* Segment Selector */}
+        {(formData.target_type === 'segment' || preSelectedSegment) && !preSelectedSegment && (
           <div>
-            <label className="block text-sm font-medium mb-2">Choisir un segment *</label>
+            <label className="block text-sm font-medium mb-2">Sélectionner un segment</label>
             <select
               value={formData.target_segment || ''}
               onChange={(e) => setFormData({...formData, target_segment: e.target.value})}
               className="w-full px-4 py-2 border rounded-lg"
               required
             >
-              <option value="">-- Sélectionnez un segment --</option>
-              <option value="new">✨ Nouveaux clients</option>
-              <option value="regulars">⭐ Clients réguliers</option>
-              <option value="vip">💎 Clients VIP (&gt;500€)</option>
-              <option value="inactive">💤 Inactifs (30j)</option>
+              <option value="">Choisir un segment...</option>
+              {segments?.map(seg => (
+                <option key={seg.value} value={seg.value}>
+                  {seg.label} ({seg.count} clients)
+                </option>
+              ))}
             </select>
+          </div>
+        )}
+
+        {/* Pre-selected segment info */}
+        {preSelectedSegment && (
+          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-800">
+              <strong>Segment ciblé:</strong> {preSelectedSegment}
+            </p>
           </div>
         )}
 
         {/* Scheduled For */}
         <div>
           <label className="block text-sm font-medium mb-2">
-            Programmer pour plus tard (optionnel)
+            Programmer (optionnel)
           </label>
           <input
             type="datetime-local"
@@ -263,17 +262,27 @@ Consignes:
             className="w-full px-4 py-2 border rounded-lg"
           />
           <p className="text-xs text-gray-500 mt-1">
-            Laissez vide pour envoyer immédiatement
+            Laisser vide pour envoyer immédiatement
           </p>
         </div>
 
-        {/* Buttons */}
-        <div className="flex space-x-3 pt-4">
-          <Button type="button" variant="outline" onClick={onClose} className="flex-1">
+        {/* Actions */}
+        <div className="flex gap-3 pt-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onClose}
+            disabled={loading}
+            className="flex-1"
+          >
             Annuler
           </Button>
-          <Button type="submit" disabled={loading} className="flex-1">
-            {loading ? 'Enregistrement...' : notification ? 'Modifier' : 'Créer'}
+          <Button
+            type="submit"
+            disabled={loading}
+            className="flex-1"
+          >
+            {loading ? 'Enregistrement...' : (isEditMode ? 'Modifier' : 'Créer')}
           </Button>
         </div>
       </form>
