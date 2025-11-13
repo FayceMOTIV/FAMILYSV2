@@ -29,6 +29,8 @@ class Product(BaseModel):
     tags: List[str] = Field(default_factory=list)  # best-seller, new, popular
     is_available: bool = True
     is_out_of_stock: bool = False
+    stock_status: Optional[str] = None  # '2h', 'today', 'indefinite'
+    stock_resume_at: Optional[str] = None  # Timestamp pour réactivation auto
     option_groups: List[ProductOptionGroup] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
