@@ -166,25 +166,46 @@ Analyse ces données et génère {max_suggestions} campagnes marketing pertinent
 **Objectifs prioritaires :** {', '.join(priority_objectives)}
 **Types d'offres autorisées :** {', '.join(allowed_types)}
 
+**Types de promotions disponibles (Moteur V2) :**
+- bogo : Buy One Get One (ex: 1 acheté = 1 offert)
+- percent_item : % sur produit spécifique
+- percent_category : % sur catégorie entière
+- fixed_item : € fixe sur produit
+- conditional_discount : 2e à -50%, 3 pour 2, etc.
+- threshold : Dès X€ d'achat
+- shipping_free : Livraison gratuite
+- new_customer : 1ère commande
+- inactive_customer : Client inactif
+- loyalty_multiplier : x2, x3 points fidélité
+- happy_hour : Horaires définis
+- flash : Durée limitée
+- promo_code : Code manuel
+
 **Format de réponse JSON strict :**
 ```json
 [
   {{
-    "name": "Nom court et accrocheur",
-    "type": "produit|fidelite|happy_hour|reactivation|panier_moyen",
+    "name": "Nom court et accrocheur (max 50 caractères)",
+    "promo_type_v2": "bogo|percent_item|percent_category|conditional_discount|threshold|happy_hour|loyalty_multiplier|flash|new_customer|inactive_customer",
     "product_ids": ["id1", "id2"],
     "category_ids": ["cat1"],
-    "message": "Message motivant en 2-3 phrases max avec emojis. Ton naturel, style manager marketing.",
+    "message": "🍔 Message motivant en 2-3 phrases max avec emojis pertinents. Ton naturel, friendly, style manager marketing qui encourage son équipe.",
     "start_date": "2025-11-15",
     "end_date": "2025-11-17",
-    "discount_type": "percentage|fixed|bogo|fidelity_multiplier",
+    "discount_type": "percentage|fixed|free_item|multiplier",
     "discount_value": 20,
-    "target_hours": "14h-18h (optionnel)",
+    "start_time": "15:00",
+    "end_time": "18:00",
+    "days_active": ["mon", "tue", "wed"],
+    "badge_text": "-20% 🔥",
+    "badge_color": "#FF6B35",
     "impact_estimate": {{
       "ca_increase": "+18%",
       "difficulty": "facile|moyen|difficile",
-      "duration": "3 jours"
-    }}
+      "duration": "3 jours",
+      "target_customers": 50
+    }},
+    "source_promo_analysis": "Basé sur promo BOGO Burgers qui a généré +450€ de CA"
   }}
 ]
 ```
