@@ -1897,6 +1897,34 @@ class BackendTester:
         test_name = "Promotions Calendar"
         
         try:
+            # Create a test promotion for calendar testing
+            from datetime import date, timedelta
+            
+            calendar_promotion = {
+                "name": "Calendar Test Promo",
+                "description": "Test promotion for calendar view",
+                "type": "flash",
+                "discount_type": "percentage",
+                "discount_value": 15,
+                "start_date": date.today().isoformat(),
+                "end_date": (date.today() + timedelta(days=7)).isoformat(),
+                "status": "active",
+                "badge_text": "FLASH 15%",
+                "badge_color": "#FF6B35"
+            }
+            
+            # Create the promotion
+            promotion_id = None
+            async with self.session.post(
+                f"{self.base_url}/api/v1/admin/promotions",
+                json=calendar_promotion,
+                headers={"Content-Type": "application/json"}
+            ) as response:
+                
+                if response.status == 201:
+                    promo_data = await response.json()
+                    promotion_id = promo_data.get("promotion", {}).get("id")
+            
             # Test without date filters
             async with self.session.get(
                 f"{self.base_url}/api/v1/admin/promotions/calendar",
@@ -1929,8 +1957,6 @@ class BackendTester:
                 self.log_result(test_name + " - No Filters", True, f"Calendar retrieved: {len(events)} events")
             
             # Test with date filters
-            from datetime import date, timedelta
-            
             start_date = date.today().isoformat()
             end_date = (date.today() + timedelta(days=30)).isoformat()
             
@@ -1948,7 +1974,15 @@ class BackendTester:
                 filtered_events = data.get("events", [])
                 
                 self.log_result(test_name + " - With Filters", True, f"Filtered calendar: {len(filtered_events)} events")
-                return True
+            
+            # Clean up - delete test promotion
+            if promotion_id:
+                await self.session.delete(
+                    f"{self.base_url}/api/v1/admin/promotions/{promotion_id}",
+                    headers={"Content-Type": "application/json"}
+                )
+            
+            return True
                 
         except Exception as e:
             self.log_result(test_name, False, f"Exception: {str(e)}")
