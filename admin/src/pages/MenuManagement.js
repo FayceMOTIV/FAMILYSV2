@@ -372,7 +372,8 @@ export const MenuManagement = () => {
   const tabs = [
     { id: 'products', label: '🍔 Produits', icon: Package, count: products.length },
     { id: 'categories', label: '📁 Catégories', icon: FolderOpen, count: categories.length },
-    { id: 'options', label: '🎛️ Options', icon: Sliders, count: options.length }
+    { id: 'options', label: '🎛️ Options', icon: Sliders, count: options.length },
+    { id: 'choice-library', label: '📚 Bibliothèque', icon: Package, count: choiceLibrary.length }
   ];
 
   if (loading) {
