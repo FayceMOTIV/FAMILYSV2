@@ -27,7 +27,7 @@ export const OptionsListView = ({ options, onEdit, onDelete }) => {
                     ? 'bg-blue-100 text-blue-700' 
                     : 'bg-purple-100 text-purple-700'
                 }`}>
-                  {option.type === 'single' ? '◉ Choix unique' : '☑ Choix multiple'}
+                  {option.type === 'single' ? 'Choix unique' : 'Choix multiple'}
                 </span>
               </td>
               <td className="px-6 py-4">
