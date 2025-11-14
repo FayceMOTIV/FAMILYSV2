@@ -307,7 +307,71 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
               </div>
             ))}
           </div>
+
+          {/* Action buttons for choices */}
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleAddChoice}
+              size="sm"
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              Ajouter un choix
+            </Button>
+            {choiceLibrary.length > 0 && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowLibraryPicker(true)}
+                size="sm"
+              >
+                📚 Piocher dans la bibliothèque ({choiceLibrary.length})
+              </Button>
+            )}
+          </div>
         </div>
+
+        {/* Library Picker Modal */}
+        {showLibraryPicker && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-bold">📚 Choisir depuis la bibliothèque</h3>
+                <button onClick={() => setShowLibraryPicker(false)} className="text-gray-400 hover:text-gray-600">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                {choiceLibrary.map((choice) => (
+                  <div
+                    key={choice.id}
+                    onClick={() => handleAddFromLibrary(choice)}
+                    className="border-2 rounded-lg p-3 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all"
+                  >
+                    {choice.image_url && (
+                      <img 
+                        src={choice.image_url} 
+                        alt={choice.name}
+                        className="w-full h-24 object-cover rounded mb-2"
+                      />
+                    )}
+                    <h4 className="font-bold">{choice.name}</h4>
+                    <p className="text-sm text-primary font-bold">{choice.default_price.toFixed(2)}€</p>
+                    {choice.description && (
+                      <p className="text-xs text-gray-500 mt-1">{choice.description}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+              
+              {choiceLibrary.length === 0 && (
+                <p className="text-center text-gray-400 py-8">Aucun choix dans la bibliothèque</p>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Buttons */}
         <div className="flex space-x-3 pt-4">
