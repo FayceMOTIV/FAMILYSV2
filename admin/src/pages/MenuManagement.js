@@ -720,7 +720,14 @@ export const MenuManagement = () => {
                 const isLast = index === sortedCategories.length - 1;
                 
                 return (
-                  <Card key={category.id}>
+                  <Card 
+                    key={category.id}
+                    draggable
+                    onDragStart={(e) => handleCategoryDragStart(e, index)}
+                    onDragOver={handleCategoryDragOver}
+                    onDrop={(e) => handleCategoryDrop(e, index)}
+                    className={`cursor-move transition-all ${draggedCategoryIndex === index ? 'opacity-50 scale-95' : ''}`}
+                  >
                     {imageUrl ? (
                       <img
                         src={imageUrl}
