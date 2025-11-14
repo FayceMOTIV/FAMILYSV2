@@ -194,31 +194,74 @@ export const Settings = () => {
           <CardContent className="space-y-6">
             <div>
               <h3 className="font-semibold text-lg mb-3">🏪 Horaires d'ouverture (affichés dans l'app)</h3>
-              <div className="space-y-2">
+              <p className="text-xs text-gray-500 mb-3">Vous pouvez définir 2 plages horaires par jour (ex: 11h-14h et 18h-23h)</p>
+              <div className="space-y-3">
                 {DAYS.map(day => (
-                  <div key={day.key} className="grid grid-cols-4 gap-2 items-center">
-                    <label className="font-medium text-sm">{day.label}</label>
-                    <Input
-                      type="time"
-                      placeholder="Ouverture"
-                      value={settings.opening_hours[day.key]?.open || ''}
-                      onChange={(e) => updateHours(day.key, 'opening', 'open', e.target.value)}
-                    />
-                    <Input
-                      type="time"
-                      placeholder="Fermeture"
-                      value={settings.opening_hours[day.key]?.close || ''}
-                      onChange={(e) => updateHours(day.key, 'opening', 'close', e.target.value)}
-                    />
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        checked={settings.opening_hours[day.key]?.closed || false}
-                        onChange={(e) => updateHours(day.key, 'opening', 'closed', e.target.checked)}
-                        className="w-4 h-4"
-                      />
-                      <span className="text-sm text-gray-600">Fermé</span>
-                    </label>
+                  <div key={day.key} className="border rounded-lg p-3 bg-gray-50">
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="font-bold text-sm">{day.label}</label>
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={settings.opening_hours[day.key]?.closed || false}
+                          onChange={(e) => {
+                            const newHours = {...settings.opening_hours};
+                            newHours[day.key] = { ...newHours[day.key], closed: e.target.checked };
+                            setSettings({...settings, opening_hours: newHours});
+                          }}
+                          className="w-4 h-4"
+                        />
+                        <span className="text-sm text-red-600 font-medium">Fermé</span>
+                      </label>
+                    </div>
+                    {!settings.opening_hours[day.key]?.closed && (
+                      <div className="space-y-2">
+                        <div className="grid grid-cols-2 gap-2">
+                          <Input
+                            type="time"
+                            placeholder="Ouverture matin"
+                            value={settings.opening_hours[day.key]?.open1 || ''}
+                            onChange={(e) => {
+                              const newHours = {...settings.opening_hours};
+                              newHours[day.key] = { ...newHours[day.key], open1: e.target.value };
+                              setSettings({...settings, opening_hours: newHours});
+                            }}
+                          />
+                          <Input
+                            type="time"
+                            placeholder="Fermeture matin"
+                            value={settings.opening_hours[day.key]?.close1 || ''}
+                            onChange={(e) => {
+                              const newHours = {...settings.opening_hours};
+                              newHours[day.key] = { ...newHours[day.key], close1: e.target.value };
+                              setSettings({...settings, opening_hours: newHours});
+                            }}
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Input
+                            type="time"
+                            placeholder="Ouverture soir (optionnel)"
+                            value={settings.opening_hours[day.key]?.open2 || ''}
+                            onChange={(e) => {
+                              const newHours = {...settings.opening_hours};
+                              newHours[day.key] = { ...newHours[day.key], open2: e.target.value };
+                              setSettings({...settings, opening_hours: newHours});
+                            }}
+                          />
+                          <Input
+                            type="time"
+                            placeholder="Fermeture soir (optionnel)"
+                            value={settings.opening_hours[day.key]?.close2 || ''}
+                            onChange={(e) => {
+                              const newHours = {...settings.opening_hours};
+                              newHours[day.key] = { ...newHours[day.key], close2: e.target.value };
+                              setSettings({...settings, opening_hours: newHours});
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
