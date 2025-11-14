@@ -53,16 +53,17 @@ async def create_product(
     """Create new product."""
     restaurant_id = "default"  # current_user.get("restaurant_id")
     
-    # Check if slug already exists
+    # Check if product name already exists in same category
     existing = await db.products.find_one({
-        "slug": product_create.slug,
+        "name": product_create.name,
+        "category": product_create.category,
         "restaurant_id": restaurant_id
     })
     
     if existing:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Product with this slug already exists"
+            detail="Product with this name already exists in this category"
         )
     
     product = Product(
