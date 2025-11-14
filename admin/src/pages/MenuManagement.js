@@ -572,7 +572,8 @@ export const MenuManagement = () => {
                   </Card>
                 );
               })}
-            </div>
+              </div>
+            )}
           </div>
         )}
 
