@@ -727,18 +727,35 @@ export const MenuManagement = () => {
           <div>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">🎛️ Options ({options.length})</h2>
-              <Button 
-                onClick={() => {
-                  setEditingOption(null);
-                  setShowOptionModal(true);
-                }}
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Nouvelle option
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setOptionsViewMode(optionsViewMode === 'grid' ? 'list' : 'grid')}
+                >
+                  {optionsViewMode === 'grid' ? <ListIcon className="w-4 h-4" /> : <LayoutGrid className="w-4 h-4" />}
+                </Button>
+                <Button 
+                  onClick={() => {
+                    setEditingOption(null);
+                    setShowOptionModal(true);
+                  }}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Nouvelle option
+                </Button>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {optionsViewMode === 'list' ? (
+              <OptionsListView 
+                options={options}
+                onEdit={(opt) => { setEditingOption(opt); setShowOptionModal(true); }}
+                onDelete={handleDeleteOption}
+                onDuplicate={handleDuplicateOption}
+              />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {options.map((option) => (
                 <Card key={option.id}>
                   <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
