@@ -196,23 +196,13 @@ export const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
       size="lg"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div>
           <div>
-            <Label htmlFor="name">Nom *</Label>
+            <Label htmlFor="name">Nom du produit *</Label>
             <Input
               id="name"
               value={formData.name}
-              onChange={handleNameChange}
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="slug">Slug *</Label>
-            <Input
-              id="slug"
-              value={formData.slug}
-              onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               required
             />
           </div>
