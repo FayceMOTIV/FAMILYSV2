@@ -11,6 +11,8 @@ export const PromotionWizard = ({ isOpen, onClose, promotion, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [productSearch, setProductSearch] = useState('');
+  const [showTooltip, setShowTooltip] = useState(null);
   
   const [formData, setFormData] = useState({
     name: '',
