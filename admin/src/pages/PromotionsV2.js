@@ -83,7 +83,7 @@ export const PromotionsV2 = () => {
       'new_customer': '✨ Nouveau client',
       'inactive_customer': '💤 Client inactif',
       'loyalty_multiplier': '⭐ Multiplicateur',
-      'happy_hour': '🍻 Happy Hour',
+      'happy_hour': '🌅 Happy Hour',
       'flash': '⚡ Flash',
       'seasonal': '🎉 Saisonnier',
       'promo_code': '🔖 Code promo'
