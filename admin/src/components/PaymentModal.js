@@ -144,39 +144,51 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
-              onClick={() => !isPaymentLocked && setPaymentMethod('cash')}
+              onClick={() => !isPaymentLocked && setPaymentMethod('espece')}
               disabled={isPaymentLocked}
               className={`p-3 rounded-lg border-2 transition-colors text-sm font-medium ${
-                paymentMethod === 'cash'
+                paymentMethod === 'espece'
                   ? 'border-green-500 bg-green-50 text-green-700'
                   : 'border-gray-200 hover:border-gray-300'
               } ${isPaymentLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
             >
-              💵 Espèces
+              💵 Espèce
             </button>
             <button
               type="button"
-              onClick={() => !isPaymentLocked && setPaymentMethod('card')}
+              onClick={() => !isPaymentLocked && setPaymentMethod('cb')}
               disabled={isPaymentLocked}
               className={`p-3 rounded-lg border-2 transition-colors text-sm font-medium ${
-                paymentMethod === 'card'
+                paymentMethod === 'cb'
                   ? 'border-blue-500 bg-blue-50 text-blue-700'
                   : 'border-gray-200 hover:border-gray-300'
               } ${isPaymentLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
             >
-              💳 Carte
+              💳 CB
             </button>
             <button
               type="button"
-              onClick={() => !isPaymentLocked && setPaymentMethod('mobile')}
+              onClick={() => !isPaymentLocked && setPaymentMethod('cheque')}
               disabled={isPaymentLocked}
               className={`p-3 rounded-lg border-2 transition-colors text-sm font-medium ${
-                paymentMethod === 'mobile'
+                paymentMethod === 'cheque'
                   ? 'border-purple-500 bg-purple-50 text-purple-700'
                   : 'border-gray-200 hover:border-gray-300'
               } ${isPaymentLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
             >
-              📱 Mobile
+              📝 Chèque
+            </button>
+            <button
+              type="button"
+              onClick={() => !isPaymentLocked && setPaymentMethod('ticket_restaurant')}
+              disabled={isPaymentLocked}
+              className={`p-3 rounded-lg border-2 transition-colors text-sm font-medium ${
+                paymentMethod === 'ticket_restaurant'
+                  ? 'border-orange-500 bg-orange-50 text-orange-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              } ${isPaymentLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+            >
+              🎟️ Ticket restaurant
             </button>
             <button
               type="button"
