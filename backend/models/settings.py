@@ -39,6 +39,7 @@ class SettingsUpdate(BaseModel):
     primary_color: Optional[str] = None
     secondary_color: Optional[str] = None
     opening_hours: Optional[Dict] = None
+    order_hours: Optional[Dict] = None
     order_cutoff_minutes: Optional[int] = None
     preparation_time_minutes: Optional[int] = None
     enable_delivery: Optional[bool] = None
@@ -47,4 +48,5 @@ class SettingsUpdate(BaseModel):
     enable_reservations: Optional[bool] = None
     loyalty_percentage: Optional[float] = None
     stripe_key: Optional[str] = None
+    service_links: Optional[Dict] = None
     social_media: Optional[Dict] = None
