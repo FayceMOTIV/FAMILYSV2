@@ -254,16 +254,24 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
                     className="w-24 px-3 py-2 border rounded-lg"
                     placeholder="Prix"
                   />
-                {formData.choices.length > 1 && (
-                  <Button
-                    type="button"
-                    variant="danger"
-                    size="sm"
-                    onClick={() => handleRemoveChoice(index)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                )}
+                  {formData.choices.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="danger"
+                      size="sm"
+                      onClick={() => handleRemoveChoice(index)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+                <input
+                  type="text"
+                  value={choice.image_url || ''}
+                  onChange={(e) => handleChoiceChange(index, 'image_url', e.target.value)}
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="URL de l'image (optionnel)"
+                />
               </div>
             ))}
           </div>
