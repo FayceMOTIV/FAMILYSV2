@@ -25,8 +25,9 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
         internal_comment: option.internal_comment || '',
         type: option.type || 'single',
         is_required: option.is_required || false,
+        allow_repeat: option.allow_repeat || false,
         max_choices: option.max_choices || '',
-        choices: option.choices?.length > 0 ? option.choices : [{ name: '', price: 0 }]
+        choices: option.choices?.length > 0 ? option.choices : [{ name: '', price: 0, image_url: '' }]
       });
     } else {
       setFormData({
@@ -35,8 +36,9 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
         internal_comment: '',
         type: 'single',
         is_required: false,
+        allow_repeat: false,
         max_choices: '',
-        choices: [{ name: '', price: 0 }]
+        choices: [{ name: '', price: 0, image_url: '' }]
       });
     }
   }, [option, isOpen]);
