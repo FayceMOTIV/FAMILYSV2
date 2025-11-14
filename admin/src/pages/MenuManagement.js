@@ -16,6 +16,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'https://resto-admin-11.preview
 
 export const MenuManagement = () => {
   const [activeTab, setActiveTab] = useState('products');
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' ou 'list'
   
   // Products state
   const [products, setProducts] = useState([]);
@@ -23,6 +24,12 @@ export const MenuManagement = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [openStockMenu, setOpenStockMenu] = useState(null);
   const [showOutOfStockOnly, setShowOutOfStockOnly] = useState(false);
+  
+  // Filtres
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterPromo, setFilterPromo] = useState(false);
+  const [filterCategory, setFilterCategory] = useState('all');
+  const [filterStock, setFilterStock] = useState('all');
   
   // Categories state
   const [categories, setCategories] = useState([]);
