@@ -92,121 +92,219 @@ export const PromotionWizard = ({ isOpen, onClose, promotion, onSuccess }) => {
     { value: 'promo_code', label: '🔖 Code promo', description: 'Code manuel à saisir', tooltip: 'Le client doit saisir un code pour bénéficier de la réduction. Utile pour le marketing ciblé.' }
   ];
 
-  const renderStep1 = () => (
-    <div className="space-y-4">
-      <h3 className="text-lg font-bold mb-4">Étape 1: Type & Ciblage</h3>
-      
-      {/* Type de promo */}
-      <div>
-        <label className="block text-sm font-medium mb-2">Type de promotion *</label>
-        <select
-          value={formData.type}
-          onChange={(e) => setFormData({...formData, type: e.target.value})}
-          className="w-full px-3 py-2 border rounded-lg"
-        >
-          {getPromoTypeOptions().map(opt => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
-          ))}
-        </select>
-        <p className="text-xs text-gray-500 mt-1">
-          {getPromoTypeOptions().find(o => o.value === formData.type)?.description}
-        </p>
-      </div>
-
-      {/* Nom */}
-      <div>
-        <label className="block text-sm font-medium mb-2">Nom de la promo *</label>
-        <input
-          type="text"
-          value={formData.name}
-          onChange={(e) => setFormData({...formData, name: e.target.value})}
-          className="w-full px-3 py-2 border rounded-lg"
-          placeholder="Ex: Happy Hour Burgers"
-          required
-        />
-      </div>
-
-      {/* Description */}
-      <div>
-        <label className="block text-sm font-medium mb-2">Description</label>
-        <textarea
-          value={formData.description}
-          onChange={(e) => setFormData({...formData, description: e.target.value})}
-          className="w-full px-3 py-2 border rounded-lg"
-          rows="2"
-          placeholder="Profitez de -15% sur tous nos burgers entre 15h et 18h"
-        />
-      </div>
-
-      {/* Valeur remise */}
-      <div className="grid grid-cols-2 gap-4">
+  const renderStep1 = () => {
+    const shouldShowDiscountFields = !['bogo', 'shipping_free'].includes(formData.type);
+    const needsProductSelection = ['percent_item', 'fixed_item', 'bogo'].includes(formData.type);
+    const needsCategorySelection = ['percent_category', 'fixed_category'].includes(formData.type);
+    
+    const filteredProducts = products.filter(p => 
+      p.name.toLowerCase().includes(productSearch.toLowerCase())
+    );
+    
+    return (
+      <div className="space-y-4">
+        <h3 className="text-lg font-bold mb-4">Étape 1: Type & Ciblage</h3>
+        
+        {/* Type de promo avec tooltips */}
         <div>
-          <label className="block text-sm font-medium mb-2">Type de remise</label>
-          <select
-            value={formData.discount_type}
-            onChange={(e) => setFormData({...formData, discount_type: e.target.value})}
-            className="w-full px-3 py-2 border rounded-lg"
-          >
-            <option value="percentage">Pourcentage (%)</option>
-            <option value="fixed">Montant fixe (€)</option>
-          </select>
+          <label className="block text-sm font-medium mb-2">Type de promotion *</label>
+          <div className="grid grid-cols-2 gap-2">
+            {getPromoTypeOptions().map(opt => (
+              <div
+                key={opt.value}
+                className={`relative group cursor-pointer p-3 border-2 rounded-lg transition-all ${
+                  formData.type === opt.value 
+                    ? 'border-primary bg-primary/5' 
+                    : 'border-gray-200 hover:border-primary/50'
+                }`}
+                onClick={() => setFormData({...formData, type: opt.value})}
+              >
+                <div className="font-medium text-sm">{opt.label}</div>
+                <div className="text-xs text-gray-500">{opt.description}</div>
+                
+                {/* Tooltip */}
+                <div className="absolute left-0 top-full mt-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                  <div className="font-semibold mb-1">ℹ️ Comment ça marche?</div>
+                  {opt.tooltip}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
+
+        {/* Nom */}
         <div>
-          <label className="block text-sm font-medium mb-2">Valeur *</label>
+          <label className="block text-sm font-medium mb-2">Nom de la promo *</label>
           <input
-            type="number"
-            step="0.01"
-            value={formData.discount_value}
-            onChange={(e) => setFormData({...formData, discount_value: parseFloat(e.target.value)})}
+            type="text"
+            value={formData.name}
+            onChange={(e) => setFormData({...formData, name: e.target.value})}
             className="w-full px-3 py-2 border rounded-lg"
+            placeholder="Ex: Happy Hour Burgers"
             required
           />
         </div>
+
+        {/* Description */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Description</label>
+          <textarea
+            value={formData.description}
+            onChange={(e) => setFormData({...formData, description: e.target.value})}
+            className="w-full px-3 py-2 border rounded-lg"
+            rows="2"
+            placeholder="Profitez de -15% sur tous nos burgers entre 15h et 18h"
+          />
+        </div>
+
+        {/* Valeur remise - Conditionnel */}
+        {shouldShowDiscountFields && (
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Type de remise</label>
+              <select
+                value={formData.discount_type}
+                onChange={(e) => setFormData({...formData, discount_type: e.target.value})}
+                className="w-full px-3 py-2 border rounded-lg"
+              >
+                <option value="percentage">Pourcentage (%)</option>
+                <option value="fixed">Montant fixe (€)</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Valeur *</label>
+              <input
+                type="number"
+                step="0.01"
+                value={formData.discount_value}
+                onChange={(e) => setFormData({...formData, discount_value: parseFloat(e.target.value)})}
+                className="w-full px-3 py-2 border rounded-lg"
+                required
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Ciblage produits - Amélioré */}
+        {needsProductSelection && (
+          <div>
+            <label className="block text-sm font-medium mb-2">Produits éligibles</label>
+            
+            {/* Option toute la carte */}
+            <div className="mb-3">
+              <label className="flex items-center space-x-2 p-3 border-2 rounded-lg cursor-pointer hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={formData.all_products}
+                  onChange={(e) => setFormData({
+                    ...formData, 
+                    all_products: e.target.checked,
+                    eligible_products: e.target.checked ? [] : formData.eligible_products
+                  })}
+                  className="w-4 h-4"
+                />
+                <span className="font-medium">🍽️ Toute la carte</span>
+                <span className="text-xs text-gray-500">(Tous les produits sont éligibles)</span>
+              </label>
+            </div>
+
+            {!formData.all_products && (
+              <>
+                {/* Recherche */}
+                <input
+                  type="text"
+                  placeholder="🔍 Rechercher un produit..."
+                  value={productSearch}
+                  onChange={(e) => setProductSearch(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-lg mb-2"
+                />
+                
+                {/* Liste avec checkboxes */}
+                <div className="border rounded-lg max-h-48 overflow-y-auto p-2 space-y-1">
+                  {filteredProducts.length === 0 ? (
+                    <p className="text-center text-gray-400 py-4">Aucun produit trouvé</p>
+                  ) : (
+                    filteredProducts.map(p => (
+                      <label
+                        key={p.id}
+                        className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={formData.eligible_products.includes(p.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setFormData({
+                                ...formData,
+                                eligible_products: [...formData.eligible_products, p.id]
+                              });
+                            } else {
+                              setFormData({
+                                ...formData,
+                                eligible_products: formData.eligible_products.filter(id => id !== p.id)
+                              });
+                            }
+                          }}
+                          className="w-4 h-4"
+                        />
+                        <span className="flex-1">{p.name}</span>
+                        <span className="text-sm text-gray-500">{p.price}€</span>
+                      </label>
+                    ))
+                  )}
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  {formData.eligible_products.length} produit(s) sélectionné(s)
+                </p>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Ciblage catégories - Amélioré */}
+        {needsCategorySelection && (
+          <div>
+            <label className="block text-sm font-medium mb-2">Catégories éligibles</label>
+            <p className="text-xs text-gray-500 mb-2">
+              Le client pourra choisir n'importe quel produit de ces catégories
+            </p>
+            
+            <div className="grid grid-cols-2 gap-2">
+              {categories.map(c => (
+                <label
+                  key={c.id}
+                  className="flex items-center space-x-2 p-3 border-2 rounded-lg cursor-pointer hover:bg-gray-50"
+                >
+                  <input
+                    type="checkbox"
+                    checked={formData.eligible_categories.includes(c.id)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setFormData({
+                          ...formData,
+                          eligible_categories: [...formData.eligible_categories, c.id]
+                        });
+                      } else {
+                        setFormData({
+                          ...formData,
+                          eligible_categories: formData.eligible_categories.filter(id => id !== c.id)
+                        });
+                      }
+                    }}
+                    className="w-4 h-4"
+                  />
+                  <span className="font-medium">{c.name}</span>
+                </label>
+              ))}
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              {formData.eligible_categories.length} catégorie(s) sélectionnée(s)
+            </p>
+          </div>
+        )}
       </div>
-
-      {/* Ciblage produits */}
-      {['percent_item', 'fixed_item', 'bogo'].includes(formData.type) && (
-        <div>
-          <label className="block text-sm font-medium mb-2">Produits éligibles</label>
-          <select
-            multiple
-            value={formData.eligible_products}
-            onChange={(e) => setFormData({
-              ...formData, 
-              eligible_products: Array.from(e.target.selectedOptions, opt => opt.value)
-            })}
-            className="w-full px-3 py-2 border rounded-lg"
-            size="5"
-          >
-            {products.map(p => (
-              <option key={p.id} value={p.id}>{p.name} - {p.price}€</option>
-            ))}
-          </select>
-        </div>
-      )}
-
-      {/* Ciblage catégories */}
-      {['percent_category', 'fixed_category'].includes(formData.type) && (
-        <div>
-          <label className="block text-sm font-medium mb-2">Catégories éligibles</label>
-          <select
-            multiple
-            value={formData.eligible_categories}
-            onChange={(e) => setFormData({
-              ...formData, 
-              eligible_categories: Array.from(e.target.selectedOptions, opt => opt.value)
-            })}
-            className="w-full px-3 py-2 border rounded-lg"
-            size="3"
-          >
-            {categories.map(c => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
-        </div>
-      )}
-    </div>
-  );
+    );
+  };
 
   const renderStep2 = () => (
     <div className="space-y-4">
