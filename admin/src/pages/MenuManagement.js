@@ -486,7 +486,7 @@ export const MenuManagement = () => {
               />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filteredProducts.map((product) => {
+                {filteredProducts.map((product, productIndex) => {
                 const price = product.base_price || product.basePrice || 0;
                 let imageUrl = product.image_url || product.image;
                 // Si l'URL est relative, construire l'URL complète
@@ -494,7 +494,14 @@ export const MenuManagement = () => {
                   imageUrl = `${API_URL}${imageUrl}`;
                 }
                 return (
-                  <Card key={product.id}>
+                  <Card 
+                    key={product.id}
+                    draggable
+                    onDragStart={(e) => handleProductDragStart(e, productIndex)}
+                    onDragOver={handleProductDragOver}
+                    onDrop={(e) => handleProductDrop(e, productIndex)}
+                    className={`cursor-move transition-all ${draggedProductIndex === productIndex ? 'opacity-50 scale-95' : ''}`}
+                  >
                     {imageUrl ? (
                       <img
                         src={imageUrl}
