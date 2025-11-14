@@ -846,7 +846,8 @@ export const MenuManagement = () => {
                   </CardContent>
                 </Card>
               ))}
-            </div>
+              </div>
+            )}
           </div>
         )}
       </div>
