@@ -858,7 +858,12 @@ export const MenuManagement = () => {
                 <Card key={option.id}>
                   <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
                     <CardTitle className="flex items-center justify-between">
-                      <span className="text-lg font-bold">{option.name}</span>
+                      <div className="flex-1">
+                        <span className="text-lg font-bold">{option.name}</span>
+                        {option.internal_comment && (
+                          <p className="text-xs text-yellow-700 mt-1 font-normal">💬 {option.internal_comment}</p>
+                        )}
+                      </div>
                       <div className="flex space-x-1">
                         <button
                           onClick={() => {
@@ -891,13 +896,6 @@ export const MenuManagement = () => {
                   <CardContent className="space-y-3">
                     {option.description && (
                       <p className="text-sm text-gray-600">{option.description}</p>
-                    )}
-                    
-                    {option.internal_comment && (
-                      <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
-                        <p className="text-xs font-semibold text-yellow-800 mb-1">📝 Commentaire interne</p>
-                        <p className="text-sm text-yellow-700">{option.internal_comment}</p>
-                      </div>
                     )}
                     
                     <div className="flex items-center space-x-2 text-sm">
