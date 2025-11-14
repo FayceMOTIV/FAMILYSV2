@@ -406,7 +406,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "AI Marketing ↔ Promotions V2 Bridge System"
+    - "Menu Management V2 Frontend Testing"
   stuck_tasks:
     - "AI Sales Analysis"
     - "AI Promo Suggestion"
