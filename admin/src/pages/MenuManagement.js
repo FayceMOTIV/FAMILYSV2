@@ -74,7 +74,8 @@ export const MenuManagement = () => {
       await Promise.all([
         loadProducts(),
         loadCategories(),
-        loadOptions()
+        loadOptions(),
+        loadChoiceLibrary()
       ]);
     } catch (error) {
       console.error('Error loading data:', error);
