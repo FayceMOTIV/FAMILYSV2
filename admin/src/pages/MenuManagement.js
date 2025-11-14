@@ -268,19 +268,19 @@ export const MenuManagement = () => {
     const sortedGroups = Object.values(grouped).sort((a, b) => (a.category.order || 0) - (b.category.order || 0));
     
     return (
-      <div className=\"space-y-8\">
+      <div className="space-y-8\">
         {sortedGroups.map(group => (
           <div key={group.category.id}>
-            <div className=\"flex items-center justify-between mb-4\">
-              <h3 className=\"text-xl font-bold text-gray-800\">
+            <div className="flex items-center justify-between mb-4\">
+              <h3 className="text-xl font-bold text-gray-800\">
                 {group.category.name}
-                <span className=\"ml-2 text-sm font-normal text-gray-500\">
+                <span className="ml-2 text-sm font-normal text-gray-500\">
                   ({group.products.length} produit{group.products.length > 1 ? 's' : ''})
                 </span>
               </h3>
             </div>
             
-            <div className=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4\">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4\">
               {group.products.map(product => (
                 <ProductCard 
                   key={product.id}
@@ -301,40 +301,40 @@ export const MenuManagement = () => {
   };
 
   return (
-    <div className=\"min-h-screen bg-gray-50\">
+    <div className="min-h-screen bg-gray-50\">
       <Header 
         title=\"🍽️ Gestion du Menu\"
         subtitle=\"Gérez vos produits, catégories et options\"
       />
 
-      <div className=\"p-6\">
+      <div className="p-6\">
         {/* Tabs */}
-        <div className=\"flex items-center justify-between mb-6\">
-          <div className=\"flex gap-2\">
+        <div className="flex items-center justify-between mb-6\">
+          <div className="flex gap-2\">
             <Button
               variant={activeTab === 'products' ? 'default' : 'outline'}
               onClick={() => setActiveTab('products')}
             >
-              <Package className=\"w-4 h-4 mr-2\" />
+              <Package className="w-4 h-4 mr-2\" />
               Produits ({products.length})
             </Button>
             <Button
               variant={activeTab === 'categories' ? 'default' : 'outline'}
               onClick={() => setActiveTab('categories')}
             >
-              <FolderOpen className=\"w-4 h-4 mr-2\" />
+              <FolderOpen className="w-4 h-4 mr-2\" />
               Catégories ({categories.length})
             </Button>
             <Button
               variant={activeTab === 'options' ? 'default' : 'outline'}
               onClick={() => setActiveTab('options')}
             >
-              <Sliders className=\"w-4 h-4 mr-2\" />
+              <Sliders className="w-4 h-4 mr-2\" />
               Options ({options.length})
             </Button>
           </div>
           
-          <div className=\"flex gap-2\">
+          <div className="flex gap-2\">
             {activeTab === 'products' && (
               <>
                 <Button
@@ -342,7 +342,7 @@ export const MenuManagement = () => {
                   size=\"sm\"
                   onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
                 >
-                  {viewMode === 'grid' ? <ListIcon className=\"w-4 h-4\" /> : <LayoutGrid className=\"w-4 h-4\" />}
+                  {viewMode === 'grid' ? <ListIcon className="w-4 h-4\" /> : <LayoutGrid className="w-4 h-4\" />}
                 </Button>
               </>
             )}
@@ -352,7 +352,7 @@ export const MenuManagement = () => {
                 size=\"sm\"
                 onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
               >
-                {viewMode === 'grid' ? <ListIcon className=\"w-4 h-4\" /> : <LayoutGrid className=\"w-4 h-4\" />}
+                {viewMode === 'grid' ? <ListIcon className="w-4 h-4\" /> : <LayoutGrid className="w-4 h-4\" />}
               </Button>
             )}
             {activeTab === 'options' && (
@@ -361,7 +361,7 @@ export const MenuManagement = () => {
                 size=\"sm\"
                 onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
               >
-                {viewMode === 'grid' ? <ListIcon className=\"w-4 h-4\" /> : <LayoutGrid className=\"w-4 h-4\" />}
+                {viewMode === 'grid' ? <ListIcon className="w-4 h-4\" /> : <LayoutGrid className="w-4 h-4\" />}
               </Button>
             )}
           </div>
@@ -369,25 +369,25 @@ export const MenuManagement = () => {
 
         {/* Filtres (seulement pour produits) */}
         {activeTab === 'products' && (
-          <Card className=\"mb-6\">
-            <CardContent className=\"p-4\">
-              <div className=\"grid grid-cols-1 md:grid-cols-4 gap-4\">
+          <Card className="mb-6\">
+            <CardContent className="p-4\">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4\">
                 {/* Recherche */}
-                <div className=\"relative\">
-                  <Search className=\"absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400\" />
+                <div className="relative\">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400\" />
                   <input
                     type=\"text\"
                     placeholder=\"Rechercher...\"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className=\"w-full pl-10 pr-8 py-2 border rounded-lg text-sm\"
+                    className="w-full pl-10 pr-8 py-2 border rounded-lg text-sm\"
                   />
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery('')}
-                      className=\"absolute right-3 top-1/2 transform -translate-y-1/2\"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2\"
                     >
-                      <X className=\"w-4 h-4 text-gray-400\" />
+                      <X className="w-4 h-4 text-gray-400\" />
                     </button>
                   )}
                 </div>
@@ -396,7 +396,7 @@ export const MenuManagement = () => {
                 <select
                   value={filterCategory}
                   onChange={(e) => setFilterCategory(e.target.value)}
-                  className=\"px-3 py-2 border rounded-lg text-sm\"
+                  className="px-3 py-2 border rounded-lg text-sm\"
                 >
                   <option value=\"all\">Toutes les catégories</option>
                   {categories.map(cat => (
@@ -408,7 +408,7 @@ export const MenuManagement = () => {
                 <select
                   value={filterStock}
                   onChange={(e) => setFilterStock(e.target.value)}
-                  className=\"px-3 py-2 border rounded-lg text-sm\"
+                  className="px-3 py-2 border rounded-lg text-sm\"
                 >
                   <option value=\"all\">Tous les stocks</option>
                   <option value=\"available\">Disponibles</option>
@@ -416,12 +416,12 @@ export const MenuManagement = () => {
                 </select>
 
                 {/* Filtre Promo + Reset */}
-                <div className=\"flex gap-2\">
+                <div className="flex gap-2\">
                   <Button
                     variant={filterPromo ? 'default' : 'outline'}
                     size=\"sm\"
                     onClick={() => setFilterPromo(!filterPromo)}
-                    className=\"flex-1\"
+                    className="flex-1\"
                   >
                     🏷 Promo
                   </Button>
@@ -431,14 +431,14 @@ export const MenuManagement = () => {
                       size=\"sm\"
                       onClick={resetFilters}
                     >
-                      <X className=\"w-4 h-4\" />
+                      <X className="w-4 h-4\" />
                     </Button>
                   )}
                 </div>
               </div>
               
               {hasActiveFilters && (
-                <div className=\"mt-3 text-sm text-gray-600\">
+                <div className="mt-3 text-sm text-gray-600\">
                   {filteredProducts.length} produit(s) trouvé(s)
                 </div>
               )}
@@ -447,20 +447,20 @@ export const MenuManagement = () => {
         )}
 
         {/* Actions */}
-        <div className=\"flex justify-between items-center mb-6\">
+        <div className="flex justify-between items-center mb-6\">
           <div>
             {activeTab === 'products' && (
-              <h2 className=\"text-2xl font-bold text-gray-800\">
+              <h2 className="text-2xl font-bold text-gray-800\">
                 {filteredProducts.length} produit(s)
               </h2>
             )}
             {activeTab === 'categories' && (
-              <h2 className=\"text-2xl font-bold text-gray-800\">
+              <h2 className="text-2xl font-bold text-gray-800\">
                 {categories.length} catégorie(s)
               </h2>
             )}
             {activeTab === 'options' && (
-              <h2 className=\"text-2xl font-bold text-gray-800\">
+              <h2 className="text-2xl font-bold text-gray-800\">
                 {options.length} option(s)
               </h2>
             )}
@@ -471,7 +471,7 @@ export const MenuManagement = () => {
             else if (activeTab === 'categories') setShowCategoryModal(true);
             else if (activeTab === 'options') setShowOptionModal(true);
           }}>
-            <Plus className=\"w-4 h-4 mr-2\" />
+            <Plus className="w-4 h-4 mr-2\" />
             {activeTab === 'products' && 'Nouveau Produit'}
             {activeTab === 'categories' && 'Nouvelle Catégorie'}
             {activeTab === 'options' && 'Nouvelle Option'}
@@ -480,7 +480,7 @@ export const MenuManagement = () => {
 
         {/* Content */}
         {loading ? (
-          <div className=\"text-center py-12\">Chargement...</div>
+          <div className="text-center py-12\">Chargement...</div>
         ) : (
           <>
             {activeTab === 'products' && renderProducts()}
@@ -584,44 +584,44 @@ const ProductCard = ({ product, onEdit, onDelete, onDuplicate, openStockMenu, on
   const badge = getStockBadge();
 
   return (
-    <Card className=\"hover:shadow-lg transition-shadow relative\">
+    <Card className="hover:shadow-lg transition-shadow relative\">
       {product.isPromo && (
-        <div className=\"absolute top-2 right-2 z-10\">
-          <span className=\"px-2 py-1 bg-yellow-400 text-yellow-900 text-xs rounded-full font-bold\">
+        <div className="absolute top-2 right-2 z-10\">
+          <span className="px-2 py-1 bg-yellow-400 text-yellow-900 text-xs rounded-full font-bold\">
             🏷 PROMO
           </span>
         </div>
       )}
       
-      <div className=\"h-48 bg-gray-100 rounded-t-lg overflow-hidden\">
+      <div className="h-48 bg-gray-100 rounded-t-lg overflow-hidden\">
         {product.imageUrl ? (
           <img 
             src={product.imageUrl} 
             alt={product.name}
-            className=\"w-full h-full object-cover\"
+            className="w-full h-full object-cover\"
           />
         ) : (
-          <div className=\"w-full h-full flex items-center justify-center\">
-            <Package className=\"w-16 h-16 text-gray-400\" />
+          <div className="w-full h-full flex items-center justify-center\">
+            <Package className="w-16 h-16 text-gray-400\" />
           </div>
         )}
       </div>
       
-      <CardContent className=\"p-4\">
-        <h3 className=\"font-bold text-lg mb-1 truncate\">{product.name}</h3>
+      <CardContent className="p-4\">
+        <h3 className="font-bold text-lg mb-1 truncate\">{product.name}</h3>
         {product.description && (
-          <p className=\"text-sm text-gray-600 mb-2 line-clamp-2\">{product.description}</p>
+          <p className="text-sm text-gray-600 mb-2 line-clamp-2\">{product.description}</p>
         )}
         
-        <div className=\"flex items-center justify-between mb-3\">
-          <span className=\"text-2xl font-bold text-primary\">{product.price.toFixed(2)}€</span>
-          <div className=\"relative\">
+        <div className="flex items-center justify-between mb-3\">
+          <span className="text-2xl font-bold text-primary\">{product.price.toFixed(2)}€</span>
+          <div className="relative\">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onStockClick();
               }}
-              className=\"focus:outline-none\"
+              className="focus:outline-none\"
             >
               <span className={`px-2 py-1 ${badge.color} text-xs rounded-full font-medium cursor-pointer`}>
                 {badge.text}
@@ -629,26 +629,26 @@ const ProductCard = ({ product, onEdit, onDelete, onDuplicate, openStockMenu, on
             </button>
             
             {openStockMenu && (
-              <div className=\"absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border z-20\">
-                <button onClick={() => onStockChange('available')} className=\"w-full px-4 py-2 text-left hover:bg-gray-50 text-sm\">Disponible</button>
-                <button onClick={() => onStockChange('2h')} className=\"w-full px-4 py-2 text-left hover:bg-gray-50 text-sm\">Rupture 2h</button>
-                <button onClick={() => onStockChange('today')} className=\"w-full px-4 py-2 text-left hover:bg-gray-50 text-sm\">Rupture journée</button>
-                <button onClick={() => onStockChange('indefinite')} className=\"w-full px-4 py-2 text-left hover:bg-gray-50 text-sm\">Indisponible</button>
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border z-20\">
+                <button onClick={() => onStockChange('available')} className="w-full px-4 py-2 text-left hover:bg-gray-50 text-sm\">Disponible</button>
+                <button onClick={() => onStockChange('2h')} className="w-full px-4 py-2 text-left hover:bg-gray-50 text-sm\">Rupture 2h</button>
+                <button onClick={() => onStockChange('today')} className="w-full px-4 py-2 text-left hover:bg-gray-50 text-sm\">Rupture journée</button>
+                <button onClick={() => onStockChange('indefinite')} className="w-full px-4 py-2 text-left hover:bg-gray-50 text-sm\">Indisponible</button>
               </div>
             )}
           </div>
         </div>
         
-        <div className=\"flex gap-2\">
-          <Button size=\"sm\" variant=\"outline\" onClick={onEdit} className=\"flex-1\">
-            <Edit2 className=\"w-4 h-4 mr-1\" />
+        <div className="flex gap-2\">
+          <Button size=\"sm\" variant=\"outline\" onClick={onEdit} className="flex-1\">
+            <Edit2 className="w-4 h-4 mr-1\" />
             Modifier
           </Button>
           <Button size=\"sm\" variant=\"outline\" onClick={onDuplicate}>
-            <Copy className=\"w-4 h-4\" />
+            <Copy className="w-4 h-4\" />
           </Button>
-          <Button size=\"sm\" variant=\"outline\" onClick={onDelete} className=\"text-red-600 border-red-300 hover:bg-red-50\">
-            <Trash2 className=\"w-4 h-4\" />
+          <Button size=\"sm\" variant=\"outline\" onClick={onDelete} className="text-red-600 border-red-300 hover:bg-red-50\">
+            <Trash2 className="w-4 h-4\" />
           </Button>
         </div>
       </CardContent>
@@ -660,45 +660,45 @@ const CategoriesGrid = ({ categories, products, onEdit, onDelete, onReorder }) =
   const getProductCount = (categoryId) => products.filter(p => p.category === categoryId).length;
 
   return (
-    <div className=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4\">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4\">
       {categories.map((category, index) => (
-        <Card key={category.id} className=\"hover:shadow-lg transition-shadow\">
-          <CardContent className=\"p-4\">
-            <div className=\"flex items-start justify-between mb-3\">
-              <div className=\"flex-1\">
-                <h3 className=\"font-bold text-lg mb-1\">{category.name}</h3>
+        <Card key={category.id} className="hover:shadow-lg transition-shadow\">
+          <CardContent className="p-4\">
+            <div className="flex items-start justify-between mb-3\">
+              <div className="flex-1\">
+                <h3 className="font-bold text-lg mb-1\">{category.name}</h3>
                 {category.description && (
-                  <p className=\"text-sm text-gray-600\">{category.description}</p>
+                  <p className="text-sm text-gray-600\">{category.description}</p>
                 )}
               </div>
-              <div className=\"flex flex-col gap-1 ml-2\">
+              <div className="flex flex-col gap-1 ml-2\">
                 {index > 0 && (
-                  <button onClick={() => onReorder(category.id, 'up')} className=\"p-1 hover:bg-gray-100 rounded\">
-                    <ArrowUp className=\"w-4 h-4 text-gray-600\" />
+                  <button onClick={() => onReorder(category.id, 'up')} className="p-1 hover:bg-gray-100 rounded\">
+                    <ArrowUp className="w-4 h-4 text-gray-600\" />
                   </button>
                 )}
                 {index < categories.length - 1 && (
-                  <button onClick={() => onReorder(category.id, 'down')} className=\"p-1 hover:bg-gray-100 rounded\">
-                    <ArrowDown className=\"w-4 h-4 text-gray-600\" />
+                  <button onClick={() => onReorder(category.id, 'down')} className="p-1 hover:bg-gray-100 rounded\">
+                    <ArrowDown className="w-4 h-4 text-gray-600\" />
                   </button>
                 )}
               </div>
             </div>
             
-            <div className=\"mb-3\">
-              <span className=\"inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800\">
-                <Package className=\"w-3 h-3 mr-1\" />
+            <div className="mb-3\">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800\">
+                <Package className="w-3 h-3 mr-1\" />
                 {getProductCount(category.id)} produit(s)
               </span>
             </div>
             
-            <div className=\"flex gap-2\">
-              <Button size=\"sm\" variant=\"outline\" onClick={() => onEdit(category)} className=\"flex-1\">
-                <Edit2 className=\"w-4 h-4 mr-1\" />
+            <div className="flex gap-2\">
+              <Button size=\"sm\" variant=\"outline\" onClick={() => onEdit(category)} className="flex-1\">
+                <Edit2 className="w-4 h-4 mr-1\" />
                 Modifier
               </Button>
-              <Button size=\"sm\" variant=\"outline\" onClick={() => onDelete(category.id)} className=\"text-red-600 border-red-300 hover:bg-red-50\">
-                <Trash2 className=\"w-4 h-4\" />
+              <Button size=\"sm\" variant=\"outline\" onClick={() => onDelete(category.id)} className="text-red-600 border-red-300 hover:bg-red-50\">
+                <Trash2 className="w-4 h-4\" />
               </Button>
             </div>
           </CardContent>
@@ -710,46 +710,46 @@ const CategoriesGrid = ({ categories, products, onEdit, onDelete, onReorder }) =
 
 const OptionsGrid = ({ options, onEdit, onDelete }) => {
   return (
-    <div className=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4\">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4\">
       {options.map((option) => (
-        <Card key={option.id} className=\"hover:shadow-lg transition-shadow\">
-          <CardContent className=\"p-4\">
-            <div className=\"mb-3\">
-              <h3 className=\"font-bold text-lg mb-2\">{option.name}</h3>
-              <div className=\"flex items-center gap-2 mb-2\">
+        <Card key={option.id} className="hover:shadow-lg transition-shadow\">
+          <CardContent className="p-4\">
+            <div className="mb-3\">
+              <h3 className="font-bold text-lg mb-2\">{option.name}</h3>
+              <div className="flex items-center gap-2 mb-2\">
                 <span className={`px-2 py-1 text-xs rounded-full font-medium ${
                   option.type === 'single' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
                 }`}>
                   {option.type === 'single' ? 'Choix unique' : 'Choix multiple'}
                 </span>
                 {option.required && (
-                  <span className=\"px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-medium\">* Requis</span>
+                  <span className="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-medium\">* Requis</span>
                 )}
               </div>
             </div>
             
-            <div className=\"mb-3\">
-              <p className=\"text-xs text-gray-500 mb-2\">{option.choices?.length || 0} choix :</p>
-              <div className=\"flex flex-wrap gap-1\">
+            <div className="mb-3\">
+              <p className="text-xs text-gray-500 mb-2\">{option.choices?.length || 0} choix :</p>
+              <div className="flex flex-wrap gap-1\">
                 {option.choices?.slice(0, 4).map((choice, idx) => (
-                  <span key={idx} className=\"inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-700\">
+                  <span key={idx} className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-700\">
                     {choice.name}
-                    {choice.price > 0 && <span className=\"ml-1 text-green-600 font-medium\">+{choice.price}€</span>}
+                    {choice.price > 0 && <span className="ml-1 text-green-600 font-medium\">+{choice.price}€</span>}
                   </span>
                 ))}
                 {option.choices?.length > 4 && (
-                  <span className=\"text-xs text-gray-500\">+{option.choices.length - 4}</span>
+                  <span className="text-xs text-gray-500\">+{option.choices.length - 4}</span>
                 )}
               </div>
             </div>
             
-            <div className=\"flex gap-2\">
-              <Button size=\"sm\" variant=\"outline\" onClick={() => onEdit(option)} className=\"flex-1\">
-                <Edit2 className=\"w-4 h-4 mr-1\" />
+            <div className="flex gap-2\">
+              <Button size=\"sm\" variant=\"outline\" onClick={() => onEdit(option)} className="flex-1\">
+                <Edit2 className="w-4 h-4 mr-1\" />
                 Modifier
               </Button>
-              <Button size=\"sm\" variant=\"outline\" onClick={() => onDelete(option.id)} className=\"text-red-600 border-red-300 hover:bg-red-50\">
-                <Trash2 className=\"w-4 h-4\" />
+              <Button size=\"sm\" variant=\"outline\" onClick={() => onDelete(option.id)} className="text-red-600 border-red-300 hover:bg-red-50\">
+                <Trash2 className="w-4 h-4\" />
               </Button>
             </div>
           </CardContent>
