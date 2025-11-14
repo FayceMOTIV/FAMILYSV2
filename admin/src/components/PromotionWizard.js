@@ -83,7 +83,7 @@ export const PromotionWizard = ({ isOpen, onClose, promotion, onSuccess }) => {
     { value: 'threshold', label: '🎯 Seuil de panier', description: 'Dès X€ d\'achat' },
     { value: 'shipping_free', label: '🚚 Livraison gratuite', description: 'Frais de livraison offerts' },
     { value: 'new_customer', label: '✨ Nouveau client', description: '1ère commande uniquement' },
-    { value: 'happy_hour', label: '🍻 Happy Hour', description: 'Promo sur horaires définis' },
+    { value: 'happy_hour', label: '🌅 Happy Hour', description: 'Promo sur horaires définis' },
     { value: 'flash', label: '⚡ Offre Flash', description: 'Durée très limitée' },
     { value: 'seasonal', label: '🎉 Saisonnier', description: 'Événement spécial' },
     { value: 'promo_code', label: '🔖 Code promo', description: 'Code manuel à saisir' }
