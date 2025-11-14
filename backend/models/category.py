@@ -22,7 +22,6 @@ class CategoryCreate(BaseModel):
 
 class CategoryUpdate(BaseModel):
     name: Optional[str] = None
-    slug: Optional[str] = None
     image: Optional[str] = None
     icon: Optional[str] = None
     order: Optional[int] = None
