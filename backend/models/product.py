@@ -20,7 +20,6 @@ class Product(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     restaurant_id: str
     name: str
-    slug: str
     category: str
     description: str
     base_price: float
