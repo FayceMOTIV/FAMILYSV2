@@ -720,7 +720,7 @@ const OptionsGrid = ({ options, onEdit, onDelete }) => {
                 <span className={`px-2 py-1 text-xs rounded-full font-medium ${
                   option.type === 'single' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
                 }`}>
-                  {option.type === 'single' ? '◉ Choix unique' : '☑ Choix multiple'}
+                  {option.type === 'single' ? 'Choix unique' : 'Choix multiple'}
                 </span>
                 {option.required && (
                   <span className=\"px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-medium\">* Requis</span>
