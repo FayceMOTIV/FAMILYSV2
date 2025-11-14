@@ -406,7 +406,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Menu Management V2 Frontend Testing"
+    - "Settings API - Nouveaux Champs"
   stuck_tasks:
     - "AI Sales Analysis"
     - "AI Promo Suggestion"
@@ -422,6 +422,8 @@ test_plan:
     - "Partial Refunds System"
     - "Payment Processing System"
     - "Order Cancellation with Reason"
+    - "Menu Management V2 Frontend Testing"
+    - "Settings API - Nouveaux Champs"
 
   - task: "Admin Categories CRUD"
     implemented: true
