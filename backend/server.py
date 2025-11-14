@@ -25,6 +25,7 @@ from routes.admin import notifications as admin_notifications
 from routes.admin import reservations as admin_reservations
 from routes.admin import settings as admin_settings
 from routes.admin import ai_marketing as admin_ai_marketing
+from routes.admin import choice_library as admin_choice_library
 from routes.admin import upload as admin_upload
 from routes.admin import options as admin_options
 from routes.admin import refunds as admin_refunds
