@@ -644,7 +644,7 @@ test_plan:
 
   - task: "Order Status Transition System"
     implemented: true
-    working: false
+    working: true
     file: "/app/backend/routes/admin/orders.py"
     stuck_count: 0
     priority: "high"
@@ -656,6 +656,9 @@ test_plan:
         - working: false
         - agent: "testing"
         - comment: "❌ CRITICAL BUGS FOUND IN ORDER STATUS SYSTEM: Comprehensive testing revealed multiple critical security and business logic failures in /app/backend/routes/admin/orders.py. BUGS IDENTIFIED: 1) ❌ NO PAYMENT VALIDATION: Orders can be completed without payment (new→completed, ready→completed allowed without payment_status='paid'), 2) ❌ NO STATUS TRANSITION VALIDATION: Invalid transitions allowed (new→out_for_delivery, in_preparation→completed, new→invalid_status all succeed), 3) ❌ NO BUSINESS LOGIC: update_order_status() function accepts ANY status change without validation rules, 4) ❌ SECURITY ISSUE: Any status can be set to any other status bypassing business workflows. ROOT CAUSE: Lines 73-126 in orders.py have zero validation logic - function just updates database with any provided status. WORKING FEATURES: ✅ Cancellations with/without reason work, ✅ Data consistency maintained, ✅ Notifications sent correctly, ✅ Payment recording works. CRITICAL IMPACT: Restaurant can mark unpaid orders as completed, bypass preparation workflows, and accept invalid statuses. This breaks the entire order management business logic and creates financial/operational risks."
+        - working: true
+        - agent: "testing"
+        - comment: "✅ ORDER STATUS TRANSITION SYSTEM FULLY CORRECTED: Comprehensive re-testing confirms all critical bugs have been fixed. VALIDATION RESULTS: 1) ✅ PAYMENT VALIDATION WORKING: ready→completed correctly blocked for unpaid orders with message 'PAIEMENT REQUIS', after payment recording the transition works correctly, 2) ✅ STATUS TRANSITION VALIDATION WORKING: Invalid transitions properly blocked (ready→new blocked with 'Transition non autorisée' message, new→completed blocked, invalid statuses rejected), 3) ✅ BUSINESS LOGIC IMPLEMENTED: Lines 99-134 in orders.py now contain comprehensive validation with valid_transitions dictionary defining allowed state changes, payment validation for completion, proper error messages, 4) ✅ SECURITY FIXED: Status changes now follow strict business rules - takeaway flow (new→in_preparation→ready→completed), delivery flow includes out_for_delivery state, cancellation allowed from any non-final state, 5) ✅ ERROR MESSAGES EXPLICIT: All error responses include detailed messages with 'Transition non autorisée', 'Statut invalide', 'PAIEMENT REQUIS', and list of valid transitions/statuses. COMPREHENSIVE TESTING PERFORMED: Valid transitions (ready→completed for paid orders ✅, out_for_delivery→completed ✅), Invalid transitions blocked (ready→new ❌, invalid_status ❌), Payment validation (unpaid completion blocked ❌, paid completion allowed ✅), Cancellation from any state (ready→canceled ✅), Error message format validation ✅. ALL FRENCH REVIEW REQUIREMENTS MET: Transitions valides fonctionnent, transitions invalides bloquées avec erreur 400, validation paiement opérationnelle, messages d'erreur explicites, sécurité du workflow garantie. Order management system is now PRODUCTION READY with proper business logic enforcement."
 
 agent_communication:
     - agent: "testing"
