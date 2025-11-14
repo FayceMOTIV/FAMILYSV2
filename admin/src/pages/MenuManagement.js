@@ -300,31 +300,78 @@ export const MenuManagement = () => {
         {/* PRODUITS */}
         {activeTab === 'products' && (
           <div>
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center mb-4">
               <div>
-                <h2 className="text-2xl font-bold">🍔 Produits ({products.length})</h2>
-                <div className="flex items-center gap-2 mt-2">
+                <h2 className="text-2xl font-bold">🍔 Produits ({filteredProducts.length})</h2>
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+                >
+                  {viewMode === 'grid' ? <ListIcon className="w-4 h-4" /> : <LayoutGrid className="w-4 h-4" />}
+                </Button>
+                <Button 
+                  onClick={() => {
+                    setEditingProduct(null);
+                    setShowProductModal(true);
+                  }}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Nouveau produit
+                </Button>
+              </div>
+            </div>
+            
+            {/* Filtres */}
+            <div className="mb-4 p-4 bg-white rounded-lg shadow">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
-                    type="checkbox"
-                    id="outOfStockFilter"
-                    checked={showOutOfStockOnly}
-                    onChange={(e) => setShowOutOfStockOnly(e.target.checked)}
-                    className="w-4 h-4"
+                    type="text"
+                    placeholder="Rechercher..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-8 py-2 border rounded-lg text-sm"
                   />
-                  <label htmlFor="outOfStockFilter" className="text-sm font-medium text-gray-700 cursor-pointer">
-                    🚫 Afficher uniquement les produits en rupture
-                  </label>
+                </div>
+                <select
+                  value={filterCategory}
+                  onChange={(e) => setFilterCategory(e.target.value)}
+                  className="px-3 py-2 border rounded-lg text-sm"
+                >
+                  <option value="all">Toutes catégories</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
+                <select
+                  value={filterStock}
+                  onChange={(e) => setFilterStock(e.target.value)}
+                  className="px-3 py-2 border rounded-lg text-sm"
+                >
+                  <option value="all">Tous stocks</option>
+                  <option value="available">Disponibles</option>
+                  <option value="out_of_stock">En rupture</option>
+                </select>
+                <div className="flex gap-2">
+                  <Button
+                    variant={filterPromo ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setFilterPromo(!filterPromo)}
+                    className="flex-1"
+                  >
+                    Promo
+                  </Button>
+                  {hasActiveFilters && (
+                    <Button variant="outline" size="sm" onClick={resetFilters}>
+                      <X className="w-4 h-4" />
+                    </Button>
+                  )}
                 </div>
               </div>
-              <Button 
-                onClick={() => {
-                  setEditingProduct(null);
-                  setShowProductModal(true);
-                }}
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Nouveau produit
-              </Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
