@@ -14,6 +14,7 @@ class RestaurantSettings(BaseModel):
     primary_color: str = "#C62828"
     secondary_color: str = "#FFD54F"
     opening_hours: Dict[str, Dict] = Field(default_factory=dict)
+    order_hours: Dict[str, Dict] = Field(default_factory=dict)  # Horaires de commande (différents des horaires d'ouverture)
     order_cutoff_minutes: int = 20
     preparation_time_minutes: int = 15  # Temps de préparation par créneau
     enable_delivery: bool = True
@@ -22,7 +23,8 @@ class RestaurantSettings(BaseModel):
     enable_reservations: bool = True
     loyalty_percentage: float = 5.0
     stripe_key: Optional[str] = None
-    social_media: Dict[str, str] = Field(default_factory=dict)
+    service_links: Dict[str, str] = Field(default_factory=dict)  # Liens Stripe, PayPal, etc
+    social_media: Dict[str, str] = Field(default_factory=dict)  # Liens réseaux sociaux
     terms_url: Optional[str] = None
     privacy_url: Optional[str] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
