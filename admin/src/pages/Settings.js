@@ -357,6 +357,24 @@ export const Settings = () => {
                   placeholder="URL du service de livraison"
                 />
               </div>
+              <div>
+                <Label htmlFor="apple_pay">🍎 Apple Pay</Label>
+                <Input
+                  id="apple_pay"
+                  value={settings.service_links?.apple_pay || ''}
+                  onChange={(e) => updateServiceLinks('apple_pay', e.target.value)}
+                  placeholder="Lien Apple Pay"
+                />
+              </div>
+              <div>
+                <Label htmlFor="google_pay">🟢 Google Pay</Label>
+                <Input
+                  id="google_pay"
+                  value={settings.service_links?.google_pay || ''}
+                  onChange={(e) => updateServiceLinks('google_pay', e.target.value)}
+                  placeholder="Lien Google Pay"
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
