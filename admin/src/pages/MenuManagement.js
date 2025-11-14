@@ -973,8 +973,6 @@ export const MenuManagement = () => {
             )}
           </div>
         )}
-
- 
       </div>
 
       {/* Modals */}
