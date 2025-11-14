@@ -7,7 +7,6 @@ class Category(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     restaurant_id: str
     name: str
-    slug: str
     image: Optional[str] = None
     icon: Optional[str] = None
     order: int = 0
