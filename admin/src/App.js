@@ -23,7 +23,7 @@ import { MenuManagement } from './pages/MenuManagement';
 import { OrdersKiosk } from './pages/OrdersKiosk';
 import { Revenue } from './pages/Revenue';
 import AIMarketingTemp from './pages/AIMarketingTemp';
-import { ChoiceLibrary } from './pages/ChoiceLibrary';
+// import { ChoiceLibrary } from './pages/ChoiceLibrary';
 
 function App() {
   return (
