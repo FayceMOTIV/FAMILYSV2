@@ -36,7 +36,6 @@ class Product(BaseModel):
 
 class ProductCreate(BaseModel):
     name: str
-    slug: str
     category: str
     description: str
     base_price: float
