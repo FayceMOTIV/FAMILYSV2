@@ -9,7 +9,6 @@ export const CategoryModal = ({ isOpen, onClose, category, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
-    slug: '',
     image: '',
     icon: '',
     order: 0,
@@ -20,7 +19,6 @@ export const CategoryModal = ({ isOpen, onClose, category, onSuccess }) => {
     if (category) {
       setFormData({
         name: category.name || '',
-        slug: category.slug || '',
         image: category.image || '',
         icon: category.icon || '',
         order: category.order || 0,
@@ -29,7 +27,6 @@ export const CategoryModal = ({ isOpen, onClose, category, onSuccess }) => {
     } else {
       setFormData({
         name: '',
-        slug: '',
         image: '',
         icon: '',
         order: 0,
@@ -37,24 +34,6 @@ export const CategoryModal = ({ isOpen, onClose, category, onSuccess }) => {
       });
     }
   }, [category]);
-
-  const generateSlug = (name) => {
-    return name
-      .toLowerCase()
-      .replace(/[éèê]/g, 'e')
-      .replace(/[àâ]/g, 'a')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
-  };
-
-  const handleNameChange = (e) => {
-    const name = e.target.value;
-    setFormData({
-      ...formData,
-      name,
-      slug: generateSlug(name),
-    });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
