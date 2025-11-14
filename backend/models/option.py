@@ -16,9 +16,11 @@ class ProductOption(BaseModel):
     restaurant_id: str
     name: str  # Ex: "Taille", "Sauce", "Accompagnement"
     description: Optional[str] = None
+    internal_comment: Optional[str] = None  # Commentaire interne non visible client
     type: str  # "single" (choix unique) ou "multiple" (choix multiples)
     is_required: bool = False  # Option obligatoire ou non
     max_choices: Optional[int] = None  # Pour type="multiple", nombre max de choix
+    allow_repeat: bool = False  # Permet de prendre le même choix plusieurs fois (ex: chantilly *2)
     price: float = 0.0  # Prix de base de l'option (optionnel)
     choices: List[OptionChoice] = []  # Liste des choix possibles
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
