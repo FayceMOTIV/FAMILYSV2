@@ -1,59 +1,78 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { Button } from './Button';
-import { X } from 'lucide-react';
+import { X, Plus, Trash2 } from 'lucide-react';
 
 export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
-  const [paymentMethod, setPaymentMethod] = useState('');
-  const [amountReceived, setAmountReceived] = useState('');
-  const [change, setChange] = useState(0);
+  const [payments, setPayments] = useState([]);
+  const [currentPaymentMethod, setCurrentPaymentMethod] = useState('');
+  const [currentAmount, setCurrentAmount] = useState('');
   const [loading, setLoading] = useState(false);
 
   const isModifyingPayment = order?.payment_status === 'paid';
   const isPaymentLocked = isModifyingPayment && order?.payment_method === 'online';
 
   useEffect(() => {
-    if (order) {
-      // If modifying, pre-fill with existing data
-      if (isModifyingPayment) {
-        setPaymentMethod(order.payment_method || '');
-        setAmountReceived(order.amount_received?.toString() || order.total.toString());
-        setChange(order.change_given || 0);
+    if (order && isOpen) {
+      if (isModifyingPayment && !isPaymentLocked) {
+        // Modifier un paiement existant
+        setPayments([{
+          method: order.payment_method || '',
+          amount: parseFloat(order.total)
+        }]);
       } else {
-        // New payment
-        setPaymentMethod('');
-        setAmountReceived('');
-        setChange(0);
+        // Nouveau paiement
+        setPayments([]);
       }
+      setCurrentPaymentMethod('');
+      setCurrentAmount('');
     }
-  }, [order, isModifyingPayment, isOpen]);
+  }, [order, isModifyingPayment, isPaymentLocked, isOpen]);
 
-  useEffect(() => {
-    // Calculate change when amount received changes
-    if (amountReceived && order && paymentMethod === 'cash') {
-      const received = parseFloat(amountReceived);
-      const total = parseFloat(order.total);
-      if (received >= total) {
-        setChange(received - total);
-      } else {
-        setChange(0);
-      }
-    } else {
-      setChange(0);
+  const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
+  const remaining = order ? parseFloat(order.total) - totalPaid : 0;
+
+  const handleAddPayment = () => {
+    if (!currentPaymentMethod) {
+      alert('⚠️ Sélectionnez un mode de paiement');
+      return;
     }
-  }, [amountReceived, order, paymentMethod]);
 
-  const handleAppoint = () => {
-    setAmountReceived(order.total.toString());
-    setChange(0);
+    const amount = parseFloat(currentAmount) || remaining;
+    
+    if (amount <= 0) {
+      alert('⚠️ Le montant doit être supérieur à 0');
+      return;
+    }
+
+    if (amount > remaining) {
+      alert('⚠️ Le montant ne peut pas dépasser le restant à payer');
+      return;
+    }
+
+    setPayments([...payments, {
+      method: currentPaymentMethod,
+      amount: amount
+    }]);
+
+    setCurrentPaymentMethod('');
+    setCurrentAmount('');
+  };
+
+  const handleRemovePayment = (index) => {
+    setPayments(payments.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // VALIDATION : Vérifier qu'un mode de paiement est sélectionné
-    if (!paymentMethod || paymentMethod === '') {
-      alert('⚠️ Veuillez sélectionner un mode de paiement');
+    if (payments.length === 0) {
+      alert('⚠️ Ajoutez au moins un paiement');
+      return;
+    }
+
+    if (remaining > 0.01) { // Tolérance de 1 centime
+      alert(`⚠️ Il reste ${remaining.toFixed(2)}€ à payer`);
       return;
     }
 
@@ -62,15 +81,25 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
     try {
       const API_URL = process.env.REACT_APP_BACKEND_URL || '';
       
+      // Si un seul paiement, utiliser l'ancien format
+      // Si multi-paiements, envoyer le tableau
+      const paymentData = payments.length === 1 ? {
+        payment_method: payments[0].method,
+        payment_status: 'paid',
+        amount_received: payments[0].amount,
+        change_given: totalPaid - parseFloat(order.total)
+      } : {
+        payment_method: 'multi', // Nouveau type
+        payment_status: 'paid',
+        payments: payments, // Tableau de paiements
+        amount_received: totalPaid,
+        change_given: totalPaid - parseFloat(order.total)
+      };
+
       const response = await fetch(`${API_URL}/api/v1/admin/orders/${order.id}/payment`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          payment_method: paymentMethod,
-          payment_status: 'paid',
-          amount_received: amountReceived ? parseFloat(amountReceived) : parseFloat(order.total),
-          change_given: change
-        })
+        body: JSON.stringify(paymentData)
       });
 
       if (!response.ok) throw new Error('Failed to record payment');
@@ -79,19 +108,27 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
       onSuccess?.();
       onClose();
     } catch (error) {
-      console.error('Error recording payment:', error);
+      console.error('Payment error:', error);
       alert('❌ Erreur lors de l\'enregistrement du paiement');
     } finally {
       setLoading(false);
     }
   };
 
-  if (!order) return null;
+  const getPaymentMethodLabel = (method) => {
+    const labels = {
+      'espece': '💵 Espèce',
+      'cb': '💳 CB',
+      'cheque': '📝 Chèque',
+      'ticket_restaurant': '🎟️ Ticket restaurant'
+    };
+    return labels[method] || method;
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="medium">
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-lg font-bold">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-bold">
           {isModifyingPayment ? '✏️ Modifier le paiement' : '💳 Enregistrer le paiement'}
         </h2>
         <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
@@ -101,167 +138,173 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
 
       {/* Avertissement paiement verrouillé */}
       {isPaymentLocked && (
-        <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded">
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
           <div className="flex items-center gap-2">
-            <span className="text-lg">🔒</span>
-            <p className="text-xs text-red-700 font-medium">
+            <span className="text-xl">🔒</span>
+            <p className="text-sm text-red-700 font-medium">
               Paiement en ligne non modifiable
             </p>
           </div>
         </div>
       )}
 
-      {/* Info modification paiement physique */}
-      {isModifyingPayment && !isPaymentLocked && (
-        <div className="mb-3 p-2 bg-yellow-50 border border-yellow-200 rounded">
-          <div className="flex items-center gap-2">
-            <span className="text-lg">⚠️</span>
-            <p className="text-xs text-yellow-700 font-medium">
-              Modification d'un paiement existant
-            </p>
-          </div>
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-3">
-        {/* Order Summary */}
-        <div className="p-3 bg-gray-50 rounded-lg">
-          <div className="grid grid-cols-2 gap-2 text-sm">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Order Summary avec RESTANT À PAYER */}
+        <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border-2 border-blue-200">
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <span className="text-gray-600">Commande:</span>
-              <span className="ml-2 font-medium">#{order.id.slice(0, 8)}</span>
+              <span className="text-sm text-gray-600">Commande:</span>
+              <span className="ml-2 font-bold">#{order?.id?.slice(0, 8)}</span>
             </div>
             <div className="text-right">
-              <span className="text-gray-600">Total:</span>
-              <span className="ml-2 font-bold text-lg text-primary">{order.total.toFixed(2)}€</span>
+              <span className="text-sm text-gray-600">Total:</span>
+              <span className="ml-2 font-bold text-lg">{order?.total?.toFixed(2)}€</span>
+            </div>
+            <div>
+              <span className="text-sm text-gray-600">Déjà payé:</span>
+              <span className="ml-2 font-bold text-green-600">{totalPaid.toFixed(2)}€</span>
+            </div>
+            <div className="text-right">
+              <span className="text-sm text-gray-600">Restant:</span>
+              <span className={`ml-2 font-bold text-xl ${remaining > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                {remaining.toFixed(2)}€
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Payment Method */}
-        <div>
-          <label className="block text-sm font-medium mb-1">Mode de paiement *</label>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={() => !isPaymentLocked && setPaymentMethod('espece')}
-              disabled={isPaymentLocked}
-              className={`p-3 rounded-lg border-2 transition-colors text-sm font-medium ${
-                paymentMethod === 'espece'
-                  ? 'border-green-500 bg-green-50 text-green-700'
-                  : 'border-gray-200 hover:border-gray-300'
-              } ${isPaymentLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-            >
-              💵 Espèce
-            </button>
-            <button
-              type="button"
-              onClick={() => !isPaymentLocked && setPaymentMethod('cb')}
-              disabled={isPaymentLocked}
-              className={`p-3 rounded-lg border-2 transition-colors text-sm font-medium ${
-                paymentMethod === 'cb'
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 hover:border-gray-300'
-              } ${isPaymentLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-            >
-              💳 CB
-            </button>
-            <button
-              type="button"
-              onClick={() => !isPaymentLocked && setPaymentMethod('cheque')}
-              disabled={isPaymentLocked}
-              className={`p-3 rounded-lg border-2 transition-colors text-sm font-medium ${
-                paymentMethod === 'cheque'
-                  ? 'border-purple-500 bg-purple-50 text-purple-700'
-                  : 'border-gray-200 hover:border-gray-300'
-              } ${isPaymentLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-            >
-              📝 Chèque
-            </button>
-            <button
-              type="button"
-              onClick={() => !isPaymentLocked && setPaymentMethod('ticket_restaurant')}
-              disabled={isPaymentLocked}
-              className={`p-3 rounded-lg border-2 transition-colors text-sm font-medium ${
-                paymentMethod === 'ticket_restaurant'
-                  ? 'border-orange-500 bg-orange-50 text-orange-700'
-                  : 'border-gray-200 hover:border-gray-300'
-              } ${isPaymentLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-            >
-              🎟️ Ticket restaurant
-            </button>
-            <button
-              type="button"
-              onClick={() => !isPaymentLocked && setPaymentMethod('online')}
-              disabled={isPaymentLocked}
-              className={`p-3 rounded-lg border-2 transition-colors text-sm font-medium ${
-                paymentMethod === 'online'
-                  ? 'border-orange-500 bg-orange-50 text-orange-700'
-                  : 'border-gray-200 hover:border-gray-300'
-              } ${isPaymentLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-            >
-              🌐 En ligne
-            </button>
-          </div>
-          {!paymentMethod && (
-            <p className="text-xs text-red-500 mt-1">* Sélectionnez un mode de paiement</p>
-          )}
-        </div>
-
-        {/* Amount Received (for cash only) */}
-        {paymentMethod === 'cash' && (
-          <div>
-            <label className="block text-sm font-medium mb-1">Montant reçu</label>
-            <div className="flex gap-2">
-              <input
-                type="number"
-                step="0.01"
-                value={amountReceived}
-                onChange={(e) => setAmountReceived(e.target.value)}
-                disabled={isPaymentLocked}
-                className="flex-1 px-3 py-2 border rounded-lg text-sm"
-                placeholder="0.00"
-              />
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={handleAppoint}
-                disabled={isPaymentLocked}
-              >
-                Appoint
-              </Button>
-            </div>
+        {/* Liste des paiements enregistrés */}
+        {payments.length > 0 && (
+          <div className="space-y-2">
+            <h3 className="font-semibold text-sm text-gray-700">Paiements enregistrés:</h3>
+            {payments.map((payment, index) => (
+              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <span className="font-medium">{getPaymentMethodLabel(payment.method)}</span>
+                  <span className="text-gray-400">→</span>
+                  <span className="font-bold text-green-600">{payment.amount.toFixed(2)}€</span>
+                </div>
+                {!isPaymentLocked && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemovePayment(index)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            ))}
           </div>
         )}
 
-        {/* Change Display */}
-        {paymentMethod === 'cash' && change > 0 && (
-          <div className="p-2 bg-green-50 border border-green-200 rounded">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-green-700">À rendre:</span>
-              <span className="text-lg font-bold text-green-700">{change.toFixed(2)}€</span>
+        {/* Ajouter un paiement */}
+        {!isPaymentLocked && remaining > 0.01 && (
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 space-y-3">
+            <h3 className="font-semibold text-sm text-gray-700">Ajouter un paiement:</h3>
+            
+            {/* Modes de paiement */}
+            <div>
+              <label className="block text-sm font-medium mb-2">Mode de paiement *</label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setCurrentPaymentMethod('espece')}
+                  className={`p-3 rounded-lg border-2 transition-colors text-sm font-medium ${
+                    currentPaymentMethod === 'espece'
+                      ? 'border-green-500 bg-green-50 text-green-700'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  💵 Espèce
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCurrentPaymentMethod('cb')}
+                  className={`p-3 rounded-lg border-2 transition-colors text-sm font-medium ${
+                    currentPaymentMethod === 'cb'
+                      ? 'border-blue-500 bg-blue-50 text-blue-700'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  💳 CB
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCurrentPaymentMethod('cheque')}
+                  className={`p-3 rounded-lg border-2 transition-colors text-sm font-medium ${
+                    currentPaymentMethod === 'cheque'
+                      ? 'border-purple-500 bg-purple-50 text-purple-700'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  📝 Chèque
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCurrentPaymentMethod('ticket_restaurant')}
+                  className={`p-3 rounded-lg border-2 transition-colors text-sm font-medium ${
+                    currentPaymentMethod === 'ticket_restaurant'
+                      ? 'border-orange-500 bg-orange-50 text-orange-700'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  🎟️ Ticket restaurant
+                </button>
+              </div>
             </div>
+
+            {/* Montant */}
+            <div>
+              <label className="block text-sm font-medium mb-2">Montant</label>
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  step="0.01"
+                  value={currentAmount}
+                  onChange={(e) => setCurrentAmount(e.target.value)}
+                  placeholder={`Max: ${remaining.toFixed(2)}€`}
+                  className="flex-1 px-3 py-2 border rounded-lg"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setCurrentAmount(remaining.toFixed(2))}
+                >
+                  Tout le restant
+                </Button>
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              onClick={handleAddPayment}
+              className="w-full"
+              variant="outline"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Ajouter ce paiement
+            </Button>
           </div>
         )}
 
-        {/* Actions */}
-        <div className="flex gap-2 pt-2">
+        {/* Boutons d'action */}
+        <div className="flex gap-2 pt-4 border-t">
           <Button
             type="button"
             variant="outline"
             onClick={onClose}
-            disabled={loading}
             className="flex-1"
+            disabled={loading}
           >
             Annuler
           </Button>
           <Button
             type="submit"
-            disabled={loading || isPaymentLocked || !paymentMethod}
             className="flex-1"
+            disabled={loading || isPaymentLocked || payments.length === 0}
           >
-            {loading ? 'Enregistrement...' : (isModifyingPayment ? 'Modifier' : 'Valider le paiement')}
+            {loading ? 'Enregistrement...' : remaining > 0.01 ? `Il reste ${remaining.toFixed(2)}€` : 'Valider le paiement'}
           </Button>
         </div>
       </form>
