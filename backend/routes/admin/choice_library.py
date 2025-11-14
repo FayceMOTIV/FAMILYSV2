@@ -47,10 +47,14 @@ async def create_choice(choice: Choice):
         "updated_at": datetime.now(timezone.utc).isoformat()
     }
     
-    await db.choice_library.insert_one(choice_data)
+    result = await db.choice_library.insert_one(choice_data)
     
     # Return only the data we created (without MongoDB ObjectId)
-    return {"success": True, "id": choice_data["id"], "choice": choice_data}
+    return {
+        "success": True, 
+        "id": choice_data["id"],
+        "message": "Choice created successfully"
+    }
 
 @router.put("/{choice_id}")
 async def update_choice(choice_id: str, choice: ChoiceUpdate):
