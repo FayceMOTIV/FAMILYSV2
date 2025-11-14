@@ -674,6 +674,18 @@ test_plan:
         - working: true
         - agent: "testing"
         - comment: "✅ FRENCH REVIEW COMPLETE - 100% SUCCESS: All 6 test categories passed (100% success rate). 1) SYSTÈME DE COMMANDES: Order status transitions working correctly, payment validation blocking unpaid completions, payment recording flow functional ✅, 2) CHOICE-LIBRARY ENDPOINT: Complete CRUD operations working after fixing MongoDB ObjectId serialization issue ✅, 3) EXISTING ENDPOINTS: Products, Categories (with reordering), Options, Stock Management (all 4 statuses) - no regression detected ✅, 4) PROMOTIONS V2: No regression, simulation engine functional ✅, 5) AI MARKETING: No regression, campaigns and stats endpoints working ✅. All French review criteria met: 30+ orders retrieved, status transitions validated/blocked correctly, payment validation active, new choice-library endpoint fully functional, no regression on existing functionality. Family's Restaurant backend system is PRODUCTION READY."
+
+  - task: "Menu Management V2 Frontend Testing"
+    implemented: true
+    working: "NA"
+    file: "/app/admin/src/pages/MenuManagement.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Testing Menu Management V2 overhaul frontend changes implemented this morning. Features to test: 1) Menu Management page access from sidebar, 2) View toggle (Grid/List), 3) Advanced filtering (search, category filter, stock status filter, promotions filter), 4) Products grouped by category in grid view, 5) List views (ProductsListView, CategoriesListView), 6) Choice Library page navigation, 7) Backend integration verification, 8) Visual quality and responsive design. Admin credentials: admin@familys.app / Admin@123456"
 agent_communication:
     - agent: "testing"
     - message: "Starting comprehensive backend API testing for ALL admin endpoints. Testing Categories, Products, Options, Orders, Notifications, Promos, Upload, and AI Marketing with full CRUD operations on https://admin-kitchen.preview.emergentagent.com"
