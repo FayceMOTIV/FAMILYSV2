@@ -40,8 +40,10 @@ class OptionCreate(BaseModel):
 class OptionUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
+    internal_comment: Optional[str] = None
     type: Optional[str] = None
     is_required: Optional[bool] = None
     max_choices: Optional[int] = None
+    allow_repeat: Optional[bool] = None
     price: Optional[float] = None
     choices: Optional[List[OptionChoice]] = None
