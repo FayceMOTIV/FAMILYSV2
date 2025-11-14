@@ -182,6 +182,35 @@ export const MenuManagement = () => {
     }
   };
 
+  const handleReorderCategory = async (categoryId, direction) => {
+    const sortedCats = [...categories].sort((a, b) => (a.order || 0) - (b.order || 0));
+    const index = sortedCats.findIndex(c => c.id === categoryId);
+    if (index === -1) return;
+    
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= sortedCats.length) return;
+    
+    try {
+      const category1 = sortedCats[index];
+      const category2 = sortedCats[targetIndex];
+      
+      await axios.put(`${API_URL}/api/v1/admin/categories/${category1.id}`, {
+        ...category1,
+        order: category2.order || targetIndex
+      });
+      
+      await axios.put(`${API_URL}/api/v1/admin/categories/${category2.id}`, {
+        ...category2,
+        order: category1.order || index
+      });
+      
+      await loadCategories();
+    } catch (error) {
+      console.error('Error reordering:', error);
+      alert('Erreur lors du réordonnancement');
+    }
+  };
+
   const handleMoveCategoryUp = async (category, index) => {
     if (index === 0) return; // Already at top
     
