@@ -570,15 +570,15 @@ export const MenuManagement = () => {
 const ProductCard = ({ product, onEdit, onDelete, onDuplicate, openStockMenu, onStockClick, onStockChange }) => {
   const getStockBadge = () => {
     if (!product.is_out_of_stock) {
-      return { text: '✓ Disponible', color: 'bg-green-100 text-green-700' };
+      return { text: 'Disponible', color: 'bg-green-100 text-green-700' };
     }
     if (product.stock_status === '2h') {
-      return { text: '⏱ Rupture 2h', color: 'bg-orange-100 text-orange-700' };
+      return { text: 'Rupture 2h', color: 'bg-orange-100 text-orange-700' };
     }
     if (product.stock_status === 'today') {
-      return { text: '📅 Rupture journée', color: 'bg-red-100 text-red-700' };
+      return { text: 'Rupture journée', color: 'bg-red-100 text-red-700' };
     }
-    return { text: '⛔ Indisponible', color: 'bg-gray-100 text-gray-700' };
+    return { text: 'Indisponible', color: 'bg-gray-100 text-gray-700' };
   };
 
   const badge = getStockBadge();
