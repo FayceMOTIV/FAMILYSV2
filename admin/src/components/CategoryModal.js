@@ -68,21 +68,11 @@ export const CategoryModal = ({ isOpen, onClose, category, onSuccess }) => {
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <Label htmlFor="name">Nom *</Label>
+          <Label htmlFor="name">Nom de la catégorie *</Label>
           <Input
             id="name"
             value={formData.name}
-            onChange={handleNameChange}
-            required
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="slug">Slug *</Label>
-          <Input
-            id="slug"
-            value={formData.slug}
-            onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             required
           />
         </div>
