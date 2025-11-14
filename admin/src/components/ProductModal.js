@@ -101,24 +101,6 @@ export const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
     }
   };
 
-  const generateSlug = (name) => {
-    return name
-      .toLowerCase()
-      .replace(/[éèê]/g, 'e')
-      .replace(/[àâ]/g, 'a')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
-  };
-
-  const handleNameChange = (e) => {
-    const name = e.target.value;
-    setFormData({
-      ...formData,
-      name,
-      slug: generateSlug(name),
-    });
-  };
-
   const handleOptionToggle = (option, isChecked) => {
     if (isChecked) {
       // Add option to selected
