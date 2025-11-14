@@ -8,6 +8,7 @@ class OptionChoice(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     price: float = 0.0  # Prix additionnel pour ce choix
+    image_url: Optional[str] = None  # Image pour le choix
 
 class ProductOption(BaseModel):
     """Option pour un produit (ex: Taille, Sauce, etc.)."""
