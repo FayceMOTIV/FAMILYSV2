@@ -152,7 +152,8 @@ async def generate_promotion_usage():
         promo = random.choice(promotions)
         
         # Calculer le discount
-        discount_amount = order["total_amount"] * random.uniform(0.05, 0.25)
+        total_amount = order.get("total_amount", order.get("amount", 0))
+        discount_amount = total_amount * random.uniform(0.05, 0.25)
         
         usage_log = {
             "id": str(uuid.uuid4()),
@@ -161,8 +162,8 @@ async def generate_promotion_usage():
             "order_id": order["id"],
             "customer_id": order.get("customer_id"),
             "discount_amount": round(discount_amount, 2),
-            "original_amount": order["total_amount"],
-            "final_amount": round(order["total_amount"] - discount_amount, 2),
+            "original_amount": total_amount,
+            "final_amount": round(total_amount - discount_amount, 2),
             "used_at": order["created_at"]
         }
         
