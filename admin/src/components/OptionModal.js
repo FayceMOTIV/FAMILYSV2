@@ -20,6 +20,36 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
   const [showLibraryPicker, setShowLibraryPicker] = useState(false);
 
   useEffect(() => {
+    if (isOpen) {
+      loadChoiceLibrary();
+    }
+  }, [isOpen]);
+
+  const loadChoiceLibrary = async () => {
+    try {
+      const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://admin-kitchen.preview.emergentagent.com';
+      const response = await fetch(`${API_URL}/api/v1/admin/choice-library`);
+      const data = await response.json();
+      setChoiceLibrary(data.choices || []);
+    } catch (error) {
+      console.error('Error loading choice library:', error);
+    }
+  };
+
+  const handleAddFromLibrary = (libraryChoice) => {
+    const newChoice = {
+      name: libraryChoice.name,
+      price: libraryChoice.default_price,
+      image_url: libraryChoice.image_url
+    };
+    setFormData({
+      ...formData,
+      choices: [...formData.choices, newChoice]
+    });
+    setShowLibraryPicker(false);
+  };
+
+  useEffect(() => {
     if (option) {
       setFormData({
         name: option.name || '',
