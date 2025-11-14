@@ -22,6 +22,7 @@ export const PromotionWizard = ({ isOpen, onClose, promotion, onSuccess }) => {
     discount_value: 10,
     eligible_products: [],
     eligible_categories: [],
+    all_products: false,
     min_cart_amount: null,
     start_date: new Date().toISOString().split('T')[0],
     end_date: new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0],
