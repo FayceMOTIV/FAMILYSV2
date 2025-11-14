@@ -76,17 +76,17 @@ export const PromotionWizard = ({ isOpen, onClose, promotion, onSuccess }) => {
   };
 
   const getPromoTypeOptions = () => [
-    { value: 'bogo', label: '🎁 BOGO (Achetez 1 = 1 offert)', description: 'Classique Buy One Get One' },
-    { value: 'percent_item', label: '💯 % sur produit', description: 'Réduction % sur produits spécifiques' },
-    { value: 'percent_category', label: '💯 % sur catégorie', description: 'Réduction % sur une catégorie' },
-    { value: 'conditional_discount', label: '🔢 2e à -50%', description: '2ème article à -50%, 3 pour 2...' },
-    { value: 'threshold', label: '🎯 Seuil de panier', description: 'Dès X€ d\'achat' },
-    { value: 'shipping_free', label: '🚚 Livraison gratuite', description: 'Frais de livraison offerts' },
-    { value: 'new_customer', label: '✨ Nouveau client', description: '1ère commande uniquement' },
-    { value: 'happy_hour', label: '🌅 Happy Hour', description: 'Promo sur horaires définis' },
-    { value: 'flash', label: '⚡ Offre Flash', description: 'Durée très limitée' },
-    { value: 'seasonal', label: '🎉 Saisonnier', description: 'Événement spécial' },
-    { value: 'promo_code', label: '🔖 Code promo', description: 'Code manuel à saisir' }
+    { value: 'bogo', label: '🎁 BOGO (Achetez 1 = 1 offert)', description: 'Classique Buy One Get One', tooltip: 'Le client achète un produit et en reçoit un second identique gratuitement. Idéal pour augmenter le volume des ventes.' },
+    { value: 'percent_item', label: '💯 % sur produit', description: 'Réduction % sur produits spécifiques', tooltip: 'Réduction en pourcentage appliquée sur des produits sélectionnés. Ex: -15% sur tous les burgers.' },
+    { value: 'percent_category', label: '💯 % sur catégorie', description: 'Réduction % sur une catégorie', tooltip: 'Réduction en pourcentage sur tous les produits d\'une ou plusieurs catégories. Ex: -20% sur toutes les boissons.' },
+    { value: 'conditional_discount', label: '🔢 2e à -50%', description: '2ème article à -50%, 3 pour 2...', tooltip: 'Réduction progressive: le 2ème article à -50%, ou formules "3 pour le prix de 2". Encourage l\'achat multiple.' },
+    { value: 'threshold', label: '🎯 Seuil de panier', description: 'Dès X€ d\'achat', tooltip: 'Réduction activée quand le montant du panier atteint un seuil. Ex: -5€ dès 30€ d\'achat.' },
+    { value: 'shipping_free', label: '🚚 Livraison gratuite', description: 'Frais de livraison offerts', tooltip: 'Les frais de livraison sont offerts. Peut être conditionné à un montant minimum.' },
+    { value: 'new_customer', label: '✨ Nouveau client', description: '1ère commande uniquement', tooltip: 'Offre réservée aux nouveaux clients pour leur première commande. Excellent pour l\'acquisition.' },
+    { value: 'happy_hour', label: '🌅 Happy Hour', description: 'Promo sur horaires définis', tooltip: 'Réduction active uniquement pendant certaines heures de la journée. Ex: -15% de 15h à 18h.' },
+    { value: 'flash', label: '⚡ Offre Flash', description: 'Durée très limitée', tooltip: 'Promotion de très courte durée (quelques heures) pour créer un sentiment d\'urgence.' },
+    { value: 'seasonal', label: '🎉 Saisonnier', description: 'Événement spécial', tooltip: 'Promotion liée à un événement (Noël, St-Valentin, etc.) ou une saison spécifique.' },
+    { value: 'promo_code', label: '🔖 Code promo', description: 'Code manuel à saisir', tooltip: 'Le client doit saisir un code pour bénéficier de la réduction. Utile pour le marketing ciblé.' }
   ];
 
   const renderStep1 = () => (
