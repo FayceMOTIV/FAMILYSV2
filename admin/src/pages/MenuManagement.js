@@ -105,7 +105,7 @@ export const MenuManagement = () => {
   const filteredProducts = products.filter(product => {
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      const matchName = product.name.toLowerCase().includes(query);
+      const matchName = product.name?.toLowerCase().includes(query);
       const matchDesc = product.description?.toLowerCase().includes(query);
       if (!matchName && !matchDesc) return false;
     }
