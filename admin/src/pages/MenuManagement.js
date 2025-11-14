@@ -358,6 +358,17 @@ export const MenuManagement = () => {
     }
   };
 
+  const handleDeleteChoice = async (choiceId) => {
+    if (!window.confirm('Supprimer ce choix de la bibliothèque ?')) return;
+    try {
+      await axios.delete(`${API_URL}/api/v1/admin/choice-library/${choiceId}`);
+      loadChoiceLibrary();
+      alert('✅ Choix supprimé!');
+    } catch (error) {
+      alert('Erreur lors de la suppression');
+    }
+  };
+
   const tabs = [
     { id: 'products', label: '🍔 Produits', icon: Package, count: products.length },
     { id: 'categories', label: '📁 Catégories', icon: FolderOpen, count: categories.length },
