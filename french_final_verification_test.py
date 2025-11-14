@@ -173,9 +173,8 @@ class FrenchFinalVerificationTester:
                     "name": "Test Burger Sans Slug",
                     "description": "Test product created without slug field",
                     "base_price": 12.50,
-                    "category_id": first_product.get("category_id", "default-category"),
-                    "image_url": "https://example.com/test-burger.jpg",
-                    "is_available": True
+                    "category": first_product.get("category", "Burgers"),
+                    "image_url": "https://example.com/test-burger.jpg"
                 }
                 
                 async with self.session.post(
