@@ -29,9 +29,11 @@ class ProductOption(BaseModel):
 class OptionCreate(BaseModel):
     name: str
     description: Optional[str] = None
+    internal_comment: Optional[str] = None
     type: str = "single"
     is_required: bool = False
     max_choices: Optional[int] = None
+    allow_repeat: bool = False
     price: float = 0.0
     choices: List[OptionChoice] = []
 
