@@ -947,6 +947,44 @@ export const MenuManagement = () => {
             )}
           </div>
         )}
+
+        {/* BIBLIOTHÈQUE DE CHOIX */}
+        {activeTab === 'choice-library' && (
+          <div>
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-2xl font-bold">📚 Bibliothèque de Choix</h2>
+                <p className="text-sm text-gray-600 mt-1">Créez des choix réutilisables avec images pour vos options</p>
+              </div>
+              <Button 
+                onClick={() => {
+                  // TODO: Open choice creation modal
+                  alert('Création de choix - À implémenter');
+                }}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Nouveau choix
+              </Button>
+            </div>
+
+            <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 text-center">
+              <Package className="w-16 h-16 text-blue-400 mx-auto mb-4" />
+              <h3 className="text-lg font-bold text-blue-900 mb-2">Bibliothèque de Choix</h3>
+              <p className="text-sm text-blue-700 mb-4">
+                Cette fonctionnalité vous permet de créer des choix réutilisables (avec images) que vous pourrez utiliser dans vos options.
+              </p>
+              <p className="text-xs text-blue-600">
+                Exemple : Créez "Chantilly" avec son image, puis utilisez-le dans plusieurs options différentes.
+              </p>
+              <div className="mt-6">
+                <p className="text-sm font-semibold text-blue-900 mb-2">🚀 Fonctionnalité à venir</p>
+                <p className="text-xs text-blue-600">
+                  Pour l'instant, ajoutez vos choix directement dans chaque option avec la possibilité d'ajouter des images.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Modals */}
