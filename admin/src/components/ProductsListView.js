@@ -62,7 +62,7 @@ export const ProductsListView = ({ products, categories, onEdit, onDelete, onDup
                 <span className="text-sm text-gray-700">{getCategoryName(product.category)}</span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <span className="text-sm font-semibold text-gray-900">{product.price.toFixed(2)}€</span>
+                <span className="text-sm font-semibold text-gray-900">{((product.price || product.base_price || product.basePrice || 0)).toFixed(2)}€</span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <button onClick={() => onStockClick(product.id)} className="focus:outline-none">
