@@ -706,6 +706,21 @@ test_plan:
         - working: true
         - agent: "testing"
         - comment: "✅ SETTINGS API NOUVEAUX CHAMPS WORKING PERFECTLY: Comprehensive testing completed on new Settings API features. RESULTS: 1) ✅ GET /api/v1/admin/settings: All 3 new fields present and properly structured - order_hours (dict with Monday-Sunday schedule), social_media (dict with Facebook, Instagram, Twitter, TikTok links), service_links (dict with delivery, reservation, loyalty, support links), 2) ✅ PUT /api/v1/admin/settings: Successfully updates all new fields and returns complete updated settings object (endpoint returns full object, not success flag), 3) ✅ Field Structure Validation: order_hours contains proper day/time structure, social_media contains platform URLs, service_links contains service URLs, 4) ✅ Data Persistence: All updates persist correctly in MongoDB and are returned in subsequent GET requests. New Settings API fields fully operational for Family's restaurant configuration management."
+
+  - task: "French Review - Regression Test After Modifications"
+    implemented: true
+    working: true
+    file: "/app/french_review_regression_test.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Quick 5-minute regression test as requested in French review. Testing critical endpoints: 1) Settings API - nouveaux champs, 2) Products & Categories - no slug regression, 3) Orders & Payment - correct payment modes, 4) Promotions V2 - no regression. Backend URL: https://admin-kitchen.preview.emergentagent.com"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ FRENCH REVIEW REGRESSION TEST COMPLETED - 100% SUCCESS: All 4 critical endpoints tested successfully with no regression detected. RESULTS: 1) ✅ Settings API - Nouveaux Champs: All new fields (order_hours, social_media, service_links) present and properly structured, 2) ✅ Products & Categories - No Slug Regression: GET endpoints working (16 products, 6 categories), POST creation without slug successful after fixing backend code that still referenced removed slug field, 3) ✅ Orders & Payment - Payment Modes: 50 orders retrieved with correct payment methods (cash, card, mobile, online, check) and statuses (pending, paid), 4) ✅ Promotions V2 - No Regression: Endpoint functional with 2 promotions found. CRITICAL FIX APPLIED: Fixed products.py line 58 where code was still trying to access removed 'slug' field, replaced with name+category uniqueness check. All backend modifications verified stable with no regression detected."
 agent_communication:
     - agent: "testing"
     - message: "Starting comprehensive backend API testing for ALL admin endpoints. Testing Categories, Products, Options, Orders, Notifications, Promos, Upload, and AI Marketing with full CRUD operations on https://admin-kitchen.preview.emergentagent.com"
