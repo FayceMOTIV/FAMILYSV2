@@ -233,26 +233,27 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
             </Button>
           </div>
 
-          <div className="space-y-2 max-h-64 overflow-y-auto">
+          <div className="space-y-3 max-h-96 overflow-y-auto">
             {formData.choices.map((choice, index) => (
-              <div key={index} className="flex gap-2">
-                <input
-                  type="text"
-                  value={choice.name}
-                  onChange={(e) => handleChoiceChange(index, 'name', e.target.value)}
-                  className="flex-1 px-3 py-2 border rounded-lg"
-                  placeholder="Nom du choix"
-                  required
-                />
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={choice.price}
-                  onChange={(e) => handleChoiceChange(index, 'price', e.target.value)}
-                  className="w-24 px-3 py-2 border rounded-lg"
-                  placeholder="Prix"
-                />
+              <div key={index} className="border rounded-lg p-3 bg-gray-50">
+                <div className="flex gap-2 mb-2">
+                  <input
+                    type="text"
+                    value={choice.name}
+                    onChange={(e) => handleChoiceChange(index, 'name', e.target.value)}
+                    className="flex-1 px-3 py-2 border rounded-lg"
+                    placeholder="Nom du choix"
+                    required
+                  />
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={choice.price}
+                    onChange={(e) => handleChoiceChange(index, 'price', e.target.value)}
+                    className="w-24 px-3 py-2 border rounded-lg"
+                    placeholder="Prix"
+                  />
                 {formData.choices.length > 1 && (
                   <Button
                     type="button"
