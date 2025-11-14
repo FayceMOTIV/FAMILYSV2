@@ -406,7 +406,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Settings API - Nouveaux Champs"
+    - "French Final Verification - Complete Feature Testing"
   stuck_tasks:
     - "AI Sales Analysis"
     - "AI Promo Suggestion"
@@ -424,6 +424,7 @@ test_plan:
     - "Order Cancellation with Reason"
     - "Menu Management V2 Frontend Testing"
     - "Settings API - Nouveaux Champs"
+    - "French Final Verification - Complete Feature Testing"
 
   - task: "Admin Categories CRUD"
     implemented: true
