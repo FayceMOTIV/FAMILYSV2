@@ -18,6 +18,8 @@ export const MenuManagement = () => {
   const [activeTab, setActiveTab] = useState('products');
   const [viewMode, setViewMode] = useState('grid'); // 'grid' ou 'list'
   const [optionsViewMode, setOptionsViewMode] = useState('grid'); // 'grid' ou 'list' pour options
+  const [draggedCategoryIndex, setDraggedCategoryIndex] = useState(null);
+  const [draggedProductIndex, setDraggedProductIndex] = useState(null);
   
   // Products state
   const [products, setProducts] = useState([]);
