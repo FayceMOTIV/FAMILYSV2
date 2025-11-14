@@ -1087,6 +1087,16 @@ export const MenuManagement = () => {
         option={editingOption}
         onSuccess={loadOptions}
       />
+
+      <ChoiceLibraryModal
+        isOpen={showChoiceModal}
+        onClose={() => {
+          setShowChoiceModal(false);
+          setEditingChoice(null);
+        }}
+        choice={editingChoice}
+        onSuccess={loadChoiceLibrary}
+      />
     </div>
   );
 };
