@@ -145,7 +145,6 @@ export const MenuManagement = () => {
       const duplicatedProduct = {
         ...product,
         name: `${product.name} (copie)`,
-        slug: `${product.slug}-copie-${Date.now()}`,
       };
       delete duplicatedProduct.id;
       await productsAPI.create(duplicatedProduct);
