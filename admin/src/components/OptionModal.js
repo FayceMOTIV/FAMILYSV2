@@ -257,15 +257,9 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
 
         {/* Choix */}
         <div>
-          <div className="flex items-center justify-between mb-3">
-            <label className="block text-sm font-medium">Choix disponibles *</label>
-            <Button type="button" size="sm" onClick={handleAddChoice}>
-              <Plus className="w-4 h-4 mr-1" />
-              Ajouter un choix
-            </Button>
-          </div>
+          <label className="block text-sm font-medium mb-3">Choix disponibles *</label>
 
-          <div className="space-y-3 max-h-96 overflow-y-auto">
+          <div className="space-y-3 max-h-96 overflow-y-auto mb-3">
             {formData.choices.map((choice, index) => (
               <div key={index} className="border rounded-lg p-3 bg-gray-50">
                 <div className="flex gap-2 mb-2">
