@@ -666,7 +666,21 @@ export const MenuManagement = () => {
                       <h4 className="font-bold text-lg">{category.name}</h4>
                       <span className="text-xs bg-gray-100 px-2 py-1 rounded">#{index + 1}</span>
                     </div>
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-2">{category.description}</p>
+                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">{category.description}</p>
+                    
+                    {/* View products button */}
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => {
+                        setActiveTab('products');
+                        setFilterCategory(category.id);
+                      }}
+                      className="w-full mb-2"
+                    >
+                      <Package className="w-4 h-4 mr-1" />
+                      Voir les produits
+                    </Button>
                     
                     {/* Reorder buttons */}
                     <div className="flex space-x-2 mb-2">
