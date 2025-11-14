@@ -65,6 +65,9 @@ export const Customers = () => {
                     {customer.phone && (
                       <p className="text-xs text-gray-500 mt-1">📱 {customer.phone}</p>
                     )}
+                    {customer.address && (
+                      <p className="text-xs text-gray-500 mt-1">📍 {customer.address}</p>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
