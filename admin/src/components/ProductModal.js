@@ -18,7 +18,6 @@ export const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
   
   const [formData, setFormData] = useState({
     name: '',
-    slug: '',
     category: '',
     description: '',
     base_price: '',
