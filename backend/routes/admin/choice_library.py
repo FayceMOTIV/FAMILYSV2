@@ -49,7 +49,8 @@ async def create_choice(choice: Choice):
     
     await db.choice_library.insert_one(choice_data)
     
-    return {"success": True, "choice": choice_data}
+    # Return only the data we created (without MongoDB ObjectId)
+    return {"success": True, "id": choice_data["id"], "choice": choice_data}
 
 @router.put("/{choice_id}")
 async def update_choice(choice_id: str, choice: ChoiceUpdate):
