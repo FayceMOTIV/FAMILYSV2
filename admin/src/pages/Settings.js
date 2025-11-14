@@ -2,11 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { Header } from '../components/Header';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/Card';
 import { Button } from '../components/Button';
-import { Input, Label, Select } from '../components/Input';
-import { Save, Clock, Store, Palette, CreditCard, Percent } from 'lucide-react';
+import { Input, Label, Select, Textarea } from '../components/Input';
+import { Save, Clock, Store, Palette, CreditCard, Percent, Share2, Calendar, Link as LinkIcon, X } from 'lucide-react';
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://admin-kitchen.preview.emergentagent.com';
+
+const DAYS = [
+  { key: 'monday', label: 'Lundi' },
+  { key: 'tuesday', label: 'Mardi' },
+  { key: 'wednesday', label: 'Mercredi' },
+  { key: 'thursday', label: 'Jeudi' },
+  { key: 'friday', label: 'Vendredi' },
+  { key: 'saturday', label: 'Samedi' },
+  { key: 'sunday', label: 'Dimanche' }
+];
 
 export const Settings = () => {
   const [settings, setSettings] = useState(null);
@@ -20,10 +30,15 @@ export const Settings = () => {
   const loadSettings = async () => {
     try {
       const response = await axios.get(`${API_URL}/api/v1/admin/settings`);
-      setSettings(response.data);
+      setSettings({
+        ...response.data,
+        social_media: response.data.social_media || {},
+        service_links: response.data.service_links || {},
+        opening_hours: response.data.opening_hours || {},
+        order_hours: response.data.order_hours || {}
+      });
     } catch (error) {
       console.error('Error loading settings:', error);
-      // Set default settings if none exist
       setSettings({
         name: "Family's Bourg-en-Bresse",
         email: 'contact@familys.app',
@@ -36,8 +51,12 @@ export const Settings = () => {
         enable_delivery: true,
         enable_takeaway: true,
         enable_onsite: true,
-        enable_reservations: true,
-        loyalty_percentage: 5.0
+        enable_reservations: false,
+        loyalty_percentage: 5.0,
+        social_media: {},
+        service_links: {},
+        opening_hours: {},
+        order_hours: {}
       });
     } finally {
       setLoading(false);
@@ -55,6 +74,40 @@ export const Settings = () => {
     } finally {
       setSaving(false);
     }
+  };
+
+  const updateSocialMedia = (platform, value) => {
+    setSettings({
+      ...settings,
+      social_media: {
+        ...settings.social_media,
+        [platform]: value
+      }
+    });
+  };
+
+  const updateServiceLinks = (service, value) => {
+    setSettings({
+      ...settings,
+      service_links: {
+        ...settings.service_links,
+        [service]: value
+      }
+    });
+  };
+
+  const updateHours = (day, type, field, value) => {
+    const hoursField = type === 'opening' ? 'opening_hours' : 'order_hours';
+    setSettings({
+      ...settings,
+      [hoursField]: {
+        ...settings[hoursField],
+        [day]: {
+          ...settings[hoursField][day],
+          [field]: value
+        }
+      }
+    });
   };
 
   if (loading) {
@@ -130,6 +183,184 @@ export const Settings = () => {
           </CardContent>
         </Card>
 
+        {/* Horaires */}
+        <Card>
+          <CardHeader className="bg-gradient-to-r from-indigo-50 to-blue-50">
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="w-5 h-5" />
+              Horaires du restaurant
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div>
+              <h3 className="font-semibold text-lg mb-3">🏪 Horaires d'ouverture (affichés dans l'app)</h3>
+              <div className="space-y-2">
+                {DAYS.map(day => (
+                  <div key={day.key} className="grid grid-cols-4 gap-2 items-center">
+                    <label className="font-medium text-sm">{day.label}</label>
+                    <Input
+                      type="time"
+                      placeholder="Ouverture"
+                      value={settings.opening_hours[day.key]?.open || ''}
+                      onChange={(e) => updateHours(day.key, 'opening', 'open', e.target.value)}
+                    />
+                    <Input
+                      type="time"
+                      placeholder="Fermeture"
+                      value={settings.opening_hours[day.key]?.close || ''}
+                      onChange={(e) => updateHours(day.key, 'opening', 'close', e.target.value)}
+                    />
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={settings.opening_hours[day.key]?.closed || false}
+                        onChange={(e) => updateHours(day.key, 'opening', 'closed', e.target.checked)}
+                        className="w-4 h-4"
+                      />
+                      <span className="text-sm text-gray-600">Fermé</span>
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="border-t pt-6">
+              <h3 className="font-semibold text-lg mb-3">📱 Horaires de commande (différents si nécessaire)</h3>
+              <p className="text-sm text-gray-600 mb-3">Les clients ne pourront commander que pendant ces horaires</p>
+              <div className="space-y-2">
+                {DAYS.map(day => (
+                  <div key={day.key} className="grid grid-cols-4 gap-2 items-center">
+                    <label className="font-medium text-sm">{day.label}</label>
+                    <Input
+                      type="time"
+                      placeholder="Début"
+                      value={settings.order_hours[day.key]?.start || ''}
+                      onChange={(e) => updateHours(day.key, 'order', 'start', e.target.value)}
+                    />
+                    <Input
+                      type="time"
+                      placeholder="Fin"
+                      value={settings.order_hours[day.key]?.end || ''}
+                      onChange={(e) => updateHours(day.key, 'order', 'end', e.target.value)}
+                    />
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={settings.order_hours[day.key]?.disabled || false}
+                        onChange={(e) => updateHours(day.key, 'order', 'disabled', e.target.checked)}
+                        className="w-4 h-4"
+                      />
+                      <span className="text-sm text-gray-600">Désactivé</span>
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Réseaux sociaux */}
+        <Card>
+          <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
+            <CardTitle className="flex items-center gap-2">
+              <Share2 className="w-5 h-5" />
+              Réseaux sociaux
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-gray-600">Ces liens apparaîtront sous forme d'icônes cliquables dans l'application mobile</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="facebook">🔵 Facebook</Label>
+                <Input
+                  id="facebook"
+                  value={settings.social_media?.facebook || ''}
+                  onChange={(e) => updateSocialMedia('facebook', e.target.value)}
+                  placeholder="https://facebook.com/familysbourg"
+                />
+              </div>
+              <div>
+                <Label htmlFor="instagram">📷 Instagram</Label>
+                <Input
+                  id="instagram"
+                  value={settings.social_media?.instagram || ''}
+                  onChange={(e) => updateSocialMedia('instagram', e.target.value)}
+                  placeholder="https://instagram.com/familysbourg"
+                />
+              </div>
+              <div>
+                <Label htmlFor="twitter">🐦 Twitter / X</Label>
+                <Input
+                  id="twitter"
+                  value={settings.social_media?.twitter || ''}
+                  onChange={(e) => updateSocialMedia('twitter', e.target.value)}
+                  placeholder="https://twitter.com/familysbourg"
+                />
+              </div>
+              <div>
+                <Label htmlFor="tiktok">🎵 TikTok</Label>
+                <Input
+                  id="tiktok"
+                  value={settings.social_media?.tiktok || ''}
+                  onChange={(e) => updateSocialMedia('tiktok', e.target.value)}
+                  placeholder="https://tiktok.com/@familysbourg"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Liens services */}
+        <Card>
+          <CardHeader className="bg-gradient-to-r from-green-50 to-teal-50">
+            <CardTitle className="flex items-center gap-2">
+              <LinkIcon className="w-5 h-5" />
+              Liens des services externes
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-gray-600">Gérez les liens de vos services de paiement et autres intégrations</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="stripe">💳 Stripe</Label>
+                <Input
+                  id="stripe"
+                  value={settings.service_links?.stripe || ''}
+                  onChange={(e) => updateServiceLinks('stripe', e.target.value)}
+                  placeholder="Dashboard Stripe URL"
+                />
+              </div>
+              <div>
+                <Label htmlFor="paypal">🅿️ PayPal</Label>
+                <Input
+                  id="paypal"
+                  value={settings.service_links?.paypal || ''}
+                  onChange={(e) => updateServiceLinks('paypal', e.target.value)}
+                  placeholder="Dashboard PayPal URL"
+                />
+              </div>
+              <div>
+                <Label htmlFor="analytics">📊 Analytics</Label>
+                <Input
+                  id="analytics"
+                  value={settings.service_links?.analytics || ''}
+                  onChange={(e) => updateServiceLinks('analytics', e.target.value)}
+                  placeholder="Google Analytics URL"
+                />
+              </div>
+              <div>
+                <Label htmlFor="delivery">🚚 Service de livraison</Label>
+                <Input
+                  id="delivery"
+                  value={settings.service_links?.delivery || ''}
+                  onChange={(e) => updateServiceLinks('delivery', e.target.value)}
+                  placeholder="URL du service de livraison"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Paramètres de commande */}
         <Card>
           <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50">
@@ -140,11 +371,8 @@ export const Settings = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              {/* Temps de préparation */}
               <div>
-                <Label htmlFor="preparation_time">
-                  ⏱️ Temps de préparation (créneaux)
-                </Label>
+                <Label htmlFor="preparation_time">⏱️ Temps de préparation (créneaux)</Label>
                 <Select
                   id="preparation_time"
                   value={settings.preparation_time_minutes || 15}
@@ -167,11 +395,8 @@ export const Settings = () => {
                 </p>
               </div>
 
-              {/* Délai de commande */}
               <div>
-                <Label htmlFor="cutoff_time">
-                  🚫 Délai minimum de commande
-                </Label>
+                <Label htmlFor="cutoff_time">🚫 Délai minimum de commande</Label>
                 <Select
                   id="cutoff_time"
                   value={settings.order_cutoff_minutes || 20}
@@ -193,10 +418,9 @@ export const Settings = () => {
               </div>
             </div>
 
-            {/* Types de commande activés */}
             <div>
               <Label>Types de commande activés</Label>
-              <div className="grid grid-cols-3 gap-4 mt-2">
+              <div className="grid grid-cols-2 gap-4 mt-2">
                 <label className="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
                   <input
                     type="checkbox"
@@ -223,6 +447,15 @@ export const Settings = () => {
                     className="w-4 h-4"
                   />
                   <span className="text-sm font-medium">🍽️ Sur place</span>
+                </label>
+                <label className="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                  <input
+                    type="checkbox"
+                    checked={settings.enable_reservations}
+                    onChange={(e) => setSettings({ ...settings, enable_reservations: e.target.checked })}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm font-medium">📅 Réservations</span>
                 </label>
               </div>
             </div>
@@ -312,11 +545,11 @@ export const Settings = () => {
         </Card>
 
         {/* Bouton Enregistrer */}
-        <div className="flex justify-end">
+        <div className="flex justify-end sticky bottom-4">
           <Button
             onClick={handleSave}
             disabled={saving}
-            className="px-8 py-3 text-lg font-bold"
+            className="px-8 py-3 text-lg font-bold shadow-lg"
           >
             <Save className="w-5 h-5 mr-2" />
             {saving ? 'Enregistrement...' : 'Enregistrer les paramètres'}
