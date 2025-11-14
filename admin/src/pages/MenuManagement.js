@@ -101,6 +101,32 @@ export const MenuManagement = () => {
     }
   };
 
+  // === FILTRAGE DES PRODUITS ===
+  const filteredProducts = products.filter(product => {
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const matchName = product.name.toLowerCase().includes(query);
+      const matchDesc = product.description?.toLowerCase().includes(query);
+      if (!matchName && !matchDesc) return false;
+    }
+    if (filterPromo && !product.isPromo) return false;
+    if (filterCategory !== 'all' && product.category !== filterCategory) return false;
+    if (filterStock === 'available' && product.is_out_of_stock) return false;
+    if (filterStock === 'out_of_stock' && !product.is_out_of_stock) return false;
+    if (showOutOfStockOnly && !product.is_out_of_stock) return false;
+    return true;
+  });
+
+  const resetFilters = () => {
+    setSearchQuery('');
+    setFilterPromo(false);
+    setFilterCategory('all');
+    setFilterStock('all');
+    setShowOutOfStockOnly(false);
+  };
+
+  const hasActiveFilters = searchQuery || filterPromo || filterCategory !== 'all' || filterStock !== 'all' || showOutOfStockOnly;
+
   const handleDeleteProduct = async (id) => {
     if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) return;
     try {
