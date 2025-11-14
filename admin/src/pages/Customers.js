@@ -47,7 +47,14 @@ export const Customers = () => {
         ) : (
           <div className="space-y-4">
             {customers.map((customer) => (
-              <Card key={customer.id} className="flex items-center justify-between p-4">
+              <Card 
+                key={customer.id} 
+                className="flex items-center justify-between p-4 hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => {
+                  setSelectedCustomer(customer);
+                  setShowDetailModal(true);
+                }}
+              >
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-xl">
                     {customer.name?.charAt(0)?.toUpperCase() || '?'}
@@ -60,22 +67,32 @@ export const Customers = () => {
                     )}
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-2xl font-black text-primary">
-                    {(customer.total_spent || 0).toFixed(2)}€
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {customer.total_orders || 0} commandes
-                  </p>
-                  <p className="text-xs text-green-600 font-semibold mt-1">
-                    💰 {(customer.loyalty_points || 0).toFixed(2)}€ fidélité
-                  </p>
+                <div className="flex items-center gap-4">
+                  <div className="text-right">
+                    <p className="text-2xl font-black text-primary">
+                      {(customer.total_spent || 0).toFixed(2)}€
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {customer.total_orders || 0} commandes
+                    </p>
+                    <p className="text-xs text-green-600 font-semibold mt-1">
+                      💰 {(customer.loyalty_points || 0).toFixed(2)}€ fidélité
+                    </p>
+                  </div>
+                  <Eye className="w-5 h-5 text-gray-400" />
                 </div>
               </Card>
             ))}
           </div>
         )}
       </div>
+
+      {/* Modal de détails */}
+      <CustomerDetailModal
+        isOpen={showDetailModal}
+        onClose={() => setShowDetailModal(false)}
+        customer={selectedCustomer}
+      />
     </div>
   );
 };
