@@ -22,20 +22,43 @@ import { useAuth } from '../contexts/AuthContext';
 import { cn } from '../utils/cn';
 
 const menuItems = [
+  // 1. Tableau de bord - Vue d'ensemble
   { name: 'Tableau de bord', path: '/admin', icon: LayoutDashboard, exact: true },
-  { name: 'Assistant IA', path: '/admin/ai', icon: Sparkles },
+  
+  // 2. Commandes - Le plus utilisé quotidiennement
+  { name: 'Commandes', path: '/admin/orders', icon: ShoppingCart },
+  
+  // 3. Gestion du Menu - Produits, catégories, stock
+  { name: 'Gestion du Menu', path: '/admin/menu', icon: Menu, highlight: true },
+  
+  // 4. Promotions V2 - Nouveau moteur de promotions
+  { name: '🎯 Promotions', path: '/admin/promotions', icon: Tag, highlight: true },
+  
+  // 5. Notifications - Communication clients
+  { name: 'Notifications', path: '/admin/notifications', icon: Bell },
+  
+  // 6. Chiffre d'Affaires - Analytics
+  { name: 'Chiffre d\'Affaires', path: '/admin/revenue', icon: DollarSign },
+  
+  // 7. IA Marketing - Campagnes intelligentes
   { name: '🤖 IA Marketing', path: '/admin/ai-marketing', icon: Zap, section: true },
   { name: 'Campagnes proposées', path: '/admin/ai-marketing/campaigns', icon: Zap, indent: true },
   { name: 'Historique & Résultats', path: '/admin/ai-marketing/history', icon: History, indent: true },
   { name: 'Paramètres IA', path: '/admin/ai-marketing/settings', icon: Sliders, indent: true },
-  { name: 'Gestion du Menu', path: '/admin/menu', icon: Menu, highlight: true },
-  { name: 'Commandes', path: '/admin/orders', icon: ShoppingCart },
-  { name: 'Chiffre d\'Affaires', path: '/admin/revenue', icon: DollarSign },
-  { name: 'Promos (ancien)', path: '/admin/promos', icon: Tag },
-  { name: '🎯 Promotions', path: '/admin/promotions', icon: Tag, highlight: true },
+  
+  // 8. Clients - Gestion clientèle
   { name: 'Clients', path: '/admin/customers', icon: Users },
-  { name: 'Notifications', path: '/admin/notifications', icon: Bell },
+  
+  // 9. Assistant IA - Aide contextuelle
+  { name: 'Assistant IA', path: '/admin/ai', icon: Sparkles },
+  
+  // 10. Réservations - Moins fréquent
   { name: 'Réservations', path: '/admin/reservations', icon: Calendar },
+  
+  // 11. Promos (ancien) - Déprécié
+  { name: 'Promos (ancien)', path: '/admin/promos', icon: Tag },
+  
+  // 12. Paramètres - Configuration
   { name: 'Paramètres', path: '/admin/settings', icon: Settings },
 ];
 
