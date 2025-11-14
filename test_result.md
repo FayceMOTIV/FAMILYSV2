@@ -660,6 +660,20 @@ test_plan:
         - agent: "testing"
         - comment: "✅ ORDER STATUS TRANSITION SYSTEM FULLY CORRECTED: Comprehensive re-testing confirms all critical bugs have been fixed. VALIDATION RESULTS: 1) ✅ PAYMENT VALIDATION WORKING: ready→completed correctly blocked for unpaid orders with message 'PAIEMENT REQUIS', after payment recording the transition works correctly, 2) ✅ STATUS TRANSITION VALIDATION WORKING: Invalid transitions properly blocked (ready→new blocked with 'Transition non autorisée' message, new→completed blocked, invalid statuses rejected), 3) ✅ BUSINESS LOGIC IMPLEMENTED: Lines 99-134 in orders.py now contain comprehensive validation with valid_transitions dictionary defining allowed state changes, payment validation for completion, proper error messages, 4) ✅ SECURITY FIXED: Status changes now follow strict business rules - takeaway flow (new→in_preparation→ready→completed), delivery flow includes out_for_delivery state, cancellation allowed from any non-final state, 5) ✅ ERROR MESSAGES EXPLICIT: All error responses include detailed messages with 'Transition non autorisée', 'Statut invalide', 'PAIEMENT REQUIS', and list of valid transitions/statuses. COMPREHENSIVE TESTING PERFORMED: Valid transitions (ready→completed for paid orders ✅, out_for_delivery→completed ✅), Invalid transitions blocked (ready→new ❌, invalid_status ❌), Payment validation (unpaid completion blocked ❌, paid completion allowed ✅), Cancellation from any state (ready→canceled ✅), Error message format validation ✅. ALL FRENCH REVIEW REQUIREMENTS MET: Transitions valides fonctionnent, transitions invalides bloquées avec erreur 400, validation paiement opérationnelle, messages d'erreur explicites, sécurité du workflow garantie. Order management system is now PRODUCTION READY with proper business logic enforcement."
 
+  - task: "French Review - Morning Changes Verification"
+    implemented: true
+    working: true
+    file: "/app/final_french_review_test.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Comprehensive testing of all morning changes as specified in French review request: 1) Order status transitions, 2) Choice-library CRUD endpoint, 3) Existing endpoints regression testing, 4) Promotions V2 no regression, 5) AI Marketing no regression"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ FRENCH REVIEW COMPLETE - 100% SUCCESS: All 6 test categories passed (100% success rate). 1) SYSTÈME DE COMMANDES: Order status transitions working correctly, payment validation blocking unpaid completions, payment recording flow functional ✅, 2) CHOICE-LIBRARY ENDPOINT: Complete CRUD operations working after fixing MongoDB ObjectId serialization issue ✅, 3) EXISTING ENDPOINTS: Products, Categories (with reordering), Options, Stock Management (all 4 statuses) - no regression detected ✅, 4) PROMOTIONS V2: No regression, simulation engine functional ✅, 5) AI MARKETING: No regression, campaigns and stats endpoints working ✅. All French review criteria met: 30+ orders retrieved, status transitions validated/blocked correctly, payment validation active, new choice-library endpoint fully functional, no regression on existing functionality. Family's Restaurant backend system is PRODUCTION READY."
 agent_communication:
     - agent: "testing"
     - message: "Starting comprehensive backend API testing for ALL admin endpoints. Testing Categories, Products, Options, Orders, Notifications, Promos, Upload, and AI Marketing with full CRUD operations on https://resto-admin-11.preview.emergentagent.com"
