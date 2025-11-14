@@ -374,10 +374,18 @@ export const MenuManagement = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {products
-                .filter(product => !showOutOfStockOnly || product.is_out_of_stock)
-                .map((product) => {
+            {viewMode === 'list' ? (
+              <ProductsListView 
+                products={filteredProducts}
+                categories={categories}
+                onEdit={(p) => { setEditingProduct(p); setShowProductModal(true); }}
+                onDelete={handleDeleteProduct}
+                onDuplicate={handleDuplicateProduct}
+                onStockClick={(id) => setOpenStockMenu(openStockMenu === id ? null : id)}
+              />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {filteredProducts.map((product) => {
                 const price = product.base_price || product.basePrice || 0;
                 let imageUrl = product.image_url || product.image;
                 // Si l'URL est relative, construire l'URL complète
