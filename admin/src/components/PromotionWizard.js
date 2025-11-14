@@ -446,64 +446,119 @@ export const PromotionWizard = ({ isOpen, onClose, promotion, onSuccess }) => {
     </div>
   );
 
-  const renderStep3 = () => (
-    <div className="space-y-4">
-      <h3 className="text-lg font-bold mb-4">Étape 3: Affichage & Activation</h3>
-      
-      {/* Badge */}
-      <div>
-        <label className="block text-sm font-medium mb-2">Texte badge (affiché sur produits)</label>
-        <input
-          type="text"
-          value={formData.badge_text}
-          onChange={(e) => setFormData({...formData, badge_text: e.target.value})}
-          className="w-full px-3 py-2 border rounded-lg"
-          placeholder="Ex: -15% 🔥"
-        />
-      </div>
+  const renderStep3 = () => {
+    // Récupérer les noms des produits/catégories sélectionnés
+    const selectedProductNames = formData.eligible_products
+      .map(id => products.find(p => p.id === id)?.name)
+      .filter(Boolean);
+    
+    const selectedCategoryNames = formData.eligible_categories
+      .map(id => categories.find(c => c.id === id)?.name)
+      .filter(Boolean);
+    
+    return (
+      <div className="space-y-4">
+        <h3 className="text-lg font-bold mb-4">Étape 3: Affichage & Activation</h3>
+        
+        {/* Badge */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Texte badge (affiché sur produits)</label>
+          <input
+            type="text"
+            value={formData.badge_text}
+            onChange={(e) => setFormData({...formData, badge_text: e.target.value})}
+            className="w-full px-3 py-2 border rounded-lg"
+            placeholder="Ex: -15% 🔥"
+          />
+        </div>
 
-      {/* Couleur badge */}
-      <div>
-        <label className="block text-sm font-medium mb-2">Couleur du badge</label>
-        <input
-          type="color"
-          value={formData.badge_color}
-          onChange={(e) => setFormData({...formData, badge_color: e.target.value})}
-          className="w-20 h-10 border rounded-lg"
-        />
-      </div>
+        {/* Couleur badge */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Couleur du badge</label>
+          <input
+            type="color"
+            value={formData.badge_color}
+            onChange={(e) => setFormData({...formData, badge_color: e.target.value})}
+            className="w-20 h-10 border rounded-lg"
+          />
+        </div>
 
-      {/* Statut */}
-      <div>
-        <label className="block text-sm font-medium mb-2">Statut</label>
-        <select
-          value={formData.status}
-          onChange={(e) => setFormData({...formData, status: e.target.value})}
-          className="w-full px-3 py-2 border rounded-lg"
-        >
-          <option value="draft">🟡 Brouillon</option>
-          <option value="active">🟢 Active</option>
-          <option value="paused">🟠 Pause</option>
-        </select>
-      </div>
+        {/* Statut */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Statut</label>
+          <select
+            value={formData.status}
+            onChange={(e) => setFormData({...formData, status: e.target.value})}
+            className="w-full px-3 py-2 border rounded-lg"
+          >
+            <option value="draft">🟡 Brouillon</option>
+            <option value="active">🟢 Active</option>
+            <option value="paused">🟠 Pause</option>
+          </select>
+        </div>
 
-      {/* Aperçu */}
-      <div className="p-4 border-2 border-dashed rounded-lg bg-gray-50">
-        <h4 className="font-bold mb-2">📋 Aperçu</h4>
-        <div className="space-y-2 text-sm">
-          <p><strong>Nom:</strong> {formData.name}</p>
-          <p><strong>Type:</strong> {getPromoTypeOptions().find(o => o.value === formData.type)?.label}</p>
-          <p><strong>Remise:</strong> {formData.discount_value}{formData.discount_type === 'percentage' ? '%' : '€'}</p>
-          <p><strong>Période:</strong> {formData.start_date} → {formData.end_date}</p>
-          {formData.badge_text && (
-            <div className="inline-block px-3 py-1 rounded font-bold text-white" style={{backgroundColor: formData.badge_color}}>
-              {formData.badge_text}
-            </div>
-          )}
+        {/* Aperçu amélioré */}
+        <div className="p-4 border-2 border-dashed rounded-lg bg-gradient-to-br from-blue-50 to-purple-50">
+          <h4 className="font-bold mb-3 text-lg">📋 Aperçu de la promotion</h4>
+          <div className="space-y-2 text-sm">
+            <p><strong>Nom:</strong> {formData.name || '(Non défini)'}</p>
+            <p><strong>Type:</strong> {getPromoTypeOptions().find(o => o.value === formData.type)?.label}</p>
+            
+            {!['bogo', 'shipping_free'].includes(formData.type) && (
+              <p><strong>Remise:</strong> {formData.discount_value}{formData.discount_type === 'percentage' ? '%' : '€'}</p>
+            )}
+            
+            <p><strong>Période:</strong> {formData.start_date} → {formData.end_date}</p>
+            
+            {formData.start_time && formData.end_time && (
+              <p><strong>Horaires:</strong> {formData.start_time} - {formData.end_time}</p>
+            )}
+            
+            {/* Produits éligibles */}
+            {formData.all_products && (
+              <p><strong>Produits:</strong> <span className="text-green-600 font-semibold">🍽️ Toute la carte</span></p>
+            )}
+            
+            {!formData.all_products && selectedProductNames.length > 0 && (
+              <div>
+                <strong>Produits éligibles:</strong>
+                <div className="mt-1 flex flex-wrap gap-1">
+                  {selectedProductNames.map((name, i) => (
+                    <span key={i} className="inline-block px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">
+                      {name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Catégories éligibles */}
+            {selectedCategoryNames.length > 0 && (
+              <div>
+                <strong>Catégories éligibles:</strong>
+                <div className="mt-1 flex flex-wrap gap-1">
+                  {selectedCategoryNames.map((name, i) => (
+                    <span key={i} className="inline-block px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-medium">
+                      📂 {name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {formData.badge_text && (
+              <div className="mt-3">
+                <strong>Badge:</strong>
+                <div className="inline-block px-3 py-1 rounded font-bold text-white ml-2" style={{backgroundColor: formData.badge_color}}>
+                  {formData.badge_text}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
