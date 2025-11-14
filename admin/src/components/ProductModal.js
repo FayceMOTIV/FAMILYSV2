@@ -472,6 +472,45 @@ export const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
                 </p>
               </div>
             </label>
+
+            {/* Boutons rapides rupture */}
+            {formData.is_out_of_stock && (
+              <div className="ml-7 mt-2 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setFormData({...formData, stock_status: '2h'})}
+                  className={`px-3 py-1 text-xs rounded-full font-medium border-2 transition-colors ${
+                    formData.stock_status === '2h' 
+                      ? 'bg-orange-100 border-orange-500 text-orange-700' 
+                      : 'bg-white border-gray-300 text-gray-600 hover:border-orange-400'
+                  }`}
+                >
+                  ⏱ Rupture 2h
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData({...formData, stock_status: 'today'})}
+                  className={`px-3 py-1 text-xs rounded-full font-medium border-2 transition-colors ${
+                    formData.stock_status === 'today' 
+                      ? 'bg-red-100 border-red-500 text-red-700' 
+                      : 'bg-white border-gray-300 text-gray-600 hover:border-red-400'
+                  }`}
+                >
+                  📅 Rupture journée
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData({...formData, stock_status: 'indefinite'})}
+                  className={`px-3 py-1 text-xs rounded-full font-medium border-2 transition-colors ${
+                    formData.stock_status === 'indefinite' 
+                      ? 'bg-gray-100 border-gray-500 text-gray-700' 
+                      : 'bg-white border-gray-300 text-gray-600 hover:border-gray-400'
+                  }`}
+                >
+                  ⛔ Rupture indéfinie
+                </button>
+              </div>
+            )}
           </div>
           
           <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
