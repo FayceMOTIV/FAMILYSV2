@@ -30,7 +30,6 @@ const menuItems = [
   
   // 3. Gestion du Menu - Produits, catégories, stock
   { name: 'Gestion du Menu', path: '/admin/menu', icon: Menu, highlight: true },
-  { name: 'Bibliothèque de Choix', path: '/admin/choice-library', icon: Tag, indent: true },
   
   // 4. Promotions V2 - Nouveau moteur de promotions
   { name: '🎯 Promotions', path: '/admin/promotions', icon: Tag, highlight: true },
