@@ -10,8 +10,9 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
     internal_comment: '',
     type: 'single',
     is_required: false,
+    allow_repeat: false,
     max_choices: '',
-    choices: [{ name: '', price: 0 }]
+    choices: [{ name: '', price: 0, image_url: '' }]
   });
   
   const [loading, setLoading] = useState(false);
