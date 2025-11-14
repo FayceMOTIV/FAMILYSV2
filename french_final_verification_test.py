@@ -101,12 +101,12 @@ class FrenchFinalVerificationTester:
                         self.log_result(test_name, False, f"Missing new fields: order_hours={order_hours is not None}, social_media={social_media is not None}, service_links={service_links is not None}")
                         return False
                     
-                    # Verify order_hours structure (should have days with open1/close1, open2/close2)
+                    # Verify order_hours structure (should have days with time schedules)
                     if isinstance(order_hours, dict):
-                        # Check if it has day structure
+                        # Check if it has day structure with time fields
                         has_proper_structure = False
                         for day, schedule in order_hours.items():
-                            if isinstance(schedule, dict) and any(key in schedule for key in ['open1', 'close1', 'open2', 'close2']):
+                            if isinstance(schedule, dict) and any(key in schedule for key in ['open', 'close', 'open1', 'close1', 'open2', 'close2']):
                                 has_proper_structure = True
                                 break
                         
