@@ -169,8 +169,10 @@ class FrenchFinalVerificationTester:
                 product_id = first_product.get("id")
                 
                 # Test POST creation without slug
+                import time
+                unique_name = f"Test Burger Sans Slug {int(time.time())}"
                 new_product_data = {
-                    "name": "Test Burger Sans Slug",
+                    "name": unique_name,
                     "description": "Test product created without slug field",
                     "base_price": 12.50,
                     "category": first_product.get("category", "Burgers"),
