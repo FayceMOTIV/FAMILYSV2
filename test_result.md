@@ -689,6 +689,21 @@ test_plan:
         - working: true
         - agent: "testing"
         - comment: "✅ MENU MANAGEMENT V2 FRONTEND TESTING COMPLETED SUCCESSFULLY: Comprehensive testing performed on all requested features. RESULTS: 1) ✅ Menu Management Page Access: Successfully navigated via sidebar link, page loads correctly with title 'Gestion du Menu', 2) ✅ Advanced Filtering: All 4 filter types working - Search input filters products correctly (18→6 results for 'burger'), Category dropdown with 10 options, Stock status filter (available/out_of_stock), Promotions filter button toggles correctly, 3) ✅ Products Grouped by Category: Grid view displays products correctly with 18 products loaded, found 16 category groupings, 4) ✅ Tab Navigation: All 3 tabs functional (Produits 16, Catégories 6, Options 6), 5) ✅ Categories Display: Categories shown as cards with reorder buttons (up/down arrows), proper ordering system (#1-#6), 6) ✅ Options Display: 6 options displayed with detailed information (choice types, requirements, available choices), 7) ✅ Backend Integration: Products loaded successfully (18 items), no error messages, API calls working, 8) ✅ Visual Quality: Responsive design tested on desktop (1920x1080), tablet (768x1024), mobile (390x844) - layout adapts correctly, 9) ✅ Stock Management: Stock status badges working (En stock, Rupture indéfinie, Rupture 2h), stock management buttons functional. MINOR ISSUES: View toggle (Grid/List) button not found - may be implemented differently or missing, Choice Library page navigation redirects to dashboard (route commented out in App.js as expected). OVERALL: 8/9 major features working perfectly, backend integration excellent, UI responsive and functional. Menu Management V2 frontend is production-ready."
+
+  - task: "Settings API - Nouveaux Champs"
+    implemented: true
+    working: true
+    file: "/app/backend/routes/admin/settings.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Testing new Settings API fields as requested in French review: order_hours (horaires de commande), social_media (liens réseaux sociaux), service_links (liens services externes). Testing both GET and PUT endpoints for these new fields."
+        - working: true
+        - agent: "testing"
+        - comment: "✅ SETTINGS API NOUVEAUX CHAMPS WORKING PERFECTLY: Comprehensive testing completed on new Settings API features. RESULTS: 1) ✅ GET /api/v1/admin/settings: All 3 new fields present and properly structured - order_hours (dict with Monday-Sunday schedule), social_media (dict with Facebook, Instagram, Twitter, TikTok links), service_links (dict with delivery, reservation, loyalty, support links), 2) ✅ PUT /api/v1/admin/settings: Successfully updates all new fields and returns complete updated settings object (endpoint returns full object, not success flag), 3) ✅ Field Structure Validation: order_hours contains proper day/time structure, social_media contains platform URLs, service_links contains service URLs, 4) ✅ Data Persistence: All updates persist correctly in MongoDB and are returned in subsequent GET requests. New Settings API fields fully operational for Family's restaurant configuration management."
 agent_communication:
     - agent: "testing"
     - message: "Starting comprehensive backend API testing for ALL admin endpoints. Testing Categories, Products, Options, Orders, Notifications, Promos, Upload, and AI Marketing with full CRUD operations on https://admin-kitchen.preview.emergentagent.com"
