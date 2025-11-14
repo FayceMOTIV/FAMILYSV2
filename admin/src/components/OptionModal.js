@@ -46,7 +46,7 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
   const handleAddChoice = () => {
     setFormData({
       ...formData,
-      choices: [...formData.choices, { name: '', price: 0 }]
+      choices: [...formData.choices, { name: '', price: 0, image_url: '' }]
     });
   };
 
