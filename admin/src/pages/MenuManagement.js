@@ -602,8 +602,17 @@ export const MenuManagement = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {[...categories].sort((a, b) => (a.order || 0) - (b.order || 0)).map((category, index) => {
+            {viewMode === 'list' ? (
+              <CategoriesListView 
+                categories={[...categories].sort((a, b) => (a.order || 0) - (b.order || 0))}
+                products={products}
+                onEdit={(c) => { setEditingCategory(c); setShowCategoryModal(true); }}
+                onDelete={handleDeleteCategory}
+                onReorder={handleReorderCategory}
+              />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {[...categories].sort((a, b) => (a.order || 0) - (b.order || 0)).map((category, index) => {
                 const imageUrl = category.image_url || category.image;
                 const sortedCategories = [...categories].sort((a, b) => (a.order || 0) - (b.order || 0));
                 const isFirst = index === 0;
