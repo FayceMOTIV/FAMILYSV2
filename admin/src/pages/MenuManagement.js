@@ -110,6 +110,15 @@ export const MenuManagement = () => {
     }
   };
 
+  const loadChoiceLibrary = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/v1/admin/choice-library`);
+      setChoiceLibrary(response.data.choices || []);
+    } catch (error) {
+      console.error('Error loading choice library:', error);
+    }
+  };
+
   // === FILTRAGE DES PRODUITS ===
   const filteredProducts = products.filter(product => {
     if (searchQuery) {
