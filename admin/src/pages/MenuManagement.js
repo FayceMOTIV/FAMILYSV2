@@ -21,6 +21,11 @@ export const MenuManagement = () => {
   const [draggedCategoryIndex, setDraggedCategoryIndex] = useState(null);
   const [draggedProductIndex, setDraggedProductIndex] = useState(null);
   
+  // Choice Library state
+  const [choiceLibrary, setChoiceLibrary] = useState([]);
+  const [showChoiceModal, setShowChoiceModal] = useState(false);
+  const [editingChoice, setEditingChoice] = useState(null);
+  
   // Products state
   const [products, setProducts] = useState([]);
   const [showProductModal, setShowProductModal] = useState(false);
