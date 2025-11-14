@@ -245,6 +245,76 @@ export const MenuManagement = () => {
     }
   };
 
+  // Drag & Drop handlers for categories
+  const handleCategoryDragStart = (e, index) => {
+    setDraggedCategoryIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleCategoryDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleCategoryDrop = async (e, dropIndex) => {
+    e.preventDefault();
+    
+    if (draggedCategoryIndex === null || draggedCategoryIndex === dropIndex) {
+      setDraggedCategoryIndex(null);
+      return;
+    }
+
+    const sortedCategories = [...categories].sort((a, b) => (a.order || 0) - (b.order || 0));
+    const draggedCategory = sortedCategories[draggedCategoryIndex];
+    const targetCategory = sortedCategories[dropIndex];
+
+    try {
+      // Swap orders
+      await categoriesAPI.update(draggedCategory.id, { order: targetCategory.order || dropIndex });
+      await categoriesAPI.update(targetCategory.id, { order: draggedCategory.order || draggedCategoryIndex });
+      await loadCategories();
+      setDraggedCategoryIndex(null);
+    } catch (error) {
+      alert('Erreur lors du déplacement');
+      setDraggedCategoryIndex(null);
+    }
+  };
+
+  // Drag & Drop handlers for products
+  const handleProductDragStart = (e, index) => {
+    setDraggedProductIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleProductDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleProductDrop = async (e, dropIndex) => {
+    e.preventDefault();
+    
+    if (draggedProductIndex === null || draggedProductIndex === dropIndex) {
+      setDraggedProductIndex(null);
+      return;
+    }
+
+    const sortedProducts = [...filteredProducts].sort((a, b) => (a.order || 0) - (b.order || 0));
+    const draggedProduct = sortedProducts[draggedProductIndex];
+    const targetProduct = sortedProducts[dropIndex];
+
+    try {
+      // Swap orders
+      await productsAPI.update(draggedProduct.id, { order: targetProduct.order || dropIndex });
+      await productsAPI.update(targetProduct.id, { order: draggedProduct.order || draggedProductIndex });
+      await loadProducts();
+      setDraggedProductIndex(null);
+    } catch (error) {
+      alert('Erreur lors du déplacement');
+      setDraggedProductIndex(null);
+    }
+  };
+
   const handleDeleteOption = async (optionId) => {
     if (!window.confirm('Supprimer cette option ?')) return;
     try {
