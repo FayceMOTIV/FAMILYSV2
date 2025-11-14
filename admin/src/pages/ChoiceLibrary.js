@@ -87,10 +87,10 @@ export const ChoiceLibrary = () => {
   };
 
   return (
-    <div className=\"min-h-screen bg-gray-50\">
+    <div className="min-h-screen bg-gray-50">
       <Header 
-        title=\"📚 Bibliothèque de Choix\"
-        subtitle=\"Gérez vos choix réutilisables pour les options\"
+        title="📚 Bibliothèque de Choix"
+        subtitle="Gérez vos choix réutilisables pour les options"
       />
 
       <div className=\"p-6\">
