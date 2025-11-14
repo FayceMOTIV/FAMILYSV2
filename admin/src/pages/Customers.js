@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Header } from '../components/Header';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
+import { CustomerDetailModal } from '../components/CustomerDetailModal';
 import { customersAPI } from '../services/api';
-import { Users, Download } from 'lucide-react';
+import { Users, Download, Eye } from 'lucide-react';
 
 export const Customers = () => {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   useEffect(() => {
     loadCustomers();
