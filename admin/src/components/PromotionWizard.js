@@ -38,11 +38,13 @@ export const PromotionWizard = ({ isOpen, onClose, promotion, onSuccess }) => {
   });
 
   useEffect(() => {
-    loadData();
-    if (promotion) {
-      setFormData({...formData, ...promotion});
+    if (isOpen) {
+      loadData();
+      if (promotion) {
+        setFormData({...formData, ...promotion});
+      }
     }
-  }, []);
+  }, [isOpen]);
 
   const loadData = async () => {
     try {
