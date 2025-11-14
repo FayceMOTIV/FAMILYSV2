@@ -10,7 +10,6 @@ import { Plus, Edit2, Trash2, Package, Copy, FolderOpen, Sliders, Edit, MoreVert
 import { ProductsListView } from '../components/ProductsListView';
 import { CategoriesListView } from '../components/CategoriesListView';
 import { OptionsListView } from '../components/OptionsListView';
-import { OptionsListView } from '../components/OptionsListView';
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://admin-kitchen.preview.emergentagent.com';
