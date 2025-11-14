@@ -4,7 +4,7 @@ import { Button } from './Button';
 import { Plus, Trash2, Play } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://resto-admin-11.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_API_URL || 'https://admin-kitchen.preview.emergentagent.com';
 
 export const PromotionSimulator = ({ promotions }) => {
   const [cart, setCart] = useState({

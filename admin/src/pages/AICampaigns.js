@@ -5,7 +5,7 @@ import { Button } from '../components/Button';
 import { Sparkles, TrendingUp, Calendar, Target, CheckCircle, XCircle, Loader } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://resto-admin-11.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_API_URL || 'https://admin-kitchen.preview.emergentagent.com';
 
 export const AICampaigns = () => {
   const [campaigns, setCampaigns] = useState([]);

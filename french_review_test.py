@@ -12,7 +12,7 @@ from typing import Dict, Optional, List
 from datetime import datetime, timezone
 
 # Backend URL from environment
-BACKEND_URL = "https://resto-admin-11.preview.emergentagent.com"
+BACKEND_URL = "https://admin-kitchen.preview.emergentagent.com"
 
 class FrenchReviewTester:
     def __init__(self):

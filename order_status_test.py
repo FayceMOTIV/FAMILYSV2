@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Test complet du système de gestion des commandes - Identifier tous les bugs de transition de statuts
-URL: https://resto-admin-11.preview.emergentagent.com
+URL: https://admin-kitchen.preview.emergentagent.com
 
 Tests à effectuer selon la demande:
 1. Créer une commande de test
@@ -22,7 +22,7 @@ from datetime import datetime, timezone
 import uuid
 
 # Backend URL from environment
-BACKEND_URL = "https://resto-admin-11.preview.emergentagent.com"
+BACKEND_URL = "https://admin-kitchen.preview.emergentagent.com"
 
 class OrderStatusTester:
     def __init__(self):
