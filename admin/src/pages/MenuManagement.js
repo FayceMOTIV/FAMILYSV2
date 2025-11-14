@@ -953,13 +953,13 @@ export const MenuManagement = () => {
           <div>
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h2 className="text-2xl font-bold">📚 Bibliothèque de Choix</h2>
+                <h2 className="text-2xl font-bold">📚 Bibliothèque de Choix ({choiceLibrary.length})</h2>
                 <p className="text-sm text-gray-600 mt-1">Créez des choix réutilisables avec images pour vos options</p>
               </div>
               <Button 
                 onClick={() => {
-                  // TODO: Open choice creation modal
-                  alert('Création de choix - À implémenter');
+                  setEditingChoice(null);
+                  setShowChoiceModal(true);
                 }}
               >
                 <Plus className="w-4 h-4 mr-2" />
@@ -967,22 +967,65 @@ export const MenuManagement = () => {
               </Button>
             </div>
 
-            <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 text-center">
-              <Package className="w-16 h-16 text-blue-400 mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-blue-900 mb-2">Bibliothèque de Choix</h3>
-              <p className="text-sm text-blue-700 mb-4">
-                Cette fonctionnalité vous permet de créer des choix réutilisables (avec images) que vous pourrez utiliser dans vos options.
-              </p>
-              <p className="text-xs text-blue-600">
-                Exemple : Créez "Chantilly" avec son image, puis utilisez-le dans plusieurs options différentes.
-              </p>
-              <div className="mt-6">
-                <p className="text-sm font-semibold text-blue-900 mb-2">🚀 Fonctionnalité à venir</p>
-                <p className="text-xs text-blue-600">
-                  Pour l'instant, ajoutez vos choix directement dans chaque option avec la possibilité d'ajouter des images.
+            {choiceLibrary.length === 0 ? (
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 text-center">
+                <Package className="w-16 h-16 text-blue-400 mx-auto mb-4" />
+                <h3 className="text-lg font-bold text-blue-900 mb-2">Bibliothèque vide</h3>
+                <p className="text-sm text-blue-700 mb-4">
+                  Créez vos premiers choix réutilisables (Chantilly, Ketchup, Bacon...)
                 </p>
+                <Button onClick={() => setShowChoiceModal(true)}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Créer mon premier choix
+                </Button>
               </div>
-            </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {choiceLibrary.map((choice) => (
+                  <Card key={choice.id}>
+                    <CardContent className="p-4">
+                      {choice.image_url && (
+                        <img 
+                          src={choice.image_url} 
+                          alt={choice.name}
+                          className="w-full h-32 object-cover rounded-lg mb-3"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                      )}
+                      <h3 className="font-bold text-lg mb-1">{choice.name}</h3>
+                      {choice.description && (
+                        <p className="text-sm text-gray-600 mb-2">{choice.description}</p>
+                      )}
+                      <p className="text-lg font-bold text-primary mb-3">
+                        {choice.default_price.toFixed(2)}€
+                      </p>
+                      <div className="flex gap-2">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => {
+                            setEditingChoice(choice);
+                            setShowChoiceModal(true);
+                          }}
+                        >
+                          <Edit className="w-4 h-4 mr-1" />
+                          Modifier
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="danger"
+                          onClick={() => handleDeleteChoice(choice.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
