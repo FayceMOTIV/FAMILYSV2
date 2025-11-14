@@ -561,11 +561,13 @@ export const PromotionWizard = ({ isOpen, onClose, promotion, onSuccess }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="xl">
-      <div className="p-6">
-        <h2 className="text-2xl font-bold mb-6">
-          {promotion ? '✏️ Modifier la promotion' : '➕ Créer une promotion'}
-        </h2>
+    <Modal 
+      isOpen={isOpen} 
+      onClose={onClose} 
+      title={promotion ? '✏️ Modifier la promotion' : '➕ Créer une promotion'}
+      size="lg"
+    >
+      <div className="p-2">
 
         {/* Progress Steps */}
         <div className="flex items-center justify-between mb-8">
