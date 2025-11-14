@@ -207,6 +207,22 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
           </label>
         </div>
 
+        {/* Permettre la répétition */}
+        {formData.type === 'multiple' && (
+          <div className="flex items-center bg-blue-50 p-3 rounded-lg">
+            <input
+              type="checkbox"
+              id="allow_repeat"
+              checked={formData.allow_repeat}
+              onChange={(e) => setFormData({...formData, allow_repeat: e.target.checked})}
+              className="mr-2"
+            />
+            <label htmlFor="allow_repeat" className="text-sm font-medium">
+              Permettre de prendre le même choix plusieurs fois (ex: Chantilly ×2)
+            </label>
+          </div>
+        )}
+
         {/* Choix */}
         <div>
           <div className="flex items-center justify-between mb-3">
