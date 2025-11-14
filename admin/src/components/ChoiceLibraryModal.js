@@ -101,25 +101,32 @@ export const ChoiceLibraryModal = ({ isOpen, onClose, choice, onSuccess }) => {
           </p>
         </div>
 
-        {/* Image URL */}
+        {/* Image Upload */}
         <div>
-          <Label htmlFor="image_url">URL de l'image (optionnel)</Label>
-          <Input
-            id="image_url"
-            type="text"
-            value={formData.image_url}
-            onChange={(e) => setFormData({...formData, image_url: e.target.value})}
-            placeholder="https://exemple.com/image.jpg"
+          <Label htmlFor="image_file">Image (optionnel)</Label>
+          <input
+            id="image_file"
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                // Create preview
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  setFormData({...formData, image_url: reader.result});
+                };
+                reader.readAsDataURL(file);
+              }
+            }}
+            className="w-full px-3 py-2 border rounded-lg"
           />
           {formData.image_url && (
             <div className="mt-2">
               <img 
                 src={formData.image_url} 
                 alt="Aperçu" 
-                className="h-20 w-20 object-cover rounded-lg border"
-                onError={(e) => {
-                  e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect fill="%23ddd" width="80" height="80"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="%23999">?</text></svg>';
-                }}
+                className="h-32 w-32 object-cover rounded-lg border"
               />
             </div>
           )}
