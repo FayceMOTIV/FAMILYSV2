@@ -630,10 +630,10 @@ const ProductCard = ({ product, onEdit, onDelete, onDuplicate, openStockMenu, on
             
             {openStockMenu && (
               <div className=\"absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border z-20\">
-                <button onClick={() => onStockChange('available')} className=\"w-full px-4 py-2 text-left hover:bg-gray-50 text-sm\">✓ Disponible</button>
-                <button onClick={() => onStockChange('2h')} className=\"w-full px-4 py-2 text-left hover:bg-gray-50 text-sm\">⏱ Rupture 2h</button>
-                <button onClick={() => onStockChange('today')} className=\"w-full px-4 py-2 text-left hover:bg-gray-50 text-sm\">📅 Rupture journée</button>
-                <button onClick={() => onStockChange('indefinite')} className=\"w-full px-4 py-2 text-left hover:bg-gray-50 text-sm\">⛔ Indisponible</button>
+                <button onClick={() => onStockChange('available')} className=\"w-full px-4 py-2 text-left hover:bg-gray-50 text-sm\">Disponible</button>
+                <button onClick={() => onStockChange('2h')} className=\"w-full px-4 py-2 text-left hover:bg-gray-50 text-sm\">Rupture 2h</button>
+                <button onClick={() => onStockChange('today')} className=\"w-full px-4 py-2 text-left hover:bg-gray-50 text-sm\">Rupture journée</button>
+                <button onClick={() => onStockChange('indefinite')} className=\"w-full px-4 py-2 text-left hover:bg-gray-50 text-sm\">Indisponible</button>
               </div>
             )}
           </div>
