@@ -76,7 +76,7 @@ async def update_order_status(
     status_update: OrderStatusUpdate
     # current_user: dict = Security(require_manager_or_admin)  # TEMPORAIREMENT DESACTIVE
 ):
-    """Update order status."""
+    """Update order status with validation rules."""
     restaurant_id = "default"  # current_user.get("restaurant_id")
     
     # Check if order exists
@@ -91,9 +91,50 @@ async def update_order_status(
             detail="Order not found"
         )
     
+    current_status = existing.get("status")
+    new_status = status_update.status
+    order_type = existing.get("order_type", "takeaway")
+    payment_status = existing.get("payment_status", "pending")
+    
+    # ===== VALIDATION DES TRANSITIONS DE STATUTS =====
+    
+    # Définir les transitions valides
+    valid_transitions = {
+        "new": ["in_preparation", "canceled"],
+        "in_preparation": ["ready", "canceled"],
+        "ready": ["out_for_delivery", "completed", "canceled"] if order_type == "delivery" else ["completed", "canceled"],
+        "out_for_delivery": ["completed", "canceled"],
+        "completed": [],  # État final
+        "canceled": []    # État final
+    }
+    
+    # Vérifier que le statut est valide
+    valid_statuses = ["new", "in_preparation", "ready", "out_for_delivery", "completed", "canceled"]
+    if new_status not in valid_statuses:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Statut invalide: {new_status}. Statuts valides: {', '.join(valid_statuses)}"
+        )
+    
+    # Vérifier que la transition est autorisée
+    if new_status not in valid_transitions.get(current_status, []):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Transition non autorisée: {current_status} → {new_status}. Transitions possibles depuis {current_status}: {', '.join(valid_transitions.get(current_status, []))}"
+        )
+    
+    # ===== VALIDATION DU PAIEMENT POUR COMPLÉTION =====
+    
+    # Bloquer la complétion si la commande n'est pas payée
+    if new_status == "completed" and payment_status != "paid":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="❌ PAIEMENT REQUIS: Cette commande ne peut pas être terminée car elle n'est pas encore payée. Veuillez d'abord enregistrer le paiement."
+        )
+    
     # Update status
     update_data = {
-        "status": status_update.status,
+        "status": new_status,
         "updated_at": datetime.now(timezone.utc).isoformat()
     }
     
