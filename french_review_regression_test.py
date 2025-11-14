@@ -178,9 +178,8 @@ class FrenchReviewTester:
                 "name": "Test Product Sans Slug",
                 "description": "Produit de test sans slug",
                 "base_price": 15.99,
-                "category_id": categories[0].get("id") if categories else "test-category",
-                "image_url": "https://example.com/test.jpg",
-                "is_available": True
+                "category": categories[0].get("name") if categories else "test-category",
+                "image_url": "https://example.com/test.jpg"
             }
             
             async with self.session.post(
