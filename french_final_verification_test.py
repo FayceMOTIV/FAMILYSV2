@@ -189,10 +189,13 @@ class FrenchFinalVerificationTester:
                         return False
                     
                     created_data = await create_response.json()
-                    created_product_id = created_data.get("id")
+                    # Check different possible response structures
+                    created_product_id = (created_data.get("id") or 
+                                        created_data.get("product", {}).get("id") or
+                                        (created_data.get("product") if isinstance(created_data.get("product"), str) else None))
                     
                     if not created_product_id:
-                        self.log_result(test_name, False, "Created product has no ID")
+                        self.log_result(test_name, False, f"Created product has no ID. Response: {created_data}")
                         return False
                 
                 # Test PUT modification
