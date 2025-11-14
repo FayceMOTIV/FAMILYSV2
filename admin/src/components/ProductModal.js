@@ -47,7 +47,6 @@ export const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
     if (product) {
       const productData = {
         name: product.name || '',
-        slug: product.slug || '',
         category: product.category || '',
         description: product.description || '',
         base_price: product.base_price?.toString() || '',
@@ -69,7 +68,6 @@ export const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
     } else {
       setFormData({
         name: '',
-        slug: '',
         category: '',
         description: '',
         base_price: '',
