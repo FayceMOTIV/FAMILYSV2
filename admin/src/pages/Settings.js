@@ -269,32 +269,74 @@ export const Settings = () => {
 
             <div className="border-t pt-6">
               <h3 className="font-semibold text-lg mb-3">📱 Horaires de commande (différents si nécessaire)</h3>
-              <p className="text-sm text-gray-600 mb-3">Les clients ne pourront commander que pendant ces horaires</p>
-              <div className="space-y-2">
+              <p className="text-sm text-gray-600 mb-3">Les clients ne pourront commander que pendant ces horaires (2 plages possibles)</p>
+              <div className="space-y-3">
                 {DAYS.map(day => (
-                  <div key={day.key} className="grid grid-cols-4 gap-2 items-center">
-                    <label className="font-medium text-sm">{day.label}</label>
-                    <Input
-                      type="time"
-                      placeholder="Début"
-                      value={settings.order_hours[day.key]?.start || ''}
-                      onChange={(e) => updateHours(day.key, 'order', 'start', e.target.value)}
-                    />
-                    <Input
-                      type="time"
-                      placeholder="Fin"
-                      value={settings.order_hours[day.key]?.end || ''}
-                      onChange={(e) => updateHours(day.key, 'order', 'end', e.target.value)}
-                    />
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        checked={settings.order_hours[day.key]?.disabled || false}
-                        onChange={(e) => updateHours(day.key, 'order', 'disabled', e.target.checked)}
-                        className="w-4 h-4"
-                      />
-                      <span className="text-sm text-gray-600">Désactivé</span>
-                    </label>
+                  <div key={day.key} className="border rounded-lg p-3 bg-gray-50">
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="font-bold text-sm">{day.label}</label>
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={settings.order_hours[day.key]?.disabled || false}
+                          onChange={(e) => {
+                            const newHours = {...settings.order_hours};
+                            newHours[day.key] = { ...newHours[day.key], disabled: e.target.checked };
+                            setSettings({...settings, order_hours: newHours});
+                          }}
+                          className="w-4 h-4"
+                        />
+                        <span className="text-sm text-red-600 font-medium">Désactivé</span>
+                      </label>
+                    </div>
+                    {!settings.order_hours[day.key]?.disabled && (
+                      <div className="space-y-2">
+                        <div className="grid grid-cols-2 gap-2">
+                          <Input
+                            type="time"
+                            placeholder="Début 1"
+                            value={settings.order_hours[day.key]?.start1 || ''}
+                            onChange={(e) => {
+                              const newHours = {...settings.order_hours};
+                              newHours[day.key] = { ...newHours[day.key], start1: e.target.value };
+                              setSettings({...settings, order_hours: newHours});
+                            }}
+                          />
+                          <Input
+                            type="time"
+                            placeholder="Fin 1"
+                            value={settings.order_hours[day.key]?.end1 || ''}
+                            onChange={(e) => {
+                              const newHours = {...settings.order_hours};
+                              newHours[day.key] = { ...newHours[day.key], end1: e.target.value };
+                              setSettings({...settings, order_hours: newHours});
+                            }}
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Input
+                            type="time"
+                            placeholder="Début 2 (optionnel)"
+                            value={settings.order_hours[day.key]?.start2 || ''}
+                            onChange={(e) => {
+                              const newHours = {...settings.order_hours};
+                              newHours[day.key] = { ...newHours[day.key], start2: e.target.value };
+                              setSettings({...settings, order_hours: newHours});
+                            }}
+                          />
+                          <Input
+                            type="time"
+                            placeholder="Fin 2 (optionnel)"
+                            value={settings.order_hours[day.key]?.end2 || ''}
+                            onChange={(e) => {
+                              const newHours = {...settings.order_hours};
+                              newHours[day.key] = { ...newHours[day.key], end2: e.target.value };
+                              setSettings({...settings, order_hours: newHours});
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
