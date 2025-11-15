@@ -41,7 +41,9 @@ function App() {
           <Route path="/admin/orders-mode-login" element={<ModeLogin mode="orders" />} />
           <Route path="/admin/orders-mode" element={<OrdersMode />} />
           <Route path="/admin/delivery-mode-login" element={<ModeLogin mode="delivery" />} />
+          <Route path="/admin/delivery-mode" element={<DeliveryMode />} />
           <Route path="/admin/reservation-mode-login" element={<ModeLogin mode="reservation" />} />
+          <Route path="/admin/reservation-mode" element={<ReservationMode />} />
           <Route path="/admin" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="ai" element={<AIAssistant />} />
