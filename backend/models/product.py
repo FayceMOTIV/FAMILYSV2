@@ -53,6 +53,7 @@ class ProductUpdate(BaseModel):
     vat_rate: Optional[float] = None
     image_url: Optional[str] = None
     tags: Optional[List[str]] = None
+    badge: Optional[str] = None
     is_available: Optional[bool] = None
     is_out_of_stock: Optional[bool] = None
     option_groups: Optional[List[ProductOptionGroup]] = None
