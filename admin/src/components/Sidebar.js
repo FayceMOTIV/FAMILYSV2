@@ -16,8 +16,7 @@ import {
   History,
   Sliders,
   Menu,
-  DollarSign,
-  FileText
+  DollarSign
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { cn } from '../utils/cn';
