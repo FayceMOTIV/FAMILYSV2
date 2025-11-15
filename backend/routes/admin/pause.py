@@ -109,13 +109,54 @@ async def get_pause_status():
         if not settings:
             return {
                 "is_paused": False,
-                "pause_reason": None
+                "pause_reason": None,
+                "pause_until": None,
+                "no_more_orders_today": False
             }
         
         return {
             "is_paused": settings.get("is_paused", False),
-            "pause_reason": settings.get("pause_reason", None)
+            "pause_reason": settings.get("pause_reason", None),
+            "pause_until": settings.get("pause_until", None),
+            "no_more_orders_today": settings.get("no_more_orders_today", False)
         }
         
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+class PINVerifyRequest(BaseModel):
+    pin: str
+    mode: str  # 'orders', 'delivery', 'reservation'
+
+@router.post("/verify-pin")
+async def verify_pin(request: PINVerifyRequest):
+    """
+    Vérifie si le code PIN est correct pour le mode demandé
+    """
+    try:
+        settings = await db.settings.find_one()
+        
+        if not settings:
+            raise HTTPException(status_code=404, detail="Settings not found")
+        
+        # Récupérer le PIN du mode demandé
+        pin_field = f"pin_{request.mode}_mode"
+        stored_pin = settings.get(pin_field)
+        
+        if not stored_pin:
+            raise HTTPException(status_code=400, detail=f"PIN not configured for {request.mode} mode")
+        
+        # Vérifier le PIN
+        if request.pin == stored_pin:
+            return {
+                "success": True,
+                "mode": request.mode,
+                "message": "Access granted"
+            }
+        else:
+            raise HTTPException(status_code=401, detail="Invalid PIN")
+        
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
