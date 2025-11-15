@@ -225,23 +225,6 @@ export const OrdersManagement = () => {
     requestStatusChange(order.id, order.status, nextStatus);
   };
 
-  const handleStatusChange = (orderId, currentStatus, newStatus) => {
-    // Vérifier si on essaie de terminer une commande
-    if (newStatus === 'completed') {
-      // Trouver la commande
-      const order = orders.find(o => o.id === orderId);
-      
-      // Bloquer si la commande n'est pas payée
-      if (order && order.payment_status !== 'paid') {
-        alert('❌ PAIEMENT REQUIS\n\nCette commande ne peut pas être terminée car elle n\'est pas encore payée.\n\nVeuillez d\'abord enregistrer le paiement avant de la marquer comme terminée.');
-        return;
-      }
-    }
-    
-    setPendingStatusChange({ orderId, currentStatus, newStatus });
-    setShowConfirmationModal(true);
-  };
-
   const requestStatusChange = (orderId, currentStatus, newStatus) => {
     // Vérifier si on essaie de terminer une commande
     if (newStatus === 'completed') {
