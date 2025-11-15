@@ -26,6 +26,8 @@ export const MenuManagement = () => {
   const [choiceLibrary, setChoiceLibrary] = useState([]);
   const [showChoiceModal, setShowChoiceModal] = useState(false);
   const [editingChoice, setEditingChoice] = useState(null);
+  const [librarySearchTerm, setLibrarySearchTerm] = useState('');
+  const [libraryViewMode, setLibraryViewMode] = useState('grid'); // 'grid' ou 'list'
   
   // Products state
   const [products, setProducts] = useState([]);
