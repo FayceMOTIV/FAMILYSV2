@@ -150,9 +150,9 @@ async def get_daily_status(
 
 @router.get("", response_model=List[TicketZ])
 async def list_tickets_z(
-    limit: int = 30,
-    db: AsyncIOMotorDatabase = Depends(get_database)
+    limit: int = 30
 ):
+    db = get_db()
     """Lister les Tickets Z."""
     tickets = await db.tickets_z.find().sort("date", -1).limit(limit).to_list(length=limit)
     return [TicketZ(**t) for t in tickets]
