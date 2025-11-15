@@ -176,6 +176,96 @@ class NotificationSystemTester:
         except Exception as e:
             self.log_result("POST Mark All as Read", False, error=str(e))
     
+    def test_loyalty_notification_format(self):
+        """Test loyalty notification with correct French format"""
+        print("\n🎯 TESTING LOYALTY NOTIFICATION FORMAT")
+        
+        try:
+            # Get a customer to use for testing
+            customer_response = requests.get(
+                f"{self.base_url}/api/v1/admin/customers?limit=1",
+                headers=self.get_headers()
+            )
+            
+            if customer_response.status_code == 200:
+                customers = customer_response.json().get("customers", [])
+                if customers:
+                    customer = customers[0]
+                    customer_id = customer.get("id")
+                    customer_email = customer.get("email")
+                    
+                    # Create a loyalty notification with the exact French format expected
+                    loyalty_notification = {
+                        "user_id": customer_id,
+                        "type": "loyalty_credited",
+                        "title": "🎉 Points de fidélité crédités !",
+                        "message": "Merci pour ta commande, ta carte de fidélité a été crédité de 5.50 €!",
+                        "data": {
+                            "order_id": "test-order-loyalty-123",
+                            "amount_credited": 5.50,
+                            "total_points": 105.50
+                        }
+                    }
+                    
+                    create_response = requests.post(
+                        f"{self.base_url}/api/v1/notifications",
+                        json=loyalty_notification,
+                        headers={"Content-Type": "application/json"}
+                    )
+                    
+                    if create_response.status_code == 200:
+                        create_data = create_response.json()
+                        if create_data.get("success"):
+                            notification_id = create_data.get("notification_id")
+                            self.log_result("Create Loyalty Notification", True, f"Created loyalty notification: {notification_id}")
+                            
+                            # Verify the notification was created with correct format
+                            time.sleep(1)  # Brief wait
+                            
+                            get_response = requests.get(
+                                f"{self.base_url}/api/v1/notifications/{customer_id}",
+                                headers={"Content-Type": "application/json"}
+                            )
+                            
+                            if get_response.status_code == 200:
+                                get_data = get_response.json()
+                                notifications = get_data.get("notifications", [])
+                                
+                                # Find our loyalty notification
+                                loyalty_notif = None
+                                for notif in notifications:
+                                    if notif.get("type") == "loyalty_credited" and "test-order-loyalty-123" in str(notif.get("data", {})):
+                                        loyalty_notif = notif
+                                        break
+                                
+                                if loyalty_notif:
+                                    message = loyalty_notif.get("message", "")
+                                    title = loyalty_notif.get("title", "")
+                                    
+                                    # Verify French format
+                                    if ("Merci pour ta commande" in message and 
+                                        "crédité de" in message and 
+                                        "€!" in message and
+                                        "🎉" in title):
+                                        self.log_result("Verify French Format", True, f"Loyalty notification has correct French format: '{message}'")
+                                    else:
+                                        self.log_result("Verify French Format", False, error=f"Incorrect format: '{message}'")
+                                else:
+                                    self.log_result("Find Loyalty Notification", False, error="Could not find the created loyalty notification")
+                            else:
+                                self.log_result("Get Notifications for Verification", False, error=f"Status {get_response.status_code}")
+                        else:
+                            self.log_result("Create Loyalty Notification", False, error="Success flag not returned")
+                    else:
+                        self.log_result("Create Loyalty Notification", False, error=f"Status {create_response.status_code}: {create_response.text}")
+                else:
+                    self.log_result("Get Customer for Loyalty Test", False, error="No customers found")
+            else:
+                self.log_result("Get Customer for Loyalty Test", False, error=f"Status {customer_response.status_code}")
+                
+        except Exception as e:
+            self.log_result("Loyalty Notification Format Test", False, error=str(e))
+    
     def test_order_payment_flow_with_notification(self):
         """Test order payment flow and verify notification creation"""
         print("\n💳 TESTING ORDER PAYMENT FLOW WITH NOTIFICATION")
