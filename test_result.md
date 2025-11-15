@@ -442,7 +442,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "French Final Verification - Complete Feature Testing"
+    - "Customer Loyalty Notification System"
+    - "Customer Notification UI System"
   stuck_tasks:
     - "AI Sales Analysis"
     - "AI Promo Suggestion"
