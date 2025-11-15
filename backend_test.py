@@ -15,35 +15,26 @@ BASE_URL = "https://chefs-control.preview.emergentagent.com"
 ADMIN_EMAIL = "admin@familys.app"
 ADMIN_PASSWORD = "Admin@123456"
 
-class BackendTester:
+class NotificationSystemTester:
     def __init__(self):
-        self.base_url = BACKEND_URL
-        self.session = None
-        self.auth_token = None
+        self.base_url = BASE_URL
+        self.token = None
         self.test_results = []
         
-    async def __aenter__(self):
-        self.session = aiohttp.ClientSession()
-        return self
-        
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
-        if self.session:
-            await self.session.close()
-    
-    def log_result(self, test_name: str, success: bool, message: str, response_data: Optional[Dict] = None):
-        """Log test result."""
-        status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status} {test_name}: {message}")
-        
-        self.test_results.append({
+    def log_result(self, test_name, success, details="", error=""):
+        """Log test result"""
+        result = {
             "test": test_name,
             "success": success,
-            "message": message,
-            "response_data": response_data
-        })
-        
-        if response_data and not success:
-            print(f"   Response: {json.dumps(response_data, indent=2)}")
+            "details": details,
+            "error": error,
+            "timestamp": datetime.now().isoformat()
+        }
+        self.test_results.append(result)
+        status = "✅" if success else "❌"
+        print(f"{status} {test_name}: {details}")
+        if error:
+            print(f"   Error: {error}")
     
     async def test_login(self) -> bool:
         """Test admin login endpoint."""
