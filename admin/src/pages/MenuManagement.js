@@ -973,7 +973,13 @@ export const MenuManagement = () => {
                     </CardTitle>
                   </CardHeader>
 
-                  <CardContent className="space-y-3">
+                  <CardContent 
+                    className="space-y-3 cursor-pointer hover:bg-gray-50 transition-colors rounded-lg"
+                    onClick={() => {
+                      setEditingOption(option);
+                      setShowOptionModal(true);
+                    }}
+                  >
                     {option.description && (
                       <p className="text-sm text-gray-600">{option.description}</p>
                     )}
