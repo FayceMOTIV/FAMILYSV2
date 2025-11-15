@@ -596,6 +596,49 @@ export const Settings = () => {
                 🎁 Pourcentage du montant de chaque commande crédité sur la carte de fidélité du client
               </p>
             </div>
+
+            {/* Options cashback supplémentaires */}
+            <div className="border-t pt-4 mt-4">
+              <Label className="mb-3 block">Options de calcul du cashback</Label>
+              
+              <div className="space-y-3">
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={settings.loyalty_exclude_promos_from_calculation || false}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      loyalty_exclude_promos_from_calculation: e.target.checked
+                    })}
+                    className="mt-1"
+                  />
+                  <div>
+                    <p className="font-medium text-gray-900">Ne pas prendre en compte les promos dans le calcul</p>
+                    <p className="text-xs text-gray-500">
+                      Si activé, le cashback sera calculé sur le montant AVANT application des promotions
+                    </p>
+                  </div>
+                </label>
+
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={settings.auto_badges_enabled || false}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      auto_badges_enabled: e.target.checked
+                    })}
+                    className="mt-1"
+                  />
+                  <div>
+                    <p className="font-medium text-gray-900">🤖 Laisser l'IA gérer les badges produits</p>
+                    <p className="text-xs text-gray-500">
+                      L'IA décidera automatiquement quels produits afficher avec des badges (Best Seller, Nouveau, etc.)
+                    </p>
+                  </div>
+                </label>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
