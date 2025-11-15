@@ -18,6 +18,11 @@ export const AppProvider = ({ children }) => {
   const [loyaltyStamps, setLoyaltyStamps] = useState(0);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [theme, setTheme] = useState('light');
+  const [restaurantStatus, setRestaurantStatus] = useState({
+    canOrder: true,
+    isPaused: false,
+    noMoreOrdersToday: false
+  });
 
   // Load from localStorage on mount
   useEffect(() => {
