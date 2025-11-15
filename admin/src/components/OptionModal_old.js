@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { Button } from './Button';
-import { X, Plus, Trash2, Upload, Image as ImageIcon } from 'lucide-react';
+import { X, Plus, Trash2 } from 'lucide-react';
 
 export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -12,18 +12,13 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
     is_required: false,
     allow_repeat: false,
     max_choices: '',
-    choices: [{ name: '', price: 0, image_url: '', internal_comment: '' }]
+    choices: [{ name: '', price: 0, image_url: '' }]
   });
   
   const [loading, setLoading] = useState(false);
   const [choiceLibrary, setChoiceLibrary] = useState([]);
   const [showLibraryPicker, setShowLibraryPicker] = useState(false);
   const [librarySearchTerm, setLibrarySearchTerm] = useState('');
-  const [selectedLibraryChoices, setSelectedLibraryChoices] = useState([]);
-  const [uploadingImage, setUploadingImage] = useState({});
-  const [toast, setToast] = useState(null);
-
-  const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://menu-master-141.preview.emergentagent.com';
 
   useEffect(() => {
     if (isOpen) {
@@ -31,13 +26,9 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
     }
   }, [isOpen]);
 
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
-
   const loadChoiceLibrary = async () => {
     try {
+      const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://menu-master-141.preview.emergentagent.com';
       const response = await fetch(`${API_URL}/api/v1/admin/choice-library`);
       const data = await response.json();
       setChoiceLibrary(data.choices || []);
@@ -46,127 +37,18 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
     }
   };
 
-  const handleAddSelectedFromLibrary = () => {
-    const newChoices = selectedLibraryChoices.map(libChoice => ({
-      name: libChoice.name,
-      price: libChoice.default_price,
-      image_url: libChoice.image_url || '',
-      internal_comment: ''
-    }));
-    
+  const handleAddFromLibrary = (libraryChoice) => {
+    const newChoice = {
+      name: libraryChoice.name,
+      price: libraryChoice.default_price,
+      image_url: libraryChoice.image_url
+    };
     setFormData({
       ...formData,
-      choices: [...formData.choices, ...newChoices]
+      choices: [...formData.choices, newChoice]
     });
-    
     setShowLibraryPicker(false);
-    setLibrarySearchTerm('');
-    setSelectedLibraryChoices([]);
-    showToast(`${newChoices.length} choix ajouté${newChoices.length > 1 ? 's' : ''}`, 'success');
-  };
-
-  const toggleLibraryChoice = (choice) => {
-    setSelectedLibraryChoices(prev => {
-      const exists = prev.find(c => c.id === choice.id);
-      if (exists) {
-        return prev.filter(c => c.id !== choice.id);
-      } else {
-        return [...prev, choice];
-      }
-    });
-  };
-
-  const selectAllVisible = () => {
-    const filteredChoices = choiceLibrary.filter((choice) => {
-      if (!librarySearchTerm.trim()) return true;
-      const searchLower = librarySearchTerm.toLowerCase();
-      return (
-        choice.name.toLowerCase().includes(searchLower) ||
-        (choice.description && choice.description.toLowerCase().includes(searchLower)) ||
-        choice.default_price.toString().includes(searchLower)
-      );
-    });
-    setSelectedLibraryChoices(filteredChoices);
-  };
-
-  const deselectAll = () => {
-    setSelectedLibraryChoices([]);
-  };
-
-  const addChoiceToLibrary = async (choice) => {
-    try {
-      // Check if choice already exists in library
-      const existingChoice = choiceLibrary.find(
-        c => c.name.toLowerCase().trim() === choice.name.toLowerCase().trim()
-      );
-      
-      if (existingChoice) {
-        return; // Already in library, skip
-      }
-
-      const response = await fetch(`${API_URL}/api/v1/admin/choice-library`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: choice.name,
-          default_price: choice.price,
-          image_url: choice.image_url || null,
-          description: null
-        })
-      });
-
-      if (response.ok) {
-        await loadChoiceLibrary(); // Reload library
-        showToast(`"${choice.name}" ajouté à la bibliothèque`, 'info');
-      }
-    } catch (error) {
-      console.error('Error adding to library:', error);
-    }
-  };
-
-  const handleImageUpload = async (index, file) => {
-    if (!file) return;
-    
-    // Validate file size (5MB max)
-    if (file.size > 5 * 1024 * 1024) {
-      alert('L\'image est trop grande. Maximum 5 MB.');
-      return;
-    }
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      alert('Le fichier doit être une image.');
-      return;
-    }
-
-    setUploadingImage(prev => ({ ...prev, [index]: true }));
-
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch(`${API_URL}/api/v1/admin/upload/image`, {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!response.ok) {
-        throw new Error('Upload failed');
-      }
-
-      const data = await response.json();
-      handleChoiceChange(index, 'image_url', data.url);
-      showToast('Image uploadée avec succès', 'success');
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      alert('Erreur lors de l\'upload de l\'image');
-    } finally {
-      setUploadingImage(prev => ({ ...prev, [index]: false }));
-    }
-  };
-
-  const handleRemoveImage = (index) => {
-    handleChoiceChange(index, 'image_url', '');
+    setLibrarySearchTerm(''); // Reset search when closing
   };
 
   useEffect(() => {
@@ -179,7 +61,7 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
         is_required: option.is_required || false,
         allow_repeat: option.allow_repeat || false,
         max_choices: option.max_choices || '',
-        choices: option.choices?.length > 0 ? option.choices : [{ name: '', price: 0, image_url: '', internal_comment: '' }]
+        choices: option.choices?.length > 0 ? option.choices : [{ name: '', price: 0, image_url: '' }]
       });
     } else {
       setFormData({
@@ -190,7 +72,7 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
         is_required: false,
         allow_repeat: false,
         max_choices: '',
-        choices: [{ name: '', price: 0, image_url: '', internal_comment: '' }]
+        choices: [{ name: '', price: 0, image_url: '' }]
       });
     }
   }, [option, isOpen]);
@@ -198,7 +80,7 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
   const handleAddChoice = () => {
     setFormData({
       ...formData,
-      choices: [...formData.choices, { name: '', price: 0, image_url: '', internal_comment: '' }]
+      choices: [...formData.choices, { name: '', price: 0, image_url: '' }]
     });
   };
 
@@ -225,6 +107,8 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
     setLoading(true);
 
     try {
+      const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+      
       // Préparer les données
       const data = {
         ...formData,
@@ -249,11 +133,6 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
         throw new Error(error.detail || 'Failed to save option');
       }
 
-      // Add all choices to library after successful save
-      for (const choice of data.choices) {
-        await addChoiceToLibrary(choice);
-      }
-
       onSuccess?.();
       onClose();
     } catch (error) {
@@ -264,28 +143,8 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
     }
   };
 
-  const filteredLibraryChoices = choiceLibrary.filter((choice) => {
-    if (!librarySearchTerm.trim()) return true;
-    const searchLower = librarySearchTerm.toLowerCase();
-    return (
-      choice.name.toLowerCase().includes(searchLower) ||
-      (choice.description && choice.description.toLowerCase().includes(searchLower)) ||
-      choice.default_price.toString().includes(searchLower)
-    );
-  });
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="large">
-      {/* Toast notification */}
-      {toast && (
-        <div className={`fixed top-4 right-4 z-[60] px-4 py-2 rounded-lg shadow-lg text-white text-sm ${
-          toast.type === 'success' ? 'bg-green-500' : 
-          toast.type === 'error' ? 'bg-red-500' : 'bg-blue-500'
-        }`}>
-          {toast.message}
-        </div>
-      )}
-
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold">
           {option ? 'Modifier l\'option' : 'Créer une option'}
@@ -434,49 +293,17 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
                     </Button>
                   )}
                 </div>
-
-                {/* Image Upload Section */}
-                <div className="mt-2">
-                  {choice.image_url ? (
-                    <div className="relative inline-block">
-                      <img 
-                        src={choice.image_url.startsWith('/') ? `${API_URL}${choice.image_url}` : choice.image_url}
-                        alt={choice.name}
-                        className="w-32 h-32 object-cover rounded border"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveImage(index)}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ) : (
-                    <label className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary hover:bg-gray-50 transition-colors">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleImageUpload(index, e.target.files[0])}
-                        className="hidden"
-                        disabled={uploadingImage[index]}
-                      />
-                      {uploadingImage[index] ? (
-                        <span className="text-sm text-gray-500">Upload en cours...</span>
-                      ) : (
-                        <>
-                          <Upload className="w-4 h-4 mr-2 text-gray-400" />
-                          <span className="text-sm text-gray-600">📤 Télécharger une image (max 5MB)</span>
-                        </>
-                      )}
-                    </label>
-                  )}
-                </div>
-
+                <input
+                  type="text"
+                  value={choice.image_url || ''}
+                  onChange={(e) => handleChoiceChange(index, 'image_url', e.target.value)}
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="URL de l'image (optionnel)"
+                />
                 <textarea
                   value={choice.internal_comment || ''}
                   onChange={(e) => handleChoiceChange(index, 'internal_comment', e.target.value)}
-                  className="w-full px-3 py-2 border rounded-lg resize-none mt-2"
+                  className="w-full px-3 py-2 border rounded-lg resize-none"
                   placeholder="💬 Commentaire interne (non visible par le client)"
                   rows="2"
                 />
@@ -513,25 +340,17 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] flex flex-col">
               <div className="flex justify-between items-center mb-4">
-                <div>
-                  <h3 className="text-lg font-bold">📚 Choisir depuis la bibliothèque</h3>
-                  {selectedLibraryChoices.length > 0 && (
-                    <p className="text-sm text-primary font-semibold mt-1">
-                      {selectedLibraryChoices.length} choix sélectionné{selectedLibraryChoices.length > 1 ? 's' : ''}
-                    </p>
-                  )}
-                </div>
+                <h3 className="text-lg font-bold">📚 Choisir depuis la bibliothèque</h3>
                 <button onClick={() => {
                   setShowLibraryPicker(false);
-                  setLibrarySearchTerm('');
-                  setSelectedLibraryChoices([]);
+                  setLibrarySearchTerm(''); // Reset search when closing
                 }} className="text-gray-400 hover:text-gray-600">
                   <X className="w-5 h-5" />
                 </button>
               </div>
               
               {/* Search Bar */}
-              <div className="mb-3">
+              <div className="mb-4">
                 <input
                   type="text"
                   placeholder="🔍 Rechercher un choix..."
@@ -540,78 +359,51 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
                   className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-primary focus:outline-none"
                 />
               </div>
-
-              {/* Selection controls */}
-              <div className="flex gap-2 mb-3">
-                <button
-                  type="button"
-                  onClick={selectAllVisible}
-                  className="text-xs px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded"
-                >
-                  Tout sélectionner
-                </button>
-                <button
-                  type="button"
-                  onClick={deselectAll}
-                  className="text-xs px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded"
-                >
-                  Tout désélectionner
-                </button>
-              </div>
               
-              <div className="grid grid-cols-2 gap-3 overflow-y-auto flex-1 mb-3">
-                {filteredLibraryChoices.map((choice) => {
-                  const isSelected = selectedLibraryChoices.find(c => c.id === choice.id);
-                  return (
+              <div className="grid grid-cols-2 gap-3 overflow-y-auto">
+                {choiceLibrary
+                  .filter((choice) => {
+                    if (!librarySearchTerm.trim()) return true;
+                    const searchLower = librarySearchTerm.toLowerCase();
+                    return (
+                      choice.name.toLowerCase().includes(searchLower) ||
+                      (choice.description && choice.description.toLowerCase().includes(searchLower)) ||
+                      choice.default_price.toString().includes(searchLower)
+                    );
+                  })
+                  .map((choice) => (
                     <div
                       key={choice.id}
-                      onClick={() => toggleLibraryChoice(choice)}
-                      className={`border-2 rounded-lg p-3 cursor-pointer transition-all relative ${
-                        isSelected ? 'border-primary bg-primary/10' : 'border-gray-200 hover:border-primary hover:bg-primary/5'
-                      }`}
+                      onClick={() => handleAddFromLibrary(choice)}
+                      className="border-2 rounded-lg p-3 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all"
                     >
-                      {/* Checkbox */}
-                      <div className="absolute top-2 right-2">
-                        <input
-                          type="checkbox"
-                          checked={!!isSelected}
-                          onChange={() => {}}
-                          className="w-5 h-5 cursor-pointer"
-                        />
-                      </div>
-
                       {choice.image_url && (
                         <img 
-                          src={choice.image_url.startsWith('/') ? `${API_URL}${choice.image_url}` : choice.image_url}
+                          src={choice.image_url} 
                           alt={choice.name}
                           className="w-full h-24 object-cover rounded mb-2"
                         />
                       )}
-                      <h4 className="font-bold pr-6">{choice.name}</h4>
+                      <h4 className="font-bold">{choice.name}</h4>
                       <p className="text-sm text-primary font-bold">{choice.default_price.toFixed(2)}€</p>
                       {choice.description && (
                         <p className="text-xs text-gray-500 mt-1">{choice.description}</p>
                       )}
                     </div>
-                  );
-                })}
+                  ))
+                }
               </div>
               
-              {filteredLibraryChoices.length === 0 && (
+              {choiceLibrary.filter((choice) => {
+                if (!librarySearchTerm.trim()) return true;
+                const searchLower = librarySearchTerm.toLowerCase();
+                return (
+                  choice.name.toLowerCase().includes(searchLower) ||
+                  (choice.description && choice.description.toLowerCase().includes(searchLower)) ||
+                  choice.default_price.toString().includes(searchLower)
+                );
+              }).length === 0 && (
                 <p className="text-center text-gray-400 py-8">Aucun résultat pour "{librarySearchTerm}"</p>
-              )}
-
-              {/* Add selected button */}
-              {selectedLibraryChoices.length > 0 && (
-                <div className="pt-3 border-t">
-                  <Button
-                    type="button"
-                    onClick={handleAddSelectedFromLibrary}
-                    className="w-full"
-                  >
-                    ✅ Ajouter {selectedLibraryChoices.length} choix sélectionné{selectedLibraryChoices.length > 1 ? 's' : ''}
-                  </Button>
-                </div>
               )}
             </div>
           </div>
