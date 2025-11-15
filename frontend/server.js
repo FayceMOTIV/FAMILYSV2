@@ -5,9 +5,11 @@ const app = express();
 // Serve admin panel under /admin
 app.use('/admin', express.static(path.join(__dirname, 'build/admin')));
 
-// Handle admin SPA routing - all /admin/* routes return admin/index.html
-app.get('/admin/*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build/admin/index.html'));
+// Handle admin SPA routing - all /admin routes return admin/index.html
+app.get('/admin*', (req, res) => {
+  if (req.path.startsWith('/admin') && !req.path.includes('.')) {
+    res.sendFile(path.join(__dirname, 'build/admin/index.html'));
+  }
 });
 
 // Serve main frontend
