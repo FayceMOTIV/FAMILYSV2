@@ -2,25 +2,21 @@ const express = require('express');
 const path = require('path');
 const app = express();
 
-// Serve static files for admin
-app.use('/admin/static', express.static(path.join(__dirname, 'build/admin/static')));
+// Serve static files
+app.use(express.static(path.join(__dirname, 'build')));
 
-// Serve static files for main frontend
-app.use('/static', express.static(path.join(__dirname, 'build/static')));
-
-// Serve admin assets (but not index.html)
-app.use('/admin', express.static(path.join(__dirname, 'build/admin'), { index: false }));
-
-// Admin SPA routing - catch all /admin routes and return index.html
-app.get(/^\/admin/, (req, res) => {
+// Admin SPA - all routes starting with /admin
+app.use('/admin', (req, res, next) => {
+  // Skip if it's a static file request
+  if (req.path.match(/\.(js|css|map|ico|png|jpg|jpeg|svg|woff|woff2|ttf|eot)$/)) {
+    return next();
+  }
+  // Return admin index.html for all other /admin requests
   res.sendFile(path.join(__dirname, 'build/admin/index.html'));
 });
 
-// Serve main frontend static files
-app.use(express.static(path.join(__dirname, 'build'), { index: false }));
-
-// Main frontend SPA routing
-app.get('*', (req, res) => {
+// Frontend SPA fallback
+app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'build/index.html'));
 });
 
