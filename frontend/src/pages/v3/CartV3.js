@@ -125,7 +125,7 @@ export const CartV3 = () => {
               <div className="flex-1">
                 <h3 className="font-bold text-gray-900 mb-1">{item.name}</h3>
                 <p className="text-sm text-gray-500 mb-2">
-                  {item.base_price.toFixed(2)}€ × {item.quantity}
+                  {(item.base_price || 0).toFixed(2)}€ × {item.quantity}
                 </p>
 
                 {/* Quantité */}
