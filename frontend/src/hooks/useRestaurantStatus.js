@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://menu-master-141.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://chefs-control.preview.emergentagent.com';
 
 export const useRestaurantStatus = () => {
   const [status, setStatus] = useState({

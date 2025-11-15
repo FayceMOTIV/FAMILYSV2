@@ -6,7 +6,7 @@ import { Input, Label, Select, Textarea } from '../components/Input';
 import { Save, Clock, Store, Palette, CreditCard, Percent, Share2, Calendar, Link as LinkIcon, X, Lock } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://menu-master-141.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://chefs-control.preview.emergentagent.com';
 
 const DAYS = [
   { key: 'monday', label: 'Lundi' },

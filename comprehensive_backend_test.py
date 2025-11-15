@@ -14,7 +14,7 @@ import base64
 import io
 
 # Backend URL from environment
-BACKEND_URL = "https://menu-master-141.preview.emergentagent.com"
+BACKEND_URL = "https://chefs-control.preview.emergentagent.com"
 
 class ComprehensiveBackendTester:
     def __init__(self):

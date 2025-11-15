@@ -4,7 +4,7 @@ import { Button } from './Button';
 import { X, MapPin, Phone, Mail, Calendar, ShoppingBag, TrendingUp } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://menu-master-141.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://chefs-control.preview.emergentagent.com';
 
 export const CustomerDetailModal = ({ isOpen, onClose, customer }) => {
   const [orders, setOrders] = useState([]);
