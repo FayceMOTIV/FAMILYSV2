@@ -186,7 +186,7 @@ sudo supervisorctl restart admin
 ```
 
 ### URLs importantes:
-- **Admin** : https://resto-hub-54.preview.emergentagent.com
+- **Admin** : https://menu-master-141.preview.emergentagent.com
 - **Credentials** : admin@familys.app / Admin@123456
 
 ---

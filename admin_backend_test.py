@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 import io
 
 # Backend URL from environment
-BACKEND_URL = "https://resto-hub-54.preview.emergentagent.com"
+BACKEND_URL = "https://menu-master-141.preview.emergentagent.com"
 
 class AdminBackendTester:
     def __init__(self):

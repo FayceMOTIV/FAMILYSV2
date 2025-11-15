@@ -9,7 +9,7 @@ import { productsAPI, categoriesAPI } from '../services/api';
 import { Plus, Edit2, Trash2, Package, Copy, FolderOpen, Sliders, Edit, MoreVertical, Clock, Calendar, XCircle, CheckCircle, ArrowUp, ArrowDown } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://resto-hub-54.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_API_URL || 'https://menu-master-141.preview.emergentagent.com';
 
 export const MenuManagement = () => {
   const [activeTab, setActiveTab] = useState('products');

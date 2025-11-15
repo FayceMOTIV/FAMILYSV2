@@ -6,7 +6,7 @@ import { OptionModal } from '../components/OptionModal';
 import { Plus, Edit, Trash2, Copy } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://resto-hub-54.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://menu-master-141.preview.emergentagent.com';
 
 export const Options = () => {
   const [options, setOptions] = useState([]);

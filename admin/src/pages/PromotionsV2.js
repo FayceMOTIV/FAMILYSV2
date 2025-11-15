@@ -8,7 +8,7 @@ import { PromotionCalendar } from '../components/PromotionCalendar';
 import { PromotionSimulator } from '../components/PromotionSimulator';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://resto-hub-54.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://menu-master-141.preview.emergentagent.com';
 
 export const PromotionsV2 = () => {
   const [promotions, setPromotions] = useState([]);

@@ -7,7 +7,7 @@ import { productsAPI, categoriesAPI } from '../services/api';
 import axios from 'axios';
 import { ChevronUp, ChevronDown, X, Info } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://resto-hub-54.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://menu-master-141.preview.emergentagent.com';
 
 export const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
   const [loading, setLoading] = useState(false);
