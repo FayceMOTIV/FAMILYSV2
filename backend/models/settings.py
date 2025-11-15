@@ -48,6 +48,8 @@ class SettingsUpdate(BaseModel):
     enable_takeaway: Optional[bool] = None
     enable_onsite: Optional[bool] = None
     enable_reservations: Optional[bool] = None
+    is_paused: Optional[bool] = None
+    pause_reason: Optional[str] = None
     loyalty_percentage: Optional[float] = None
     stripe_key: Optional[str] = None
     service_links: Optional[Dict] = None
