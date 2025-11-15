@@ -149,12 +149,118 @@ export const Revenue = () => {
   ];
 
   const paymentMethods = [
+    { key: 'online', label: 'Paiement en ligne', icon: Smartphone, color: 'purple', amount: stats.online },
     { key: 'card_restaurant', label: 'CB (restaurant)', icon: CreditCard, color: 'blue', amount: stats.card_restaurant },
-    { key: 'online', label: 'Paiement en ligne', icon: TrendingUp, color: 'purple', amount: stats.online },
-    { key: 'ticket_resto', label: 'Ticket Restaurant', icon: Wallet, color: 'orange', amount: stats.ticket_resto },
+    { key: 'ticket_resto', label: 'Ticket restaurant', icon: Wallet, color: 'orange', amount: stats.ticket_resto },
     { key: 'check', label: 'Chèque bancaire', icon: CreditCard, color: 'indigo', amount: stats.check },
     { key: 'cash', label: 'Espèce', icon: Wallet, color: 'green', amount: stats.cash }
   ];
+
+  const printRevenue = () => {
+    // ESC/POS commands for 80MM thermal printer
+    const ESC = '\x1B';
+    const GS = '\x1D';
+    
+    let receipt = '';
+    
+    // Initialize printer
+    receipt += ESC + '@';
+    
+    // Center align + Bold + Double size
+    receipt += ESC + 'a' + '\x01'; // Center
+    receipt += ESC + 'E' + '\x01'; // Bold
+    receipt += GS + '!' + '\x11'; // Double size
+    receipt += 'CHIFFRE D\'AFFAIRES\n';
+    receipt += GS + '!' + '\x00'; // Normal size
+    receipt += ESC + 'E' + '\x00'; // Bold off
+    receipt += '\n';
+    
+    // Date range
+    receipt += ESC + 'a' + '\x01'; // Center
+    const dateRangeLabel = dateRangeOptions.find(opt => opt.value === dateRange)?.label || 'Personnalisé';
+    receipt += dateRangeLabel + '\n';
+    if (dateRange === 'custom' && customStartDate && customEndDate) {
+      receipt += `${customStartDate} - ${customEndDate}\n`;
+    }
+    receipt += '\n';
+    
+    // Line separator
+    receipt += ESC + 'a' + '\x00'; // Left align
+    receipt += '--------------------------------\n';
+    
+    // Total
+    receipt += ESC + 'E' + '\x01'; // Bold
+    receipt += GS + '!' + '\x11'; // Double size
+    receipt += 'TOTAL: ' + stats.total.toFixed(2) + ' EUR\n';
+    receipt += GS + '!' + '\x00'; // Normal size
+    receipt += ESC + 'E' + '\x00'; // Bold off
+    receipt += '--------------------------------\n\n';
+    
+    // Payment methods breakdown
+    receipt += ESC + 'E' + '\x01'; // Bold
+    receipt += 'REPARTITION PAR MOYEN:\n';
+    receipt += ESC + 'E' + '\x00'; // Bold off
+    receipt += '\n';
+    
+    paymentMethods.forEach(method => {
+      if (method.amount > 0) {
+        const label = method.label.padEnd(20, ' ');
+        const amount = method.amount.toFixed(2).padStart(10, ' ');
+        receipt += label + amount + ' EUR\n';
+      }
+    });
+    
+    receipt += '\n--------------------------------\n\n';
+    
+    // Number of orders
+    receipt += 'Nombre de commandes: ' + filteredOrders.length + '\n';
+    receipt += '\n--------------------------------\n\n';
+    
+    // Orders list (last 10)
+    receipt += ESC + 'E' + '\x01'; // Bold
+    receipt += 'DERNIERES COMMANDES:\n';
+    receipt += ESC + 'E' + '\x00'; // Bold off
+    receipt += '\n';
+    
+    const lastOrders = filteredOrders.slice(0, 10);
+    lastOrders.forEach((order, index) => {
+      receipt += `#${order.order_number || order.id.substring(0, 8)}\n`;
+      receipt += `  ${order.customer_name || 'Client'}\n`;
+      receipt += `  ${order.total.toFixed(2)} EUR\n`;
+      if (index < lastOrders.length - 1) {
+        receipt += '\n';
+      }
+    });
+    
+    receipt += '\n--------------------------------\n';
+    
+    // Footer
+    receipt += ESC + 'a' + '\x01'; // Center
+    receipt += '\n';
+    const now = new Date();
+    receipt += `Imprime le ${now.toLocaleDateString('fr-FR')} a ${now.toLocaleTimeString('fr-FR')}\n`;
+    receipt += '\n\n\n';
+    
+    // Cut paper
+    receipt += GS + 'V' + '\x41' + '\x03';
+    
+    // Create blob and open print dialog
+    const blob = new Blob([receipt], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    
+    const printWindow = window.open(url, '_blank', 'width=302,height=500');
+    if (printWindow) {
+      printWindow.onload = () => {
+        printWindow.print();
+        setTimeout(() => {
+          URL.revokeObjectURL(url);
+          printWindow.close();
+        }, 100);
+      };
+    } else {
+      alert('Veuillez autoriser les pop-ups pour imprimer');
+    }
+  };
 
   if (loading) {
     return (
