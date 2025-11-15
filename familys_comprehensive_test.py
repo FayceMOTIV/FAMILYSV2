@@ -337,11 +337,15 @@ class FamilysComprehensiveTester:
                         "name": "Test Burger",
                         "quantity": 1,
                         "base_price": 12.50,
-                        "total_price": 12.50
+                        "total_price": 12.50,
+                        "options": []
                     }
                 ],
+                "subtotal": 12.50,
+                "vat_amount": 0.0,
                 "total": 12.50,
                 "payment_method": "card",
+                "consumption_mode": "takeaway",
                 "use_cashback": True,
                 "cashback_used": 0,
                 "notes": "Test order for comprehensive testing"
