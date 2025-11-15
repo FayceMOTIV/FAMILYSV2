@@ -1,7 +1,8 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, ShoppingBag, Award, Heart, User } from 'lucide-react';
+import { Home, ShoppingBag, Award, Heart, User, Bell } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { useNotifications } from '../hooks/useNotifications';
 import MobileCart from './MobileCart';
 
 const MobileLayout = ({ children }) => {
