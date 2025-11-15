@@ -12,10 +12,14 @@ import MobileLoyalty from './pages/MobileLoyalty';
 import MobileFavorites from './pages/MobileFavorites';
 import MobileProfile from './pages/MobileProfile';
 import Checkout from './pages/Checkout';
+import { useRestaurantStatus } from './hooks/useRestaurantStatus';
+import { RestaurantClosedModal } from './components/RestaurantClosedModal';
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [appReady, setAppReady] = useState(false);
+  const [showClosedModal, setShowClosedModal] = useState(false);
+  const restaurantStatus = useRestaurantStatus();
 
   useEffect(() => {
     // Check si c'est la premi\u00e8re visite ou recharge
