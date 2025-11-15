@@ -34,6 +34,12 @@ function App() {
         <Routes>
           <Route path="/admin/login" element={<Login />} />
           <Route path="/admin/kiosk" element={<OrdersKiosk />} />
+          
+          {/* Modes spéciaux avec PIN */}
+          <Route path="/admin/orders-mode-login" element={<ModeLogin mode="orders" />} />
+          <Route path="/admin/orders-mode" element={<OrdersMode />} />
+          <Route path="/admin/delivery-mode-login" element={<ModeLogin mode="delivery" />} />
+          <Route path="/admin/reservation-mode-login" element={<ModeLogin mode="reservation" />} />
           <Route path="/admin" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="ai" element={<AIAssistant />} />
