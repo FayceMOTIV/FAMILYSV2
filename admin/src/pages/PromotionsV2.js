@@ -248,9 +248,98 @@ export const PromotionsV2 = () => {
           <PromotionCalendar promotions={promotions} />
         )}
 
-        {/* Simulator View */}
-        {activeTab === 'simulator' && (
-          <PromotionSimulator promotions={promotions} />
+        {/* Preview View */}
+        {activeTab === 'preview' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Mobile preview */}
+            <div>
+              <h3 className="font-bold text-lg mb-4">📱 Aperçu dans l'application</h3>
+              <div className="bg-gradient-to-b from-gray-100 to-gray-200 rounded-3xl p-4 shadow-2xl mx-auto" style={{maxWidth: '375px'}}>
+                {/* Phone notch */}
+                <div className="bg-black rounded-t-3xl h-8 flex items-center justify-center mb-2">
+                  <div className="w-20 h-5 bg-gray-900 rounded-full"></div>
+                </div>
+                
+                {/* App content */}
+                <div className="bg-white rounded-2xl overflow-hidden shadow-inner" style={{height: '667px'}}>
+                  {/* App header */}
+                  <div className="bg-gradient-to-r from-red-500 to-orange-500 p-4 text-white">
+                    <h2 className="text-xl font-bold">Family's 🍔</h2>
+                    <p className="text-sm text-white/80">Promotions du moment</p>
+                  </div>
+                  
+                  {/* Scrollable promo list */}
+                  <div className="p-4 overflow-y-auto" style={{height: 'calc(667px - 72px)'}}>
+                    {promotions.length === 0 ? (
+                      <div className="text-center py-20">
+                        <div className="text-6xl mb-4">🎯</div>
+                        <h3 className="text-xl font-bold text-gray-700 mb-2">Aucune promotion</h3>
+                        <p className="text-gray-500">Créez votre première promotion</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {promotions.slice(0, 8).map(promo => (
+                          <div 
+                            key={promo.id}
+                            className="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-orange-200 rounded-xl p-4"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1">
+                                <h4 className="font-bold text-lg">{promo.name}</h4>
+                                <p className="text-sm text-gray-600 mt-1">{promo.description}</p>
+                              </div>
+                              <div className="text-3xl font-black text-orange-600 ml-4">
+                                -{promo.discount_value}{promo.discount_type === 'percentage' ? '%' : '€'}
+                              </div>
+                            </div>
+                            {promo.badge_text && (
+                              <div className="mt-3 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold inline-block">
+                                {promo.badge_text}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Phone home button */}
+                <div className="bg-black rounded-b-3xl h-8 flex items-center justify-center mt-2">
+                  <div className="w-32 h-1 bg-white/30 rounded-full"></div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Promo list */}
+            <div>
+              <h3 className="font-bold text-lg mb-4">Vos promotions</h3>
+              <div className="space-y-2 max-h-[700px] overflow-y-auto">
+                {promotions.length === 0 ? (
+                  <div className="text-center py-10 text-gray-500">
+                    <p>Aucune promotion disponible</p>
+                  </div>
+                ) : (
+                  promotions.map(promo => (
+                    <Card 
+                      key={promo.id}
+                      className="p-3"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <h4 className="font-bold">{promo.name}</h4>
+                          <p className="text-sm text-gray-600">{promo.description}</p>
+                        </div>
+                        <span className="text-xl font-black text-primary ml-3">
+                          -{promo.discount_value}{promo.discount_type === 'percentage' ? '%' : '€'}
+                        </span>
+                      </div>
+                    </Card>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
