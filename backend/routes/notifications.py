@@ -64,7 +64,7 @@ async def get_user_notifications(user_id: str, unread_only: bool = False):
         if unread_only:
             query["is_read"] = False
         
-        notifications = await db.notifications.find(query).sort("created_at", -1).to_list(length=50)
+        notifications = await db.notifications.find(query, {"_id": 0}).sort("created_at", -1).to_list(length=50)
         
         return {
             "notifications": notifications,
