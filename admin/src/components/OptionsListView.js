@@ -17,7 +17,11 @@ export const OptionsListView = ({ options, onEdit, onDelete }) => {
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {options.map((option) => (
-            <tr key={option.id} className="hover:bg-gray-50">
+            <tr 
+              key={option.id} 
+              onClick={() => onEdit(option)}
+              className="hover:bg-blue-50 cursor-pointer transition-colors"
+            >
               <td className="px-6 py-4">
                 <div className="text-sm font-medium text-gray-900">{option.name}</div>
               </td>
