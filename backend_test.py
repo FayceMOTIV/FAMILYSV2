@@ -353,7 +353,7 @@ class NotificationSystemTester:
                                         self.log_result("Check Notification Creation", False, error=f"Status {notif_response.status_code}: {notif_response.text}")
                                         
                                 else:
-                                    self.log_result("Mark Order as Paid", False, error=f"Status {payment_response.status_code}: {payment_response.text}")
+                                    self.log_result("Trigger Loyalty Notification", False, error=f"Status {payment_response.status_code}: {payment_response.text}")
                             else:
                                 self.log_result("Customer Lookup", False, error=f"Customer with email {customer_email} not found")
                         else:
