@@ -449,6 +449,76 @@ export const OrdersManagement = () => {
     <div className="min-h-screen bg-gray-100">
       <Header title="📦 Gestion des Commandes" subtitle="Système de suivi optimisé pour tablette" />
       
+      {/* Ticket Z - Clôture de Journée */}
+      {dailyStatus && !dailyStatus.is_closed && (
+        <div className={`mx-4 mt-4 p-4 rounded-lg border-2 ${
+          dailyStatus.needs_closure 
+            ? 'bg-red-50 border-red-500' 
+            : dailyStatus.can_close
+              ? 'bg-green-50 border-green-500'
+              : 'bg-yellow-50 border-yellow-500'
+        }`}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <FileText className={`w-6 h-6 ${
+                dailyStatus.needs_closure ? 'text-red-600' : 'text-green-600'
+              }`} />
+              <div>
+                <h3 className="font-bold text-lg">
+                  {dailyStatus.needs_closure ? '⚠️ Clôture de journée requise' : '📊 Ticket Z'}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {dailyStatus.pending_orders > 0 ? (
+                    <span className="text-orange-600 font-semibold">
+                      <AlertCircle className="w-4 h-4 inline mr-1" />
+                      {dailyStatus.pending_orders} commande(s) en attente
+                    </span>
+                  ) : (
+                    <span className="text-green-600 font-semibold">
+                      <CheckCircle className="w-4 h-4 inline mr-1" />
+                      Toutes les commandes sont traitées
+                    </span>
+                  )}
+                </p>
+              </div>
+            </div>
+            <Button
+              onClick={handleCloseDay}
+              disabled={!dailyStatus.can_close || closingDay}
+              className={`${
+                dailyStatus.can_close 
+                  ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg' 
+                  : 'bg-gray-400'
+              } text-white font-bold px-6 py-3`}
+            >
+              {closingDay ? (
+                <><Loader className="w-5 h-5 mr-2 animate-spin" /> Clôture en cours...</>
+              ) : (
+                <>🔒 Clôturer la journée</>
+              )}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {dailyStatus && dailyStatus.is_closed && (
+        <div className="mx-4 mt-4 p-4 rounded-lg bg-blue-50 border-2 border-blue-500">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <CheckCircle className="w-6 h-6 text-blue-600" />
+              <div>
+                <h3 className="font-bold text-lg text-blue-900">
+                  ✅ Journée clôturée - {dailyStatus.date}
+                </h3>
+                <p className="text-sm text-blue-700">
+                  Le Ticket Z a été généré avec succès
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Onglets */}
       <div className="p-4 bg-white border-b overflow-x-auto">
         <div className="flex justify-between items-center">
