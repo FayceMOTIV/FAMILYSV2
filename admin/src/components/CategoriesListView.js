@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit2, Trash2, ArrowUp, ArrowDown, Package } from 'lucide-react';
+import { Edit2, Trash2, ArrowUp, ArrowDown, Package, Copy } from 'lucide-react';
 import { Button } from './Button';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://resto-hub-54.preview.emergentagent.com';
