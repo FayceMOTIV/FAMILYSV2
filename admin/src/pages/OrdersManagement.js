@@ -6,7 +6,7 @@ import { PaymentModal } from '../components/PaymentModal';
 import { CancellationModal } from '../components/CancellationModal';
 import { ConfirmationModal } from '../components/ConfirmationModal';
 import { RefundModal } from '../components/RefundModal';
-import { Package, Clock, Truck, CheckCircle, XCircle, CreditCard, Loader, Printer, Grid, List, DollarSign } from 'lucide-react';
+import { Package, Clock, Truck, CheckCircle, XCircle, CreditCard, Loader, Printer, Grid, List, DollarSign, FileText, AlertCircle } from 'lucide-react';
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://resto-hub-54.preview.emergentagent.com';
