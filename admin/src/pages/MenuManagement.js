@@ -525,9 +525,9 @@ export const MenuManagement = () => {
                     if (match) {
                       imageUrl = `${API_URL}${match[0]}`;
                     }
-                  } else if (imageUrl.startsWith('http') && !imageUrl.includes(API_URL)) {
-                    // URL externe invalide, on skip
-                    imageUrl = null;
+                  } else if (imageUrl.startsWith('http')) {
+                    // URL externe complète (Unsplash, etc.) - garder telle quelle
+                    imageUrl = imageUrl;
                   } else if (!imageUrl.startsWith('http')) {
                     if (imageUrl.startsWith('/')) {
                       imageUrl = `${API_URL}${imageUrl}`;
