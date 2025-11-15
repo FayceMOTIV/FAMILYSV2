@@ -53,10 +53,11 @@ export const MenuV3 = () => {
       const productsRes = await axios.get(`${API_URL}/api/v1/admin/products`);
       const productsData = productsRes.data.products || [];
       
-      // Calculer le cashback pour chaque produit
+      // Calculer le cashback pour chaque produit (utiliser les settings chargés)
+      const loyaltyPercentage = cashbackSettings.loyalty_percentage || 5;
       const productsWithCashback = productsData.map(product => ({
         ...product,
-        cashback_amount: ((product.base_price * cashbackSettings.loyalty_percentage) / 100).toFixed(2)
+        cashback_amount: product.base_price ? ((product.base_price * loyaltyPercentage) / 100).toFixed(2) : '0.00'
       }));
 
       setProducts(productsWithCashback);
