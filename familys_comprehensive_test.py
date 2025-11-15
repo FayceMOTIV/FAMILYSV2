@@ -139,11 +139,11 @@ class FamilysComprehensiveTester:
         try:
             # Scenario 1: Sans cashback
             preview_data_no_cashback = {
-                "items": [
-                    {"product_id": "test-product-1", "quantity": 1, "price": 15.0}
-                ],
-                "use_cashback": False,
-                "customer_id": None
+                "customer_id": None,
+                "subtotal": 15.0,
+                "total_after_promos": 15.0,
+                "promo_discount": 0.0,
+                "use_cashback": False
             }
             
             preview_response_1 = requests.post(
@@ -163,11 +163,11 @@ class FamilysComprehensiveTester:
             if customers:
                 customer_id = customers[0].get("id")
                 preview_data_with_cashback = {
-                    "items": [
-                        {"product_id": "test-product-1", "quantity": 1, "price": 25.0}
-                    ],
-                    "use_cashback": True,
-                    "customer_id": customer_id
+                    "customer_id": customer_id,
+                    "subtotal": 25.0,
+                    "total_after_promos": 25.0,
+                    "promo_discount": 0.0,
+                    "use_cashback": True
                 }
                 
                 preview_response_2 = requests.post(
@@ -186,11 +186,11 @@ class FamilysComprehensiveTester:
             
             # Scenario 3: Sans user
             preview_data_no_user = {
-                "items": [
-                    {"product_id": "test-product-1", "quantity": 2, "price": 10.0}
-                ],
-                "use_cashback": False,
-                "customer_id": None
+                "customer_id": None,
+                "subtotal": 20.0,
+                "total_after_promos": 20.0,
+                "promo_discount": 0.0,
+                "use_cashback": False
             }
             
             preview_response_3 = requests.post(
