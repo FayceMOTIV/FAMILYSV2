@@ -305,7 +305,36 @@ class NotificationSystemTester:
                                             else:
                                                 self.log_result("Loyalty Notification Created", False, error=f"Notification message not in expected French format: {message}")
                                         else:
+                                            # If no notification found, create a manual test to verify the notification system works
                                             self.log_result("Loyalty Notification Created", False, error="No loyalty_credited notification found for this order")
+                                            
+                                            # Test manual loyalty notification creation
+                                            manual_loyalty_notif = {
+                                                "user_id": customer_id,
+                                                "type": "loyalty_credited",
+                                                "title": "🎉 Points de fidélité crédités !",
+                                                "message": f"Merci pour ta commande, ta carte de fidélité a été crédité de 2.40 €!",
+                                                "data": {
+                                                    "order_id": order_id,
+                                                    "amount_credited": 2.40,
+                                                    "total_points": loyalty_points + 2.40
+                                                }
+                                            }
+                                            
+                                            manual_response = requests.post(
+                                                f"{self.base_url}/api/v1/notifications",
+                                                json=manual_loyalty_notif,
+                                                headers={"Content-Type": "application/json"}
+                                            )
+                                            
+                                            if manual_response.status_code == 200:
+                                                manual_data = manual_response.json()
+                                                if manual_data.get("success"):
+                                                    self.log_result("Manual Loyalty Notification Test", True, f"Successfully created manual loyalty notification with French message")
+                                                else:
+                                                    self.log_result("Manual Loyalty Notification Test", False, error="Manual notification creation failed")
+                                            else:
+                                                self.log_result("Manual Loyalty Notification Test", False, error=f"Manual notification creation failed: {manual_response.status_code}")
                                     else:
                                         self.log_result("Check Notification Creation", False, error=f"Status {notif_response.status_code}: {notif_response.text}")
                                         
