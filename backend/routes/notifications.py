@@ -32,12 +32,12 @@ class PublicNotificationCreate(BaseModel):
     data: Optional[Dict[str, Any]] = None
 
 @router.post("/notifications")
-async def create_notification(notification: NotificationCreate):
+async def create_notification(notification: PublicNotificationCreate):
     """
     Créer une notification pour un utilisateur
     """
     try:
-        notif = Notification(
+        notif = PublicNotification(
             user_id=notification.user_id,
             type=notification.type,
             title=notification.title,
@@ -45,7 +45,7 @@ async def create_notification(notification: NotificationCreate):
             data=notification.data
         )
         
-        result = await db.notifications.insert_one(notif.dict())
+        result = await db.notifications.insert_one(notif.model_dump())
         
         return {
             "success": True,
