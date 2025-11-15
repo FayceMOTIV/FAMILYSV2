@@ -486,36 +486,57 @@ export const PromotionsV2 = () => {
                         </button>
                       </div>
                     ) : (
-                      // Promo list
+                      // Promo list - AFFICHE TOUTES LES PROMOS, PAS SEULEMENT ACTIVES
                       <div className="space-y-3">
-                        {promotions.filter(p => p.status === 'active').slice(0, 5).map(promo => (
-                          <div 
-                            key={promo.id}
-                            onClick={() => setSelectedPromoForPreview(promo)}
-                            className="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-orange-200 rounded-xl p-4 cursor-pointer hover:shadow-lg transition-shadow"
-                          >
-                            <div className="flex items-center justify-between">
-                              <div className="flex-1">
-                                <div className="text-xs text-orange-600 font-bold mb-1">
-                                  {getTypeLabel(promo.type)}
-                                </div>
-                                <h4 className="font-bold text-lg">{promo.name}</h4>
-                                <p className="text-sm text-gray-600 mt-1">{promo.description}</p>
-                                {getTargetInfo(promo) && (
-                                  <p className="text-xs text-blue-600 mt-2">{getTargetInfo(promo)}</p>
-                                )}
-                              </div>
-                              <div className="text-3xl font-black text-orange-600 ml-4">
-                                -{promo.discount_value}{promo.discount_type === 'percentage' ? '%' : '€'}
-                              </div>
-                            </div>
-                            {promo.badge_text && (
-                              <div className="mt-3 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold inline-block">
-                                {promo.badge_text}
-                              </div>
-                            )}
+                        {promotions.length === 0 ? (
+                          <div className="text-center py-20">
+                            <div className="text-6xl mb-4">🎯</div>
+                            <h3 className="text-xl font-bold text-gray-700 mb-2">Aucune promotion</h3>
+                            <p className="text-gray-500">Créez votre première promotion pour la voir apparaître ici</p>
                           </div>
-                        ))}
+                        ) : (
+                          promotions.slice(0, 8).map(promo => (
+                            <div 
+                              key={promo.id}
+                              onClick={() => setSelectedPromoForPreview(promo)}
+                              className="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-orange-200 rounded-xl p-4 cursor-pointer hover:shadow-lg transition-shadow"
+                            >
+                              <div className="flex items-center justify-between">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <span className="text-xs text-orange-600 font-bold">
+                                      {getTypeLabel(promo.type)}
+                                    </span>
+                                    {promo.status !== 'active' && (
+                                      <span className={`text-xs px-2 py-0.5 rounded ${
+                                        promo.status === 'draft' ? 'bg-gray-200 text-gray-700' :
+                                        promo.status === 'paused' ? 'bg-orange-200 text-orange-700' :
+                                        'bg-red-200 text-red-700'
+                                      }`}>
+                                        {promo.status === 'draft' ? '📝 Brouillon' : 
+                                         promo.status === 'paused' ? '⏸️ Pausé' : 
+                                         '🚫 Expiré'}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <h4 className="font-bold text-lg">{promo.name}</h4>
+                                  <p className="text-sm text-gray-600 mt-1">{promo.description}</p>
+                                  {getTargetInfo(promo) && (
+                                    <p className="text-xs text-blue-600 mt-2">{getTargetInfo(promo)}</p>
+                                  )}
+                                </div>
+                                <div className="text-3xl font-black text-orange-600 ml-4">
+                                  -{promo.discount_value}{promo.discount_type === 'percentage' ? '%' : '€'}
+                                </div>
+                              </div>
+                              {promo.badge_text && (
+                                <div className="mt-3 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold inline-block">
+                                  {promo.badge_text}
+                                </div>
+                              )}
+                            </div>
+                          ))
+                        )}
                       </div>
                     )}
                   </div>
