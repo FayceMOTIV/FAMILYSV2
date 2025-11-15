@@ -545,19 +545,28 @@ export const MenuManagement = () => {
                     onDrop={(e) => handleProductDrop(e, productIndex)}
                     className={`cursor-move transition-all ${draggedProductIndex === productIndex ? 'opacity-50 scale-95' : ''}`}
                   >
-                    {imageUrl ? (
-                      <img
-                        src={imageUrl}
-                        alt={product.name}
-                        className="w-full h-48 object-cover rounded-lg mb-4"
-                      />
-                    ) : (
-                      <div className="w-full h-48 bg-gray-100 rounded-lg mb-4 flex items-center justify-center">
-                        <Package className="w-12 h-12 text-gray-400" />
-                      </div>
-                    )}
-                    <h4 className="font-bold text-lg mb-2">{product.name}</h4>
-                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
+                    {/* Zone cliquable pour ouvrir le modal */}
+                    <div 
+                      className="cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={() => {
+                        setEditingProduct(product);
+                        setShowProductModal(true);
+                      }}
+                    >
+                      {imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          alt={product.name}
+                          className="w-full h-48 object-cover rounded-lg mb-4"
+                        />
+                      ) : (
+                        <div className="w-full h-48 bg-gray-100 rounded-lg mb-4 flex items-center justify-center">
+                          <Package className="w-12 h-12 text-gray-400" />
+                        </div>
+                      )}
+                      <h4 className="font-bold text-lg mb-2">{product.name}</h4>
+                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
+                    </div>
                     
                     {/* Stock Status Badge */}
                     <div className="flex items-center justify-between mb-3">
