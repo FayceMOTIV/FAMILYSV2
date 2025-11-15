@@ -13,7 +13,7 @@ import { OptionsListView } from '../components/OptionsListView';
 import { ChoiceLibraryModal } from '../components/ChoiceLibraryModal';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://admin-kitchen.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://resto-hub-54.preview.emergentagent.com';
 
 export const MenuManagement = () => {
   const [activeTab, setActiveTab] = useState('products');

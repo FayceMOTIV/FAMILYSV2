@@ -12,7 +12,7 @@ from typing import Dict, Optional
 from datetime import datetime, timezone
 
 # Backend URL from environment
-BACKEND_URL = "https://admin-kitchen.preview.emergentagent.com"
+BACKEND_URL = "https://resto-hub-54.preview.emergentagent.com"
 
 class BackendTester:
     def __init__(self):
@@ -242,7 +242,7 @@ class BackendTester:
         try:
             # Test preflight request
             headers = {
-                "Origin": "https://admin-kitchen.preview.emergentagent.com",
+                "Origin": "https://resto-hub-54.preview.emergentagent.com",
                 "Access-Control-Request-Method": "POST",
                 "Access-Control-Request-Headers": "authorization,content-type"
             }

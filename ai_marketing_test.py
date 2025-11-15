@@ -11,7 +11,7 @@ import sys
 from typing import Dict, Optional, List
 
 # Backend URL from environment
-BACKEND_URL = "https://admin-kitchen.preview.emergentagent.com"
+BACKEND_URL = "https://resto-hub-54.preview.emergentagent.com"
 
 class AIMarketingTester:
     def __init__(self):

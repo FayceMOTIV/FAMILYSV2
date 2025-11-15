@@ -8,7 +8,7 @@ import aiohttp
 import json
 from typing import Dict, Optional
 
-BACKEND_URL = "https://admin-kitchen.preview.emergentagent.com"
+BACKEND_URL = "https://resto-hub-54.preview.emergentagent.com"
 
 class PaymentBlockingTester:
     def __init__(self):

@@ -6,7 +6,7 @@ import { ProductModal } from '../components/ProductModal';
 import { productsAPI } from '../services/api';
 import { Plus, Edit2, Trash2, Package, Copy } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://admin-kitchen.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_API_URL || 'https://resto-hub-54.preview.emergentagent.com';
 
 export const Products = () => {
   const [products, setProducts] = useState([]);

@@ -2,7 +2,7 @@ import React from 'react';
 import { Edit2, Trash2, Tag, AlertCircle, CheckCircle, Package } from 'lucide-react';
 import { Button } from './Button';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://admin-kitchen.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://resto-hub-54.preview.emergentagent.com';
 
 const getImageUrl = (product) => {
   const imageUrl = product.image_url || product.image;
