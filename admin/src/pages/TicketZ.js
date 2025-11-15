@@ -19,7 +19,14 @@ export const TicketZ = () => {
 
   const loadDailyStatus = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/v1/admin/ticket-z/daily-status/${today}`);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/v1/admin/ticket-z/daily-status/${today}`, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
+      if (!response.ok) {
+        console.error('Failed to load daily status:', response.status);
+        return;
+      }
       const data = await response.json();
       setDailyStatus(data);
     } catch (error) {
@@ -29,7 +36,14 @@ export const TicketZ = () => {
 
   const loadTickets = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/v1/admin/ticket-z`);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/v1/admin/ticket-z`, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
+      if (!response.ok) {
+        console.error('Failed to load tickets:', response.status);
+        return;
+      }
       const data = await response.json();
       setTickets(data);
     } catch (error) {
