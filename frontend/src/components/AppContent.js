@@ -63,8 +63,14 @@ export const AppContent = () => {
     <>
       <MobileLayout>
         <Routes>
-          <Route path="/" element={<MobileHome />} />
-          <Route path="/menu" element={<MobileMenu />} />
+          {/* V3 Routes */}
+          <Route path="/" element={<HomeV3 />} />
+          <Route path="/menu" element={<MenuV3 />} />
+          <Route path="/wallet" element={<WalletV3 />} />
+          
+          {/* Legacy Routes */}
+          <Route path="/legacy-home" element={<MobileHome />} />
+          <Route path="/legacy-menu" element={<MobileMenu />} />
           <Route path="/loyalty" element={<MobileLoyalty />} />
           <Route path="/favorites" element={<MobileFavorites />} />
           <Route path="/profile" element={<MobileProfile />} />
