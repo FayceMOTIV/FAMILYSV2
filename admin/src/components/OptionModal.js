@@ -48,6 +48,7 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
       choices: [...formData.choices, newChoice]
     });
     setShowLibraryPicker(false);
+    setLibrarySearchTerm(''); // Reset search when closing
   };
 
   useEffect(() => {
