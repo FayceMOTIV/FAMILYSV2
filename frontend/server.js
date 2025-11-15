@@ -1,14 +1,9 @@
 const express = require('express');
 const path = require('path');
-const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 
-// Proxy /uploads to backend
-app.use('/uploads', createProxyMiddleware({
-  target: 'http://localhost:8001',
-  changeOrigin: true,
-  logLevel: 'debug'
-}));
+// Serve uploads directory
+app.use('/uploads', express.static('/app/backend/uploads'));
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'build')));
