@@ -15,7 +15,6 @@ import Checkout from './pages/Checkout';
 import { useRestaurantStatus } from './hooks/useRestaurantStatus';
 import { RestaurantClosedModal } from './components/RestaurantClosedModal';
 import { AppContent } from './components/AppContent';
-import AppContent from './components/AppContent';
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
