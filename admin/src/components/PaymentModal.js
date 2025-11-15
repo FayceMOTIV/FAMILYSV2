@@ -300,10 +300,14 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
           </Button>
           <Button
             type="submit"
-            className="flex-1"
+            className={`flex-1 font-bold text-white shadow-lg ${
+              remaining > 0.01 
+                ? 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600' 
+                : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700'
+            }`}
             disabled={loading || isPaymentLocked || payments.length === 0}
           >
-            {loading ? 'Enregistrement...' : remaining > 0.01 ? `Il reste ${remaining.toFixed(2)}€` : 'Valider le paiement'}
+            {loading ? 'Enregistrement...' : remaining > 0.01 ? `⚠️ Il reste ${remaining.toFixed(2)}€` : '✅ Valider le paiement complet'}
           </Button>
         </div>
       </form>
