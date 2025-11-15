@@ -519,7 +519,16 @@ export const MenuManagement = () => {
                 let imageUrl = product.image_url || product.image;
                 // Construire l'URL complète si nécessaire
                 if (imageUrl) {
-                  if (!imageUrl.startsWith('http')) {
+                  // Si c'est une ancienne URL d'un autre domaine, extraire le chemin
+                  if (imageUrl.includes('.preview.emergentagent.com/uploads/')) {
+                    const match = imageUrl.match(/\/uploads\/.+$/);
+                    if (match) {
+                      imageUrl = `${API_URL}${match[0]}`;
+                    }
+                  } else if (imageUrl.startsWith('http') && !imageUrl.includes(API_URL)) {
+                    // URL externe invalide, on skip
+                    imageUrl = null;
+                  } else if (!imageUrl.startsWith('http')) {
                     if (imageUrl.startsWith('/')) {
                       imageUrl = `${API_URL}${imageUrl}`;
                     } else {
