@@ -57,17 +57,7 @@ function App() {
   return (
     <AppProvider>
       <BrowserRouter>
-        <MobileLayout>
-          <Routes>
-            <Route path="/" element={<MobileHome />} />
-            <Route path="/menu" element={<MobileMenu />} />
-            <Route path="/product/:slug" element={<ProductDetail />} />
-            <Route path="/loyalty" element={<MobileLoyalty />} />
-            <Route path="/favorites" element={<MobileFavorites />} />
-            <Route path="/profile" element={<MobileProfile />} />
-            <Route path="/checkout" element={<Checkout />} />
-          </Routes>
-        </MobileLayout>
+        <AppContent />
         <Toaster />
         
         {/* Modal restaurant fermé */}
