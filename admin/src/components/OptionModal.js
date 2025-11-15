@@ -18,6 +18,7 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [choiceLibrary, setChoiceLibrary] = useState([]);
   const [showLibraryPicker, setShowLibraryPicker] = useState(false);
+  const [librarySearchTerm, setLibrarySearchTerm] = useState('');
 
   useEffect(() => {
     if (isOpen) {
