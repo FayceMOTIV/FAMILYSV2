@@ -272,8 +272,9 @@ class NotificationSystemTester:
                                 customer_id = customer.get("id")
                                 self.log_result("Customer Lookup", True, f"Customer {customer_email} has {loyalty_points}€ loyalty points")
                                 
-                                # 3. Mark order as paid to trigger notification
-                                payment_data = {
+                                # 3. Mark order as paid again to trigger loyalty notification
+                                # (The loyalty logic triggers when payment_status becomes "paid" AND status is "completed")
+                                payment_data_step3 = {
                                     "payment_method": "card",
                                     "payment_status": "paid",
                                     "amount_received": order_total,
@@ -282,12 +283,12 @@ class NotificationSystemTester:
                                 
                                 payment_response = requests.post(
                                     f"{self.base_url}/api/v1/admin/orders/{order_id}/payment",
-                                    json=payment_data,
+                                    json=payment_data_step3,
                                     headers=self.get_headers()
                                 )
                                 
                                 if payment_response.status_code == 200:
-                                    self.log_result("Mark Order as Paid", True, f"Order {order_id} marked as paid")
+                                    self.log_result("Trigger Loyalty Notification", True, f"Order {order_id} payment updated to trigger loyalty")
                                     
                                     # 4. Check if notification was created
                                     # Wait a moment for notification to be created
