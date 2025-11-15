@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { useRestaurantStatus } from '../hooks/useRestaurantStatus';
+import { useNotifications } from '../hooks/useNotifications';
 import MobileLayout from './MobileLayout';
 import MobileHome from '../pages/MobileHome';
 import MobileMenu from '../pages/MobileMenu';
@@ -10,6 +11,8 @@ import MobileLoyalty from '../pages/MobileLoyalty';
 import MobileFavorites from '../pages/MobileFavorites';
 import MobileProfile from '../pages/MobileProfile';
 import Checkout from '../pages/Checkout';
+import { Notifications } from '../pages/Notifications';
+import { NotificationToast } from './NotificationToast';
 
 export const AppContent = () => {
   const { setRestaurantStatus } = useApp();
