@@ -107,6 +107,7 @@ admin_router.include_router(admin_upload.router)
 admin_router.include_router(admin_options.router)
 admin_router.include_router(admin_refunds.router)
 admin_router.include_router(admin_stock.router)
+admin_router.include_router(admin_ticket_z.router)
 
 # Include the routers in the main app
 app.include_router(api_router)
