@@ -74,6 +74,7 @@ export const AppContent = () => {
           <Route path="/product/:slug" element={<ProductDetailV3 />} />
           <Route path="/cart" element={<CartV3 />} />
           <Route path="/checkout-v3" element={<CheckoutV3 />} />
+          <Route path="/order-success" element={<OrderSuccess />} />
           
           {/* Legacy Routes */}
           <Route path="/legacy-home" element={<MobileHome />} />
