@@ -90,7 +90,7 @@ export const ProductsListView = ({ products, categories, onEdit, onDelete, onDup
                   <span className="text-xs text-gray-400">-</span>
                 )}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium" onClick={(e) => e.stopPropagation()}>
                 <div className="flex gap-2 justify-end">
                   <Button size="sm" variant="outline" onClick={() => onEdit(product)}>
                     <Edit2 className="w-4 h-4" />
