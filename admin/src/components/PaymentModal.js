@@ -279,8 +279,7 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
             <Button
               type="button"
               onClick={handleAddPayment}
-              className="w-full"
-              variant="outline"
+              className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600 font-bold shadow-lg"
             >
               <Plus className="w-4 h-4 mr-2" />
               Ajouter ce paiement
