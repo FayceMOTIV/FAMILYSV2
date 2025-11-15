@@ -23,6 +23,13 @@ class RestaurantSettings(BaseModel):
     enable_reservations: bool = True
     is_paused: bool = False  # Restaurant en pause (pas de nouvelles commandes)
     pause_reason: Optional[str] = None  # Raison de la pause
+    pause_duration_minutes: Optional[int] = None  # Durée de la pause en minutes
+    pause_until: Optional[str] = None  # Timestamp de fin de pause
+    no_more_orders_today: bool = False  # Plus de commandes pour aujourd'hui
+    # Codes PIN pour les modes
+    pin_orders_mode: Optional[str] = None  # PIN pour Mode Commande (4 chiffres)
+    pin_delivery_mode: Optional[str] = None  # PIN pour Mode Livraison (4 chiffres)
+    pin_reservation_mode: Optional[str] = None  # PIN pour Mode Réservation (4 chiffres)
     loyalty_percentage: float = 5.0
     stripe_key: Optional[str] = None
     service_links: Dict[str, str] = Field(default_factory=dict)  # Liens Stripe, PayPal, etc
