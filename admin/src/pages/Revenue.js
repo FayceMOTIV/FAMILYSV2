@@ -213,7 +213,7 @@ export const Revenue = () => {
     receipt += '\n--------------------------------\n\n';
     
     // Number of orders
-    receipt += 'Nombre de commandes: ' + filteredOrders.length + '\n';
+    receipt += 'Nombre de commandes: ' + orders.length + '\n';
     receipt += '\n--------------------------------\n\n';
     
     // Orders list (last 10)
@@ -222,7 +222,7 @@ export const Revenue = () => {
     receipt += ESC + 'E' + '\x00'; // Bold off
     receipt += '\n';
     
-    const lastOrders = filteredOrders.slice(0, 10);
+    const lastOrders = orders.slice(0, 10);
     lastOrders.forEach((order, index) => {
       receipt += `#${order.order_number || order.id.substring(0, 8)}\n`;
       receipt += `  ${order.customer_name || 'Client'}\n`;
