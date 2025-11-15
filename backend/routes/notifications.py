@@ -116,11 +116,11 @@ async def send_loyalty_credited_notification(user_id: str, order_id: str, amount
     Envoyer une notification de crédit de fidélité
     """
     try:
-        notification = NotificationCreate(
+        notification = PublicNotificationCreate(
             user_id=user_id,
             type="loyalty_credited",
             title="🎉 Points de fidélité crédités !",
-            message=f"Merci pour ta commande ! Ta carte de fidélité a été créditée de {amount_credited:.2f}€. Solde actuel : {total_points:.2f}€",
+            message=f"Merci pour ta commande, ta carte de fidélité a été crédité de {amount_credited:.2f} €!",
             data={
                 "order_id": order_id,
                 "amount_credited": amount_credited,
