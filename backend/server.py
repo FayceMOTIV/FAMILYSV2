@@ -118,6 +118,9 @@ admin_router.include_router(admin_dashboard_simple.router)
 # Routes publiques pour notifications
 app.include_router(notifications_routes.router, prefix="/api/v1", tags=["notifications"])
 
+# Routes publiques pour cashback
+app.include_router(cashback_routes.router, prefix="/api/v1", tags=["cashback"])
+
 # Include the routers in the main app
 app.include_router(api_router)
 app.include_router(admin_router)
