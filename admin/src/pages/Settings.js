@@ -599,6 +599,88 @@ export const Settings = () => {
           </CardContent>
         </Card>
 
+        {/* Codes PIN Modes */}
+        <Card>
+          <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50">
+            <CardTitle className="flex items-center gap-2">
+              <Lock className="w-5 h-5" />
+              🔐 Codes PIN des Modes
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-gray-600 mb-4">
+              Définissez des codes PIN à 4 chiffres pour sécuriser l'accès aux différents modes du back-office
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="pin_orders_mode">🍽️ Mode Commande</Label>
+                <Input
+                  id="pin_orders_mode"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]{4}"
+                  maxLength="4"
+                  value={settings.pin_orders_mode || ''}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^0-9]/g, '');
+                    if (value.length <= 4) {
+                      setSettings({ ...settings, pin_orders_mode: value });
+                    }
+                  }}
+                  placeholder="••••"
+                  className="text-center text-2xl tracking-widest font-bold"
+                />
+                <p className="text-xs text-gray-500 mt-1">Accès : Dashboard, Pause, Rupture</p>
+              </div>
+              <div>
+                <Label htmlFor="pin_delivery_mode">🚚 Mode Livraison</Label>
+                <Input
+                  id="pin_delivery_mode"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]{4}"
+                  maxLength="4"
+                  value={settings.pin_delivery_mode || ''}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^0-9]/g, '');
+                    if (value.length <= 4) {
+                      setSettings({ ...settings, pin_delivery_mode: value });
+                    }
+                  }}
+                  placeholder="••••"
+                  className="text-center text-2xl tracking-widest font-bold"
+                />
+                <p className="text-xs text-gray-500 mt-1">Accès : Gestion des livraisons</p>
+              </div>
+              <div>
+                <Label htmlFor="pin_reservation_mode">📅 Mode Réservation</Label>
+                <Input
+                  id="pin_reservation_mode"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]{4}"
+                  maxLength="4"
+                  value={settings.pin_reservation_mode || ''}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^0-9]/g, '');
+                    if (value.length <= 4) {
+                      setSettings({ ...settings, pin_reservation_mode: value });
+                    }
+                  }}
+                  placeholder="••••"
+                  className="text-center text-2xl tracking-widest font-bold"
+                />
+                <p className="text-xs text-gray-500 mt-1">Accès : Gestion des réservations</p>
+              </div>
+            </div>
+            <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mt-4">
+              <p className="text-sm text-yellow-800">
+                ⚠️ Notez ces codes en lieu sûr. Le personnel aura besoin de ces codes pour accéder aux modes.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Personnalisation */}
         <Card>
           <CardHeader className="bg-gradient-to-r from-pink-50 to-rose-50">
