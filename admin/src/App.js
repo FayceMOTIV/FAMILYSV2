@@ -53,6 +53,7 @@ function App() {
             <Route path="notifications" element={<Notifications />} />
             <Route path="reservations" element={<Reservations />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="ticket-z" element={<TicketZ />} />
           </Route>
           <Route path="*" element={<Navigate to="/admin" replace />} />
         </Routes>
