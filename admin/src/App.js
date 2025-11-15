@@ -23,6 +23,8 @@ import { OrdersKiosk } from './pages/OrdersKiosk';
 import { Revenue } from './pages/Revenue';
 import { TicketZ } from './pages/TicketZ';
 import AIMarketingTemp from './pages/AIMarketingTemp';
+import { OrdersMode } from './pages/OrdersMode';
+import { ModeLogin } from './pages/ModeLogin';
 // import { ChoiceLibrary } from './pages/ChoiceLibrary';
 
 function App() {
