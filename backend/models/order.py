@@ -38,6 +38,8 @@ class Order(BaseModel):
     subtotal: float
     vat_amount: float
     total: float
+    cashback_used: float = 0.0  # Montant de cashback utilisé pour payer
+    cashback_earned: float = 0.0  # Montant de cashback gagné avec cette commande
     status: str = OrderStatus.NEW
     payment_method: str = PaymentMethod.CARD
     payment_status: Optional[str] = None  # 'paid' (payé en ligne), 'pending' (à payer au restaurant), None (legacy)
