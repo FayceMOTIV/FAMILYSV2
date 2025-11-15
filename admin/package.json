@@ -2,21 +2,20 @@
   "name": "familys-admin",
   "version": "1.0.0",
   "private": true,
-  
   "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^6.28.0",
-    "axios": "^1.7.2",
-    "recharts": "^2.12.7",
-    "lucide-react": "^0.507.0",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-switch": "^1.0.3",
     "@radix-ui/react-toast": "^1.1.5",
+    "axios": "^1.7.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "lucide-react": "^0.507.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
+    "recharts": "^2.12.7",
     "tailwind-merge": "^2.3.0"
   },
   "devDependencies": {
@@ -52,5 +51,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "homepage": "/admin"
 }
