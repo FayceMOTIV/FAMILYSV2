@@ -127,7 +127,7 @@ export const ProductDetailV3 = () => {
   const finalCashback = cashbackAmount * cashbackMultiplier;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-32">
+    <div className="min-h-screen bg-gray-50 pb-40">
       {/* Image Header */}
       <div className="relative h-80 bg-gray-900">
         {product.image_url ? (
