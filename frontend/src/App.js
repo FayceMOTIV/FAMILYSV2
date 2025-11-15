@@ -30,6 +30,16 @@ function App() {
     }
   }, []);
 
+  // Afficher la modal si restaurant fermé
+  useEffect(() => {
+    if (!restaurantStatus.loading && restaurantStatus.noMoreOrdersToday) {
+      const hasSeenClosedModal = sessionStorage.getItem('hasSeenClosedModal');
+      if (!hasSeenClosedModal) {
+        setShowClosedModal(true);
+      }
+    }
+  }, [restaurantStatus]);
+
   const handleSplashComplete = () => {
     sessionStorage.setItem('hasSeenSplash', 'true');
     setShowSplash(false);
