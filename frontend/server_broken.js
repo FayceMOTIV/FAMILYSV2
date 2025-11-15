@@ -14,23 +14,18 @@ app.use('/api', createProxyMiddleware({
 app.use('/uploads', express.static('/app/backend/uploads'));
 
 // Serve admin static files
-app.use('/admin', express.static(path.join(__dirname, 'build/admin')));
+app.use('/admin/static', express.static(path.join(__dirname, 'build/admin/static')));
 
-// Serve main app static files  
-app.use(express.static(path.join(__dirname, 'build')));
+// Serve main app static files
+app.use('/static', express.static(path.join(__dirname, 'build/static')));
 
-// Admin SPA routing
-app.use('/admin', (req, res, next) => {
-  // If requesting a file with extension, let express.static handle it
-  if (req.path.match(/\.(js|css|map|json|ico|png|jpg|jpeg|svg|woff|woff2|ttf|eot)$/)) {
-    return next();
-  }
-  // Otherwise send admin index.html
+// Admin SPA routing - must handle all /admin routes
+app.get(/^\/admin/, (req, res) => {
   res.sendFile(path.join(__dirname, 'build/admin/index.html'));
 });
 
-// Frontend SPA fallback
-app.use((req, res) => {
+// Frontend SPA fallback for main app
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build/index.html'));
 });
 
