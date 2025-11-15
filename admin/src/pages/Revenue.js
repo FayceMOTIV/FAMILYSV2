@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Header } from '../components/Header';
 import { Card, CardContent } from '../components/Card';
 import { Button } from '../components/Button';
-import { DollarSign, TrendingUp, CreditCard, Wallet, Smartphone, Calendar } from 'lucide-react';
+import { DollarSign, TrendingUp, CreditCard, Wallet, Smartphone, Calendar, Printer } from 'lucide-react';
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://resto-hub-54.preview.emergentagent.com';
