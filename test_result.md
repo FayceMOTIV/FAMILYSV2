@@ -105,6 +105,18 @@
 user_problem_statement: "Continue implementing back office features for Family's restaurant: Stock Management, Category Reordering, Kiosk Mode, Partial Refunds. Backend URL: https://chefs-control.preview.emergentagent.com"
 
 backend:
+  - task: "Customer Loyalty Notification System"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/routes/notifications.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implemented complete notification system for loyalty points. Backend: 1) Created Notification model (models/notification.py), 2) API endpoints at /api/v1/notifications/ for GET (user notifications), POST (create), PUT (mark as read), POST (mark all as read), 3) Integrated into order payment flow - when order marked as paid, loyalty points credited and notification created automatically, 4) Frontend: Created useNotifications hook, NotificationToast component for real-time alerts, Notifications page to list all notifications, integrated notification badge in MobileLayout (floating bell icon with unread count), added /notifications route in AppContent. Need to test: 1) Backend notification endpoints, 2) Notification creation on payment, 3) Frontend toast display, 4) Badge count update, 5) Navigation to notifications page."
+
   - task: "Granular Stock Management System"
     implemented: true
     working: true
