@@ -8,7 +8,8 @@ import MobileCart from './MobileCart';
 const MobileLayout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isCartOpen, setIsCartOpen, getCartItemsCount } = useApp();
+  const { isCartOpen, setIsCartOpen, getCartItemsCount, user } = useApp();
+  const { unreadCount } = useNotifications(user?.id);
   
   const cartCount = getCartItemsCount();
 
