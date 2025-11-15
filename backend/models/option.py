@@ -9,6 +9,7 @@ class OptionChoice(BaseModel):
     name: str
     price: float = 0.0  # Prix additionnel pour ce choix
     image_url: Optional[str] = None  # Image pour le choix
+    internal_comment: Optional[str] = None  # Commentaire interne pour ce choix (non visible client)
 
 class ProductOption(BaseModel):
     """Option pour un produit (ex: Taille, Sauce, etc.)."""
