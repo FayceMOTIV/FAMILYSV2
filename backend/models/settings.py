@@ -21,6 +21,8 @@ class RestaurantSettings(BaseModel):
     enable_takeaway: bool = True
     enable_onsite: bool = True
     enable_reservations: bool = True
+    is_paused: bool = False  # Restaurant en pause (pas de nouvelles commandes)
+    pause_reason: Optional[str] = None  # Raison de la pause
     loyalty_percentage: float = 5.0
     stripe_key: Optional[str] = None
     service_links: Dict[str, str] = Field(default_factory=dict)  # Liens Stripe, PayPal, etc
