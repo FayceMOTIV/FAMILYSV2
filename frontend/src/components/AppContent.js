@@ -17,6 +17,7 @@ import { NotificationToast } from './NotificationToast';
 import { HomeV3 } from '../pages/v3/HomeV3';
 import { MenuV3 } from '../pages/v3/MenuV3';
 import { WalletV3 } from '../pages/v3/WalletV3';
+import { ProductDetailV3 } from '../pages/v3/ProductDetailV3';
 
 export const AppContent = () => {
   const { setRestaurantStatus, user } = useApp();
