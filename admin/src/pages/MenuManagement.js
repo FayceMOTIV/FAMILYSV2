@@ -203,6 +203,24 @@ export const MenuManagement = () => {
     }
   };
 
+  const handleDuplicateCategory = async (category) => {
+    if (!window.confirm(`Dupliquer la catégorie "${category.name}" ?`)) return;
+    try {
+      const duplicatedCategory = {
+        ...category,
+        name: `${category.name} (copie)`,
+      };
+      delete duplicatedCategory.id;
+      delete duplicatedCategory.order; // Reset order so it goes to the end
+      await categoriesAPI.create(duplicatedCategory);
+      loadCategories();
+      alert('✅ Catégorie dupliquée avec succès !');
+    } catch (error) {
+      alert('Erreur lors de la duplication');
+      console.error(error);
+    }
+  };
+
   const handleReorderCategory = async (categoryId, direction) => {
     const sortedCats = [...categories].sort((a, b) => (a.order || 0) - (b.order || 0));
     const index = sortedCats.findIndex(c => c.id === categoryId);
