@@ -39,6 +39,7 @@ export const MenuManagement = () => {
   const [filterPromo, setFilterPromo] = useState(false);
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterStock, setFilterStock] = useState('all');
+  const [expandedCategory, setExpandedCategory] = useState(null);
   
   // Categories state
   const [categories, setCategories] = useState([]);
