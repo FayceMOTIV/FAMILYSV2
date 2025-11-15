@@ -46,7 +46,6 @@ function App() {
             <Route path="orders" element={<OrdersManagement />} />
             <Route path="revenue" element={<Revenue />} />
             <Route path="categories" element={<Categories />} />
-            <Route path="promos" element={<Promos />} />
             <Route path="promotions" element={<PromotionsV2 />} />
             <Route path="customers" element={<Customers />} />
             <Route path="notifications" element={<Notifications />} />
