@@ -180,11 +180,11 @@ export const PromotionsV2 = () => {
               Calendrier
             </Button>
             <Button
-              variant={activeTab === 'simulator' ? 'primary' : 'outline'}
-              onClick={() => setActiveTab('simulator')}
+              variant={activeTab === 'preview' ? 'primary' : 'outline'}
+              onClick={() => setActiveTab('preview')}
             >
               <Eye className="w-4 h-4 mr-2" />
-              Simulateur
+              Aperçu App
             </Button>
           </div>
           
