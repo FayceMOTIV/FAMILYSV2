@@ -74,7 +74,7 @@ export const Customers = () => {
       <div className="p-8">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-bold">{customers.length} clients</h3>
-          <Button variant="outline"><Download className="w-4 h-4 mr-2" />Exporter CSV</Button>
+          <Button variant="outline" onClick={handleExportCSV}><Download className="w-4 h-4 mr-2" />Exporter CSV</Button>
         </div>
 
         {customers.length === 0 ? (
