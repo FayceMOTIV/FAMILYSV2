@@ -331,7 +331,18 @@ export const Revenue = () => {
                 <p className="text-5xl font-black">{stats.total.toFixed(2)}€</p>
                 <p className="text-green-100 text-sm mt-2">{stats.orderCount} commandes</p>
               </div>
-              <DollarSign className="w-20 h-20 text-white/30" />
+              <div className="flex flex-col items-end gap-3">
+                <DollarSign className="w-20 h-20 text-white/30" />
+                <Button
+                  onClick={printRevenue}
+                  variant="outline"
+                  size="sm"
+                  className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+                >
+                  <Printer className="w-4 h-4 mr-2" />
+                  Imprimer
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
