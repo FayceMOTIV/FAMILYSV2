@@ -135,6 +135,57 @@ export const OrdersManagement = () => {
     }
   };
 
+  const loadDailyStatus = async () => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/v1/admin/ticket-z/daily-status/${today}`, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setDailyStatus(data);
+      }
+    } catch (error) {
+      console.error('Error loading daily status:', error);
+    }
+  };
+
+  const handleCloseDay = async () => {
+    if (!window.confirm('⚠️ Confirmer la clôture de journée ? Cette action est irréversible et générera le Ticket Z.')) {
+      return;
+    }
+
+    setClosingDay(true);
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/v1/admin/ticket-z`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ date: today })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Erreur lors de la clôture');
+      }
+
+      const ticketZ = await response.json();
+      alert('✅ Journée clôturée avec succès !');
+      setShowTicketZModal(true);
+      loadDailyStatus();
+      loadOrders();
+    } catch (error) {
+      alert(`❌ ${error.message}`);
+    } finally {
+      setClosingDay(false);
+    }
+  };
+
   const requestStatusChange = (orderId, currentStatus, newStatus) => {
     // Vérifier si on essaie de terminer une commande
     if (newStatus === 'completed') {
