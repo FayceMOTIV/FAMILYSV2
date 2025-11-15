@@ -29,7 +29,10 @@ export const Revenue = () => {
   const loadRevenue = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API_URL}/api/v1/admin/orders`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API_URL}/api/v1/admin/orders`, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
       const allOrders = response.data.orders || [];
       
       // Filtrer par statut et paiement
