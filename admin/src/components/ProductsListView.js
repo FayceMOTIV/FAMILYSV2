@@ -48,7 +48,11 @@ export const ProductsListView = ({ products, categories, onEdit, onDelete, onDup
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {products.map((product) => (
-            <tr key={product.id} className="hover:bg-gray-50">
+            <tr 
+              key={product.id} 
+              onClick={() => onEdit(product)}
+              className="hover:bg-blue-50 cursor-pointer transition-colors"
+            >
               <td className="px-6 py-4 whitespace-nowrap">
                 {getImageUrl(product) ? (
                   <img 
