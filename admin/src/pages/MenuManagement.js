@@ -842,28 +842,50 @@ export const MenuManagement = () => {
                       {/* Display products of this category */}
                       {expandedCategory === category.id && (
                         <div className="space-y-2 mt-3 p-3 bg-gray-50 rounded-lg">
-                          {products.filter(p => p.category === category.name).map(product => (
-                            <div 
-                              key={product.id}
-                              onClick={() => {
-                                setEditingProduct(product);
-                                setShowProductModal(true);
-                              }}
-                              className="flex items-center justify-between p-2 bg-white rounded hover:bg-blue-50 cursor-pointer transition-colors"
-                            >
-                              <div className="flex items-center space-x-2">
-                                {product.image_url ? (
-                                  <img src={product.image_url} alt={product.name} className="w-10 h-10 object-cover rounded" />
-                                ) : (
-                                  <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
-                                    <Package className="w-5 h-5 text-gray-400" />
-                                  </div>
-                                )}
-                                <span className="text-sm font-medium">{product.name}</span>
+                          {products.filter(p => p.category === category.name).map(product => {
+                            // Construire l'URL de l'image du produit
+                            let productImageUrl = product.image_url || product.image;
+                            if (productImageUrl) {
+                              if (productImageUrl.includes('.preview.emergentagent.com/uploads/')) {
+                                const match = productImageUrl.match(/\/uploads\/.+$/);
+                                if (match) {
+                                  productImageUrl = `${API_URL}${match[0]}`;
+                                }
+                              } else if (productImageUrl.startsWith('http')) {
+                                // URL externe (Unsplash, etc.) - garder telle quelle
+                                productImageUrl = productImageUrl;
+                              } else if (!productImageUrl.startsWith('http')) {
+                                if (productImageUrl.startsWith('/')) {
+                                  productImageUrl = `${API_URL}${productImageUrl}`;
+                                } else {
+                                  productImageUrl = `${API_URL}/${productImageUrl}`;
+                                }
+                              }
+                            }
+
+                            return (
+                              <div 
+                                key={product.id}
+                                onClick={() => {
+                                  setEditingProduct(product);
+                                  setShowProductModal(true);
+                                }}
+                                className="flex items-center justify-between p-2 bg-white rounded hover:bg-blue-50 cursor-pointer transition-colors"
+                              >
+                                <div className="flex items-center space-x-2">
+                                  {productImageUrl ? (
+                                    <img src={productImageUrl} alt={product.name} className="w-10 h-10 object-cover rounded" />
+                                  ) : (
+                                    <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                                      <Package className="w-5 h-5 text-gray-400" />
+                                    </div>
+                                  )}
+                                  <span className="text-sm font-medium">{product.name}</span>
+                                </div>
+                                <span className="text-sm font-bold text-primary">{product.base_price?.toFixed(2)}€</span>
                               </div>
-                              <span className="text-sm font-bold text-primary">{product.base_price?.toFixed(2)}€</span>
-                            </div>
-                          ))}
+                            );
+                          })}
                           {products.filter(p => p.category === category.name).length === 0 && (
                             <p className="text-xs text-gray-400 italic text-center">Aucun produit dans cette catégorie</p>
                           )}
