@@ -5,11 +5,13 @@ const app = express();
 // Serve admin panel under /admin
 app.use('/admin', express.static(path.join(__dirname, 'build/admin')));
 
-// Handle admin SPA routing - all /admin routes return admin/index.html
-app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build/admin/index.html'));
-});
-app.get('/admin/:path(*)', (req, res) => {
+// Handle admin SPA routing
+app.use('/admin', (req, res, next) => {
+  // If request is for a file (has extension), let static middleware handle it
+  if (req.path.includes('.')) {
+    return next();
+  }
+  // Otherwise return admin index.html for SPA routing
   res.sendFile(path.join(__dirname, 'build/admin/index.html'));
 });
 
