@@ -453,6 +453,21 @@ frontend:
         - agent: "main"
         - comment: "Implemented comprehensive improvements to Choice Library modal and image handling. FEATURES IMPLEMENTED: 1) 🔍 SEARCH BAR: Real-time filtering in library picker with search in name, description, and price fields. 2) ☑️ MULTI-SELECT: Added checkboxes to select multiple choices at once, with 'Select All' and 'Deselect All' buttons, counter showing number of selected items, single button to add all selected choices. 3) 📸 IMAGE UPLOAD: Replaced URL input fields with direct file upload (accepts JPG, PNG, WEBP up to 5MB), shows image preview after upload, delete button to remove uploaded image, uses /api/v1/admin/upload/image endpoint, displays proper loading state during upload. 4) 📚 AUTO-ADD TO LIBRARY: When creating/editing an option, all choices are automatically added to the choice library (checks for duplicates to avoid redundancy), discrete toast notification confirms addition ('X ajouté à la bibliothèque'). TECHNICAL DETAILS: New states for selectedLibraryChoices array, uploadingImage object for loading states, toast notification system. Functions: toggleLibraryChoice(), selectAllVisible(), deselectAll(), handleImageUpload(), handleRemoveImage(), addChoiceToLibrary(). UI improvements: Selection counter in modal header, checkboxes in top-right of each choice card, border highlights for selected items, responsive grid layout maintained. Need comprehensive testing: multi-selection workflow, image upload/preview/delete, auto-add to library with toast notifications, search + selection combined."
 
+  - task: "Family's V3 Cashback Flow Complete Testing"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/pages/v3/"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Comprehensive testing of Family's V3 application flow with cashback system as requested. Mobile viewport 390x844 used throughout testing."
+        - working: false
+        - agent: "testing"
+        - comment: "❌ FAMILY'S V3 CASHBACK FLOW CRITICAL ISSUES IDENTIFIED: Comprehensive testing completed on all 5 requested scenarios with mixed results. WORKING COMPONENTS: 1) ✅ HOME V3 PAGE: Loads correctly with Family's branding, 'Offres du moment' promo banners visible, 'Que veux-tu manger ?' categories section present, 'Commander maintenant' button navigates to /menu successfully. 2) ✅ MENU V3 STRUCTURE: Grille de produits displays 6 products, page loads properly, responsive design works on mobile 390x844. 3) ✅ CHECKOUT V3 FORM: Client information form present (5 inputs), payment methods available (Carte bancaire, Sur place), total display functional. CRITICAL FAILURES: 1) ❌ CASHBACK NOT VISIBLE: No '+X.XX€' cashback amounts shown on products in menu, missing core V3 feature. 2) ❌ PRODUCT DETAIL ISSUES: Product pages load but missing 'Gagne X.XX€' cashback block, no 'Ajouter au panier' button found, cannot add items to cart. 3) ❌ CART FUNCTIONALITY BROKEN: Cannot test cart with cashback preview because products cannot be added, only empty state visible. 4) ❌ CHECKOUT CASHBACK MISSING: No cashback recap section visible, total shows 0.00€ due to empty cart. ROOT CAUSE: Backend cashback system confirmed working in previous tests, but frontend V3 components have incomplete integration. ProductDetailV3.js exists but cashback calculation/display logic not properly connected to backend API. MOBILE COMPATIBILITY: All pages responsive and functional on mobile viewport. RECOMMENDATION: Fix frontend-backend integration for cashback display and product interaction in V3 components before production deployment."
+
 metadata:
   created_by: "testing_agent"
   version: "1.0"
