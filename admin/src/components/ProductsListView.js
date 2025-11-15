@@ -96,7 +96,7 @@ export const ProductsListView = ({ products, categories, onEdit, onDelete, onDup
                     <Edit2 className="w-4 h-4" />
                   </Button>
                   <Button size="sm" variant="outline" onClick={() => onDuplicate(product)}>
-                    <Package className="w-4 h-4" />
+                    <Copy className="w-4 h-4" />
                   </Button>
                   <Button size="sm" variant="outline" onClick={() => onDelete(product.id)} className="text-red-600 border-red-300 hover:bg-red-50">
                     <Trash2 className="w-4 h-4" />
