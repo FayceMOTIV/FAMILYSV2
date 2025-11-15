@@ -122,6 +122,9 @@ app.include_router(notifications_routes.router, prefix="/api/v1", tags=["notific
 # Routes publiques pour cashback
 app.include_router(cashback_routes.router, prefix="/api/v1", tags=["cashback"])
 
+# Routes publiques pour orders
+app.include_router(orders_routes.router, prefix="/api/v1", tags=["orders"])
+
 # Include the routers in the main app
 app.include_router(api_router)
 app.include_router(admin_router)
