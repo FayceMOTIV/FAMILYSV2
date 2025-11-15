@@ -806,22 +806,31 @@ export const MenuManagement = () => {
                     onDrop={(e) => handleCategoryDrop(e, index)}
                     className={`cursor-move transition-all ${draggedCategoryIndex === index ? 'opacity-50 scale-95' : ''}`}
                   >
-                    {imageUrl ? (
-                      <img
-                        src={imageUrl}
-                        alt={category.name}
-                        className="w-full h-40 object-cover rounded-lg mb-4"
-                      />
-                    ) : (
-                      <div className="w-full h-40 bg-gradient-to-br from-orange-100 to-red-100 rounded-lg mb-4 flex items-center justify-center">
-                        <FolderOpen className="w-12 h-12 text-orange-400" />
+                    {/* Zone cliquable pour ouvrir le modal */}
+                    <div 
+                      className="cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={() => {
+                        setEditingCategory(category);
+                        setShowCategoryModal(true);
+                      }}
+                    >
+                      {imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          alt={category.name}
+                          className="w-full h-40 object-cover rounded-lg mb-4"
+                        />
+                      ) : (
+                        <div className="w-full h-40 bg-gradient-to-br from-orange-100 to-red-100 rounded-lg mb-4 flex items-center justify-center">
+                          <FolderOpen className="w-12 h-12 text-orange-400" />
+                        </div>
+                      )}
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="font-bold text-lg">{category.name}</h4>
+                        <span className="text-xs bg-gray-100 px-2 py-1 rounded">#{index + 1}</span>
                       </div>
-                    )}
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-bold text-lg">{category.name}</h4>
-                      <span className="text-xs bg-gray-100 px-2 py-1 rounded">#{index + 1}</span>
+                      <p className="text-sm text-gray-600 mb-2 line-clamp-2">{category.description}</p>
                     </div>
-                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">{category.description}</p>
                     
                     {/* View products button */}
                     <Button 
