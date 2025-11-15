@@ -191,12 +191,19 @@ class NotificationSystemTester:
                 orders_data = orders_response.json()
                 orders = orders_data.get("orders", [])
                 
-                # Find an order that's ready or in_preparation and not yet paid
+                # Find an order that's completed and not yet paid (for loyalty notification test)
                 target_order = None
                 for order in orders:
-                    if order.get("status") in ["ready", "in_preparation"] and order.get("payment_status") != "paid":
+                    if order.get("status") == "completed" and order.get("payment_status") != "paid":
                         target_order = order
                         break
+                
+                # If no completed unpaid order, find a ready order and complete it first
+                if not target_order:
+                    for order in orders:
+                        if order.get("status") == "ready" and order.get("payment_status") != "paid":
+                            target_order = order
+                            break
                 
                 if target_order:
                     order_id = target_order.get("id")
