@@ -113,9 +113,9 @@ async def create_ticket_z(
 
 @router.get("/daily-status/{date}", response_model=DailyStatus)
 async def get_daily_status(
-    date: str,  # Format: YYYY-MM-DD
-    db: AsyncIOMotorDatabase = Depends(get_database)
+    date: str  # Format: YYYY-MM-DD
 ):
+    db = get_db()
     """Obtenir le statut de clôture d'une journée."""
     
     # Vérifier si un Ticket Z existe pour cette date
