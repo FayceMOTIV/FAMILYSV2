@@ -832,19 +832,44 @@ export const MenuManagement = () => {
                       <p className="text-sm text-gray-600 mb-2 line-clamp-2">{category.description}</p>
                     </div>
                     
-                    {/* View products button */}
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      onClick={() => {
-                        setActiveTab('products');
-                        setFilterCategory(category.id);
-                      }}
-                      className="w-full mb-2"
-                    >
-                      <Package className="w-4 h-4 mr-1" />
-                      Voir les produits
-                    </Button>
+                    {/* View products - show count and expand */}
+                    <div className="mb-2">
+                      <div className="text-sm text-gray-600 font-medium mb-2">
+                        <Package className="w-4 h-4 inline mr-1" />
+                        {products.filter(p => p.category === category.name).length} produit(s)
+                      </div>
+                      
+                      {/* Display products of this category */}
+                      {expandedCategory === category.id && (
+                        <div className="space-y-2 mt-3 p-3 bg-gray-50 rounded-lg">
+                          {products.filter(p => p.category === category.name).map(product => (
+                            <div 
+                              key={product.id}
+                              onClick={() => {
+                                setEditingProduct(product);
+                                setShowProductModal(true);
+                              }}
+                              className="flex items-center justify-between p-2 bg-white rounded hover:bg-blue-50 cursor-pointer transition-colors"
+                            >
+                              <div className="flex items-center space-x-2">
+                                {product.image_url ? (
+                                  <img src={product.image_url} alt={product.name} className="w-10 h-10 object-cover rounded" />
+                                ) : (
+                                  <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                                    <Package className="w-5 h-5 text-gray-400" />
+                                  </div>
+                                )}
+                                <span className="text-sm font-medium">{product.name}</span>
+                              </div>
+                              <span className="text-sm font-bold text-primary">{product.base_price?.toFixed(2)}€</span>
+                            </div>
+                          ))}
+                          {products.filter(p => p.category === category.name).length === 0 && (
+                            <p className="text-xs text-gray-400 italic text-center">Aucun produit dans cette catégorie</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
                     
                     {/* Reorder buttons */}
                     <div className="flex space-x-2 mb-2">
