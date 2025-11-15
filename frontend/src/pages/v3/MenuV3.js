@@ -37,30 +37,40 @@ export const MenuV3 = () => {
     try {
       setLoading(true);
 
-      // Charger les settings pour le cashback
+      // 1. Charger d'abord les settings pour le cashback
+      let loyaltyPercentage = 5; // Valeur par défaut
       try {
         const settingsRes = await axios.get(`${API_URL}/api/v1/cashback/settings`);
         setCashbackSettings(settingsRes.data);
+        loyaltyPercentage = settingsRes.data.loyalty_percentage || 5;
       } catch (error) {
         console.log('Settings non disponibles:', error);
       }
 
-      // Charger les catégories
-      const categoriesRes = await axios.get(`${API_URL}/api/v1/admin/categories`);
-      setCategories(categoriesRes.data.categories || []);
+      // 2. Charger les catégories
+      try {
+        const categoriesRes = await axios.get(`${API_URL}/api/v1/admin/categories`);
+        setCategories(categoriesRes.data.categories || []);
+      } catch (error) {
+        console.log('Catégories non disponibles:', error);
+      }
 
-      // Charger les produits
-      const productsRes = await axios.get(`${API_URL}/api/v1/admin/products`);
-      const productsData = productsRes.data.products || [];
-      
-      // Calculer le cashback pour chaque produit (utiliser les settings chargés)
-      const loyaltyPercentage = cashbackSettings.loyalty_percentage || 5;
-      const productsWithCashback = productsData.map(product => ({
-        ...product,
-        cashback_amount: product.base_price ? ((product.base_price * loyaltyPercentage) / 100).toFixed(2) : '0.00'
-      }));
+      // 3. Charger les produits avec calcul du cashback
+      try {
+        const productsRes = await axios.get(`${API_URL}/api/v1/admin/products`);
+        const productsData = productsRes.data.products || [];
+        
+        // Calculer le cashback pour chaque produit
+        const productsWithCashback = productsData.map(product => ({
+          ...product,
+          cashback_amount: product.base_price ? parseFloat(((product.base_price * loyaltyPercentage) / 100).toFixed(2)) : 0
+        }));
 
-      setProducts(productsWithCashback);
+        setProducts(productsWithCashback);
+      } catch (error) {
+        console.log('Produits non disponibles:', error);
+      }
+
     } catch (error) {
       console.error('Erreur chargement menu:', error);
     } finally {
