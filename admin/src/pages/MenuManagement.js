@@ -807,12 +807,11 @@ export const MenuManagement = () => {
                     onDrop={(e) => handleCategoryDrop(e, index)}
                     className={`cursor-move transition-all ${draggedCategoryIndex === index ? 'opacity-50 scale-95' : ''}`}
                   >
-                    {/* Zone cliquable pour ouvrir le modal */}
+                    {/* Zone cliquable pour expand/collapse les produits */}
                     <div 
                       className="cursor-pointer hover:opacity-80 transition-opacity"
                       onClick={() => {
-                        setEditingCategory(category);
-                        setShowCategoryModal(true);
+                        setExpandedCategory(expandedCategory === category.id ? null : category.id);
                       }}
                     >
                       {imageUrl ? (
