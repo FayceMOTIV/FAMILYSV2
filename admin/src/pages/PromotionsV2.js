@@ -13,7 +13,8 @@ const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://menu-master-141.pr
 export const PromotionsV2 = () => {
   const [promotions, setPromotions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('list'); // list, calendar, analytics, simulator
+  const [activeTab, setActiveTab] = useState('list'); // list, calendar, analytics, preview
+  const [selectedPromoForPreview, setSelectedPromoForPreview] = useState(null);
   const [showWizard, setShowWizard] = useState(false);
   const [editingPromo, setEditingPromo] = useState(null);
   const [analytics, setAnalytics] = useState(null);
