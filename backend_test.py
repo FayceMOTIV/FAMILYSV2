@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Family's Back Office AI Assistant
-Tests CORS fix and AI integration endpoints
+Comprehensive Backend Testing for Family's Restaurant Notification System
+Testing notification CRUD endpoints and order payment flow with loyalty notifications
 """
 
-import asyncio
-import aiohttp
+import requests
 import json
-import sys
-from typing import Dict, Optional
 from datetime import datetime, timezone
+import uuid
+import time
 
-# Backend URL from environment
-BACKEND_URL = "https://chefs-control.preview.emergentagent.com"
+# Configuration
+BASE_URL = "https://chefs-control.preview.emergentagent.com"
+ADMIN_EMAIL = "admin@familys.app"
+ADMIN_PASSWORD = "Admin@123456"
 
 class BackendTester:
     def __init__(self):
