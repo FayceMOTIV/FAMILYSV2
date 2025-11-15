@@ -43,10 +43,10 @@ const MobileLayout = ({ children }) => {
         </button>
       )}
 
-      {/* Floating Cart Button */}
+      {/* Floating Cart Button V3 */}
       {cartCount > 0 && (
         <button
-          onClick={() => setIsCartOpen(true)}
+          onClick={() => navigate('/cart')}
           className="fixed bottom-24 right-4 z-[9998] w-16 h-16 bg-gradient-to-br from-[#C62828] to-[#8B0000] text-white rounded-full shadow-2xl flex items-center justify-center active:scale-90 transition-all duration-300 animate-bounce"
         >
           <ShoppingBag className="w-7 h-7" />
