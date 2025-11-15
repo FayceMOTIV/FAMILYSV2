@@ -40,6 +40,7 @@ class Order(BaseModel):
     total: float
     status: str = OrderStatus.NEW
     payment_method: str = PaymentMethod.CARD
+    payment_status: Optional[str] = None  # 'paid' (payé en ligne), 'pending' (à payer au restaurant), None (legacy)
     consumption_mode: str  # takeaway, on_site, delivery
     pickup_date: Optional[str] = None
     pickup_time: Optional[str] = None
