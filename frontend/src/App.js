@@ -69,6 +69,16 @@ function App() {
           </Routes>
         </MobileLayout>
         <Toaster />
+        
+        {/* Modal restaurant fermé */}
+        <RestaurantClosedModal
+          isOpen={showClosedModal}
+          onClose={() => {
+            setShowClosedModal(false);
+            sessionStorage.setItem('hasSeenClosedModal', 'true');
+          }}
+          reason={restaurantStatus.noMoreOrdersToday ? "Désolé, nous ne prenons plus de commandes pour aujourd'hui." : null}
+        />
       </BrowserRouter>
     </AppProvider>
   );
