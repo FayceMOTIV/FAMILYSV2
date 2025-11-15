@@ -35,6 +35,7 @@ from routes.admin import pause as admin_pause
 from routes.admin import dashboard_simple as admin_dashboard_simple
 from routes import notifications as notifications_routes
 from routes import cashback as cashback_routes
+from routes import orders as orders_routes
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
