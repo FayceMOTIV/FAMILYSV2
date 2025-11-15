@@ -26,6 +26,7 @@ class Product(BaseModel):
     vat_rate: float = 10.0
     image_url: Optional[str] = None
     tags: List[str] = Field(default_factory=list)  # best-seller, new, popular
+    badge: Optional[str] = None  # "promo", "bestseller", "nouveau", "cashback_booste"
     is_available: bool = True
     is_out_of_stock: bool = False
     stock_status: Optional[str] = None  # '2h', 'today', 'indefinite'
