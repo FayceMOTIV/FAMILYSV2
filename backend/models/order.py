@@ -58,6 +58,8 @@ class OrderCreate(BaseModel):
     subtotal: float
     vat_amount: float
     total: float
+    use_cashback: bool = False  # Le client veut utiliser son cashback
+    cashback_used: float = 0.0  # Sera calculé côté backend
     payment_method: str = PaymentMethod.CARD
     consumption_mode: str
     pickup_date: Optional[str] = None
