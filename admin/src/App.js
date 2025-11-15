@@ -28,7 +28,7 @@ import AIMarketingTemp from './pages/AIMarketingTemp';
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename="/admin">
         <Routes>
           <Route path="/admin/login" element={<Login />} />
           <Route path="/admin/kiosk" element={<OrdersKiosk />} />
