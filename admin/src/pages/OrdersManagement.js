@@ -693,7 +693,20 @@ export const OrdersManagement = () => {
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center justify-center space-x-2" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center justify-center gap-2 flex-wrap" onClick={(e) => e.stopPropagation()}>
+                        {/* Bouton ÉTAPE SUIVANTE - Prominent et automatique */}
+                        {getNextStatus(order.status, order.order_type) && (
+                          <Button
+                            size="sm"
+                            onClick={(e) => handleNextStep(order, e)}
+                            className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold hover:from-green-600 hover:to-emerald-700 shadow-md whitespace-nowrap"
+                            title={`Passer à: ${getNextStatusLabel(order.status, order.order_type)}`}
+                          >
+                            ▶️ ÉTAPE SUIVANTE
+                          </Button>
+                        )}
+                        
+                        {/* Autres actions */}
                         <Button
                           size="sm"
                           variant="outline"
