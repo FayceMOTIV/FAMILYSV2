@@ -50,9 +50,9 @@ export const ProductsListView = ({ products, categories, onEdit, onDelete, onDup
           {products.map((product) => (
             <tr key={product.id} className="hover:bg-gray-50">
               <td className="px-6 py-4 whitespace-nowrap">
-                {product.imageUrl ? (
+                {getImageUrl(product) ? (
                   <img 
-                    src={product.imageUrl} 
+                    src={getImageUrl(product)} 
                     alt={product.name}
                     className="h-12 w-12 rounded-lg object-cover"
                   />
