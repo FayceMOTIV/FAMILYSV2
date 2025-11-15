@@ -2,7 +2,7 @@ import React from 'react';
 import { Edit2, Trash2, List, Copy } from 'lucide-react';
 import { Button } from './Button';
 
-export const OptionsListView = ({ options, onEdit, onDelete }) => {
+export const OptionsListView = ({ options, onEdit, onDelete, onDuplicate }) => {
   return (
     <div className="overflow-x-auto bg-white rounded-lg shadow">
       <table className="min-w-full divide-y divide-gray-200">
