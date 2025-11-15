@@ -426,16 +426,6 @@ export const OrdersManagement = () => {
     }
   };
 
-  const getNextStatus = (currentStatus, orderType) => {
-    const statusFlow = {
-      'new': 'in_preparation',
-      'in_preparation': 'ready',
-      'ready': orderType === 'delivery' ? 'out_for_delivery' : 'completed',
-      'out_for_delivery': 'completed'
-    };
-    return statusFlow[currentStatus];
-  };
-
   const getStatusChangeConfirmation = (currentStatus, nextStatus) => {
     const confirmations = {
       'new_to_in_preparation': {
