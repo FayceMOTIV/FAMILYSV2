@@ -752,6 +752,17 @@ test_plan:
         - working: true
         - agent: "testing"
         - comment: "✅ FRENCH FINAL VERIFICATION COMPLETED - 100% SUCCESS: Comprehensive testing of all features implemented today as requested in French review. ALL 7 TEST CATEGORIES PASSED (100% success rate): 1) ✅ Settings API - Nouveaux Champs: order_hours, social_media, service_links all present with proper structure, 2) ✅ Products - Sans Slug: GET (18 products), POST creation, PUT modification, stock_status (4 options: 2h, today, indefinite, available) all working, 3) ✅ Categories - Sans Slug: GET (10 categories), POST creation successful without slug field, 4) ✅ Options - Nouveaux Champs: GET (9 options), POST creation with internal_comment & allow_repeat & choices.image_url, existing fields confirmed present, 5) ✅ Orders & Payment - Modes Paiement: GET (50 orders), all payment methods working (espece/cash, cb/card, cheque/check, ticket_restaurant, mobile, online), multi-payment support detected, 6) ✅ Promotions V2 - No Regression: GET (2 promotions), simulation engine functional, analytics working, 7) ✅ Customers - Basic Fields: GET (30 customers), email & phone fields confirmed present. BACKEND PRODUCTION READY: All critical endpoints operational, no regression detected, new features fully functional. Family's Restaurant backend system verified for production deployment."
+  - task: "Admin Panel Routing Configuration"
+    implemented: false
+    working: false
+    file: "External proxy/load balancer configuration"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+        - agent: "testing"
+        - comment: "🚨 CRITICAL ROUTING ISSUE: Comprehensive testing of ALL admin back-office tabs reveals major routing problem. Admin panel URLs (https://menu-master-141.preview.emergentagent.com/admin/*) redirect to customer-facing website instead of admin interface. CONFIRMED USER REPORT: 'Produits' tab shows blank page because all admin URLs redirect to customer homepage. TECHNICAL FINDINGS: 1) ❌ Tableau de bord: Loads initially but has 403 errors on dashboard stats API, 2) ❌ Gestion du Menu: Redirects to customer site, 3) ❌ All other admin tabs: Routing fails, redirect to customer homepage, 4) ✅ Backend APIs: Admin endpoints working correctly (200 OK responses), 5) ✅ Admin React app: Built correctly and exists in /admin/ directory. ROOT CAUSE: External proxy/load balancer not configured to serve admin panel from /admin/* paths. IMPACT: ALL admin functionality inaccessible via web interface. URGENT INFRASTRUCTURE FIX NEEDED."
 agent_communication:
     - agent: "testing"
     - message: "Starting comprehensive backend API testing for ALL admin endpoints. Testing Categories, Products, Options, Orders, Notifications, Promos, Upload, and AI Marketing with full CRUD operations on https://menu-master-141.preview.emergentagent.com"
