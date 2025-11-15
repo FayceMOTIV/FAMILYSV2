@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException
-from typing import List
+from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone
 import os
+import uuid
 from motor.motor_asyncio import AsyncIOMotorClient
-from models.notification import Notification, NotificationCreate
+from pydantic import BaseModel, Field
 
 router = APIRouter()
 
