@@ -575,7 +575,7 @@ class FamilysComprehensiveTester:
             )
             
             files = {
-                'image': ('test_image.png', io.BytesIO(test_image_data), 'image/png')
+                'file': ('test_image.png', io.BytesIO(test_image_data), 'image/png')
             }
             
             upload_response = requests.post(
