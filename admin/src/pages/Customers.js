@@ -28,6 +28,44 @@ export const Customers = () => {
     }
   };
 
+  const handleExportCSV = () => {
+    if (customers.length === 0) {
+      alert('Aucun client à exporter');
+      return;
+    }
+
+    // Créer les en-têtes CSV
+    const headers = ['Nom', 'Email', 'Téléphone', 'Adresse', 'Total dépensé', 'Nombre de commandes', 'Points fidélité'];
+    
+    // Créer les lignes de données
+    const rows = customers.map(customer => [
+      customer.name || '',
+      customer.email || '',
+      customer.phone || '',
+      customer.address || '',
+      (customer.total_spent || 0).toFixed(2),
+      customer.total_orders || 0,
+      (customer.loyalty_points || 0).toFixed(2)
+    ]);
+    
+    // Combiner en-têtes et données
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+    
+    // Créer le blob et télécharger
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `clients_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (loading) return <div><Header title="Clients" /><div className="p-8">Chargement...</div></div>;
 
   return (
