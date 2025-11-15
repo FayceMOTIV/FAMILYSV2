@@ -212,7 +212,32 @@ class NotificationSystemTester:
                     
                     self.log_result("Find Target Order", True, f"Found order {order_id} with status {target_order.get('status')}, total: {order_total}€")
                     
-                    # If order is not completed, complete it first (required for loyalty notification)
+                    # The loyalty notification requires the order to be completed AND paid
+                    # But the order validation requires payment before completion
+                    # So we need to: 1) Pay first, 2) Complete, 3) Pay again to trigger loyalty
+                    
+                    # Step 1: Pay the order first (to allow completion)
+                    if target_order.get("payment_status") != "paid":
+                        payment_data_step1 = {
+                            "payment_method": "card",
+                            "payment_status": "paid",
+                            "amount_received": order_total,
+                            "change_given": 0
+                        }
+                        
+                        payment_response_step1 = requests.post(
+                            f"{self.base_url}/api/v1/admin/orders/{order_id}/payment",
+                            json=payment_data_step1,
+                            headers=self.get_headers()
+                        )
+                        
+                        if payment_response_step1.status_code == 200:
+                            self.log_result("Pay Order (Step 1)", True, f"Order {order_id} marked as paid")
+                        else:
+                            self.log_result("Pay Order (Step 1)", False, error=f"Status {payment_response_step1.status_code}")
+                            return
+                    
+                    # Step 2: Complete the order (now that it's paid)
                     if target_order.get("status") != "completed":
                         complete_response = requests.patch(
                             f"{self.base_url}/api/v1/admin/orders/{order_id}/status",
@@ -221,23 +246,11 @@ class NotificationSystemTester:
                         )
                         
                         if complete_response.status_code == 200:
-                            self.log_result("Complete Order First", True, f"Order {order_id} marked as completed")
+                            self.log_result("Complete Order (Step 2)", True, f"Order {order_id} marked as completed")
                         else:
-                            # If completion fails (e.g., due to payment validation), try a different approach
                             error_msg = complete_response.text if complete_response.text else f"Status {complete_response.status_code}"
-                            self.log_result("Complete Order First", False, error=f"Could not complete order: {error_msg}")
-                            # Let's try to find an already completed order instead
-                            for order in orders:
-                                if order.get("status") == "completed" and order.get("payment_status") != "paid":
-                                    target_order = order
-                                    order_id = target_order.get("id")
-                                    customer_email = target_order.get("customer_email")
-                                    order_total = target_order.get("total", 0)
-                                    self.log_result("Find Completed Order", True, f"Using completed order {order_id}")
-                                    break
-                            else:
-                                self.log_result("Find Completed Order", False, error="No completed unpaid orders available")
-                                return
+                            self.log_result("Complete Order (Step 2)", False, error=f"Could not complete order: {error_msg}")
+                            return
                     
                     # 2. Get customer info to check loyalty_points field
                     if customer_email:
