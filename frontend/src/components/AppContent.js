@@ -20,6 +20,7 @@ import { WalletV3 } from '../pages/v3/WalletV3';
 import { ProductDetailV3 } from '../pages/v3/ProductDetailV3';
 import { CartV3 } from '../pages/v3/CartV3';
 import { CheckoutV3 } from '../pages/v3/CheckoutV3';
+import { OrderSuccess } from '../pages/v3/OrderSuccess';
 
 export const AppContent = () => {
   const { setRestaurantStatus, user } = useApp();
