@@ -205,17 +205,20 @@ async def update_order_payment(
         {"$set": update_data}
     )
     
-    # Si le paiement est confirmé (paid) et que la commande est terminée, créditer la fidélité
+    # Si le paiement est confirmé (paid) et que la commande est terminée, créditer le cashback
     if payment_update.payment_status == "paid" and existing.get("status") == "completed":
-        # Récupérer les paramètres de fidélité
-        settings = await db.settings.find_one()
-        loyalty_percentage = settings.get("loyalty_percentage", 5.0) if settings else 5.0
+        # Utiliser le cashback_earned de la commande si disponible, sinon recalculer
+        cashback_earned = existing.get("cashback_earned")
         
-        # Calculer les points à créditer (pourcentage du total)
-        order_total = existing.get("total", 0)
-        loyalty_amount = (order_total * loyalty_percentage) / 100
+        if cashback_earned is None or cashback_earned == 0:
+            # Recalculer si pas présent (commandes anciennes)
+            from services.cashback_service import calculate_cashback_earned
+            cashback_earned = await calculate_cashback_earned(
+                subtotal=existing.get("subtotal", 0),
+                total_after_promos=existing.get("total", 0)
+            )
         
-        # Récupérer ou créer le client
+        # Récupérer le client
         customer_email = existing.get("customer_email")
         customer_phone = existing.get("customer_phone")
         
@@ -230,26 +233,21 @@ async def update_order_payment(
             customer = await db.customers.find_one(customer_query)
             
             if customer:
-                # Créditer les points
-                new_loyalty_points = customer.get("loyalty_points", 0) + loyalty_amount
-                
-                await db.customers.update_one(
-                    {"_id": customer["_id"]},
-                    {
-                        "$set": {
-                            "loyalty_points": new_loyalty_points,
-                            "updated_at": datetime.now(timezone.utc).isoformat()
-                        },
-                        "$inc": {"total_orders": 1}
-                    }
+                # Créditer le cashback
+                from services.cashback_service import add_cashback_to_customer
+                result = await add_cashback_to_customer(
+                    customer_id=customer.get("id"),
+                    amount=cashback_earned
                 )
+                
+                new_loyalty_points = result["new_balance"]
                 
                 # Envoyer la notification
                 from routes.notifications import send_loyalty_credited_notification
                 await send_loyalty_credited_notification(
                     user_id=customer.get("id"),
                     order_id=order_id,
-                    amount_credited=loyalty_amount,
+                    amount_credited=cashback_earned,
                     total_points=new_loyalty_points
                 )
     
