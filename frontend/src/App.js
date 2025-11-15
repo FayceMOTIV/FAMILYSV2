@@ -1,17 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import { Toaster } from './components/ui/sonner';
 import SplashScreen from './components/SplashScreen';
-import MobileLayout from './components/MobileLayout';
-import MobileHome from './pages/MobileHome';
-import MobileMenu from './pages/MobileMenu';
-import ProductDetail from './pages/ProductDetail';
-import MobileLoyalty from './pages/MobileLoyalty';
-import MobileFavorites from './pages/MobileFavorites';
-import MobileProfile from './pages/MobileProfile';
-import Checkout from './pages/Checkout';
 import { useRestaurantStatus } from './hooks/useRestaurantStatus';
 import { RestaurantClosedModal } from './components/RestaurantClosedModal';
 import { AppContent } from './components/AppContent';
