@@ -65,10 +65,12 @@ export const ProductCardV3 = ({ product, onClick }) => {
         )}
 
         {/* Cashback indicator */}
-        {product.cashback_amount && (
+        {product.cashback_amount && product.cashback_amount > 0 && (
           <div className="absolute bottom-2 right-2 bg-white/95 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1 shadow-md">
             <TrendingUp className="w-3 h-3 text-green-600" />
-            <span className="text-xs font-bold text-gray-900">+{product.cashback_amount}€</span>
+            <span className="text-xs font-bold text-gray-900">
+              +{typeof product.cashback_amount === 'number' ? product.cashback_amount.toFixed(2) : product.cashback_amount}€
+            </span>
           </div>
         )}
       </div>
