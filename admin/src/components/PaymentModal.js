@@ -268,8 +268,8 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
                 />
                 <Button
                   type="button"
-                  variant="outline"
                   onClick={() => setCurrentAmount(remaining.toFixed(2))}
+                  className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600 font-bold"
                 >
                   Tout le restant
                 </Button>
