@@ -159,9 +159,9 @@ async def list_tickets_z(
 
 @router.get("/{ticket_id}", response_model=TicketZ)
 async def get_ticket_z(
-    ticket_id: str,
-    db: AsyncIOMotorDatabase = Depends(get_database)
+    ticket_id: str
 ):
+    db = get_db()
     """Récupérer un Ticket Z par son ID."""
     ticket = await db.tickets_z.find_one({"id": ticket_id})
     if not ticket:
