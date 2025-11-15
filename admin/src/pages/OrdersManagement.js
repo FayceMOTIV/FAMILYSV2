@@ -186,6 +186,62 @@ export const OrdersManagement = () => {
     }
   };
 
+  // Fonction pour déterminer l'étape suivante automatiquement
+  const getNextStatus = (currentStatus, orderType) => {
+    const statusFlow = {
+      'new': 'in_preparation',
+      'in_preparation': 'ready',
+      'ready': orderType === 'delivery' ? 'out_for_delivery' : 'completed',
+      'out_for_delivery': 'completed',
+      'completed': null,
+      'canceled': null
+    };
+    
+    return statusFlow[currentStatus] || null;
+  };
+
+  const getNextStatusLabel = (currentStatus, orderType) => {
+    const nextStatus = getNextStatus(currentStatus, orderType);
+    const labels = {
+      'in_preparation': '👨‍🍳 En préparation',
+      'ready': '✅ Prête',
+      'out_for_delivery': '🚚 En livraison',
+      'completed': '🎉 Terminée'
+    };
+    
+    return labels[nextStatus] || null;
+  };
+
+  const handleNextStep = async (order, e) => {
+    e?.stopPropagation();
+    
+    const nextStatus = getNextStatus(order.status, order.order_type);
+    
+    if (!nextStatus) {
+      alert('Cette commande est déjà à l\'étape finale');
+      return;
+    }
+    
+    handleStatusChange(order.id, order.status, nextStatus);
+  };
+
+  const handleStatusChange = (orderId, currentStatus, newStatus) => {
+    // Vérifier si on essaie de terminer une commande
+    if (newStatus === 'completed') {
+      // Trouver la commande
+      const order = orders.find(o => o.id === orderId);
+      
+      // Bloquer si la commande n'est pas payée
+      if (order && order.payment_status !== 'paid') {
+        alert('❌ PAIEMENT REQUIS\n\nCette commande ne peut pas être terminée car elle n\'est pas encore payée.\n\nVeuillez d\'abord enregistrer le paiement avant de la marquer comme terminée.');
+        return;
+      }
+    }
+    
+    setPendingStatusChange({ orderId, currentStatus, newStatus });
+    setShowConfirmationModal(true);
+  };
+
   const requestStatusChange = (orderId, currentStatus, newStatus) => {
     // Vérifier si on essaie de terminer une commande
     if (newStatus === 'completed') {
