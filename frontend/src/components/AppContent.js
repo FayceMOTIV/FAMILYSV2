@@ -13,6 +13,10 @@ import MobileProfile from '../pages/MobileProfile';
 import Checkout from '../pages/Checkout';
 import { Notifications } from '../pages/Notifications';
 import { NotificationToast } from './NotificationToast';
+// V3 Pages
+import { HomeV3 } from '../pages/v3/HomeV3';
+import { MenuV3 } from '../pages/v3/MenuV3';
+import { WalletV3 } from '../pages/v3/WalletV3';
 
 export const AppContent = () => {
   const { setRestaurantStatus, user } = useApp();
