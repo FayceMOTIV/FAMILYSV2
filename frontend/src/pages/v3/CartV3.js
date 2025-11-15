@@ -159,7 +159,7 @@ export const CartV3 = () => {
               {/* Prix */}
               <div className="text-right">
                 <p className="font-black text-lg text-gray-900">
-                  {(item.total_price || item.base_price * item.quantity).toFixed(2)}€
+                  {(item.total_price || (item.base_price || 0) * item.quantity).toFixed(2)}€
                 </p>
               </div>
             </div>
