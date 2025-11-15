@@ -222,7 +222,7 @@ export const OrdersManagement = () => {
       return;
     }
     
-    handleStatusChange(order.id, order.status, nextStatus);
+    requestStatusChange(order.id, order.status, nextStatus);
   };
 
   const handleStatusChange = (orderId, currentStatus, newStatus) => {
