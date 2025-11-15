@@ -30,6 +30,19 @@ const MobileLayout = ({ children }) => {
         {children}
       </main>
 
+      {/* Floating Notification Button */}
+      {unreadCount > 0 && (
+        <button
+          onClick={() => navigate('/notifications')}
+          className="fixed bottom-24 left-4 z-[9998] w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-full shadow-2xl flex items-center justify-center active:scale-90 transition-all duration-300"
+        >
+          <Bell className="w-6 h-6" />
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-black rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+            {unreadCount}
+          </span>
+        </button>
+      )}
+
       {/* Floating Cart Button */}
       {cartCount > 0 && (
         <button
