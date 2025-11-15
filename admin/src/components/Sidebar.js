@@ -59,7 +59,10 @@ const menuItems = [
   // 11. Promos (ancien) - Déprécié
   { name: 'Promos (ancien)', path: '/admin/promos', icon: Tag },
   
-  // 12. Paramètres - Configuration
+  // 12. Ticket Z - Clôture journalière
+  { name: 'Ticket Z', path: '/admin/ticket-z', icon: FileText },
+  
+  // 13. Paramètres - Configuration
   { name: 'Paramètres', path: '/admin/settings', icon: Settings },
 ];
 
