@@ -399,17 +399,17 @@ frontend:
         - agent: "testing"
         - comment: "❌ BUG CONFIRMÉ PERSISTE: Tests finaux confirment le problème de navigation. Accueil ✅, Commander ✅, Fidélité ✅ fonctionnent correctement. Favoris ❌ et Profil ❌ ne naviguent pas du tout. Le code MobileLayout.js semble correct avec navigate(item.path) mais les boutons Favoris et Profil ne déclenchent pas la navigation. Problème critique à résoudre."
 
-  - task: "Search Bar in Choice Library Modal (Admin)"
+  - task: "Advanced Choice Library Features (Admin)"
     implemented: true
     working: true
     file: "/app/admin/src/components/OptionModal.js"
     stuck_count: 0
-    priority: "medium"
-    needs_retesting: false
+    priority: "high"
+    needs_retesting: true
     status_history:
         - working: "NA"
         - agent: "main"
-        - comment: "Implemented search bar in 'Pick from Library' modal within OptionModal component. Features: 1) Added search input field at top of library picker modal with placeholder '🔍 Rechercher un choix...', 2) Implemented real-time filtering on choiceLibrary array based on search term (searches in name, description, and price fields), 3) Search is case-insensitive and updates results dynamically as user types, 4) Empty state message displays when no results match search term ('Aucun résultat pour [term]'), 5) Search term is automatically reset when modal closes (both via X button and after selecting a choice), 6) Modal layout updated to use flexbox for better search bar positioning. Code changes: Added librarySearchTerm state, filter logic applied to choiceLibrary.map(), search input component added before grid display, cleanup on modal close. User can now easily find specific choices in large libraries without scrolling."
+        - comment: "Implemented comprehensive improvements to Choice Library modal and image handling. FEATURES IMPLEMENTED: 1) 🔍 SEARCH BAR: Real-time filtering in library picker with search in name, description, and price fields. 2) ☑️ MULTI-SELECT: Added checkboxes to select multiple choices at once, with 'Select All' and 'Deselect All' buttons, counter showing number of selected items, single button to add all selected choices. 3) 📸 IMAGE UPLOAD: Replaced URL input fields with direct file upload (accepts JPG, PNG, WEBP up to 5MB), shows image preview after upload, delete button to remove uploaded image, uses /api/v1/admin/upload/image endpoint, displays proper loading state during upload. 4) 📚 AUTO-ADD TO LIBRARY: When creating/editing an option, all choices are automatically added to the choice library (checks for duplicates to avoid redundancy), discrete toast notification confirms addition ('X ajouté à la bibliothèque'). TECHNICAL DETAILS: New states for selectedLibraryChoices array, uploadingImage object for loading states, toast notification system. Functions: toggleLibraryChoice(), selectAllVisible(), deselectAll(), handleImageUpload(), handleRemoveImage(), addChoiceToLibrary(). UI improvements: Selection counter in modal header, checkboxes in top-right of each choice card, border highlights for selected items, responsive grid layout maintained. Need comprehensive testing: multi-selection workflow, image upload/preview/delete, auto-add to library with toast notifications, search + selection combined."
 
 metadata:
   created_by: "testing_agent"
