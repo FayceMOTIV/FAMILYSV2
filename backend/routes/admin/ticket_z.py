@@ -15,9 +15,9 @@ DB_NAME = MONGO_URL.split('/')[-1] if '/' in MONGO_URL else 'familys_restaurant'
 @router.post("", response_model=TicketZ)
 async def create_ticket_z(
     data: TicketZCreate,
-    db: AsyncIOMotorDatabase = Depends(get_database),
     user_email: str = "admin@familys.app"  # TODO: Get from auth
 ):
+    db = get_db()
     """Créer un Ticket Z (clôture de journée)."""
     
     # Vérifier qu'il n'existe pas déjà un Ticket Z pour cette date
