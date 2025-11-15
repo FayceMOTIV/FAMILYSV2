@@ -255,6 +255,18 @@ backend:
         - comment: "❌ CORS MISCONFIGURATION: CORS_ORIGINS in .env is set to 'http://localhost:3000,http://localhost:3001' but production URL is https://chefs-control.preview.emergentagent.com. This will cause CORS errors for frontend requests from production domain. Need to update CORS_ORIGINS to include production URL."
 
 frontend:
+  - task: "Customer Notification UI System"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/NotificationToast.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implemented complete notification UI system. 1) useNotifications hook - fetches user notifications, tracks unread count, refreshes every 30s, provides markAsRead/markAllAsRead functions. 2) NotificationToast component - displays real-time toast notifications with auto-close after 8s, green gradient background, gift icon, smooth animations. 3) Notifications page - lists all notifications, shows unread badge, 'Mark all as read' button, empty state with bell icon. 4) MobileLayout integration - floating bell button (bottom-left) with red unread count badge, only visible when unreadCount > 0. 5) AppContent integration - added /notifications route, detects new notifications and displays toasts automatically, manages displayed toasts array. Need to test: navigation to /notifications page, toast display when new notification arrives, badge count accuracy, mark as read functionality, full flow from payment to notification display."
+
   - task: "Splash Screen & Animations"
     implemented: true
     working: true
