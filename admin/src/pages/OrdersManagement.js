@@ -24,6 +24,11 @@ export const OrdersManagement = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [pendingStatusChange, setPendingStatusChange] = useState(null);
+  
+  // Ticket Z states
+  const [dailyStatus, setDailyStatus] = useState(null);
+  const [showTicketZModal, setShowTicketZModal] = useState(false);
+  const [closingDay, setClosingDay] = useState(false);
 
   const tabs = [
     { id: 'new', label: 'Nouvelles', icon: Package, color: 'bg-red-500', status: 'new' },
