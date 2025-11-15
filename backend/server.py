@@ -30,6 +30,7 @@ from routes.admin import upload as admin_upload
 from routes.admin import options as admin_options
 from routes.admin import refunds as admin_refunds
 from routes.admin import stock as admin_stock
+from routes.admin import ticket_z as admin_ticket_z
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
