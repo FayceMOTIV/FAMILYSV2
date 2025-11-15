@@ -1140,7 +1140,7 @@ export const MenuManagement = () => {
                   onClick={() => setLibraryViewMode('list')}
                   title="Vue liste"
                 >
-                  <List className="w-4 h-4" />
+                  <ListIcon className="w-4 h-4" />
                 </Button>
               </div>
             </div>
