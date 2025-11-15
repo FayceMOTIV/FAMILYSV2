@@ -67,7 +67,7 @@ async def get_customer_balance(customer_id: str):
         
         MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
         client = AsyncIOMotorClient(MONGO_URL)
-        db = client['familys_restaurant']
+        db = client[os.environ.get('DB_NAME', 'test_database')]
         
         customer = await db.customers.find_one({"id": customer_id})
         
