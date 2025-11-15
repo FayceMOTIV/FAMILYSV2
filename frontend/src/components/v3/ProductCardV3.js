@@ -90,15 +90,15 @@ export const ProductCardV3 = ({ product, onClick }) => {
             {product.original_price && product.original_price !== product.base_price ? (
               <div>
                 <span className="text-gray-400 text-sm line-through mr-2">
-                  {product.original_price.toFixed(2)}€
+                  {typeof product.original_price === 'number' ? product.original_price.toFixed(2) : product.original_price}€
                 </span>
                 <span className="text-[#C62828] font-black text-xl">
-                  {product.base_price.toFixed(2)}€
+                  {typeof product.base_price === 'number' ? product.base_price.toFixed(2) : product.base_price}€
                 </span>
               </div>
             ) : (
               <span className="text-gray-900 font-black text-xl">
-                {product.base_price.toFixed(2)}€
+                {typeof product.base_price === 'number' ? product.base_price.toFixed(2) : product.base_price}€
               </span>
             )}
           </div>
