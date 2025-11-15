@@ -298,6 +298,13 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
                   className="w-full px-3 py-2 border rounded-lg"
                   placeholder="URL de l'image (optionnel)"
                 />
+                <textarea
+                  value={choice.internal_comment || ''}
+                  onChange={(e) => handleChoiceChange(index, 'internal_comment', e.target.value)}
+                  className="w-full px-3 py-2 border rounded-lg resize-none"
+                  placeholder="💬 Commentaire interne (non visible par le client)"
+                  rows="2"
+                />
               </div>
             ))}
           </div>
