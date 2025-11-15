@@ -7,6 +7,8 @@ class UserRole:
     ADMIN = "admin"
     MANAGER = "manager"
     STAFF = "staff"
+    TABLET = "tablet"  # Mode tablette cuisine
+    DELIVERY = "delivery"  # Mode livreur
 
 class User(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
