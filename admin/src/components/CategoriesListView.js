@@ -34,6 +34,19 @@ export const CategoriesListView = ({ categories, products, onEdit, onDelete, onR
           {categories.map((category, index) => (
             <tr key={category.id} className="hover:bg-gray-50">
               <td className="px-6 py-4 whitespace-nowrap">
+                {getImageUrl(category) ? (
+                  <img 
+                    src={getImageUrl(category)} 
+                    alt={category.name}
+                    className="h-12 w-12 rounded-lg object-cover"
+                  />
+                ) : (
+                  <div className="h-12 w-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                    <Package className="w-6 h-6 text-gray-400" />
+                  </div>
+                )}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-gray-900">#{category.order || index + 1}</span>
                   <div className="flex flex-col gap-1">
