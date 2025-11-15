@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit2, Trash2, List } from 'lucide-react';
+import { Edit2, Trash2, List, Copy } from 'lucide-react';
 import { Button } from './Button';
 
 export const OptionsListView = ({ options, onEdit, onDelete }) => {
