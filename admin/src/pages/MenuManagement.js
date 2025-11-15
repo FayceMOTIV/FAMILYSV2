@@ -1087,7 +1087,9 @@ export const MenuManagement = () => {
           <div>
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h2 className="text-2xl font-bold">📚 Bibliothèque de Choix ({choiceLibrary.length})</h2>
+                <h2 className="text-2xl font-bold">📚 Bibliothèque de Choix ({choiceLibrary.filter(c => 
+                  c.name.toLowerCase().includes(librarySearchTerm.toLowerCase())
+                ).length})</h2>
                 <p className="text-sm text-gray-600 mt-1">Créez des choix réutilisables avec images pour vos options</p>
               </div>
               <Button 
@@ -1099,6 +1101,48 @@ export const MenuManagement = () => {
                 <Plus className="w-4 h-4 mr-2" />
                 Nouveau choix
               </Button>
+            </div>
+
+            {/* Barre de recherche et boutons de vue */}
+            <div className="flex gap-4 mb-6">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Rechercher un choix (nom, catégorie, prix...)"
+                  value={librarySearchTerm}
+                  onChange={(e) => setLibrarySearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none"
+                />
+                {librarySearchTerm && (
+                  <button
+                    onClick={() => setLibrarySearchTerm('')}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                )}
+              </div>
+              
+              {/* Boutons de vue */}
+              <div className="flex gap-2">
+                <Button
+                  variant={libraryViewMode === 'grid' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setLibraryViewMode('grid')}
+                  title="Vue grille"
+                >
+                  <Grid className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant={libraryViewMode === 'list' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setLibraryViewMode('list')}
+                  title="Vue liste"
+                >
+                  <List className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
 
             {choiceLibrary.length === 0 ? (
