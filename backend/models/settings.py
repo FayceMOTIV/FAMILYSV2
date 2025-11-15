@@ -57,6 +57,12 @@ class SettingsUpdate(BaseModel):
     enable_reservations: Optional[bool] = None
     is_paused: Optional[bool] = None
     pause_reason: Optional[str] = None
+    pause_duration_minutes: Optional[int] = None
+    pause_until: Optional[str] = None
+    no_more_orders_today: Optional[bool] = None
+    pin_orders_mode: Optional[str] = None
+    pin_delivery_mode: Optional[str] = None
+    pin_reservation_mode: Optional[str] = None
     loyalty_percentage: Optional[float] = None
     stripe_key: Optional[str] = None
     service_links: Optional[Dict] = None
