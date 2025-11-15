@@ -1370,6 +1370,20 @@ export const MenuManagement = () => {
         onSuccess={loadProducts}
       />
 
+      <ProductVisualModal
+        isOpen={showVisualModal}
+        onClose={() => {
+          setShowVisualModal(false);
+          setEditingVisualProduct(null);
+        }}
+        product={editingVisualProduct}
+        onSave={(updatedProduct) => {
+          loadProducts();
+          setShowVisualModal(false);
+          setEditingVisualProduct(null);
+        }}
+      />
+
       <CategoryModal
         isOpen={showCategoryModal}
         onClose={() => {
