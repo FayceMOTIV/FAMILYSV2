@@ -5,7 +5,7 @@ from typing import List
 import os
 
 from models.ticket_z import TicketZ, TicketZCreate, DailyStatus, PaymentBreakdown
-from database import get_database
+from database import get_db
 
 router = APIRouter(prefix="/ticket-z", tags=["admin-ticket-z"])
 
