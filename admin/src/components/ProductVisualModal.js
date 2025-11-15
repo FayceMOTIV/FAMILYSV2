@@ -53,14 +53,14 @@ export const ProductVisualModal = ({ product, isOpen, onClose, onSave }) => {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await axios.post(`${API_URL}/api/v1/admin/upload`, formData, {
+      const response = await axios.post(`${API_URL}/api/v1/admin/upload/image`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
 
-      if (response.data.file_url) {
-        setImageUrl(response.data.file_url);
+      if (response.data.url) {
+        setImageUrl(response.data.url);
       }
     } catch (error) {
       console.error('Erreur upload:', error);
