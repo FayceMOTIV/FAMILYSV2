@@ -105,6 +105,18 @@
 user_problem_statement: "Continue implementing back office features for Family's restaurant: Stock Management, Category Reordering, Kiosk Mode, Partial Refunds. Backend URL: https://chefs-control.preview.emergentagent.com"
 
 backend:
+  - task: "Cashback System V3 - Complete Redesign"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/services/cashback_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implemented complete cashback system V3 with 'all or nothing' payment logic. BACKEND FEATURES: 1) Settings: Added loyalty_percentage (default 5%), loyalty_exclude_promos_from_calculation (bool), auto_badges_enabled (bool for AI), 2) Product Model: Added badge field ('promo', 'bestseller', 'nouveau', 'cashback_booste'), 3) Order Model: Added cashback_used, cashback_earned fields + use_cashback boolean, 4) Cashback Service (services/cashback_service.py): calculate_cashback_earned() - calculates based on TTC after/before promos depending on settings, calculate_cashback_to_use() - 'all or nothing' logic (uses only what's needed), deduct_cashback_from_customer() - deducts from balance, add_cashback_to_customer() - adds to balance, get_cashback_preview() - preview for cart display, 5) API Routes (/api/v1/cashback/): POST /preview - calculates cashback preview with all infos, GET /settings - returns cashback %, GET /balance/{customer_id} - returns customer balance, 6) Order Routes (/api/v1/orders/): POST /orders - creates order with cashback handling, GET /orders/{order_id} - retrieves order, GET /orders/customer/{email} - customer order history, 7) Payment Integration: Modified admin orders payment to use new cashback service, credits cashback when order completed + paid. PAYMENT LOGIC: If use_cashback=true, deducts necessary amount from balance, combines with CB payment if needed, stores cashback_used + cashback_earned in order. Need to test: 1) Cashback calculation (before/after promos), 2) Preview endpoint, 3) Order creation with cashback, 4) Balance deduction, 5) Cashback credit on payment, 6) All or nothing logic."
+
   - task: "Customer Loyalty Notification System"
     implemented: true
     working: true
