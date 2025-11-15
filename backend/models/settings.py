@@ -66,6 +66,8 @@ class SettingsUpdate(BaseModel):
     pin_delivery_mode: Optional[str] = None
     pin_reservation_mode: Optional[str] = None
     loyalty_percentage: Optional[float] = None
+    loyalty_exclude_promos_from_calculation: Optional[bool] = None
+    auto_badges_enabled: Optional[bool] = None
     stripe_key: Optional[str] = None
     service_links: Optional[Dict] = None
     social_media: Optional[Dict] = None
