@@ -512,6 +512,7 @@ class NotificationSystemTester:
         
         # Run all test scenarios
         self.test_notification_crud_endpoints()
+        self.test_loyalty_notification_format()
         self.test_order_payment_flow_with_notification()
         self.test_customer_lookup()
         
