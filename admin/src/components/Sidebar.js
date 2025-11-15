@@ -55,10 +55,7 @@ const menuItems = [
   // 10. Réservations - Moins fréquent
   { name: 'Réservations', path: '/admin/reservations', icon: Calendar },
   
-  // 11. Promos (ancien) - Déprécié
-  { name: 'Promos (ancien)', path: '/admin/promos', icon: Tag },
-  
-  // 12. Paramètres - Configuration
+  // 11. Paramètres - Configuration
   { name: 'Paramètres', path: '/admin/settings', icon: Settings },
 ];
 
