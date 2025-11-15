@@ -36,7 +36,7 @@ class NotificationSystemTester:
         if error:
             print(f"   Error: {error}")
     
-    async def test_login(self) -> bool:
+    def authenticate(self):
         """Test admin login endpoint."""
         test_name = "Admin Login"
         
