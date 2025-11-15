@@ -20,7 +20,11 @@ app.use('/admin/static', express.static(path.join(__dirname, 'build/admin/static
 app.use('/static', express.static(path.join(__dirname, 'build/static')));
 
 // Admin SPA routing - must handle all /admin/* routes
-app.get('/admin*', (req, res) => {
+app.get('/admin/*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build/admin/index.html'));
+});
+
+app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'build/admin/index.html'));
 });
 
