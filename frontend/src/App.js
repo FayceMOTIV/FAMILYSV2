@@ -14,6 +14,7 @@ import MobileProfile from './pages/MobileProfile';
 import Checkout from './pages/Checkout';
 import { useRestaurantStatus } from './hooks/useRestaurantStatus';
 import { RestaurantClosedModal } from './components/RestaurantClosedModal';
+import { AppContent } from './components/AppContent';
 import AppContent from './components/AppContent';
 
 function App() {
