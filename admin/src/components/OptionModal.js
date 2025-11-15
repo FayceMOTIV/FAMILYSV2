@@ -337,7 +337,7 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
         {/* Library Picker Modal */}
         {showLibraryPicker && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] flex flex-col">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-bold">📚 Choisir depuis la bibliothèque</h3>
                 <button onClick={() => setShowLibraryPicker(false)} className="text-gray-400 hover:text-gray-600">
@@ -345,31 +345,61 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
                 </button>
               </div>
               
-              <div className="grid grid-cols-2 gap-3">
-                {choiceLibrary.map((choice) => (
-                  <div
-                    key={choice.id}
-                    onClick={() => handleAddFromLibrary(choice)}
-                    className="border-2 rounded-lg p-3 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all"
-                  >
-                    {choice.image_url && (
-                      <img 
-                        src={choice.image_url} 
-                        alt={choice.name}
-                        className="w-full h-24 object-cover rounded mb-2"
-                      />
-                    )}
-                    <h4 className="font-bold">{choice.name}</h4>
-                    <p className="text-sm text-primary font-bold">{choice.default_price.toFixed(2)}€</p>
-                    {choice.description && (
-                      <p className="text-xs text-gray-500 mt-1">{choice.description}</p>
-                    )}
-                  </div>
-                ))}
+              {/* Search Bar */}
+              <div className="mb-4">
+                <input
+                  type="text"
+                  placeholder="🔍 Rechercher un choix..."
+                  value={librarySearchTerm}
+                  onChange={(e) => setLibrarySearchTerm(e.target.value)}
+                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-primary focus:outline-none"
+                />
               </div>
               
-              {choiceLibrary.length === 0 && (
-                <p className="text-center text-gray-400 py-8">Aucun choix dans la bibliothèque</p>
+              <div className="grid grid-cols-2 gap-3 overflow-y-auto">
+                {choiceLibrary
+                  .filter((choice) => {
+                    if (!librarySearchTerm.trim()) return true;
+                    const searchLower = librarySearchTerm.toLowerCase();
+                    return (
+                      choice.name.toLowerCase().includes(searchLower) ||
+                      (choice.description && choice.description.toLowerCase().includes(searchLower)) ||
+                      choice.default_price.toString().includes(searchLower)
+                    );
+                  })
+                  .map((choice) => (
+                    <div
+                      key={choice.id}
+                      onClick={() => handleAddFromLibrary(choice)}
+                      className="border-2 rounded-lg p-3 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all"
+                    >
+                      {choice.image_url && (
+                        <img 
+                          src={choice.image_url} 
+                          alt={choice.name}
+                          className="w-full h-24 object-cover rounded mb-2"
+                        />
+                      )}
+                      <h4 className="font-bold">{choice.name}</h4>
+                      <p className="text-sm text-primary font-bold">{choice.default_price.toFixed(2)}€</p>
+                      {choice.description && (
+                        <p className="text-xs text-gray-500 mt-1">{choice.description}</p>
+                      )}
+                    </div>
+                  ))
+                }
+              </div>
+              
+              {choiceLibrary.filter((choice) => {
+                if (!librarySearchTerm.trim()) return true;
+                const searchLower = librarySearchTerm.toLowerCase();
+                return (
+                  choice.name.toLowerCase().includes(searchLower) ||
+                  (choice.description && choice.description.toLowerCase().includes(searchLower)) ||
+                  choice.default_price.toString().includes(searchLower)
+                );
+              }).length === 0 && (
+                <p className="text-center text-gray-400 py-8">Aucun résultat pour "{librarySearchTerm}"</p>
               )}
             </div>
           </div>
