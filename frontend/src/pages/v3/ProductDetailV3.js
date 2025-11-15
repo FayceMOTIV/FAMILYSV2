@@ -124,7 +124,15 @@ export const ProductDetailV3 = () => {
     return null;
   }
 
-  const finalCashback = cashbackAmount * cashbackMultiplier;
+  const finalCashback = (cashbackAmount || 0) * (cashbackMultiplier || 1);
+  
+  console.log('Product Detail Debug:', {
+    product: product?.name,
+    base_price: product?.base_price,
+    cashbackAmount,
+    cashbackMultiplier,
+    finalCashback
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 pb-40">
