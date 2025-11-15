@@ -517,9 +517,15 @@ export const MenuManagement = () => {
                 {filteredProducts.map((product, productIndex) => {
                 const price = product.base_price || product.basePrice || 0;
                 let imageUrl = product.image_url || product.image;
-                // Si l'URL est relative, construire l'URL complète
-                if (imageUrl && imageUrl.startsWith('/')) {
-                  imageUrl = `${API_URL}${imageUrl}`;
+                // Construire l'URL complète si nécessaire
+                if (imageUrl) {
+                  if (!imageUrl.startsWith('http')) {
+                    if (imageUrl.startsWith('/')) {
+                      imageUrl = `${API_URL}${imageUrl}`;
+                    } else {
+                      imageUrl = `${API_URL}/${imageUrl}`;
+                    }
+                  }
                 }
                 return (
                   <Card 
