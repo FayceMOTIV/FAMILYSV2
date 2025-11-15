@@ -50,7 +50,7 @@ export const CategoriesListView = ({ categories, products, onEdit, onDelete, onR
                   </div>
                 )}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap">
+              <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-gray-900">#{category.order || index + 1}</span>
                   <div className="flex flex-col gap-1">
