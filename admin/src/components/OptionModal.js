@@ -341,7 +341,10 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
             <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] flex flex-col">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-bold">📚 Choisir depuis la bibliothèque</h3>
-                <button onClick={() => setShowLibraryPicker(false)} className="text-gray-400 hover:text-gray-600">
+                <button onClick={() => {
+                  setShowLibraryPicker(false);
+                  setLibrarySearchTerm(''); // Reset search when closing
+                }} className="text-gray-400 hover:text-gray-600">
                   <X className="w-5 h-5" />
                 </button>
               </div>
