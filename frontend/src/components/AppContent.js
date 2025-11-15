@@ -68,15 +68,16 @@ export const AppContent = () => {
           <Route path="/" element={<HomeV3 />} />
           <Route path="/menu" element={<MenuV3 />} />
           <Route path="/wallet" element={<WalletV3 />} />
+          <Route path="/product/:slug" element={<ProductDetailV3 />} />
           
           {/* Legacy Routes */}
           <Route path="/legacy-home" element={<MobileHome />} />
           <Route path="/legacy-menu" element={<MobileMenu />} />
+          <Route path="/legacy-product/:slug" element={<ProductDetail />} />
           <Route path="/loyalty" element={<MobileLoyalty />} />
           <Route path="/favorites" element={<MobileFavorites />} />
           <Route path="/profile" element={<MobileProfile />} />
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/product/:slug" element={<ProductDetail />} />
           <Route path="/notifications" element={<Notifications />} />
         </Routes>
       </MobileLayout>
