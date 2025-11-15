@@ -327,11 +327,11 @@ export const ProductDetailV3 = () => {
       </div>
 
       {/* Sticky bottom CTA */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50">
+      <div className="fixed bottom-20 left-0 right-0 bg-white border-t border-gray-200 p-4 z-[10000]">
         <motion.button
           whileTap={{ scale: 0.98 }}
           onClick={handleAddToCart}
-          className="w-full bg-gradient-to-r from-[#C62828] to-orange-500 text-white py-4 rounded-2xl font-black text-lg shadow-xl flex items-center justify-between px-6"
+          className="w-full bg-gradient-to-r from-[#C62828] to-orange-500 text-white py-4 rounded-2xl font-black text-lg shadow-xl flex items-center justify-center gap-4"
         >
           <span>Ajouter au panier</span>
           <span>{getTotalPrice().toFixed(2)}€</span>
