@@ -85,6 +85,12 @@ export const AppProvider = ({ children }) => {
   };
 
   const addToCart = (product, options = [], quantity = 1) => {
+    // Vérifier si le restaurant accepte les commandes
+    if (!restaurantStatus.canOrder) {
+      alert('Désolé, le restaurant ne prend pas de commandes pour le moment.');
+      return false;
+    }
+    
     const cartItem = {
       id: `${product.id}-${Date.now()}`,
       productId: product.id,
