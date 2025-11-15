@@ -31,6 +31,8 @@ class RestaurantSettings(BaseModel):
     pin_delivery_mode: Optional[str] = None  # PIN pour Mode Livraison (4 chiffres)
     pin_reservation_mode: Optional[str] = None  # PIN pour Mode Réservation (4 chiffres)
     loyalty_percentage: float = 5.0
+    loyalty_exclude_promos_from_calculation: bool = False  # Exclure les promos du calcul du cashback
+    auto_badges_enabled: bool = False  # IA décide des badges produits
     stripe_key: Optional[str] = None
     service_links: Dict[str, str] = Field(default_factory=dict)  # Liens Stripe, PayPal, etc
     social_media: Dict[str, str] = Field(default_factory=dict)  # Liens réseaux sociaux
