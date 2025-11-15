@@ -212,6 +212,32 @@ class NotificationSystemTester:
                     
                     self.log_result("Find Target Order", True, f"Found order {order_id} with status {target_order.get('status')}, total: {order_total}€")
                     
+                    # If order is not completed, complete it first (required for loyalty notification)
+                    if target_order.get("status") != "completed":
+                        complete_response = requests.patch(
+                            f"{self.base_url}/api/v1/admin/orders/{order_id}/status",
+                            json={"status": "completed"},
+                            headers=self.get_headers()
+                        )
+                        
+                        if complete_response.status_code == 200:
+                            self.log_result("Complete Order First", True, f"Order {order_id} marked as completed")
+                        else:
+                            # If completion fails (e.g., due to payment validation), try a different approach
+                            self.log_result("Complete Order First", False, error=f"Could not complete order: {complete_response.status_code}")
+                            # Let's try to find an already completed order instead
+                            for order in orders:
+                                if order.get("status") == "completed" and order.get("payment_status") != "paid":
+                                    target_order = order
+                                    order_id = target_order.get("id")
+                                    customer_email = target_order.get("customer_email")
+                                    order_total = target_order.get("total", 0)
+                                    self.log_result("Find Completed Order", True, f"Using completed order {order_id}")
+                                    break
+                            else:
+                                self.log_result("Find Completed Order", False, error="No completed unpaid orders available")
+                                return
+                    
                     # 2. Get customer info to check loyalty_points field
                     if customer_email:
                         customer_response = requests.get(
