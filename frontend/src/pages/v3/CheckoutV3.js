@@ -232,7 +232,7 @@ export const CheckoutV3 = () => {
       </form>
 
       {/* Bottom sticky */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 p-4 z-50">
+      <div className="fixed bottom-20 left-0 right-0 bg-white border-t-2 border-gray-200 p-4 z-[10000]">
         <div className="max-w-7xl mx-auto space-y-3">
           <div className="flex justify-between text-xl font-black text-gray-900">
             <span>Total à payer</span>
