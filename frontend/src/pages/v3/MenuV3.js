@@ -61,10 +61,16 @@ export const MenuV3 = () => {
         const productsData = productsRes.data.products || [];
         
         // Calculer le cashback pour chaque produit
-        const productsWithCashback = productsData.map(product => ({
-          ...product,
-          cashback_amount: product.base_price ? parseFloat(((product.base_price * loyaltyPercentage) / 100).toFixed(2)) : 0
-        }));
+        const productsWithCashback = productsData.map(product => {
+          let cashbackAmount = 0;
+          if (product.base_price && typeof product.base_price === 'number') {
+            cashbackAmount = parseFloat(((product.base_price * loyaltyPercentage) / 100).toFixed(2));
+          }
+          return {
+            ...product,
+            cashback_amount: cashbackAmount
+          };
+        });
 
         setProducts(productsWithCashback);
       } catch (error) {
