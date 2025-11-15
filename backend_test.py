@@ -224,7 +224,8 @@ class NotificationSystemTester:
                             self.log_result("Complete Order First", True, f"Order {order_id} marked as completed")
                         else:
                             # If completion fails (e.g., due to payment validation), try a different approach
-                            self.log_result("Complete Order First", False, error=f"Could not complete order: {complete_response.status_code}")
+                            error_msg = complete_response.text if complete_response.text else f"Status {complete_response.status_code}"
+                            self.log_result("Complete Order First", False, error=f"Could not complete order: {error_msg}")
                             # Let's try to find an already completed order instead
                             for order in orders:
                                 if order.get("status") == "completed" and order.get("payment_status") != "paid":
