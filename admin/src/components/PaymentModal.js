@@ -210,10 +210,10 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
                 <button
                   type="button"
                   onClick={() => setCurrentPaymentMethod('espece')}
-                  className={`p-3 rounded-lg border-2 transition-colors text-sm font-medium ${
+                  className={`p-3 rounded-lg border-2 transition-all text-sm font-bold ${
                     currentPaymentMethod === 'espece'
-                      ? 'border-green-500 bg-green-50 text-green-700'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-green-600 bg-green-500 text-white shadow-lg scale-105'
+                      : 'border-green-300 bg-green-50 text-green-700 hover:bg-green-100'
                   }`}
                 >
                   💵 Espèce
@@ -221,10 +221,10 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
                 <button
                   type="button"
                   onClick={() => setCurrentPaymentMethod('cb')}
-                  className={`p-3 rounded-lg border-2 transition-colors text-sm font-medium ${
+                  className={`p-3 rounded-lg border-2 transition-all text-sm font-bold ${
                     currentPaymentMethod === 'cb'
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-blue-600 bg-blue-500 text-white shadow-lg scale-105'
+                      : 'border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100'
                   }`}
                 >
                   💳 CB
@@ -232,10 +232,10 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
                 <button
                   type="button"
                   onClick={() => setCurrentPaymentMethod('cheque')}
-                  className={`p-3 rounded-lg border-2 transition-colors text-sm font-medium ${
+                  className={`p-3 rounded-lg border-2 transition-all text-sm font-bold ${
                     currentPaymentMethod === 'cheque'
-                      ? 'border-purple-500 bg-purple-50 text-purple-700'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-purple-600 bg-purple-500 text-white shadow-lg scale-105'
+                      : 'border-purple-300 bg-purple-50 text-purple-700 hover:bg-purple-100'
                   }`}
                 >
                   📝 Chèque
@@ -243,10 +243,10 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
                 <button
                   type="button"
                   onClick={() => setCurrentPaymentMethod('ticket_restaurant')}
-                  className={`p-3 rounded-lg border-2 transition-colors text-sm font-medium ${
+                  className={`p-3 rounded-lg border-2 transition-all text-sm font-bold ${
                     currentPaymentMethod === 'ticket_restaurant'
-                      ? 'border-orange-500 bg-orange-50 text-orange-700'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-orange-600 bg-orange-500 text-white shadow-lg scale-105'
+                      : 'border-orange-300 bg-orange-50 text-orange-700 hover:bg-orange-100'
                   }`}
                 >
                   🎟️ Ticket restaurant
