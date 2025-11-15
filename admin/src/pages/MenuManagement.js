@@ -34,6 +34,8 @@ export const MenuManagement = () => {
   const [products, setProducts] = useState([]);
   const [showProductModal, setShowProductModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [showVisualModal, setShowVisualModal] = useState(false);
+  const [editingVisualProduct, setEditingVisualProduct] = useState(null);
   const [openStockMenu, setOpenStockMenu] = useState(null);
   const [showOutOfStockOnly, setShowOutOfStockOnly] = useState(false);
   
