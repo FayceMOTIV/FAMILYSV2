@@ -1145,65 +1145,179 @@ export const MenuManagement = () => {
               </div>
             </div>
 
-            {choiceLibrary.length === 0 ? (
-              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 text-center">
-                <Package className="w-16 h-16 text-blue-400 mx-auto mb-4" />
-                <h3 className="text-lg font-bold text-blue-900 mb-2">Bibliothèque vide</h3>
-                <p className="text-sm text-blue-700 mb-4">
-                  Créez vos premiers choix réutilisables (Chantilly, Ketchup, Bacon...)
-                </p>
-                <Button onClick={() => setShowChoiceModal(true)}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Créer mon premier choix
-                </Button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {choiceLibrary.map((choice) => (
-                  <Card key={choice.id}>
-                    <CardContent className="p-4">
-                      {choice.image_url && (
-                        <img 
-                          src={choice.image_url} 
-                          alt={choice.name}
-                          className="w-full h-32 object-cover rounded-lg mb-3"
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                          }}
-                        />
-                      )}
-                      <h3 className="font-bold text-lg mb-1">{choice.name}</h3>
-                      {choice.description && (
-                        <p className="text-sm text-gray-600 mb-2">{choice.description}</p>
-                      )}
-                      <p className="text-lg font-bold text-primary mb-3">
-                        {choice.default_price.toFixed(2)}€
-                      </p>
-                      <div className="flex gap-2">
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => {
-                            setEditingChoice(choice);
-                            setShowChoiceModal(true);
-                          }}
-                        >
-                          <Edit className="w-4 h-4 mr-1" />
-                          Modifier
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="danger"
-                          onClick={() => handleDeleteChoice(choice.id)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
+{(() => {
+              const filteredChoices = choiceLibrary.filter(c => 
+                c.name.toLowerCase().includes(librarySearchTerm.toLowerCase())
+              );
+
+              if (choiceLibrary.length === 0) {
+                return (
+                  <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 text-center">
+                    <Package className="w-16 h-16 text-blue-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-bold text-blue-900 mb-2">Bibliothèque vide</h3>
+                    <p className="text-sm text-blue-700 mb-4">
+                      Créez vos premiers choix réutilisables (Chantilly, Ketchup, Bacon...)
+                    </p>
+                    <Button onClick={() => setShowChoiceModal(true)}>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Créer mon premier choix
+                    </Button>
+                  </div>
+                );
+              }
+
+              if (filteredChoices.length === 0) {
+                return (
+                  <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-6 text-center">
+                    <Search className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-bold text-yellow-900 mb-2">Aucun résultat</h3>
+                    <p className="text-sm text-yellow-700 mb-4">
+                      Aucun choix ne correspond à votre recherche "{librarySearchTerm}"
+                    </p>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setLibrarySearchTerm('')}
+                    >
+                      Effacer la recherche
+                    </Button>
+                  </div>
+                );
+              }
+
+              if (libraryViewMode === 'list') {
+                return (
+                  <div className="bg-white rounded-lg shadow overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Choix
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Description
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Prix
+                            </th>
+                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {filteredChoices.map((choice) => (
+                            <tr key={choice.id} className="hover:bg-gray-50">
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="flex items-center">
+                                  {choice.image_url ? (
+                                    <img 
+                                      src={choice.image_url} 
+                                      alt={choice.name}
+                                      className="w-12 h-12 object-cover rounded-lg mr-4"
+                                      onError={(e) => {
+                                        e.target.style.display = 'none';
+                                      }}
+                                    />
+                                  ) : (
+                                    <div className="w-12 h-12 bg-gray-100 rounded-lg mr-4 flex items-center justify-center">
+                                      <Package className="w-6 h-6 text-gray-400" />
+                                    </div>
+                                  )}
+                                  <div>
+                                    <div className="text-sm font-medium text-gray-900">{choice.name}</div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4">
+                                <div className="text-sm text-gray-600 max-w-xs truncate">
+                                  {choice.description || '-'}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <span className="text-sm font-bold text-primary">
+                                  {choice.default_price.toFixed(2)}€
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div className="flex justify-end gap-2">
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={() => {
+                                      setEditingChoice(choice);
+                                      setShowChoiceModal(true);
+                                    }}
+                                  >
+                                    <Edit className="w-4 h-4" />
+                                  </Button>
+                                  <Button 
+                                    size="sm" 
+                                    variant="danger"
+                                    onClick={() => handleDeleteChoice(choice.id)}
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                );
+              }
+
+              // Vue grille (par défaut)
+              return (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {filteredChoices.map((choice) => (
+                    <Card key={choice.id}>
+                      <CardContent className="p-4">
+                        {choice.image_url && (
+                          <img 
+                            src={choice.image_url} 
+                            alt={choice.name}
+                            className="w-full h-32 object-cover rounded-lg mb-3"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                        )}
+                        <h3 className="font-bold text-lg mb-1">{choice.name}</h3>
+                        {choice.description && (
+                          <p className="text-sm text-gray-600 mb-2">{choice.description}</p>
+                        )}
+                        <p className="text-lg font-bold text-primary mb-3">
+                          {choice.default_price.toFixed(2)}€
+                        </p>
+                        <div className="flex gap-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => {
+                              setEditingChoice(choice);
+                              setShowChoiceModal(true);
+                            }}
+                          >
+                            <Edit className="w-4 h-4 mr-1" />
+                            Modifier
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="danger"
+                            onClick={() => handleDeleteChoice(choice.id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
         )}
       </div>
