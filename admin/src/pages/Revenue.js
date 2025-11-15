@@ -110,17 +110,30 @@ export const Revenue = () => {
       const amount = order.total || 0;
       stats.total += amount;
 
+      // Logique de distinction :
+      // 1. Si payment_status === 'paid' → Paiement en ligne (via l'app)
+      // 2. Sinon → Paiement au restaurant selon la méthode
+      
+      const isPaidOnline = order.payment_status === 'paid';
       const method = order.payment_method?.toLowerCase() || 'cash';
-      if (method === 'cash') {
-        stats.cash += amount;
-      } else if (method === 'card_restaurant') {
-        stats.card_restaurant += amount;
-      } else if (method === 'ticket_resto') {
-        stats.ticket_resto += amount;
-      } else if (method === 'check') {
-        stats.check += amount;
-      } else if (method === 'online') {
+
+      if (isPaidOnline) {
+        // Tous les paiements faits via l'app vont dans "Paiement en ligne"
         stats.online += amount;
+      } else {
+        // Paiements au restaurant selon la méthode
+        if (method === 'cash' || method === 'espece') {
+          stats.cash += amount;
+        } else if (method === 'card' || method === 'cb' || method === 'card_restaurant') {
+          stats.card_restaurant += amount;
+        } else if (method === 'ticket_resto' || method === 'ticket_restaurant') {
+          stats.ticket_resto += amount;
+        } else if (method === 'check' || method === 'cheque') {
+          stats.check += amount;
+        } else {
+          // Par défaut, si méthode inconnue et non payé en ligne, on met en CB restaurant
+          stats.card_restaurant += amount;
+        }
       }
     });
 
