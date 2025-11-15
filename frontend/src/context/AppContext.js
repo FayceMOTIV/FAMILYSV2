@@ -193,7 +193,9 @@ export const AppProvider = ({ children }) => {
     setLoyaltyStamps,
     theme,
     toggleTheme,
-    completeOrder
+    completeOrder,
+    restaurantStatus,
+    setRestaurantStatus
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
