@@ -561,26 +561,46 @@ export const PromotionsV2 = () => {
               </div>
               
               <div className="space-y-2 max-h-[700px] overflow-y-auto">
-                {promotions.filter(p => p.status === 'active').map(promo => (
-                  <Card 
-                    key={promo.id}
-                    className={`p-3 cursor-pointer hover:shadow-md transition-shadow ${
-                      selectedPromoForPreview?.id === promo.id ? 'border-2 border-primary' : ''
-                    }`}
-                    onClick={() => setSelectedPromoForPreview(promo)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-xs font-bold text-primary">{getTypeLabel(promo.type)}</span>
-                        <h4 className="font-bold">{promo.name}</h4>
-                        <p className="text-sm text-gray-600">{promo.description}</p>
+                {promotions.length === 0 ? (
+                  <div className="text-center py-10 text-gray-500">
+                    <p>Aucune promotion disponible</p>
+                    <p className="text-sm mt-2">Créez une promotion pour la prévisualiser</p>
+                  </div>
+                ) : (
+                  promotions.map(promo => (
+                    <Card 
+                      key={promo.id}
+                      className={`p-3 cursor-pointer hover:shadow-md transition-shadow ${
+                        selectedPromoForPreview?.id === promo.id ? 'border-2 border-primary' : ''
+                      }`}
+                      onClick={() => setSelectedPromoForPreview(promo)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold text-primary">{getTypeLabel(promo.type)}</span>
+                            <span className={`text-xs px-2 py-0.5 rounded ${
+                              promo.status === 'active' ? 'bg-green-100 text-green-700' :
+                              promo.status === 'draft' ? 'bg-gray-200 text-gray-700' :
+                              promo.status === 'paused' ? 'bg-orange-200 text-orange-700' :
+                              'bg-red-200 text-red-700'
+                            }`}>
+                              {promo.status === 'active' ? '✅ Active' :
+                               promo.status === 'draft' ? '📝 Brouillon' : 
+                               promo.status === 'paused' ? '⏸️ Pausé' : 
+                               '🚫 Expiré'}
+                            </span>
+                          </div>
+                          <h4 className="font-bold mt-1">{promo.name}</h4>
+                          <p className="text-sm text-gray-600">{promo.description}</p>
+                        </div>
+                        <span className="text-xl font-black text-primary ml-3">
+                          -{promo.discount_value}{promo.discount_type === 'percentage' ? '%' : '€'}
+                        </span>
                       </div>
-                      <span className="text-xl font-black text-primary">
-                        -{promo.discount_value}{promo.discount_type === 'percentage' ? '%' : '€'}
-                      </span>
-                    </div>
-                  </Card>
-                ))}
+                    </Card>
+                  ))
+                )}
               </div>
             </div>
           </div>
