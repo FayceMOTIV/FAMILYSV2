@@ -2,6 +2,16 @@ import React from 'react';
 import { Edit2, Trash2, ArrowUp, ArrowDown, Package } from 'lucide-react';
 import { Button } from './Button';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://admin-kitchen.preview.emergentagent.com';
+
+const getImageUrl = (category) => {
+  const imageUrl = category.image_url || category.image;
+  if (!imageUrl) return null;
+  if (imageUrl.startsWith('http')) return imageUrl;
+  if (imageUrl.startsWith('/')) return `${API_URL}${imageUrl}`;
+  return `${API_URL}/${imageUrl}`;
+};
+
 export const CategoriesListView = ({ categories, products, onEdit, onDelete, onReorder }) => {
   const getProductCount = (categoryId) => {
     return products.filter(p => p.category === categoryId).length;
