@@ -32,7 +32,11 @@ export const CategoriesListView = ({ categories, products, onEdit, onDelete, onR
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {categories.map((category, index) => (
-            <tr key={category.id} className="hover:bg-gray-50">
+            <tr 
+              key={category.id} 
+              onClick={() => onEdit(category)}
+              className="hover:bg-blue-50 cursor-pointer transition-colors"
+            >
               <td className="px-6 py-4 whitespace-nowrap">
                 {getImageUrl(category) ? (
                   <img 
