@@ -15,8 +15,12 @@ import { Notifications } from '../pages/Notifications';
 import { NotificationToast } from './NotificationToast';
 
 export const AppContent = () => {
-  const { setRestaurantStatus } = useApp();
+  const { setRestaurantStatus, user } = useApp();
   const restaurantStatus = useRestaurantStatus();
+  const { notifications, markAsRead } = useNotifications(user?.id);
+  
+  const [displayedNotifications, setDisplayedNotifications] = useState([]);
+  const previousNotificationsRef = useRef([]);
 
   // Mettre à jour le contexte avec le statut du restaurant
   useEffect(() => {
@@ -29,17 +33,53 @@ export const AppContent = () => {
     }
   }, [restaurantStatus, setRestaurantStatus]);
 
+  // Détecter les nouvelles notifications et afficher un toast
+  useEffect(() => {
+    if (notifications.length > 0 && previousNotificationsRef.current.length > 0) {
+      const newNotifications = notifications.filter(
+        (notification) =>
+          !previousNotificationsRef.current.some((prev) => prev.id === notification.id) &&
+          !notification.is_read
+      );
+
+      if (newNotifications.length > 0) {
+        setDisplayedNotifications((prev) => [...prev, ...newNotifications]);
+      }
+    }
+    previousNotificationsRef.current = notifications;
+  }, [notifications]);
+
+  const handleCloseToast = (notificationId) => {
+    setDisplayedNotifications((prev) =>
+      prev.filter((notification) => notification.id !== notificationId)
+    );
+  };
+
   return (
-    <MobileLayout>
-      <Routes>
-        <Route path="/" element={<MobileHome />} />
-        <Route path="/menu" element={<MobileMenu />} />
-        <Route path="/loyalty" element={<MobileLoyalty />} />
-        <Route path="/favorites" element={<MobileFavorites />} />
-        <Route path="/profile" element={<MobileProfile />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/product/:slug" element={<ProductDetail />} />
-      </Routes>
-    </MobileLayout>
+    <>
+      <MobileLayout>
+        <Routes>
+          <Route path="/" element={<MobileHome />} />
+          <Route path="/menu" element={<MobileMenu />} />
+          <Route path="/loyalty" element={<MobileLoyalty />} />
+          <Route path="/favorites" element={<MobileFavorites />} />
+          <Route path="/profile" element={<MobileProfile />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/product/:slug" element={<ProductDetail />} />
+          <Route path="/notifications" element={<Notifications />} />
+        </Routes>
+      </MobileLayout>
+
+      {/* Toasts de notification */}
+      {displayedNotifications.map((notification, index) => (
+        <div key={notification.id} style={{ top: `${4 + index * 6}rem` }}>
+          <NotificationToast
+            notification={notification}
+            onClose={() => handleCloseToast(notification.id)}
+            onRead={markAsRead}
+          />
+        </div>
+      ))}
+    </>
   );
 };
