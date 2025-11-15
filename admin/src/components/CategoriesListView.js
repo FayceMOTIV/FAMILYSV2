@@ -12,7 +12,7 @@ const getImageUrl = (category) => {
   return `${API_URL}/${imageUrl}`;
 };
 
-export const CategoriesListView = ({ categories, products, onEdit, onDelete, onReorder }) => {
+export const CategoriesListView = ({ categories, products, onEdit, onDelete, onReorder, onDuplicate }) => {
   const getProductCount = (categoryId) => {
     return products.filter(p => p.category === categoryId).length;
   };
