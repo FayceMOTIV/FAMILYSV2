@@ -13,6 +13,24 @@ MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 client = AsyncIOMotorClient(MONGO_URL)
 db = client['familys_restaurant']
 
+# Public notification models (different from admin models)
+class PublicNotification(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    type: str
+    title: str
+    message: str
+    data: Optional[Dict[str, Any]] = None
+    is_read: bool = False
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class PublicNotificationCreate(BaseModel):
+    user_id: str
+    type: str
+    title: str
+    message: str
+    data: Optional[Dict[str, Any]] = None
+
 @router.post("/notifications")
 async def create_notification(notification: NotificationCreate):
     """
