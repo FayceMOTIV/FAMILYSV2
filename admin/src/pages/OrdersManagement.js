@@ -41,6 +41,7 @@ export const OrdersManagement = () => {
 
   useEffect(() => {
     loadOrders();
+    loadDailyStatus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
