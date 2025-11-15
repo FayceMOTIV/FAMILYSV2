@@ -5,7 +5,7 @@ import { Button } from '../components/Button';
 import { Plus, Calendar, TrendingUp, Users, DollarSign, Edit2, Trash2, Copy, Eye } from 'lucide-react';
 import { PromotionWizard } from '../components/PromotionWizard';
 import { PromotionCalendar } from '../components/PromotionCalendar';
-import { PromotionSimulator } from '../components/PromotionSimulator';
+// import { PromotionSimulator } from '../components/PromotionSimulator';
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://menu-master-141.preview.emergentagent.com';
