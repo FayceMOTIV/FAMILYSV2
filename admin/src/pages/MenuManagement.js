@@ -661,26 +661,41 @@ export const MenuManagement = () => {
                     </div>
                     
                     {/* Action Buttons */}
-                    <div className="grid grid-cols-2 gap-2 mb-2">
+                    <div className="space-y-2 mb-2">
                       <Button 
                         size="sm" 
                         variant="outline" 
                         onClick={() => {
-                          setEditingProduct(product);
-                          setShowProductModal(true);
+                          setEditingVisualProduct(product);
+                          setShowVisualModal(true);
                         }}
-                        title="Modifier"
+                        className="w-full bg-blue-50 hover:bg-blue-100 border-blue-200"
+                        title="Image & Badge"
                       >
-                        <Edit2 className="w-4 h-4" />
+                        <Image className="w-4 h-4 mr-2" />
+                        Image & Badge
                       </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={() => handleDuplicateProduct(product)}
-                        title="Dupliquer"
-                      >
-                        <Copy className="w-4 h-4" />
-                      </Button>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={() => {
+                            setEditingProduct(product);
+                            setShowProductModal(true);
+                          }}
+                          title="Modifier"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={() => handleDuplicateProduct(product)}
+                          title="Dupliquer"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
                     
                     {/* Stock Management Dropdown */}
