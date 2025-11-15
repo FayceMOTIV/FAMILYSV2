@@ -205,6 +205,54 @@ async def update_order_payment(
         {"$set": update_data}
     )
     
+    # Si le paiement est confirmé (paid) et que la commande est terminée, créditer la fidélité
+    if payment_update.payment_status == "paid" and existing.get("status") == "completed":
+        # Récupérer les paramètres de fidélité
+        settings = await db.settings.find_one()
+        loyalty_percentage = settings.get("loyalty_percentage", 5.0) if settings else 5.0
+        
+        # Calculer les points à créditer (pourcentage du total)
+        order_total = existing.get("total", 0)
+        loyalty_amount = (order_total * loyalty_percentage) / 100
+        
+        # Récupérer ou créer le client
+        customer_email = existing.get("customer_email")
+        customer_phone = existing.get("customer_phone")
+        
+        if customer_email or customer_phone:
+            # Chercher le client
+            customer_query = {}
+            if customer_email:
+                customer_query["email"] = customer_email
+            elif customer_phone:
+                customer_query["phone"] = customer_phone
+            
+            customer = await db.customers.find_one(customer_query)
+            
+            if customer:
+                # Créditer les points
+                new_loyalty_points = customer.get("loyalty_points", 0) + loyalty_amount
+                
+                await db.customers.update_one(
+                    {"_id": customer["_id"]},
+                    {
+                        "$set": {
+                            "loyalty_points": new_loyalty_points,
+                            "updated_at": datetime.now(timezone.utc).isoformat()
+                        },
+                        "$inc": {"total_orders": 1}
+                    }
+                )
+                
+                # Envoyer la notification
+                from routes.notifications import send_loyalty_credited_notification
+                await send_loyalty_credited_notification(
+                    user_id=customer.get("id"),
+                    order_id=order_id,
+                    amount_credited=loyalty_amount,
+                    total_points=new_loyalty_points
+                )
+    
     return {"success": True, "message": "Payment updated successfully"}
 
 @router.get("/stats/summary")
