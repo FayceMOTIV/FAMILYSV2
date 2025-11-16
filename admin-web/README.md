@@ -1,16 +1,100 @@
-# React + Vite
+# Family's Admin Backoffice 💼
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Architecture
 
-Currently, two official plugins are available:
+- **Framework**: React 18 + Vite
+- **Routing**: React Router 6
+- **State Management**: Zustand
+- **Styling**: TailwindCSS
+- **Icons**: Lucide React
+- **Charts**: Recharts
+- **API Client**: Axios
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Structure
 
-## React Compiler
+```
+admin-web/
+├── src/
+│   ├── components/
+│   │   └── Layout.jsx       # Layout avec sidebar
+│   ├── pages/
+│   │   ├── Dashboard.jsx
+│   │   ├── Products.jsx
+│   │   ├── Categories.jsx
+│   │   ├── Orders.jsx
+│   │   ├── Customers.jsx
+│   │   ├── Promotions.jsx
+│   │   ├── AIMarketing.jsx
+│   │   ├── Settings.jsx
+│   │   └── Login.jsx
+│   ├── services/
+│   │   └── api.js           # API client & services
+│   ├── stores/
+│   │   └── authStore.js
+│   ├── App.jsx
+│   └── main.jsx
+└── index.html
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Backend API
 
-## Expanding the ESLint configuration
+**Base URL**: `https://react-native-reboot.preview.emergentagent.com/api/v1/admin`
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Available Endpoints
+
+- **Auth**: `/admin/auth/login`
+- **Dashboard**: `/admin/dashboard/stats`
+- **Products**: `/admin/products` (CRUD)
+- **Categories**: `/admin/categories` (CRUD)
+- **Orders**: `/admin/orders` (GET, update status, payment)
+- **Customers**: `/admin/customers`
+- **Promotions V2**: `/admin/promotions` (CRUD + simulate + analytics)
+- **AI Marketing**: `/admin/ai-marketing/campaigns`
+
+## Commands
+
+```bash
+# Install dependencies
+npm install
+
+# Development
+npm run dev
+
+# Build
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+## Features to Develop
+
+- [ ] Dashboard avec stats temps réel
+- [ ] CRUD Produits (avec options/variants)
+- [ ] CRUD Catégories (avec réordonnancement)
+- [ ] Gestion commandes (status, paiement, historique)
+- [ ] Liste clients + détails
+- [ ] CRUD Promotions V2 (15 types)
+- [ ] Simulateur de promotions
+- [ ] IA Marketing (validation de campagnes)
+- [ ] Paramètres restaurant
+- [ ] Analytics & graphiques
+
+## Authentication
+
+**Default credentials**:
+- Email: `admin@familys.app`
+- Password: `Admin@123456`
+
+## Color Scheme
+
+- **Primary**: #C62828 (Rouge Family's)
+- **Secondary**: #FFD54F (Or)
+
+## Notes
+
+- Architecture **100% neuve** sans dépendances à l'ancien frontend
+- Toutes les pages sont fonctionnelles mais vides
+- API client configuré et connecté au backend FastAPI
+- Zustand pour state management (léger et simple)
+- TailwindCSS pour styling rapide et moderne
