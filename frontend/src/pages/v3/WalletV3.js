@@ -194,7 +194,7 @@ export const WalletV3 = () => {
                       </div>
                       <div>
                         <p className="font-bold text-gray-900">
-                          {transaction.type === 'earned' ? 'Cashback gagné' : 'Cashback utilisé'}
+                          {transaction.type === 'earned' ? 'Points gagnés' : 'Points utilisés'}
                         </p>
                         <p className="text-sm text-gray-500">
                           Commande {transaction.order_number}
