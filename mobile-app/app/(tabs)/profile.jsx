@@ -263,4 +263,44 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: Spacing.md,
   },
+  ordersSection: {
+    backgroundColor: Colors.white,
+    borderRadius: BorderRadius.l,
+    padding: Spacing.l,
+    marginBottom: Spacing.l,
+    ...Shadows.small,
+  },
+  ordersTitle: {
+    fontSize: Typography.l,
+    fontWeight: Typography.bold,
+    color: Colors.gray900,
+    marginBottom: Spacing.m,
+  },
+  orderCard: {
+    padding: Spacing.m,
+    backgroundColor: Colors.gray50,
+    borderRadius: BorderRadius.m,
+    marginBottom: Spacing.s,
+  },
+  orderHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.xs,
+  },
+  orderNumber: {
+    fontSize: Typography.m,
+    fontWeight: Typography.semibold,
+    color: Colors.gray900,
+  },
+  orderDate: {
+    fontSize: Typography.s,
+    color: Colors.gray600,
+    marginBottom: Spacing.xs,
+  },
+  orderTotal: {
+    fontSize: Typography.l,
+    fontWeight: Typography.bold,
+    color: Colors.primary,
+  },
 });
