@@ -24,7 +24,7 @@ app.use(express.static(path.join(__dirname, 'build'), {
 }));
 
 // Frontend SPA fallback - DOIT être en dernier
-app.get('*', (req, res) => {
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'build/index.html'));
 });
 
