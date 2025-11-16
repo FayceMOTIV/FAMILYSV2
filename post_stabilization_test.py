@@ -189,14 +189,9 @@ class PostStabilizationTester:
         # Test cashback preview with cashback
         try:
             preview_data_with = {
-                "items": [
-                    {
-                        "product_id": "test-product-1",
-                        "name": "Test Burger",
-                        "price": 50.0,
-                        "quantity": 1
-                    }
-                ],
+                "subtotal": 50.0,
+                "total_after_promos": 50.0,
+                "promo_discount": 0.0,
                 "use_cashback": True,
                 "customer_id": customer_id if 'customer_id' in locals() else "test-customer"
             }
