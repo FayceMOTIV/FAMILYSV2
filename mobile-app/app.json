@@ -16,7 +16,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.familys.app"
+      "bundleIdentifier": "com.familys.app",
+      "appleTeamId": "5ZR87TPM89"
     },
     "android": {
       "adaptiveIcon": {
@@ -32,6 +33,11 @@
     "plugins": [
       "expo-router"
     ],
-    "scheme": "familys"
+    "scheme": "familys",
+    "extra": {
+      "eas": {
+        "projectId": "familys-app"
+      }
+    }
   }
 }
