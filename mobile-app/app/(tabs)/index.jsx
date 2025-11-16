@@ -69,21 +69,33 @@ export default function HomeScreen() {
         {/* Categories */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Catégories</Text>
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.categoriesScroll}
-          >
-            {categories.map((category) => (
-              <View key={category.id} style={styles.categoryItem}>
-                <CategoryCard 
-                  category={category}
-                  size="small"
-                  onPress={() => router.push('/menu')}
-                />
-              </View>
-            ))}
-          </ScrollView>
+          {loadingCategories ? (
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.categoriesScroll}
+            >
+              {[1, 2, 3, 4, 5].map((i) => (
+                <SkeletonLoader key={i} width={100} height={100} style={{ marginRight: 12 }} />
+              ))}
+            </ScrollView>
+          ) : (
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.categoriesScroll}
+            >
+              {categories.map((category) => (
+                <View key={category.id} style={styles.categoryItem}>
+                  <CategoryCard 
+                    category={{ ...category, icon: category.emoji || '🍽️' }}
+                    size="small"
+                    onPress={() => router.push('/menu')}
+                  />
+                </View>
+              ))}
+            </ScrollView>
+          )}
         </View>
 
         {/* Popular Products */}
