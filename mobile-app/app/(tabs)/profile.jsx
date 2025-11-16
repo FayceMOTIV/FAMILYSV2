@@ -1,17 +1,27 @@
 import { View, Text, ScrollView, StyleSheet, Pressable, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Typography, BorderRadius, Shadows } from '../../constants/theme';
 import Button from '../../components/Button';
 import Badge from '../../components/Badge';
 import useAuthStore from '../../stores/authStore';
 import useLoyaltyStore from '../../stores/loyaltyStore';
+import useOrderStore from '../../stores/orderStore';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { user, isAuthenticated, logout } = useAuthStore();
-  const { balance, loyaltyPercentage } = useLoyaltyStore();
+  const { balance, loyaltyPercentage, fetchBalance } = useLoyaltyStore();
+  const { orders, fetchMyOrders } = useOrderStore();
+  
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      fetchBalance(user.id || user.email);
+      fetchMyOrders();
+    }
+  }, [isAuthenticated, user]);
 
   const handleLogout = () => {
     Alert.alert(
