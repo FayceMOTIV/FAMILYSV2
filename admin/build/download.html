@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Télécharger Family's Mobile App</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #C62828 0%, #B71C1C 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        h1 {
+            color: #C62828;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+        .download-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #C62828 0%, #B71C1C 100%);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 20px 0;
+            transition: transform 0.2s;
+        }
+        .download-btn:hover {
+            transform: scale(1.05);
+        }
+        .file-info {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .file-info p {
+            margin: 10px 0;
+            color: #666;
+        }
+        .instructions {
+            text-align: left;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+        }
+        .instructions h3 {
+            color: #C62828;
+            margin-bottom: 15px;
+        }
+        .instructions ol {
+            margin-left: 20px;
+        }
+        .instructions li {
+            margin: 10px 0;
+            color: #666;
+            line-height: 1.6;
+        }
+        code {
+            background: #e0e0e0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 Family's Mobile App</h1>
+        <p class="subtitle">Télécharge le code source complet</p>
+        
+        <a href="data:application/zip;base64,PLACEHOLDER_BASE64" download="familys-mobile-app.zip" class="download-btn" id="downloadBtn">
+            📥 Télécharger le ZIP (309 KB)
+        </a>
+        
+        <div class="file-info">
+            <p><strong>📦 Contenu du package :</strong></p>
+            <p>✅ Code source complet (14/14 fonctionnalités)</p>
+            <p>✅ Configuration Expo & EAS</p>
+            <p>✅ README avec instructions TestFlight</p>
+            <p>✅ Tous les stores, components, screens</p>
+        </div>
+        
+        <div class="instructions">
+            <h3>🚀 Après téléchargement :</h3>
+            <ol>
+                <li>Décompresse le fichier ZIP</li>
+                <li>Ouvre le terminal dans le dossier <code>mobile-app</code></li>
+                <li>Lance <code>yarn install</code></li>
+                <li>Lis le fichier <code>README_TESTFLIGHT.md</code></li>
+                <li>Configure les credentials: <code>npx eas credentials</code></li>
+                <li>Build TestFlight: <code>npx eas build --platform ios</code></li>
+            </ol>
+        </div>
+        
+        <p style="margin-top: 30px; color: #999; font-size: 14px;">
+            Si le téléchargement ne démarre pas, <a href="#" onclick="downloadFallback()" style="color: #C62828;">clique ici</a>
+        </p>
+    </div>
+    
+    <script>
+        // Fallback download method
+        function downloadFallback() {
+            alert('Contacte le support pour obtenir le fichier directement.');
+            return false;
+        }
+        
+        // Auto-trigger download on page load
+        setTimeout(() => {
+            document.getElementById('downloadBtn').click();
+        }, 1000);
+    </script>
+</body>
+</html>
