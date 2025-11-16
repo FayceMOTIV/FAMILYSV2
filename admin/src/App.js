@@ -34,17 +34,17 @@ function App() {
     <AuthProvider>
       <BrowserRouter basename="/">
         <Routes>
-          <Route path="/admin/login" element={<Login />} />
-          <Route path="/admin/kiosk" element={<OrdersKiosk />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/kiosk" element={<OrdersKiosk />} />
           
           {/* Modes spéciaux avec PIN */}
-          <Route path="/admin/orders-mode-login" element={<ModeLogin mode="orders" />} />
-          <Route path="/admin/orders-mode" element={<OrdersMode />} />
-          <Route path="/admin/delivery-mode-login" element={<ModeLogin mode="delivery" />} />
-          <Route path="/admin/delivery-mode" element={<DeliveryMode />} />
-          <Route path="/admin/reservation-mode-login" element={<ModeLogin mode="reservation" />} />
-          <Route path="/admin/reservation-mode" element={<ReservationMode />} />
-          <Route path="/admin" element={<Layout />}>
+          <Route path="/orders-mode-login" element={<ModeLogin mode="orders" />} />
+          <Route path="/orders-mode" element={<OrdersMode />} />
+          <Route path="/delivery-mode-login" element={<ModeLogin mode="delivery" />} />
+          <Route path="/delivery-mode" element={<DeliveryMode />} />
+          <Route path="/reservation-mode-login" element={<ModeLogin mode="reservation" />} />
+          <Route path="/reservation-mode" element={<ReservationMode />} />
+          <Route path="/" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="ai" element={<AIAssistant />} />
             <Route path="ai-marketing/campaigns" element={<AICampaigns />} />
@@ -65,7 +65,7 @@ function App() {
             <Route path="settings" element={<Settings />} />
             <Route path="ticket-z" element={<TicketZ />} />
           </Route>
-          <Route path="*" element={<Navigate to="/admin" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
