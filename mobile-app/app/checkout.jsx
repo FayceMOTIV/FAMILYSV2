@@ -87,18 +87,48 @@ export default function CheckoutScreen() {
           <Text style={styles.title}>💳 Commande</Text>
         </View>
 
-        {/* Order Type (placeholder) */}
+        {/* Order Type */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Type de commande</Text>
           <View style={styles.orderTypeButtons}>
-            <View style={[styles.orderTypeButton, styles.orderTypeButtonActive]}>
-              <Ionicons name="bag-handle" size={24} color={Colors.primary} />
-              <Text style={[styles.orderTypeText, styles.orderTypeTextActive]}>À emporter</Text>
-            </View>
-            <View style={styles.orderTypeButton}>
-              <Ionicons name="bicycle" size={24} color={Colors.gray400} />
-              <Text style={styles.orderTypeText}>Livraison</Text>
-            </View>
+            <Pressable 
+              style={[
+                styles.orderTypeButton, 
+                orderMode === 'takeaway' && styles.orderTypeButtonActive
+              ]}
+              onPress={() => setOrderMode('takeaway')}
+            >
+              <Ionicons 
+                name="bag-handle" 
+                size={24} 
+                color={orderMode === 'takeaway' ? Colors.primary : Colors.gray400} 
+              />
+              <Text style={[
+                styles.orderTypeText,
+                orderMode === 'takeaway' && styles.orderTypeTextActive
+              ]}>
+                À emporter
+              </Text>
+            </Pressable>
+            <Pressable 
+              style={[
+                styles.orderTypeButton,
+                orderMode === 'delivery' && styles.orderTypeButtonActive
+              ]}
+              onPress={() => setOrderMode('delivery')}
+            >
+              <Ionicons 
+                name="bicycle" 
+                size={24} 
+                color={orderMode === 'delivery' ? Colors.primary : Colors.gray400} 
+              />
+              <Text style={[
+                styles.orderTypeText,
+                orderMode === 'delivery' && styles.orderTypeTextActive
+              ]}>
+                Livraison
+              </Text>
+            </Pressable>
           </View>
         </View>
 
