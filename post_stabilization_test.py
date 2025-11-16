@@ -70,10 +70,10 @@ class PostStabilizationTester:
         }
     
     def test_admin_dashboard(self):
-        """GET /api/v1/admin/dashboard"""
+        """GET /api/v1/admin/dashboard/stats"""
         try:
             response = requests.get(
-                f"{self.base_url}/api/v1/admin/dashboard",
+                f"{self.base_url}/api/v1/admin/dashboard/stats",
                 headers=self.get_headers(),
                 timeout=10
             )
@@ -81,16 +81,16 @@ class PostStabilizationTester:
             if response.status_code == 200:
                 data = response.json()
                 # Check for expected dashboard data
-                orders_count = data.get("orders_count", 0)
-                revenue = data.get("revenue", 0)
-                self.log_result("GET /api/v1/admin/dashboard", True, 
-                              f"Dashboard data retrieved - Orders: {orders_count}, Revenue: {revenue}€")
+                ca_today = data.get("ca_today", 0)
+                orders_today = data.get("orders_today", 0)
+                self.log_result("GET /api/v1/admin/dashboard/stats", True, 
+                              f"Dashboard stats retrieved - CA today: {ca_today}€, Orders today: {orders_today}")
             else:
-                self.log_result("GET /api/v1/admin/dashboard", False, 
+                self.log_result("GET /api/v1/admin/dashboard/stats", False, 
                               error=f"Status {response.status_code}: {response.text}")
                 
         except Exception as e:
-            self.log_result("GET /api/v1/admin/dashboard", False, error=str(e))
+            self.log_result("GET /api/v1/admin/dashboard/stats", False, error=str(e))
     
     def test_cashback_system_v3(self):
         """2. CASHBACK SYSTEM V3 Testing"""
