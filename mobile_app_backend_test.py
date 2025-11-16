@@ -398,24 +398,29 @@ class MobileAppBackendTester:
         
         # 3. Test POST /api/v1/cashback/preview (prévisualisation cashback)
         try:
-            # Create a test cart for cashback preview
+            # Create a test cart for cashback preview with correct structure
             test_cart = {
                 "customer_id": self.test_customer_id or "test-customer-123",
                 "items": [
                     {
                         "product_id": self.test_product_id or "test-product-123",
                         "name": "Test Burger",
-                        "price": 15.00,
-                        "quantity": 1
+                        "base_price": 15.00,
+                        "quantity": 1,
+                        "total_price": 15.00,
+                        "options": []
                     },
                     {
                         "product_id": "test-product-456",
                         "name": "Test Fries",
-                        "price": 5.00,
-                        "quantity": 1
+                        "base_price": 5.00,
+                        "quantity": 1,
+                        "total_price": 5.00,
+                        "options": []
                     }
                 ],
-                "total": 20.00,
+                "subtotal": 20.00,
+                "total_after_promos": 20.00,
                 "use_cashback": False
             }
             
