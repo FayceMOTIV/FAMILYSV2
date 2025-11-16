@@ -110,7 +110,7 @@ export const HomeV3 = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-        {/* Carte Cashback - MISE EN AVANT */}
+        {/* Carte de Fidélité - MISE EN AVANT */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -162,7 +162,7 @@ export const HomeV3 = () => {
                   <div className="bg-white/25 p-4 rounded-2xl backdrop-blur-sm shadow-lg inline-block mb-4">
                     <span className="text-6xl">💳</span>
                   </div>
-                  <h3 className="text-white text-2xl font-black mb-2">Ta Carte Cashback t'attend !</h3>
+                  <h3 className="text-white text-2xl font-black mb-2">Ta Carte de Fidélité t'attend !</h3>
                   <p className="text-white/80 text-sm">Gagne de l'argent à chaque commande</p>
                 </div>
 
@@ -170,13 +170,13 @@ export const HomeV3 = () => {
                   <div className="flex items-center gap-3 bg-white/15 backdrop-blur-md rounded-xl px-4 py-3">
                     <span className="text-2xl">💰</span>
                     <p className="text-white text-sm font-medium text-left">
-                      <strong>5%</strong> de cashback sur toutes tes commandes
+                      <strong>5%</strong> de fidélité sur toutes tes commandes
                     </p>
                   </div>
                   <div className="flex items-center gap-3 bg-white/15 backdrop-blur-md rounded-xl px-4 py-3">
                     <span className="text-2xl">♻️</span>
                     <p className="text-white text-sm font-medium text-left">
-                      Réutilise ton cashback <strong>sans limite</strong>
+                      Réutilise tes points <strong>sans limite</strong>
                     </p>
                   </div>
                   <div className="flex items-center gap-3 bg-white/15 backdrop-blur-md rounded-xl px-4 py-3">
