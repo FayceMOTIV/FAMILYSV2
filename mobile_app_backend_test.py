@@ -96,6 +96,7 @@ class MobileAppBackendTester:
                     
                     # Store first product ID for detail test
                     self.test_product_id = products[0].get("id")
+                    self.log_result("Product ID for Detail Test", True, f"Using product ID: {self.test_product_id}")
                     
                     # Verify product structure
                     first_product = products[0]
