@@ -19,12 +19,10 @@ export default function HomeScreen() {
   const { products, loading: loadingProducts } = useProducts()
   
   // Get popular products (is_popular flag or first 4)
-  const popularProducts = products
-    .filter(p => p.is_popular || p.best_seller)
-    .slice(0, 4)
+  let popularProducts = products.filter(p => p.is_popular || p.best_seller).slice(0, 4)
   
   if (popularProducts.length === 0 && products.length > 0) {
-    popularProducts.push(...products.slice(0, 4))
+    popularProducts = products.slice(0, 4)
   }
 
   return (
