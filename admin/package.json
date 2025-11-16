@@ -30,7 +30,7 @@
     "vite": "^5.2.0"
   },
   "scripts": {
-    "dev": "BROWSER=none PORT=3001 craco start",
+    "dev": "BROWSER=none craco start",
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject"
