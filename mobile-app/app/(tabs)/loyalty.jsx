@@ -27,9 +27,30 @@ export default function LoyaltyScreen() {
     setRefreshing(false)
   }
 
+  if (loading && !refreshing) {
+    return (
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <View style={styles.scrollContent}>
+          <SkeletonLoader height={200} style={{ marginBottom: 16 }} />
+          <View style={{ flexDirection: 'row', gap: 12, marginBottom: 16 }}>
+            <SkeletonLoader height={100} style={{ flex: 1 }} />
+            <SkeletonLoader height={100} style={{ flex: 1 }} />
+          </View>
+          <SkeletonLoader height={300} />
+        </View>
+      </SafeAreaView>
+    )
+  }
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+      <ScrollView 
+        style={styles.scroll} 
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>⭐ Fidélité</Text>
