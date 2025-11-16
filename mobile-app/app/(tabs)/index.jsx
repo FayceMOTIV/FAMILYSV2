@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, Image } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, Image, Pressable } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
@@ -7,10 +7,9 @@ import SearchBar from '../../components/SearchBar'
 import CategoryCard from '../../components/CategoryCard'
 import ProductCard from '../../components/ProductCard'
 import Badge from '../../components/Badge'
-
+import SkeletonLoader from '../../components/SkeletonLoader'
 import { useCategories } from '../../hooks/useCategories'
 import { useProducts } from '../../hooks/useProducts'
-import SkeletonLoader from '../../components/SkeletonLoader'
 
 export default function HomeScreen() {
   const router = useRouter()
