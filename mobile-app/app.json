@@ -17,7 +17,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.familys.app",
-      "appleTeamId": "5ZR87TPM89"
+      "appleTeamId": "5ZR87TPM89",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
