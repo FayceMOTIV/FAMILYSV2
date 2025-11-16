@@ -94,6 +94,25 @@ export default function CheckoutScreen() {
             <Pressable 
               style={[
                 styles.orderTypeButton, 
+                orderMode === 'dine_in' && styles.orderTypeButtonActive
+              ]}
+              onPress={() => setOrderMode('dine_in')}
+            >
+              <Ionicons 
+                name="restaurant" 
+                size={24} 
+                color={orderMode === 'dine_in' ? Colors.primary : Colors.gray400} 
+              />
+              <Text style={[
+                styles.orderTypeText,
+                orderMode === 'dine_in' && styles.orderTypeTextActive
+              ]}>
+                Sur place
+              </Text>
+            </Pressable>
+            <Pressable 
+              style={[
+                styles.orderTypeButton, 
                 orderMode === 'takeaway' && styles.orderTypeButtonActive
               ]}
               onPress={() => setOrderMode('takeaway')}
