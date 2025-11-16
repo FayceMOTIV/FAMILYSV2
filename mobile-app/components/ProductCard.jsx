@@ -114,6 +114,17 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xs,
     borderRadius: BorderRadius.s,
   },
+  favoriteButton: {
+    position: 'absolute',
+    bottom: Spacing.s,
+    right: Spacing.s,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   cashbackBadgeText: {
     color: Colors.black,
     fontSize: Typography.xs,
