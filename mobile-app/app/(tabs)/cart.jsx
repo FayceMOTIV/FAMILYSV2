@@ -156,7 +156,7 @@ export default function CartScreen() {
       <View style={styles.footer}>
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>Total</Text>
-          <Text style={styles.totalAmount}>{subtotal.toFixed(2)}€</Text>
+          <Text style={styles.totalAmount}>{getFinalTotal().toFixed(2)}€</Text>
         </View>
         <Button
           title="Passer à la caisse"
