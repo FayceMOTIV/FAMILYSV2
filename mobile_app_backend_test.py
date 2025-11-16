@@ -506,8 +506,8 @@ class MobileAppBackendTester:
         
         print("\n🎯 MOBILE APP READINESS:")
         critical_endpoints = [
-            "GET /api/v1/products",
-            "GET /api/v1/categories", 
+            "GET /api/v1/admin/products",
+            "GET /api/v1/admin/categories", 
             "POST /api/v1/orders",
             "GET /api/v1/cashback/settings"
         ]
