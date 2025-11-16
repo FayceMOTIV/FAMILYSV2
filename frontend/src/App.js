@@ -15,11 +15,16 @@ function App() {
   const restaurantStatus = useRestaurantStatus();
 
   useEffect(() => {
-    // Check si c'est la premi\u00e8re visite ou recharge
+    // Check si c'est la première visite ou recharge
     const hasSeenSplash = sessionStorage.getItem('hasSeenSplash');
     if (hasSeenSplash) {
       setShowSplash(false);
       setAppReady(true);
+    } else {
+      // Forcer le skip du splash pour le preview
+      setShowSplash(false);
+      setAppReady(true);
+      sessionStorage.setItem('hasSeenSplash', 'true');
     }
   }, []);
 
