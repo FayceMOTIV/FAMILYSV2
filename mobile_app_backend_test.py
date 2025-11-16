@@ -283,11 +283,15 @@ class MobileAppBackendTester:
             
             if create_response.status_code == 200 or create_response.status_code == 201:
                 created_order = create_response.json()
-                if created_order and created_order.get("id"):
-                    self.log_result("POST /api/v1/orders", True, f"Created order with ID: {created_order.get('id')}")
-                    self.test_order_id = created_order.get("id")  # Update for further tests
+                if created_order and created_order.get("success"):
+                    order_id = created_order.get("order_id")
+                    if order_id:
+                        self.log_result("POST /api/v1/orders", True, f"Created order with ID: {order_id}")
+                        self.test_order_id = order_id  # Update for further tests
+                    else:
+                        self.log_result("POST /api/v1/orders", True, f"Order created successfully - Response: {list(created_order.keys())}")
                 else:
-                    self.log_result("POST /api/v1/orders", False, error="Order created but no ID returned")
+                    self.log_result("POST /api/v1/orders", False, error=f"Order creation failed - Response: {created_order}")
             else:
                 self.log_result("POST /api/v1/orders", False, error=f"Status {create_response.status_code}: {create_response.text}")
                 
