@@ -140,6 +140,9 @@ class MobileAppBackendTester:
                         self.log_result("Product Detail Fields", True, f"Available fields: {', '.join(available_fields[:10])}")
                     else:
                         self.log_result("GET /api/v1/admin/products/{id}", False, error="Product ID mismatch or empty response")
+                elif response.status_code == 404:
+                    # This is likely due to restaurant_id mismatch between products ("default") and admin user ("familys-bourg-en-bresse")
+                    self.log_result("GET /api/v1/admin/products/{id}", False, error=f"Product not found - likely restaurant_id mismatch (products use 'default', admin user has different restaurant_id)")
                 else:
                     self.log_result("GET /api/v1/admin/products/{id}", False, error=f"Status {response.status_code}: {response.text}")
                     
