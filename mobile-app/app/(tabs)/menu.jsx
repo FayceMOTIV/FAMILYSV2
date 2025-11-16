@@ -76,21 +76,36 @@ export default function MenuScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.productsGrid}>
-          {filteredProducts.map((product) => (
-            <View key={product.id} style={styles.productItem}>
-              <ProductCard
-                product={product}
-                onPress={() => router.push(`/product/${product.id}`)}
-              />
-            </View>
-          ))}
-        </View>
-
-        {filteredProducts.length === 0 && (
-          <View style={styles.empty}>
-            <Text style={styles.emptyText}>Aucun produit dans cette catégorie</Text>
+        {loadingProducts ? (
+          <View style={styles.productsGrid}>
+            {[1, 2, 3, 4].map((i) => (
+              <SkeletonLoader key={i} height={280} style={{ marginBottom: 16 }} />
+            ))}
           </View>
+        ) : (
+          <>
+            <View style={styles.productsGrid}>
+              {filteredProducts.map((product) => (
+                <View key={product.id} style={styles.productItem}>
+                  <ProductCard
+                    product={{
+                      ...product,
+                      image: product.image_url || product.image,
+                      hasPromo: product.has_promotion || false,
+                      cashback: ((product.price * 0.05).toFixed(2))
+                    }}
+                    onPress={() => router.push(`/product/${product.id}`)}
+                  />
+                </View>
+              ))}
+            </View>
+
+            {filteredProducts.length === 0 && !loadingProducts && (
+              <View style={styles.empty}>
+                <Text style={styles.emptyText}>Aucun produit dans cette catégorie</Text>
+              </View>
+            )}
+          </>
         )}
       </ScrollView>
     </SafeAreaView>
