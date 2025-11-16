@@ -114,22 +114,91 @@ export const HomeV3 = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative"
         >
-          <CashbackCard
-            balance={cashbackBalance}
-            earnedToday={0}
-            onClick={() => user ? navigate('/wallet') : navigate('/profile')}
-          />
-          {!user && (
-            <div className="absolute inset-0 bg-black/5 backdrop-blur-[2px] rounded-2xl flex items-center justify-center">
-              <button
-                onClick={() => navigate('/profile')}
-                className="px-6 py-3 bg-white text-[#C62828] font-bold rounded-xl shadow-lg hover:shadow-xl transition-all"
+          {user ? (
+            // Carte pour utilisateur connecté
+            <CashbackCard
+              balance={cashbackBalance}
+              earnedToday={0}
+              onClick={() => navigate('/wallet')}
+            />
+          ) : (
+            // Carte pour visiteur non connecté
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => navigate('/profile')}
+              className="relative bg-gradient-to-br from-[#C62828] via-[#D32F2F] to-[#8B0000] rounded-3xl p-8 shadow-2xl cursor-pointer overflow-hidden border-2 border-[#FFD54F]/30"
+            >
+              {/* Effet brillant animé */}
+              <motion.div
+                animate={{ 
+                  opacity: [0.3, 0.6, 0.3],
+                  scale: [1, 1.1, 1]
+                }}
+                transition={{ 
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                className="absolute inset-0 opacity-20"
               >
-                Se connecter pour voir mon cashback
-              </button>
-            </div>
+                <div className="absolute top-0 right-0 w-48 h-48 bg-[#FFD54F] rounded-full blur-3xl" />
+                <div className="absolute bottom-0 left-0 w-40 h-40 bg-white rounded-full blur-3xl" />
+              </motion.div>
+
+              {/* Badge */}
+              <motion.div
+                animate={{ y: [0, -5, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="absolute -top-2 -right-2 bg-[#FFD54F] text-[#C62828] px-4 py-2 rounded-full text-xs font-bold shadow-lg"
+              >
+                🎁 Gagne 5% sur chaque commande !
+              </motion.div>
+
+              {/* Contenu */}
+              <div className="relative z-10 text-center">
+                <div className="mb-6">
+                  <div className="bg-white/25 p-4 rounded-2xl backdrop-blur-sm shadow-lg inline-block mb-4">
+                    <span className="text-6xl">💳</span>
+                  </div>
+                  <h3 className="text-white text-2xl font-black mb-2">Ta Carte Cashback t'attend !</h3>
+                  <p className="text-white/80 text-sm">Gagne de l'argent à chaque commande</p>
+                </div>
+
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center gap-3 bg-white/15 backdrop-blur-md rounded-xl px-4 py-3">
+                    <span className="text-2xl">💰</span>
+                    <p className="text-white text-sm font-medium text-left">
+                      <strong>5%</strong> de cashback sur toutes tes commandes
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 bg-white/15 backdrop-blur-md rounded-xl px-4 py-3">
+                    <span className="text-2xl">♻️</span>
+                    <p className="text-white text-sm font-medium text-left">
+                      Réutilise ton cashback <strong>sans limite</strong>
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 bg-white/15 backdrop-blur-md rounded-xl px-4 py-3">
+                    <span className="text-2xl">⚡</span>
+                    <p className="text-white text-sm font-medium text-left">
+                      Utilisable <strong>immédiatement</strong> sur ta prochaine commande
+                    </p>
+                  </div>
+                </div>
+
+                <button className="w-full py-4 bg-[#FFD54F] text-[#C62828] font-black text-lg rounded-xl shadow-xl hover:shadow-2xl transition-all hover:scale-105">
+                  🚀 Je crée mon compte gratuitement
+                </button>
+              </div>
+
+              {/* Chip design doré */}
+              <motion.div 
+                animate={{ rotate: [0, 5, -5, 0] }}
+                transition={{ duration: 4, repeat: Infinity }}
+                className="absolute bottom-6 right-6 w-14 h-14 bg-gradient-to-br from-[#FFD54F] to-[#FFA726] rounded-xl shadow-xl opacity-80"
+              />
+            </motion.div>
           )}
         </motion.div>
 
