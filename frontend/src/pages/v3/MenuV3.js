@@ -108,7 +108,13 @@ export const MenuV3 = () => {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => navigate('/')}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  navigate('/');
+                }}
+                type="button"
+                style={{ pointerEvents: 'auto' }}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors touch-manipulation"
               >
                 <ChevronLeft className="w-6 h-6" />
               </button>
