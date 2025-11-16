@@ -187,7 +187,15 @@ export const HomeV3 = () => {
                   </div>
                 </div>
 
-                <button className="w-full py-4 bg-[#FFD54F] text-[#C62828] font-black text-lg rounded-xl shadow-xl hover:shadow-2xl transition-all hover:scale-105">
+                <button 
+                  onClick={() => {
+                    console.log('🔥 CLICK DETECTED on: Je crée mon compte gratuitement');
+                    console.log('🎯 Handler executing successfully!');
+                    navigate('/signup');
+                    console.log('✅ Navigation triggered to: /signup');
+                  }}
+                  className="w-full py-4 bg-[#FFD54F] text-[#C62828] font-black text-lg rounded-xl shadow-xl hover:shadow-2xl transition-all hover:scale-105"
+                >
                   🚀 Je crée mon compte gratuitement
                 </button>
               </div>
