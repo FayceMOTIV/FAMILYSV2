@@ -211,7 +211,7 @@ export const CheckoutV3 = () => {
             <h3 className="font-black text-green-900 mb-3">💳 Résumé cashback</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-green-800">Cashback gagné</span>
+                <span className="text-green-800">Fidélité gagnée</span>
                 <span className="font-bold text-green-900">+{cashbackPreview.cashback_earned.toFixed(2)}€</span>
               </div>
               {useCashback && cashbackPreview.cashback_to_use > 0 && (
