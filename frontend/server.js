@@ -13,24 +13,18 @@ app.use('/api', createProxyMiddleware({
 // Serve uploads directory
 app.use('/uploads', express.static('/app/backend/uploads'));
 
-// Serve admin static files
-app.use('/admin', express.static(path.join(__dirname, 'build/admin')));
-
-// Serve main app static files  
-app.use(express.static(path.join(__dirname, 'build')));
-
-// Admin SPA routing
-app.use('/admin', (req, res, next) => {
-  // If requesting a file with extension, let express.static handle it
-  if (req.path.match(/\.(js|css|map|json|ico|png|jpg|jpeg|svg|woff|woff2|ttf|eot)$/)) {
-    return next();
+// Serve main app static files with cache control
+app.use(express.static(path.join(__dirname, 'build'), {
+  setHeaders: (res, path) => {
+    // Cache busting pour éviter les problèmes de cache
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
   }
-  // Otherwise send admin index.html
-  res.sendFile(path.join(__dirname, 'build/admin/index.html'));
-});
+}));
 
-// Frontend SPA fallback
-app.use((req, res) => {
+// Frontend SPA fallback - DOIT être en dernier
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build/index.html'));
 });
 
