@@ -252,7 +252,7 @@ class MobileAppBackendTester:
         
         # Test POST /api/v1/orders (créer commande)
         try:
-            # Create a test order
+            # Create a test order with correct structure
             test_order_data = {
                 "customer_email": "test.mobile@familys.app",
                 "customer_name": "Test Mobile User",
@@ -261,14 +261,18 @@ class MobileAppBackendTester:
                     {
                         "product_id": self.test_product_id or "test-product-123",
                         "name": "Test Burger",
-                        "price": 12.50,
+                        "base_price": 12.50,
                         "quantity": 1,
-                        "options": []
+                        "options": [],
+                        "total_price": 12.50
                     }
                 ],
-                "total": 12.50,
-                "order_type": "takeaway",
-                "payment_method": "card"
+                "subtotal": 12.50,
+                "vat_amount": 2.50,
+                "total": 15.00,
+                "consumption_mode": "takeaway",
+                "payment_method": "card",
+                "use_cashback": False
             }
             
             create_response = requests.post(
