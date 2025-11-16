@@ -161,14 +161,9 @@ class PostStabilizationTester:
         # Test cashback preview without cashback
         try:
             preview_data_without = {
-                "items": [
-                    {
-                        "product_id": "test-product-1",
-                        "name": "Test Burger",
-                        "price": 50.0,
-                        "quantity": 1
-                    }
-                ],
+                "subtotal": 50.0,
+                "total_after_promos": 50.0,
+                "promo_discount": 0.0,
                 "use_cashback": False
             }
             
