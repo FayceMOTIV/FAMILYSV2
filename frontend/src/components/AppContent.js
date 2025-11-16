@@ -86,6 +86,9 @@ export const AppContent = () => {
           <Route path="/profile" element={<MobileProfile />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/notifications" element={<Notifications />} />
+          
+          {/* Diagnostic Page */}
+          <Route path="/diagnostic" element={<DiagnosticTest />} />
         </Routes>
       </MobileLayout>
 
