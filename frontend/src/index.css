@@ -2,12 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* FORÇAGE RADICAL - TOUS LES ÉLÉMENTS DOIVENT ÊTRE CLIQUABLES */
-* {
-    pointer-events: auto !important;
-}
-
-/* Sauf les overlays explicitement désactivés */
+/* Seulement les overlays décoratifs doivent être non-cliquables */
 .pointer-events-none {
     pointer-events: none !important;
 }
