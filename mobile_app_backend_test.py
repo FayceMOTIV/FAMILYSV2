@@ -426,10 +426,11 @@ class MobileAppBackendTester:
                     self.log_result("POST /api/v1/cashback/preview", True, f"Preview calculated - Earned: {cashback_earned}€, To pay: {remaining_to_pay}€")
                     
                     # Test with cashback usage
-                    test_cart["use_cashback"] = True
+                    test_cart_with_cashback = test_cart.copy()
+                    test_cart_with_cashback["use_cashback"] = True
                     preview_with_cashback = requests.post(
                         f"{self.base_url}/api/v1/cashback/preview",
-                        json=test_cart,
+                        json=test_cart_with_cashback,
                         headers={"Content-Type": "application/json"}
                     )
                     
