@@ -203,11 +203,41 @@ export default function ProductDetailScreen() {
             </View>
           )}
           
-          {/* Options Section (placeholder) */}
+          {/* Options Section */}
+          {product.option_groups && product.option_groups.length > 0 && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Personnalise ton produit</Text>
+              {product.option_groups.map((group) => (
+                <OptionSelector
+                  key={group.id}
+                  optionGroup={group}
+                  selectedOptions={selectedOptions}
+                  onOptionChange={handleOptionChange}
+                />
+              ))}
+            </View>
+          )}
+          
+          {/* Notes Section */}
+          <NotesInput value={notes} onChange={setNotes} />
+          
+          {/* Quantity Selector */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Options</Text>
-            <View style={styles.optionsPlaceholder}>
-              <Text style={styles.placeholderText}>À développer : options, variants, extras...</Text>
+            <Text style={styles.sectionTitle}>Quantité</Text>
+            <View style={styles.quantitySelector}>
+              <Button
+                title=""
+                onPress={() => setQuantity(Math.max(1, quantity - 1))}
+                variant="secondary"
+                icon={<Ionicons name="remove" size={20} color={Colors.gray900} />}
+              />
+              <Text style={styles.quantityText}>{quantity}</Text>
+              <Button
+                title=""
+                onPress={() => setQuantity(quantity + 1)}
+                variant="secondary"
+                icon={<Ionicons name="add" size={20} color={Colors.gray900} />}
+              />
             </View>
           </View>
         </View>
