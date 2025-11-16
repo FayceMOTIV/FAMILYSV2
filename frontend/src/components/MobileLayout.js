@@ -70,8 +70,13 @@ const MobileLayout = ({ children }) => {
               <button
                 key={item.path}
                 onClick={handleClick}
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  handleClick();
+                }}
                 type="button"
-                className={`relative flex flex-col items-center justify-center py-2 px-3 rounded-2xl min-w-[64px] transition-all duration-300 cursor-pointer ${
+                style={{ pointerEvents: 'auto' }}
+                className={`relative flex flex-col items-center justify-center py-2 px-3 rounded-2xl min-w-[64px] transition-all duration-300 cursor-pointer touch-manipulation ${
                   active
                     ? 'text-[#C62828] dark:text-[#FFD54F] bg-[#C62828]/10 dark:bg-[#FFD54F]/10 scale-110'
                     : 'text-gray-500 dark:text-gray-400'
