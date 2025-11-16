@@ -1,7 +1,13 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import TabBarIcon from '../../components/TabBarIcon';
+import useCartStore from '../../stores/cartStore';
+import useNotificationStore from '../../stores/notificationStore';
 
 export default function TabLayout() {
+  const cartItemCount = useCartStore((state) => state.getItemCount());
+  const unreadCount = useNotificationStore((state) => state.unreadCount);
+  
   return (
     <Tabs
       screenOptions={{
@@ -23,7 +29,7 @@ export default function TabLayout() {
         options={{
           title: 'Accueil',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
+            <TabBarIcon name="home" color={color} size={size} />
           )
         }}
       />
@@ -32,7 +38,7 @@ export default function TabLayout() {
         options={{
           title: 'Menu',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="restaurant" size={size} color={color} />
+            <TabBarIcon name="restaurant" color={color} size={size} />
           )
         }}
       />
@@ -41,7 +47,7 @@ export default function TabLayout() {
         options={{
           title: 'Panier',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="cart" size={size} color={color} />
+            <TabBarIcon name="cart" color={color} size={size} badge={cartItemCount} />
           )
         }}
       />
@@ -50,7 +56,7 @@ export default function TabLayout() {
         options={{
           title: 'Fidélité',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="star" size={size} color={color} />
+            <TabBarIcon name="star" color={color} size={size} />
           )
         }}
       />
@@ -59,7 +65,7 @@ export default function TabLayout() {
         options={{
           title: 'Profil',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
+            <TabBarIcon name="person" color={color} size={size} badge={unreadCount} />
           )
         }}
       />
