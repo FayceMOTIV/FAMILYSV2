@@ -23,7 +23,7 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
   const [uploadingImage, setUploadingImage] = useState({});
   const [toast, setToast] = useState(null);
 
-  const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-native-reboot.preview.emergentagent.com';
+  const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-reborn.preview.emergentagent.com';
 
   useEffect(() => {
     if (isOpen) {

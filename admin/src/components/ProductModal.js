@@ -7,7 +7,7 @@ import { productsAPI, categoriesAPI } from '../services/api';
 import axios from 'axios';
 import { ChevronUp, ChevronDown, X, Info } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-native-reboot.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-reborn.preview.emergentagent.com';
 
 export const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
   const [loading, setLoading] = useState(false);

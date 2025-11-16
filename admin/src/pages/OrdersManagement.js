@@ -9,7 +9,7 @@ import { RefundModal } from '../components/RefundModal';
 import { Package, Clock, Truck, CheckCircle, XCircle, CreditCard, Loader, Printer, Grid, List, DollarSign, FileText, AlertCircle } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-native-reboot.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-reborn.preview.emergentagent.com';
 
 export const OrdersManagement = () => {
   const [orders, setOrders] = useState([]);

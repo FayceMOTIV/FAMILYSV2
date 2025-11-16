@@ -90,7 +90,7 @@ sudo supervisorctl restart backend
 
 **API Base URL** :
 ```
-https://react-native-reboot.preview.emergentagent.com/api/v1
+https://react-reborn.preview.emergentagent.com/api/v1
 ```
 
 ---
@@ -228,7 +228,7 @@ npm run dev  # Devrait démarrer sur port 3001
 
 ### Backend
 ```bash
-curl https://react-native-reboot.preview.emergentagent.com/api/v1/products
+curl https://react-reborn.preview.emergentagent.com/api/v1/products
 # Devrait retourner la liste des produits
 ```
 

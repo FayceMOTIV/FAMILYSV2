@@ -69,7 +69,7 @@ sudo supervisorctl start frontend-prod
 
 Puis accédez à :
 ```
-https://react-native-reboot.preview.emergentagent.com
+https://react-reborn.preview.emergentagent.com
 ```
 
 ⚠️ **Attention** : L'ancien front a des bugs (boutons non fonctionnels, c'est pourquoi on l'a remplacé).

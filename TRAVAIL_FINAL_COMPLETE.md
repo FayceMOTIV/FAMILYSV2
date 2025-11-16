@@ -186,7 +186,7 @@ sudo supervisorctl restart admin
 ```
 
 ### URLs importantes:
-- **Admin** : https://react-native-reboot.preview.emergentagent.com
+- **Admin** : https://react-reborn.preview.emergentagent.com
 - **Credentials** : admin@familys.app / Admin@123456
 
 ---

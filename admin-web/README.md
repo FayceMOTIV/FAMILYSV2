@@ -38,7 +38,7 @@ admin-web/
 
 ## Backend API
 
-**Base URL**: `https://react-native-reboot.preview.emergentagent.com/api/v1/admin`
+**Base URL**: `https://react-reborn.preview.emergentagent.com/api/v1/admin`
 
 ### Available Endpoints
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '../components/Button';
 import { AlertCircle, CheckCircle, FileText, Clock, DollarSign, Users } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-native-reboot.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-reborn.preview.emergentagent.com';
 
 export const TicketZ = () => {
   const [dailyStatus, setDailyStatus] = useState(null);

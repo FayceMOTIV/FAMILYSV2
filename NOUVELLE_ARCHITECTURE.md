@@ -127,7 +127,7 @@ Password: Admin@123456
 
 ### API Base URL
 ```
-https://react-native-reboot.preview.emergentagent.com/api/v1
+https://react-reborn.preview.emergentagent.com/api/v1
 ```
 
 ### Endpoints Disponibles

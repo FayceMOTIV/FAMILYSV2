@@ -6,7 +6,7 @@ import { Input, Label } from '../components/Input';
 import { Settings, Save, Loader } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-native-reboot.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-reborn.preview.emergentagent.com';
 
 export const AIMarketingSettings = () => {
   const [settings, setSettings] = useState({

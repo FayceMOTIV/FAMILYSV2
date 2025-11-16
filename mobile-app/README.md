@@ -35,7 +35,7 @@ mobile-app/
 
 ## Backend API
 
-**Base URL**: `https://react-native-reboot.preview.emergentagent.com/api/v1`
+**Base URL**: `https://react-reborn.preview.emergentagent.com/api/v1`
 
 ### Available Endpoints
 

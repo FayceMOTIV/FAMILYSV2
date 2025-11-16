@@ -11,7 +11,7 @@ import useCartStore from '../../stores/cartStore'
 import useLoyaltyStore from '../../stores/loyaltyStore'
 import useAuthStore from '../../stores/authStore'
 
-const API_URL = 'https://react-native-reboot.preview.emergentagent.com/api/v1'
+const API_URL = 'https://react-reborn.preview.emergentagent.com/api/v1'
 
 export default function CartScreen() {
   const router = useRouter()

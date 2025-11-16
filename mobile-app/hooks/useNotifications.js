@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-const API_URL = 'https://react-native-reboot.preview.emergentagent.com/api/v1'
+const API_URL = 'https://react-reborn.preview.emergentagent.com/api/v1'
 
 export const useNotifications = (userId) => {
   const [notifications, setNotifications] = useState([])

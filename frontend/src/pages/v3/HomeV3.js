@@ -9,7 +9,7 @@ import { CategoryCard } from '../../components/v3/CategoryCard';
 import { ProductCardV3 } from '../../components/v3/ProductCardV3';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-native-reboot.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-reborn.preview.emergentagent.com';
 
 /**
  * Home Page V3 - Design ultra moderne avec cashback en avant

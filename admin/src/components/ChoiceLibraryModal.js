@@ -4,7 +4,7 @@ import { Button } from './Button';
 import { Input, Label, Textarea } from './Input';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-native-reboot.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-reborn.preview.emergentagent.com';
 
 export const ChoiceLibraryModal = ({ isOpen, onClose, choice, onSuccess }) => {
   const [formData, setFormData] = useState({

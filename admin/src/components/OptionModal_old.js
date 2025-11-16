@@ -28,7 +28,7 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
 
   const loadChoiceLibrary = async () => {
     try {
-      const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-native-reboot.preview.emergentagent.com';
+      const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-reborn.preview.emergentagent.com';
       const response = await fetch(`${API_URL}/api/v1/admin/choice-library`);
       const data = await response.json();
       setChoiceLibrary(data.choices || []);

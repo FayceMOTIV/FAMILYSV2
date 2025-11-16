@@ -7,7 +7,7 @@ import { PromotionWizard } from '../components/PromotionWizard';
 import { PromotionCalendar } from '../components/PromotionCalendar';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-native-reboot.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-reborn.preview.emergentagent.com';
 
 export const PromotionsV2 = () => {
   const [promotions, setPromotions] = useState([]);

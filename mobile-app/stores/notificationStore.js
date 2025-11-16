@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import axios from 'axios'
 
-const API_URL = 'https://react-native-reboot.preview.emergentagent.com/api/v1'
+const API_URL = 'https://react-reborn.preview.emergentagent.com/api/v1'
 
 const useNotificationStore = create((set, get) => ({
   notifications: [],

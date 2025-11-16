@@ -5,7 +5,7 @@ import { ChevronLeft, CreditCard, Wallet, Check } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-native-reboot.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-reborn.preview.emergentagent.com';
 
 /**
  * Checkout V3 - Finalisation commande avec cashback

@@ -5,7 +5,7 @@ import { ChevronLeft, Plus, Minus, TrendingUp, Heart, Share2, Info } from 'lucid
 import { useApp } from '../../context/AppContext';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-native-reboot.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-reborn.preview.emergentagent.com';
 
 /**
  * Page Détail Produit V3 - Machine à conversion

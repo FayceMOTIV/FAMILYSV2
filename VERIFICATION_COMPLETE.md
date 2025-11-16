@@ -107,19 +107,19 @@ Tous les backends fonctionnent, testez-les:
 curl "https://resto-dashboard-21.preview.emergentagant.com/api/v1/admin/categories"
 
 # Products  
-curl "https://react-native-reboot.preview.emergentagent.com/api/v1/admin/products"
+curl "https://react-reborn.preview.emergentagent.com/api/v1/admin/products"
 
 # Options
-curl "https://react-native-reboot.preview.emergentagent.com/api/v1/admin/options"
+curl "https://react-reborn.preview.emergentagent.com/api/v1/admin/options"
 
 # Orders
-curl "https://react-native-reboot.preview.emergentagent.com/api/v1/admin/orders"
+curl "https://react-reborn.preview.emergentagent.com/api/v1/admin/orders"
 
 # Notifications
-curl "https://react-native-reboot.preview.emergentagent.com/api/v1/admin/notifications"
+curl "https://react-reborn.preview.emergentagent.com/api/v1/admin/notifications"
 
 # Promos
-curl "https://react-native-reboot.preview.emergentagent.com/api/v1/admin/promos"
+curl "https://react-reborn.preview.emergentagent.com/api/v1/admin/promos"
 ```
 
 ---
