@@ -139,6 +139,22 @@ export default function ProductDetailScreen() {
           <View style={styles.cashbackBadge}>
             <Badge text={`+${cashbackAmount}€ cashback`} variant="cashback" size="medium" />
           </View>
+          
+          {/* Favorite button */}
+          <View style={styles.favoriteButton}>
+            <Button
+              title=""
+              onPress={handleFavoriteToggle}
+              variant="secondary"
+              icon={
+                <Ionicons 
+                  name={isFavorite(product.id) ? "heart" : "heart-outline"} 
+                  size={24} 
+                  color={isFavorite(product.id) ? Colors.error : Colors.gray600} 
+                />
+              }
+            />
+          </View>
         </View>
 
         {/* Content */}
