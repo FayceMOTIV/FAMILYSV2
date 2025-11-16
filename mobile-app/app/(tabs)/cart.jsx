@@ -69,7 +69,7 @@ export default function CartScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Panier</Text>
-        <Badge text={`${cartItems.length} articles`} variant="primary" size="small" />
+        <Badge text={`${items.length} articles`} variant="primary" size="small" />
       </View>
 
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
