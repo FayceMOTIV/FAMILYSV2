@@ -1,48 +1,228 @@
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useLocalSearchParams } from 'expo-router';
+import { View, Text, ScrollView, Image, StyleSheet } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { Ionicons } from '@expo/vector-icons'
+import { Colors, Spacing, Typography, BorderRadius, Shadows } from '../../constants/theme'
+import Button from '../../components/Button'
+import Badge from '../../components/Badge'
+import useCartStore from '../../stores/cartStore'
 
 export default function ProductDetailScreen() {
-  const { id } = useLocalSearchParams();
+  const { id } = useLocalSearchParams()
+  const router = useRouter()
+  const addItem = useCartStore((state) => state.addItem)
+  
+  // Mock product data (will be replaced with API call)
+  const product = {
+    id,
+    name: 'Family\'s Burger',
+    description: 'Notre burger signature avec viande de bœuf 100% française, fromage cheddar, sauce secrète maison, salade fraîche, tomates et oignons caramテゥlisテゥs sur pain briochテゥ artisanal.',
+    price: 12.90,
+    originalPrice: 15.90,
+    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800',
+    category: 'Burgers',
+    hasPromo: true,
+    promoText: '-20% jusqu\'au 30/11',
+    cashback: '0.65',
+    allergens: ['Gluten', 'Lactose'],
+    calories: 650,
+  }
+  
+  const handleAddToCart = () => {
+    addItem(product)
+    // Show toast or navigate to cart
+    router.back()
+  }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Produit #{id}</Text>
-        
-        <View style={styles.placeholder}>
-          <Text style={styles.placeholderText}>Détail du produit</Text>
-          <Text style={styles.placeholderText}>À développer...</Text>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
+      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+        {/* Image */}
+        <View style={styles.imageContainer}>
+          <Image 
+            source={{ uri: product.image }}
+            style={styles.image}
+            resizeMode="cover"
+          />
+          
+          {/* Badges */}
+          {product.hasPromo && (
+            <View style={styles.promoBadge}>
+              <Badge text={product.promoText} variant="promo" size="medium" />
+            </View>
+          )}
+          
+          <View style={styles.cashbackBadge}>
+            <Badge text={`+${product.cashback}€ cashback`} variant="cashback" size="medium" />
+          </View>
+        </View>
+
+        {/* Content */}
+        <View style={styles.content}>
+          {/* Category */}
+          <Text style={styles.category}>{product.category}</Text>
+          
+          {/* Name */}
+          <Text style={styles.name}>{product.name}</Text>
+          
+          {/* Price */}
+          <View style={styles.priceRow}>
+            {product.originalPrice && (
+              <Text style={styles.originalPrice}>{product.originalPrice.toFixed(2)}€</Text>
+            )}
+            <Text style={styles.price}>{product.price.toFixed(2)}€</Text>
+          </View>
+          
+          {/* Description */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Description</Text>
+            <Text style={styles.description}>{product.description}</Text>
+          </View>
+          
+          {/* Info Cards */}
+          <View style={styles.infoCards}>
+            <View style={styles.infoCard}>
+              <Ionicons name="flame" size={20} color={Colors.warning} />
+              <Text style={styles.infoCardText}>{product.calories} kcal</Text>
+            </View>
+            <View style={styles.infoCard}>
+              <Ionicons name="alert-circle" size={20} color={Colors.error} />
+              <Text style={styles.infoCardText}>{product.allergens.join(', ')}</Text>
+            </View>
+          </View>
+          
+          {/* Options Section (placeholder) */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Options</Text>
+            <View style={styles.optionsPlaceholder}>
+              <Text style={styles.placeholderText}>À développer : options, variants, extras...</Text>
+            </View>
+          </View>
         </View>
       </ScrollView>
+
+      {/* Footer */}
+      <View style={styles.footer}>
+        <Button
+          title="Ajouter au panier"
+          onPress={handleAddToCart}
+          fullWidth
+          icon={<Ionicons name="cart" size={20} color={Colors.white} />}
+        />
+      </View>
     </SafeAreaView>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF'
+    backgroundColor: Colors.white,
+  },
+  scroll: {
+    flex: 1,
+  },
+  imageContainer: {
+    width: '100%',
+    height: 300,
+    backgroundColor: Colors.gray100,
+    position: 'relative',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+  promoBadge: {
+    position: 'absolute',
+    top: Spacing.l,
+    left: Spacing.l,
+  },
+  cashbackBadge: {
+    position: 'absolute',
+    top: Spacing.l,
+    right: Spacing.l,
   },
   content: {
-    padding: 20
+    padding: Spacing.l,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 24
+  category: {
+    fontSize: Typography.s,
+    color: Colors.gray600,
+    textTransform: 'uppercase',
+    fontWeight: Typography.semibold,
+    marginBottom: Spacing.xs,
   },
-  placeholder: {
-    padding: 40,
-    backgroundColor: '#F9FAFB',
-    borderRadius: 12,
-    alignItems: 'center'
+  name: {
+    fontSize: Typography.xxxl,
+    fontWeight: Typography.bold,
+    color: Colors.gray900,
+    marginBottom: Spacing.m,
+  },
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.m,
+    marginBottom: Spacing.xl,
+  },
+  originalPrice: {
+    fontSize: Typography.l,
+    color: Colors.gray400,
+    textDecorationLine: 'line-through',
+  },
+  price: {
+    fontSize: Typography.xxxl,
+    fontWeight: Typography.bold,
+    color: Colors.primary,
+  },
+  section: {
+    marginBottom: Spacing.xl,
+  },
+  sectionTitle: {
+    fontSize: Typography.l,
+    fontWeight: Typography.bold,
+    color: Colors.gray900,
+    marginBottom: Spacing.m,
+  },
+  description: {
+    fontSize: Typography.m,
+    color: Colors.gray700,
+    lineHeight: 24,
+  },
+  infoCards: {
+    flexDirection: 'row',
+    gap: Spacing.m,
+    marginBottom: Spacing.xl,
+  },
+  infoCard: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.s,
+    backgroundColor: Colors.gray50,
+    padding: Spacing.m,
+    borderRadius: BorderRadius.m,
+  },
+  infoCardText: {
+    fontSize: Typography.s,
+    color: Colors.gray700,
+    flex: 1,
+  },
+  optionsPlaceholder: {
+    backgroundColor: Colors.gray50,
+    padding: Spacing.xl,
+    borderRadius: BorderRadius.m,
+    alignItems: 'center',
   },
   placeholderText: {
-    fontSize: 14,
-    color: '#9CA3AF',
+    fontSize: Typography.s,
+    color: Colors.gray500,
     textAlign: 'center',
-    marginBottom: 4
-  }
-});
+  },
+  footer: {
+    backgroundColor: Colors.white,
+    padding: Spacing.l,
+    borderTopWidth: 1,
+    borderTopColor: Colors.gray100,
+    ...Shadows.large,
+  },
+})
