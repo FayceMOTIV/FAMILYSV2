@@ -102,18 +102,31 @@ export default function HomeScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Populaires</Text>
-            <Text style={styles.seeAll}>Voir tout</Text>
+            <Text style={styles.seeAll} onPress={() => router.push('/menu')}>Voir tout</Text>
           </View>
-          <View style={styles.productsGrid}>
-            {popularProducts.map((product) => (
-              <View key={product.id} style={styles.productItem}>
-                <ProductCard 
-                  product={product}
-                  onPress={() => router.push(`/product/${product.id}`)}
-                />
-              </View>
-            ))}
-          </View>
+          {loadingProducts ? (
+            <View style={styles.productsGrid}>
+              {[1, 2].map((i) => (
+                <SkeletonLoader key={i} height={280} style={{ marginBottom: 16 }} />
+              ))}
+            </View>
+          ) : (
+            <View style={styles.productsGrid}>
+              {popularProducts.map((product) => (
+                <View key={product.id} style={styles.productItem}>
+                  <ProductCard 
+                    product={{
+                      ...product,
+                      image: product.image_url || product.image,
+                      hasPromo: product.has_promotion || false,
+                      cashback: ((product.price * 0.05).toFixed(2))
+                    }}
+                    onPress={() => router.push(`/product/${product.id}`)}
+                  />
+                </View>
+              ))}
+            </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
