@@ -8,38 +8,25 @@ import CategoryCard from '../../components/CategoryCard'
 import ProductCard from '../../components/ProductCard'
 import Badge from '../../components/Badge'
 
+import { useCategories } from '../../hooks/useCategories'
+import { useProducts } from '../../hooks/useProducts'
+import SkeletonLoader from '../../components/SkeletonLoader'
+
 export default function HomeScreen() {
   const router = useRouter()
-
-  // Mock data
-  const categories = [
-    { id: '1', name: 'Burgers', icon: '🍔' },
-    { id: '2', name: 'Pizzas', icon: '🍕' },
-    { id: '3', name: 'Salades', icon: '🥗' },
-    { id: '4', name: 'Desserts', icon: '🍰' },
-    { id: '5', name: 'Boissons', icon: '🥤' },
-  ]
-
-  const popularProducts = [
-    {
-      id: '1',
-      name: 'Family\'s Burger',
-      description: 'Notre burger signature avec fromage et sauce secrète',
-      price: 12.90,
-      originalPrice: 15.90,
-      image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400',
-      hasPromo: true,
-      cashback: '0.65',
-    },
-    {
-      id: '2',
-      name: 'Pizza Margherita',
-      description: 'Pizza traditionnelle italienne',
-      price: 11.50,
-      image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400',
-      cashback: '0.58',
-    },
-  ]
+  
+  // Fetch real data
+  const { categories, loading: loadingCategories } = useCategories()
+  const { products, loading: loadingProducts } = useProducts()
+  
+  // Get popular products (is_popular flag or first 4)
+  const popularProducts = products
+    .filter(p => p.is_popular || p.best_seller)
+    .slice(0, 4)
+  
+  if (popularProducts.length === 0 && products.length > 0) {
+    popularProducts.push(...products.slice(0, 4))
+  }
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
