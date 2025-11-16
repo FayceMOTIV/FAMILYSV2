@@ -63,17 +63,15 @@ export default function CheckoutScreen() {
       clearCart()
       console.log('✅ Order placed successfully, cart cleared')
       
-      // Navigate to confirmation
-      Alert.alert(
-        'Commande confirmée ! 🎉',
-        `Votre commande #${result.order.id} a été enregistrée.`,
-        [
-          {
-            text: 'OK',
-            onPress: () => router.replace('/(tabs)')
-          }
-        ]
-      )
+      // Navigate to order success screen with details
+      router.replace({
+        pathname: '/order-success',
+        params: {
+          orderId: result.order.id,
+          total: total.toFixed(2),
+          cashbackEarned: cashbackEarned.toFixed(2)
+        }
+      })
     } else {
       Alert.alert('Erreur', result.error || 'Impossible de créer la commande')
     }
