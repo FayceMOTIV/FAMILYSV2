@@ -107,7 +107,7 @@ export const OrderSuccess = () => {
               className="w-full bg-gray-100 text-gray-700 py-3 rounded-xl font-medium flex items-center justify-center gap-2"
             >
               <Receipt className="w-5 h-5" />
-              Voir ma carte cashback
+              Voir ma carte de fidélité
             </button>
           </div>
         </div>
