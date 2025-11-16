@@ -151,16 +151,19 @@ class MobileAppBackendTester:
         """Test Categories API endpoints"""
         print("\n📂 TESTING CATEGORIES API")
         
-        # Test GET /api/v1/categories (liste catégories)
+        # Test GET /api/v1/admin/categories (liste catégories) - using admin endpoint
         try:
-            response = requests.get(f"{self.base_url}/api/v1/categories")
+            response = requests.get(
+                f"{self.base_url}/api/v1/admin/categories",
+                headers=self.get_headers()
+            )
             
             if response.status_code == 200:
                 data = response.json()
                 categories = data.get("categories", []) if isinstance(data, dict) else data
                 
                 if categories and len(categories) > 0:
-                    self.log_result("GET /api/v1/categories", True, f"Retrieved {len(categories)} categories")
+                    self.log_result("GET /api/v1/admin/categories", True, f"Retrieved {len(categories)} categories")
                     
                     # Verify category structure
                     first_category = categories[0]
@@ -176,12 +179,12 @@ class MobileAppBackendTester:
                     category_names = [cat.get("name", "Unknown") for cat in categories[:5]]
                     self.log_result("Category Names Sample", True, f"Sample categories: {', '.join(category_names)}")
                 else:
-                    self.log_result("GET /api/v1/categories", False, error="No categories returned")
+                    self.log_result("GET /api/v1/admin/categories", False, error="No categories returned")
             else:
-                self.log_result("GET /api/v1/categories", False, error=f"Status {response.status_code}: {response.text}")
+                self.log_result("GET /api/v1/admin/categories", False, error=f"Status {response.status_code}: {response.text}")
                 
         except Exception as e:
-            self.log_result("GET /api/v1/categories", False, error=str(e))
+            self.log_result("GET /api/v1/admin/categories", False, error=str(e))
     
     def test_orders_api(self):
         """Test Orders API endpoints"""
