@@ -63,8 +63,10 @@ const MobileLayout = ({ children }) => {
             const Icon = item.icon;
             const active = isActive(item.path);
             const handleClick = () => {
-              console.log('Navigation to:', item.path);
+              console.log('🔥 CLICK DETECTED on:', item.label, '→', item.path);
+              console.log('🎯 Handler executing successfully!');
               navigate(item.path);
+              console.log('✅ Navigation triggered to:', item.path);
             };
             return (
               <button
