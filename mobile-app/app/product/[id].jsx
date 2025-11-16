@@ -245,12 +245,18 @@ export default function ProductDetailScreen() {
 
       {/* Footer */}
       <View style={styles.footer}>
-        <Button
-          title="Ajouter au panier"
-          onPress={handleAddToCart}
-          fullWidth
-          icon={<Ionicons name="cart" size={20} color={Colors.white} />}
-        />
+        <View style={styles.footerContent}>
+          <View style={styles.priceInfo}>
+            <Text style={styles.footerLabel}>Total</Text>
+            <Text style={styles.footerPrice}>{getTotalPrice().toFixed(2)}€</Text>
+          </View>
+          <Button
+            title={`Ajouter (${quantity})`}
+            onPress={handleAddToCart}
+            icon={<Ionicons name="cart" size={20} color={Colors.white} />}
+            style={{ flex: 1 }}
+          />
+        </View>
       </View>
     </SafeAreaView>
   )
