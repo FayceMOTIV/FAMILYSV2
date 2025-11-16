@@ -45,9 +45,13 @@ export default function ProductDetailScreen() {
   
   const handleAddToCart = () => {
     addItem(product)
-    // Show toast or navigate to cart
-    router.back()
+    Alert.alert('Succès', `${product.name} ajouté au panier`)
+    console.log('✅ Added to cart:', product.name)
   }
+  
+  const cashbackAmount = (product.price * 0.05).toFixed(2)
+  const imageUrl = product.image_url || product.image || 'https://via.placeholder.com/800x400'
+  const categoryName = product.category_name || product.category || 'Produit'
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -55,56 +59,68 @@ export default function ProductDetailScreen() {
         {/* Image */}
         <View style={styles.imageContainer}>
           <Image 
-            source={{ uri: product.image }}
+            source={{ uri: imageUrl }}
             style={styles.image}
             resizeMode="cover"
           />
           
           {/* Badges */}
-          {product.hasPromo && (
+          {product.has_promotion && (
             <View style={styles.promoBadge}>
-              <Badge text={product.promoText} variant="promo" size="medium" />
+              <Badge text="Promotion" variant="promo" size="medium" />
             </View>
           )}
           
           <View style={styles.cashbackBadge}>
-            <Badge text={`+${product.cashback}€ cashback`} variant="cashback" size="medium" />
+            <Badge text={`+${cashbackAmount}€ cashback`} variant="cashback" size="medium" />
           </View>
         </View>
 
         {/* Content */}
         <View style={styles.content}>
           {/* Category */}
-          <Text style={styles.category}>{product.category}</Text>
+          <Text style={styles.category}>{categoryName}</Text>
           
           {/* Name */}
           <Text style={styles.name}>{product.name}</Text>
           
           {/* Price */}
           <View style={styles.priceRow}>
-            {product.originalPrice && (
-              <Text style={styles.originalPrice}>{product.originalPrice.toFixed(2)}€</Text>
+            {product.original_price && product.original_price > product.price && (
+              <Text style={styles.originalPrice}>{product.original_price.toFixed(2)}€</Text>
             )}
             <Text style={styles.price}>{product.price.toFixed(2)}€</Text>
           </View>
           
           {/* Description */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Description</Text>
-            <Text style={styles.description}>{product.description}</Text>
-          </View>
+          {product.description && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Description</Text>
+              <Text style={styles.description}>{product.description}</Text>
+            </View>
+          )}
           
           {/* Info Cards */}
-          <View style={styles.infoCards}>
-            <View style={styles.infoCard}>
-              <Ionicons name="flame" size={20} color={Colors.warning} />
-              <Text style={styles.infoCardText}>{product.calories} kcal</Text>
+          {(product.calories || product.allergens) && (
+            <View style={styles.infoCards}>
+              {product.calories && (
+                <View style={styles.infoCard}>
+                  <Ionicons name="flame" size={20} color={Colors.warning} />
+                  <Text style={styles.infoCardText}>{product.calories} kcal</Text>
+                </View>
+              )}
+              {product.allergens && product.allergens.length > 0 && (
+                <View style={styles.infoCard}>
+                  <Ionicons name="alert-circle" size={20} color={Colors.error} />
+                  <Text style={styles.infoCardText}>
+                    {Array.isArray(product.allergens) 
+                      ? product.allergens.join(', ') 
+                      : product.allergens}
+                  </Text>
+                </View>
+              )}
             </View>
-            <View style={styles.infoCard}>
-              <Ionicons name="alert-circle" size={20} color={Colors.error} />
-              <Text style={styles.infoCardText}>{product.allergens.join(', ')}</Text>
-            </View>
-          </View>
+          )}
           
           {/* Options Section (placeholder) */}
           <View style={styles.section}>
