@@ -51,7 +51,7 @@ export const PromoBanner = ({ promo, onClick }) => {
           repeat: Infinity,
           ease: "easeInOut"
         }}
-        className="absolute inset-0"
+        className="absolute inset-0 pointer-events-none"
       >
         <div className="absolute top-0 left-0 w-32 h-32 bg-white rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-0 w-40 h-40 bg-white rounded-full blur-3xl" />
