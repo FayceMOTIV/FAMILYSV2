@@ -75,22 +75,28 @@ export default function CartScreen() {
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
         {/* Cart Items */}
         <View style={styles.cartItems}>
-          {cartItems.map((item) => (
+          {items.map((item) => (
             <View key={item.id} style={styles.cartItem}>
               <View style={styles.itemInfo}>
                 <Text style={styles.itemName}>{item.name}</Text>
-                {item.options.length > 0 && (
+                {item.options && item.options.length > 0 && (
                   <Text style={styles.itemOptions}>{item.options.join(', ')}</Text>
                 )}
                 <Text style={styles.itemPrice}>{item.price.toFixed(2)}€</Text>
               </View>
               
               <View style={styles.quantityControl}>
-                <Pressable style={styles.quantityButton}>
+                <Pressable 
+                  style={styles.quantityButton}
+                  onPress={() => decrementQuantity(item.id)}
+                >
                   <Ionicons name="remove" size={16} color={Colors.primary} />
                 </Pressable>
                 <Text style={styles.quantity}>{item.quantity}</Text>
-                <Pressable style={styles.quantityButton}>
+                <Pressable 
+                  style={styles.quantityButton}
+                  onPress={() => incrementQuantity(item.id)}
+                >
                   <Ionicons name="add" size={16} color={Colors.primary} />
                 </Pressable>
               </View>
