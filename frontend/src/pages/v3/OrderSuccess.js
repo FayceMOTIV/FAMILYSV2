@@ -78,7 +78,7 @@ export const OrderSuccess = () => {
                 +{cashbackEarned.toFixed(2)}€
               </p>
               <p className="text-sm text-green-800">
-                Ton cashback sera crédité dès que ta commande sera marquée comme payée
+                Tes points seront crédités dès que ta commande sera marquée comme payée
               </p>
             </motion.div>
           )}
