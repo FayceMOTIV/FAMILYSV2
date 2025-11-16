@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Continue implementing back office features for Family's restaurant: Stock Management, Category Reordering, Kiosk Mode, Partial Refunds. Backend URL: https://react-native-reboot.preview.emergentagent.com"
+user_problem_statement: "PHASE 1 STABILISATION: Fix critical bugs in React web app - buttons non-responsive and pages loading inconsistently. ROOT CAUSES IDENTIFIED: 1) rrweb script hijacking click events, 2) Build contamination from admin app. CORRECTION APPLIED: Removed rrweb script and admin build contamination. Then proceed to PHASE 2: Architecture refactor (React Native + separate admin app). Backend URL: https://react-native-reboot.preview.emergentagent.com"
 
 backend:
   - task: "Cashback System V3 - Complete Redesign"
