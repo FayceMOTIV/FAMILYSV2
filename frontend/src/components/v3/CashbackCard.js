@@ -24,7 +24,7 @@ export const CashbackCard = ({ balance = 0, earnedToday = 0, onClick }) => {
           repeat: Infinity,
           ease: "easeInOut"
         }}
-        className="absolute inset-0 opacity-20"
+        className="absolute inset-0 opacity-20 pointer-events-none"
       >
         <div className="absolute top-0 right-0 w-48 h-48 bg-[#FFD54F] rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 w-40 h-40 bg-white rounded-full blur-3xl" />
