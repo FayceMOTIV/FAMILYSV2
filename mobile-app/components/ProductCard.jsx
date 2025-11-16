@@ -51,9 +51,9 @@ const ProductCard = ({ product, onPress, promotion }) => {
         />
         
         {/* Badge Promo */}
-        {product.has_promotion && (
+        {hasPromo && promoText && (
           <View style={styles.promoBadge}>
-            <Text style={styles.promoBadgeText}>🎁 -20%</Text>
+            <Text style={styles.promoBadgeText}>🎁 {promoText}</Text>
           </View>
         )}
         
