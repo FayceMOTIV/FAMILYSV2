@@ -104,6 +104,42 @@ export default function CartScreen() {
           ))}
         </View>
 
+        {/* Cashback Usage Toggle */}
+        {canUseCashback && (
+          <View style={styles.cashbackToggle}>
+            <View style={styles.cashbackToggleContent}>
+              <View>
+                <Text style={styles.cashbackToggleTitle}>Utiliser le cashback</Text>
+                <Text style={styles.cashbackToggleSubtitle}>
+                  Solde disponible: {balance.toFixed(2)}€
+                </Text>
+              </View>
+              <Switch
+                value={useCashback}
+                onValueChange={setUseCashback}
+                trackColor={{ false: Colors.gray300, true: Colors.primary }}
+                thumbColor={useCashback ? Colors.white : Colors.gray500}
+              />
+            </View>
+            {useCashback && cashbackPreview && (
+              <View style={styles.cashbackPreviewDetails}>
+                <View style={styles.cashbackPreviewRow}>
+                  <Text style={styles.cashbackPreviewLabel}>Cashback utilisé:</Text>
+                  <Text style={styles.cashbackPreviewValue}>
+                    -{cashbackPreview.cashback_used?.toFixed(2) || '0.00'}€
+                  </Text>
+                </View>
+                <View style={styles.cashbackPreviewRow}>
+                  <Text style={styles.cashbackPreviewLabel}>Nouveau solde:</Text>
+                  <Text style={styles.cashbackPreviewValue}>
+                    {cashbackPreview.new_balance?.toFixed(2) || balance.toFixed(2)}€
+                  </Text>
+                </View>
+              </View>
+            )}
+          </View>
+        )}
+
         {/* Cashback Info */}
         <View style={styles.cashbackInfo}>
           <View style={styles.cashbackIcon}>
