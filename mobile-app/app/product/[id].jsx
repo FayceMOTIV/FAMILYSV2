@@ -240,4 +240,16 @@ const styles = StyleSheet.create({
     borderTopColor: Colors.gray100,
     ...Shadows.large,
   },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Spacing.xl,
+  },
+  errorText: {
+    fontSize: Typography.l,
+    color: Colors.gray700,
+    textAlign: 'center',
+    marginBottom: Spacing.xl,
+  },
 })
