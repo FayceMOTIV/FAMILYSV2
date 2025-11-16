@@ -34,10 +34,10 @@ export const CashbackCard = ({ balance = 0, earnedToday = 0, onClick }) => {
       <motion.div
         animate={{ y: [0, -5, 0] }}
         transition={{ duration: 2, repeat: Infinity }}
-        className="absolute -top-2 -right-2 bg-[#FFD54F] text-[#C62828] px-4 py-2 rounded-full text-xs font-bold shadow-lg flex items-center gap-1"
+        className="absolute -top-2 -right-2 bg-[#FFD54F] text-[#C62828] px-3 py-2 rounded-full text-xs font-bold shadow-lg flex items-center gap-1"
       >
         <Sparkles className="w-3 h-3" />
-        Gagne 5% à chaque commande !
+        🎁 +5% cashback
       </motion.div>
 
       {/* Contenu */}
