@@ -233,7 +233,7 @@ export const CartV3 = () => {
             
             {useCashback && cashbackPreview?.cashback_to_use > 0 && (
               <div className="flex justify-between text-green-600">
-                <span>Cashback utilisé</span>
+                <span>Fidélité utilisée</span>
                 <span className="font-bold">-{cashbackPreview.cashback_to_use.toFixed(2)}€</span>
               </div>
             )}
