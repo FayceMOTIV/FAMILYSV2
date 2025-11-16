@@ -4,7 +4,7 @@ import { Button } from './Button';
 import { ChevronRight, ChevronLeft, Check } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://chefs-control.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://foodapp-redesign.preview.emergentagent.com';
 
 export const PromotionWizard = ({ isOpen, onClose, promotion, onSuccess }) => {
   const [step, setStep] = useState(1);

@@ -6,7 +6,7 @@ import { Modal } from '../components/Modal';
 import { Package, Clock, Truck, CheckCircle, XCircle, CreditCard, DollarSign, Loader, Printer } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://chefs-control.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_API_URL || 'https://foodapp-redesign.preview.emergentagent.com';
 
 export const OrdersManagement = () => {
   const [orders, setOrders] = useState([]);

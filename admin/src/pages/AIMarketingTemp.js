@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://chefs-control.preview.emergentagent.com';
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://foodapp-redesign.preview.emergentagent.com';
 
 const AIMarketingTemp = () => {
   const [campaigns, setCampaigns] = useState([]);

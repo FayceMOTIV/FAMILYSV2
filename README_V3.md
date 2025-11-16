@@ -7,17 +7,17 @@
 ## 📱 URLS DE L'APPLICATION
 
 ### App Client (Vue Publique)
-- **Home V3** : https://chefs-control.preview.emergentagent.com/
-- **Menu V3** : https://chefs-control.preview.emergentagent.com/menu
-- **Wallet Cashback** : https://chefs-control.preview.emergentagent.com/wallet
-- **Panier** : https://chefs-control.preview.emergentagent.com/cart
+- **Home V3** : https://foodapp-redesign.preview.emergentagent.com/
+- **Menu V3** : https://foodapp-redesign.preview.emergentagent.com/menu
+- **Wallet Cashback** : https://foodapp-redesign.preview.emergentagent.com/wallet
+- **Panier** : https://foodapp-redesign.preview.emergentagent.com/cart
 
 ### Back-Office Admin
-- **Dashboard** : https://chefs-control.preview.emergentagent.com/admin
-- **Gestion Menu** : https://chefs-control.preview.emergentagent.com/admin/menu
-- **Promotions** : https://chefs-control.preview.emergentagent.com/admin/promotions
-- **Commandes** : https://chefs-control.preview.emergentagent.com/admin/orders
-- **Paramètres** : https://chefs-control.preview.emergentagent.com/admin/settings
+- **Dashboard** : https://foodapp-redesign.preview.emergentagent.com/admin
+- **Gestion Menu** : https://foodapp-redesign.preview.emergentagent.com/admin/menu
+- **Promotions** : https://foodapp-redesign.preview.emergentagent.com/admin/promotions
+- **Commandes** : https://foodapp-redesign.preview.emergentagent.com/admin/orders
+- **Paramètres** : https://foodapp-redesign.preview.emergentagent.com/admin/settings
 
 **Identifiants Admin :**
 - Email : `admin@familys.app`
@@ -224,7 +224,7 @@ admin/src/
 
 ### Pour tester le cashback :
 
-1. **Ouvrir l'app** : https://chefs-control.preview.emergentagent.com/
+1. **Ouvrir l'app** : https://foodapp-redesign.preview.emergentagent.com/
 2. **Aller au menu** : Cliquer sur "Commander" ou "Voir tout le menu"
 3. **Ajouter un produit** : Cliquer sur le bouton rouge + (le cashback s'affiche sur chaque produit)
 4. **Voir le panier** : Cliquer sur le bouton panier flottant (rouge, en bas à droite)
@@ -235,7 +235,7 @@ admin/src/
 
 ### Pour gérer les images et badges (Admin) :
 
-1. **Connexion admin** : https://chefs-control.preview.emergentagent.com/admin
+1. **Connexion admin** : https://foodapp-redesign.preview.emergentagent.com/admin
 2. **Menu** : Aller dans "Produits" (sidebar gauche)
 3. **Image & Badge** : Cliquer sur le bouton bleu "Image & Badge" sur un produit
 4. **Upload** : Uploader une image ou coller une URL

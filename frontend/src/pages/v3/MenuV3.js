@@ -5,7 +5,7 @@ import { ChevronLeft, Search, Filter, X } from 'lucide-react';
 import { ProductCardV3 } from '../../components/v3/ProductCardV3';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://chefs-control.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://foodapp-redesign.preview.emergentagent.com';
 
 /**
  * Page Menu V3 - Grille de produits avec filtres et badges

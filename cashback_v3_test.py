@@ -2,7 +2,7 @@
 """
 Test complet du système cashback Family's V3
 Testing all cashback endpoints as specified in the review request
-Backend URL: https://chefs-control.preview.emergentagent.com
+Backend URL: https://foodapp-redesign.preview.emergentagent.com
 """
 
 import requests
@@ -12,7 +12,7 @@ import uuid
 import time
 
 # Configuration
-BASE_URL = "https://chefs-control.preview.emergentagent.com"
+BASE_URL = "https://foodapp-redesign.preview.emergentagent.com"
 ADMIN_EMAIL = "admin@familys.app"
 ADMIN_PASSWORD = "Admin@123456"
 

@@ -14,7 +14,7 @@ import base64
 import io
 
 # Configuration
-BASE_URL = "https://chefs-control.preview.emergentagent.com"
+BASE_URL = "https://foodapp-redesign.preview.emergentagent.com"
 ADMIN_EMAIL = "admin@familys.app"
 ADMIN_PASSWORD = "Admin@123456"
 

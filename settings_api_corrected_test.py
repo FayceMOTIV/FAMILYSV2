@@ -12,7 +12,7 @@ from typing import Dict, Optional
 from datetime import datetime, timezone
 
 # Backend URL from environment
-BACKEND_URL = "https://chefs-control.preview.emergentagent.com"
+BACKEND_URL = "https://foodapp-redesign.preview.emergentagent.com"
 
 class SettingsAPICorrectedTester:
     def __init__(self):

@@ -4,7 +4,7 @@ import { Card, CardContent } from './Card';
 import { Button } from './Button';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://chefs-control.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://foodapp-redesign.preview.emergentagent.com';
 
 /**
  * Modal pour gérer l'image et le badge d'un produit
