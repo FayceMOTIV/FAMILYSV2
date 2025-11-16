@@ -219,10 +219,11 @@ class PostStabilizationTester:
         """3. PRODUCTS & CATEGORIES Testing"""
         print("\n🍔 3. PRODUCTS & CATEGORIES TESTING")
         
-        # Test products endpoint
+        # Test admin products endpoint (no public products endpoint exists)
         try:
             response = requests.get(
-                f"{self.base_url}/api/v1/products",
+                f"{self.base_url}/api/v1/admin/products",
+                headers=self.get_headers(),
                 timeout=10
             )
             
@@ -230,19 +231,20 @@ class PostStabilizationTester:
                 data = response.json()
                 products = data.get("products", []) if isinstance(data, dict) else data
                 products_count = len(products) if isinstance(products, list) else 0
-                self.log_result("GET /api/v1/products", True, 
+                self.log_result("GET /api/v1/admin/products", True, 
                               f"Products retrieved successfully - Count: {products_count}")
             else:
-                self.log_result("GET /api/v1/products", False, 
+                self.log_result("GET /api/v1/admin/products", False, 
                               error=f"Status {response.status_code}: {response.text}")
                 
         except Exception as e:
-            self.log_result("GET /api/v1/products", False, error=str(e))
+            self.log_result("GET /api/v1/admin/products", False, error=str(e))
         
-        # Test categories endpoint
+        # Test admin categories endpoint (no public categories endpoint exists)
         try:
             response = requests.get(
-                f"{self.base_url}/api/v1/categories",
+                f"{self.base_url}/api/v1/admin/categories",
+                headers=self.get_headers(),
                 timeout=10
             )
             
@@ -250,14 +252,14 @@ class PostStabilizationTester:
                 data = response.json()
                 categories = data.get("categories", []) if isinstance(data, dict) else data
                 categories_count = len(categories) if isinstance(categories, list) else 0
-                self.log_result("GET /api/v1/categories", True, 
+                self.log_result("GET /api/v1/admin/categories", True, 
                               f"Categories retrieved successfully - Count: {categories_count}")
             else:
-                self.log_result("GET /api/v1/categories", False, 
+                self.log_result("GET /api/v1/admin/categories", False, 
                               error=f"Status {response.status_code}: {response.text}")
                 
         except Exception as e:
-            self.log_result("GET /api/v1/categories", False, error=str(e))
+            self.log_result("GET /api/v1/admin/categories", False, error=str(e))
     
     def test_orders(self):
         """4. ORDERS Testing"""
