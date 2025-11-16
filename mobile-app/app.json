@@ -33,6 +33,13 @@
     "plugins": [
       "expo-router"
     ],
-    "scheme": "familys"
+    "scheme": "familys",
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "03d04e04-c52a-4c16-a85b-8ee5533f3747"
+      }
+    },
+    "owner": "faical001"
   }
 }
