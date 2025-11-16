@@ -123,7 +123,7 @@ export const WalletV3 = () => {
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
-            <h1 className="text-xl font-black text-gray-900">Ma Carte Cashback</h1>
+            <h1 className="text-xl font-black text-gray-900">Ma Carte de Fidélité</h1>
           </div>
         </div>
       </div>
