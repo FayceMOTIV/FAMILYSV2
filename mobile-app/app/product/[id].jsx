@@ -2,17 +2,27 @@ import { View, Text, ScrollView, Image, StyleSheet, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
+import { useState, useEffect } from 'react'
 import { Colors, Spacing, Typography, BorderRadius, Shadows } from '../../constants/theme'
 import Button from '../../components/Button'
 import Badge from '../../components/Badge'
 import SkeletonLoader from '../../components/SkeletonLoader'
+import OptionSelector from '../../components/OptionSelector'
+import NotesInput from '../../components/NotesInput'
 import useCartStore from '../../stores/cartStore'
+import useFavoriteStore from '../../stores/favoriteStore'
 import { useProduct } from '../../hooks/useProducts'
+import api from '../../services/api'
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams()
   const router = useRouter()
   const addItem = useCartStore((state) => state.addItem)
+  const { toggleFavorite, isFavorite } = useFavoriteStore()
+  
+  const [selectedOptions, setSelectedOptions] = useState({})
+  const [notes, setNotes] = useState('')
+  const [quantity, setQuantity] = useState(1)
   
   // Fetch real product data
   const { product, loading, error } = useProduct(id)
