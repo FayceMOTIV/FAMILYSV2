@@ -188,11 +188,10 @@ export default function CheckoutScreen() {
       <View style={styles.footer}>
         <Button
           title="Passer la commande"
-          onPress={() => {
-            // TODO: Create order
-            console.log('📦 Order placed')
-          }}
+          onPress={handlePlaceOrder}
+          loading={creatingOrder}
           fullWidth
+          icon={<Ionicons name="checkmark-circle" size={20} color={Colors.white} />}
         />
       </View>
     </SafeAreaView>
