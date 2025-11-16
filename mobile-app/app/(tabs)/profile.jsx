@@ -131,53 +131,100 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF'
+    backgroundColor: Colors.gray50,
   },
   content: {
-    padding: 20
+    padding: Spacing.lg,
+    gap: Spacing.lg,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: Spacing.xl,
+  },
+  emoji: {
+    fontSize: 48,
+    marginBottom: Spacing.md,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#C62828',
-    marginBottom: 8
+    ...Typography.h1,
+    color: Colors.gray900,
+    marginBottom: Spacing.xs,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#6B7280',
-    marginBottom: 24
-  },
-  button: {
-    backgroundColor: '#C62828',
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 12
-  },
-  buttonSecondary: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 2,
-    borderColor: '#C62828'
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600'
-  },
-  buttonTextSecondary: {
-    color: '#C62828'
-  },
-  placeholder: {
-    marginTop: 24,
-    padding: 40,
-    backgroundColor: '#F9FAFB',
-    borderRadius: 12,
-    alignItems: 'center'
-  },
-  placeholderText: {
-    fontSize: 14,
-    color: '#9CA3AF',
+    ...Typography.body,
+    color: Colors.gray600,
     textAlign: 'center',
-    marginBottom: 4
-  }
+    marginBottom: Spacing.xl,
+  },
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: Colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.md,
+    ...Shadows.medium,
+  },
+  userName: {
+    ...Typography.h2,
+    color: Colors.gray900,
+    marginBottom: Spacing.xs,
+  },
+  userEmail: {
+    ...Typography.body,
+    color: Colors.gray600,
+  },
+  loyaltyCard: {
+    backgroundColor: Colors.primary,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    ...Shadows.medium,
+  },
+  loyaltyHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: Spacing.md,
+  },
+  loyaltyLabel: {
+    ...Typography.caption,
+    color: Colors.white,
+    opacity: 0.8,
+    marginBottom: Spacing.xs,
+  },
+  loyaltyBalance: {
+    ...Typography.h1,
+    color: Colors.white,
+    fontWeight: 'bold',
+  },
+  loyaltyFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  loyaltyFooterText: {
+    ...Typography.body,
+    color: Colors.white,
+    opacity: 0.9,
+  },
+  menuSection: {
+    backgroundColor: Colors.white,
+    borderRadius: BorderRadius.lg,
+    overflow: 'hidden',
+    ...Shadows.small,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: Spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.gray100,
+  },
+  menuItemText: {
+    ...Typography.body,
+    color: Colors.gray900,
+    flex: 1,
+    marginLeft: Spacing.md,
+  },
 });
