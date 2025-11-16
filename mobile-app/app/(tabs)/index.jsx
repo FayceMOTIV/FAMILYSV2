@@ -99,7 +99,9 @@ export default function HomeScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Populaires</Text>
-            <Text style={styles.seeAll} onPress={() => router.push('/menu')}>Voir tout</Text>
+            <Pressable onPress={() => router.push('/menu')}>
+              <Text style={styles.seeAll}>Voir tout</Text>
+            </Pressable>
           </View>
           {loadingProducts ? (
             <View style={styles.productsGrid}>
