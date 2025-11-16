@@ -179,10 +179,10 @@ export const CartV3 = () => {
               </div>
               <div className="flex-1">
                 <h3 className="font-black text-green-900 text-lg mb-1">
-                  💳 Cashback de cette commande
+                  💳 Fidélité de cette commande
                 </h3>
                 <p className="text-green-800 text-sm mb-3">
-                  En validant cette commande, tu vas gagner <strong className="text-xl">{cashbackPreview.cashback_earned.toFixed(2)}€</strong> sur ta carte Family's.
+                  En validant cette commande, tu vas gagner <strong className="text-xl">{cashbackPreview.cashback_earned.toFixed(2)}€</strong> sur ta carte de fidélité Family's.
                 </p>
                 
                 {user && cashbackPreview.cashback_available > 0 && (
@@ -194,7 +194,7 @@ export const CartV3 = () => {
                       Nouveau solde estimé après commande : <strong>{cashbackPreview.new_balance_after_order.toFixed(2)}€</strong>
                     </p>
 
-                    {/* Option utiliser le cashback */}
+                    {/* Option utiliser les points fidélité */}
                     <label className="flex items-start gap-3 cursor-pointer bg-amber-50 border border-amber-200 rounded-lg p-3">
                       <input
                         type="checkbox"
@@ -204,7 +204,7 @@ export const CartV3 = () => {
                       />
                       <div className="flex-1">
                         <p className="font-bold text-amber-900 text-sm">
-                          Utiliser ma cagnotte cashback sur cette commande
+                          Utiliser mes points fidélité sur cette commande
                         </p>
                         {useCashback && cashbackPreview.cashback_to_use > 0 && (
                           <p className="text-amber-800 text-xs mt-1">
