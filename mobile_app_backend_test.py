@@ -482,8 +482,8 @@ class MobileAppBackendTester:
         
         # Group results by API category
         api_categories = {
-            "Products API": ["GET /api/v1/products", "GET /api/v1/products/{id}", "Product Structure", "Product Detail"],
-            "Categories API": ["GET /api/v1/categories", "Category Structure", "Category Names"],
+            "Products API": ["GET /api/v1/admin/products", "GET /api/v1/admin/products/{id}", "Product Structure", "Product Detail", "Sample Product"],
+            "Categories API": ["GET /api/v1/admin/categories", "Category Structure", "Category Names"],
             "Orders API": ["GET /api/v1/orders/{order_id}", "GET /api/v1/orders/customer/{email}", "POST /api/v1/orders"],
             "Promotions API": ["GET /api/v1/admin/promotions?status=active", "Promotion Structure", "Active Promotions"],
             "Cashback API": ["GET /api/v1/cashback/settings", "GET /api/v1/cashback/balance/{customer_id}", "POST /api/v1/cashback/preview", "Cashback Preview"]
