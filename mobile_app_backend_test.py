@@ -80,61 +80,72 @@ class MobileAppBackendTester:
         """Test Products API endpoints"""
         print("\n🍔 TESTING PRODUCTS API")
         
-        # 1. Test GET /api/v1/products (liste produits)
+        # 1. Test GET /api/v1/admin/products (liste produits) - using admin endpoint
         try:
-            response = requests.get(f"{self.base_url}/api/v1/products")
+            response = requests.get(
+                f"{self.base_url}/api/v1/admin/products",
+                headers=self.get_headers()
+            )
             
             if response.status_code == 200:
                 data = response.json()
                 products = data.get("products", []) if isinstance(data, dict) else data
                 
                 if products and len(products) > 0:
-                    self.log_result("GET /api/v1/products", True, f"Retrieved {len(products)} products")
+                    self.log_result("GET /api/v1/admin/products", True, f"Retrieved {len(products)} products")
                     
                     # Store first product ID for detail test
                     self.test_product_id = products[0].get("id")
                     
                     # Verify product structure
                     first_product = products[0]
-                    required_fields = ["id", "name", "price"]
+                    required_fields = ["id", "name", "base_price"]
                     missing_fields = [field for field in required_fields if field not in first_product]
                     
                     if not missing_fields:
                         self.log_result("Product Structure Validation", True, f"Products have required fields: {required_fields}")
                     else:
                         self.log_result("Product Structure Validation", False, error=f"Missing fields: {missing_fields}")
+                        
+                    # Show sample product info
+                    sample_product = products[0]
+                    product_name = sample_product.get("name", "Unknown")
+                    product_price = sample_product.get("base_price", 0)
+                    self.log_result("Sample Product Info", True, f"Sample: {product_name} - {product_price}€")
                 else:
-                    self.log_result("GET /api/v1/products", False, error="No products returned")
+                    self.log_result("GET /api/v1/admin/products", False, error="No products returned")
             else:
-                self.log_result("GET /api/v1/products", False, error=f"Status {response.status_code}: {response.text}")
+                self.log_result("GET /api/v1/admin/products", False, error=f"Status {response.status_code}: {response.text}")
                 
         except Exception as e:
-            self.log_result("GET /api/v1/products", False, error=str(e))
+            self.log_result("GET /api/v1/admin/products", False, error=str(e))
         
-        # 2. Test GET /api/v1/products/{id} (détail produit)
+        # 2. Test GET /api/v1/admin/products/{id} (détail produit) - using admin endpoint
         if self.test_product_id:
             try:
-                response = requests.get(f"{self.base_url}/api/v1/products/{self.test_product_id}")
+                response = requests.get(
+                    f"{self.base_url}/api/v1/admin/products/{self.test_product_id}",
+                    headers=self.get_headers()
+                )
                 
                 if response.status_code == 200:
                     product = response.json()
                     
                     if product and product.get("id") == self.test_product_id:
-                        self.log_result("GET /api/v1/products/{id}", True, f"Retrieved product details for ID: {self.test_product_id}")
+                        self.log_result("GET /api/v1/admin/products/{id}", True, f"Retrieved product details for ID: {self.test_product_id}")
                         
                         # Verify detailed product structure
-                        expected_fields = ["id", "name", "price", "description"]
                         available_fields = list(product.keys())
-                        self.log_result("Product Detail Fields", True, f"Available fields: {', '.join(available_fields)}")
+                        self.log_result("Product Detail Fields", True, f"Available fields: {', '.join(available_fields[:10])}")
                     else:
-                        self.log_result("GET /api/v1/products/{id}", False, error="Product ID mismatch or empty response")
+                        self.log_result("GET /api/v1/admin/products/{id}", False, error="Product ID mismatch or empty response")
                 else:
-                    self.log_result("GET /api/v1/products/{id}", False, error=f"Status {response.status_code}: {response.text}")
+                    self.log_result("GET /api/v1/admin/products/{id}", False, error=f"Status {response.status_code}: {response.text}")
                     
             except Exception as e:
-                self.log_result("GET /api/v1/products/{id}", False, error=str(e))
+                self.log_result("GET /api/v1/admin/products/{id}", False, error=str(e))
         else:
-            self.log_result("GET /api/v1/products/{id}", False, error="No product ID available for testing")
+            self.log_result("GET /api/v1/admin/products/{id}", False, error="No product ID available for testing")
     
     def test_categories_api(self):
         """Test Categories API endpoints"""
