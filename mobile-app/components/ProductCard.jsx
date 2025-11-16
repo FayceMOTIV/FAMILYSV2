@@ -1,7 +1,19 @@
-import { View, Text, Image, Pressable, StyleSheet } from 'react-native'
+import { View, Text, Image, Pressable, StyleSheet, Alert } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
 import { Colors, Spacing, BorderRadius, Shadows, Typography } from '../constants/theme'
+import useFavoriteStore from '../stores/favoriteStore'
 
 const ProductCard = ({ product, onPress }) => {
+  const { toggleFavorite, isFavorite } = useFavoriteStore()
+  
+  const handleFavoritePress = (e) => {
+    e.stopPropagation()
+    const isNowFavorite = toggleFavorite(product)
+    // Optional: Add haptic feedback or toast here
+  }
+  
+  const cashbackAmount = (product.price * 0.05).toFixed(2)
+  
   return (
     <Pressable 
       onPress={onPress}
@@ -13,24 +25,35 @@ const ProductCard = ({ product, onPress }) => {
       {/* Image */}
       <View style={styles.imageContainer}>
         <Image 
-          source={{ uri: product.image || 'https://via.placeholder.com/300x200' }}
+          source={{ uri: product.image_url || product.image || 'https://via.placeholder.com/300x200' }}
           style={styles.image}
           resizeMode="cover"
         />
         
         {/* Badge Promo */}
-        {product.hasPromo && (
+        {product.has_promotion && (
           <View style={styles.promoBadge}>
             <Text style={styles.promoBadgeText}>🎁 -20%</Text>
           </View>
         )}
         
         {/* Badge Cashback */}
-        {product.cashback && (
-          <View style={styles.cashbackBadge}>
-            <Text style={styles.cashbackBadgeText}>+{product.cashback}€</Text>
-          </View>
-        )}
+        <View style={styles.cashbackBadge}>
+          <Text style={styles.cashbackBadgeText}>+{cashbackAmount}€</Text>
+        </View>
+        
+        {/* Favorite Button */}
+        <Pressable 
+          onPress={handleFavoritePress}
+          style={styles.favoriteButton}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons 
+            name={isFavorite(product.id) ? "heart" : "heart-outline"} 
+            size={22} 
+            color={isFavorite(product.id) ? Colors.error : Colors.white} 
+          />
+        </Pressable>
       </View>
 
       {/* Content */}
