@@ -373,6 +373,46 @@ const styles = StyleSheet.create({
     borderTopColor: Colors.gray100,
     ...Shadows.large,
   },
+  footerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.m,
+  },
+  priceInfo: {
+    alignItems: 'flex-start',
+  },
+  footerLabel: {
+    fontSize: Typography.s,
+    color: Colors.gray600,
+  },
+  footerPrice: {
+    fontSize: Typography.xxl,
+    fontWeight: Typography.bold,
+    color: Colors.gray900,
+  },
+  favoriteButton: {
+    position: 'absolute',
+    bottom: Spacing.l,
+    right: Spacing.l,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: Colors.white,
+    ...Shadows.large,
+  },
+  quantitySelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xl,
+  },
+  quantityText: {
+    fontSize: Typography.xxl,
+    fontWeight: Typography.bold,
+    color: Colors.gray900,
+    minWidth: 40,
+    textAlign: 'center',
+  },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
