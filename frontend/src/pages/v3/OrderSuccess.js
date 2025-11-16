@@ -56,7 +56,7 @@ export const OrderSuccess = () => {
             </div>
             {order.cashback_used > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Cashback utilisé</span>
+                <span className="text-gray-600">Fidélité utilisée</span>
                 <span className="font-bold text-green-600">-{order.cashback_used.toFixed(2)}€</span>
               </div>
             )}
