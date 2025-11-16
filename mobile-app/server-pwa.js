@@ -20,8 +20,8 @@ app.get('/sw.js', (req, res) => {
   `);
 });
 
-// All routes return index.html for SPA
-app.get('/*', (req, res) => {
+// Fallback to index.html for all other routes
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
