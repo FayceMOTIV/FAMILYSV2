@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { Colors, Spacing, BorderRadius, Shadows, Typography } from '../constants/theme'
 import useFavoriteStore from '../stores/favoriteStore'
 
-const ProductCard = ({ product, onPress }) => {
+const ProductCard = ({ product, onPress, promotion }) => {
   const { toggleFavorite, isFavorite } = useFavoriteStore()
   
   const handleFavoritePress = (e) => {
@@ -13,6 +13,26 @@ const ProductCard = ({ product, onPress }) => {
   }
   
   const cashbackAmount = (product.price * 0.05).toFixed(2)
+  
+  // Calculate promo info
+  let promoText = null
+  let hasPromo = product.has_promotion || promotion
+  
+  if (promotion) {
+    if (promotion.promotion_type === 'PERCENT_ITEM') {
+      promoText = `-${promotion.discount_value}%`
+    } else if (promotion.promotion_type === 'FIXED_ITEM') {
+      promoText = `-${promotion.discount_value}€`
+    } else if (promotion.promotion_type === 'BOGO') {
+      promoText = 'BOGO'
+    } else if (promotion.promotion_type === 'HAPPY_HOUR') {
+      promoText = 'Happy Hour'
+    } else {
+      promoText = 'Promo'
+    }
+  } else if (product.has_promotion) {
+    promoText = 'Promo'
+  }
   
   return (
     <Pressable 
