@@ -1,18 +1,31 @@
-import { View, Text, ScrollView, StyleSheet } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, RefreshControl } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
-import { LinearGradient } from 'expo-linear-gradient'
+import { useEffect, useState } from 'react'
 import { Colors, Spacing, Typography, BorderRadius, Shadows } from '../../constants/theme'
+import useLoyaltyStore from '../../stores/loyaltyStore'
+import useAuthStore from '../../stores/authStore'
+import SkeletonLoader from '../../components/SkeletonLoader'
 
 export default function LoyaltyScreen() {
-  const balance = 12.45
-  const loyaltyRate = 5
-
-  const transactions = [
-    { id: '1', type: 'earned', amount: 1.25, date: '15/11/2025', order: 'Commande #1234' },
-    { id: '2', type: 'used', amount: -5.00, date: '10/11/2025', order: 'Commande #1230' },
-    { id: '3', type: 'earned', amount: 0.95, date: '08/11/2025', order: 'Commande #1225' },
-  ]
+  const { user } = useAuthStore()
+  const { balance, loyaltyPercentage, transactions, loading, fetchBalance, fetchSettings } = useLoyaltyStore()
+  const [refreshing, setRefreshing] = useState(false)
+  
+  useEffect(() => {
+    if (user) {
+      fetchSettings()
+      fetchBalance(user.id || user.email)
+    }
+  }, [user])
+  
+  const onRefresh = async () => {
+    setRefreshing(true)
+    if (user) {
+      await fetchBalance(user.id || user.email)
+    }
+    setRefreshing(false)
+  }
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
