@@ -54,9 +54,64 @@ export default function ProductDetailScreen() {
   }
   
   const handleAddToCart = () => {
-    addItem(product)
+    // Validate required options
+    if (product.option_groups) {
+      for (const group of product.option_groups) {
+        if (group.required && !selectedOptions[group.id]) {
+          Alert.alert('Option requise', `Veuillez sélectionner ${group.name}`)
+          return
+        }
+      }
+    }
+    
+    // Calculate total price with options
+    let totalPrice = product.price * quantity
+    Object.values(selectedOptions).forEach(option => {
+      if (Array.isArray(option)) {
+        option.forEach(opt => totalPrice += (opt.delta_price || 0) * quantity)
+      } else if (option) {
+        totalPrice += (option.delta_price || 0) * quantity
+      }
+    })
+    
+    const itemToAdd = {
+      ...product,
+      quantity,
+      selectedOptions,
+      notes,
+      totalPrice,
+    }
+    
+    addItem(itemToAdd)
     Alert.alert('Succès', `${product.name} ajouté au panier`)
     console.log('✅ Added to cart:', product.name)
+  }
+  
+  const handleOptionChange = (groupId, choice) => {
+    setSelectedOptions(prev => ({
+      ...prev,
+      [groupId]: choice
+    }))
+  }
+  
+  const getTotalPrice = () => {
+    let total = product.price * quantity
+    Object.values(selectedOptions).forEach(option => {
+      if (Array.isArray(option)) {
+        option.forEach(opt => total += (opt.delta_price || 0) * quantity)
+      } else if (option) {
+        total += (option.delta_price || 0) * quantity
+      }
+    })
+    return total
+  }
+  
+  const handleFavoriteToggle = () => {
+    const isNowFavorite = toggleFavorite(product)
+    Alert.alert(
+      isNowFavorite ? 'Ajouté aux favoris' : 'Retiré des favoris',
+      isNowFavorite ? `${product.name} a été ajouté à vos favoris` : `${product.name} a été retiré de vos favoris`
+    )
   }
   
   const cashbackAmount = (product.price * 0.05).toFixed(2)
