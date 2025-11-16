@@ -18,7 +18,7 @@ export default function CheckoutScreen() {
   const { createOrder, loading: creatingOrder } = useOrderStore()
   const { user } = useAuthStore()
   
-  const [orderMode, setOrderMode] = useState('takeaway')
+  const [orderMode, setOrderMode] = useState('dine_in')
   
   const subtotal = getSubtotal()
   const tax = getTax()
