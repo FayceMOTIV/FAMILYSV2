@@ -72,7 +72,7 @@ export const OrderSuccess = () => {
             >
               <div className="flex items-center justify-center gap-2 mb-2">
                 <TrendingUp className="w-5 h-5 text-green-600" />
-                <h3 className="font-black text-green-900">Cashback gagné !</h3>
+                <h3 className="font-black text-green-900">Points de fidélité gagnés !</h3>
               </div>
               <p className="text-3xl font-black text-green-600 mb-1">
                 +{cashbackEarned.toFixed(2)}€
