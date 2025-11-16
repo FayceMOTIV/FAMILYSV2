@@ -33,11 +33,6 @@
     "plugins": [
       "expo-router"
     ],
-    "scheme": "familys",
-    "extra": {
-      "eas": {
-        "projectId": "familys-app"
-      }
-    }
+    "scheme": "familys"
   }
 }
