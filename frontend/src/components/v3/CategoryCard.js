@@ -36,7 +36,7 @@ export const CategoryCard = ({ category, onClick, emoji }) => {
       className={`relative bg-gradient-to-br ${getCategoryGradient(category.name)} rounded-2xl p-6 shadow-lg cursor-pointer overflow-hidden min-h-[120px] flex flex-col justify-between`}
     >
       {/* Pattern de fond */}
-      <div className="absolute inset-0 opacity-20">
+      <div className="absolute inset-0 opacity-20 pointer-events-none">
         <div className="absolute top-0 right-0 w-24 h-24 bg-white rounded-full blur-2xl" />
       </div>
 
