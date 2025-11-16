@@ -1,31 +1,46 @@
-import { View, Text, ScrollView, Image, StyleSheet } from 'react-native'
+import { View, Text, ScrollView, Image, StyleSheet, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { Colors, Spacing, Typography, BorderRadius, Shadows } from '../../constants/theme'
 import Button from '../../components/Button'
 import Badge from '../../components/Badge'
+import SkeletonLoader from '../../components/SkeletonLoader'
 import useCartStore from '../../stores/cartStore'
+import { useProduct } from '../../hooks/useProducts'
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams()
   const router = useRouter()
   const addItem = useCartStore((state) => state.addItem)
   
-  // Mock product data (will be replaced with API call)
-  const product = {
-    id,
-    name: 'Family\'s Burger',
-    description: 'Notre burger signature avec viande de bœuf 100% française, fromage cheddar, sauce secrète maison, salade fraîche, tomates et oignons caramテゥlisテゥs sur pain briochテゥ artisanal.',
-    price: 12.90,
-    originalPrice: 15.90,
-    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800',
-    category: 'Burgers',
-    hasPromo: true,
-    promoText: '-20% jusqu\'au 30/11',
-    cashback: '0.65',
-    allergens: ['Gluten', 'Lactose'],
-    calories: 650,
+  // Fetch real product data
+  const { product, loading, error } = useProduct(id)
+  
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container} edges={['bottom']}>
+        <ScrollView style={styles.scroll}>
+          <SkeletonLoader height={300} />
+          <View style={{ padding: Spacing.l }}>
+            <SkeletonLoader height={24} width="60%" style={{ marginBottom: 12 }} />
+            <SkeletonLoader height={32} width="90%" style={{ marginBottom: 12 }} />
+            <SkeletonLoader height={120} />
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    )
+  }
+  
+  if (error || !product) {
+    return (
+      <SafeAreaView style={styles.container} edges={['bottom']}>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>Produit introuvable</Text>
+          <Button title="Retour" onPress={() => router.back()} />
+        </View>
+      </SafeAreaView>
+    )
   }
   
   const handleAddToCart = () => {
