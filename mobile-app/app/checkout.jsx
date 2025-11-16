@@ -254,6 +254,7 @@ const styles = StyleSheet.create({
   },
   orderTypeButton: {
     flex: 1,
+    minWidth: '30%',
     alignItems: 'center',
     padding: Spacing.l,
     borderRadius: BorderRadius.m,
