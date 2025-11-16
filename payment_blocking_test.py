@@ -8,7 +8,7 @@ import aiohttp
 import json
 from typing import Dict, Optional
 
-BACKEND_URL = "https://foodapp-redesign.preview.emergentagent.com"
+BACKEND_URL = "https://react-native-reboot.preview.emergentagent.com"
 
 class PaymentBlockingTester:
     def __init__(self):

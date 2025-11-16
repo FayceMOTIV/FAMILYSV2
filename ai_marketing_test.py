@@ -11,7 +11,7 @@ import sys
 from typing import Dict, Optional, List
 
 # Backend URL from environment
-BACKEND_URL = "https://foodapp-redesign.preview.emergentagent.com"
+BACKEND_URL = "https://react-native-reboot.preview.emergentagent.com"
 
 class AIMarketingTester:
     def __init__(self):

@@ -12,7 +12,7 @@ from typing import Dict, Optional
 from datetime import datetime, timezone
 
 # Backend URL from review request
-BACKEND_URL = "https://foodapp-redesign.preview.emergentagent.com"
+BACKEND_URL = "https://react-native-reboot.preview.emergentagent.com"
 
 class FrenchReviewTester:
     def __init__(self):

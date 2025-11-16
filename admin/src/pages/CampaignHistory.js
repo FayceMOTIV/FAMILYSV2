@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '../components/Card';
 import { CheckCircle, XCircle, TrendingUp, Users, DollarSign, Award, Loader } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://foodapp-redesign.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-native-reboot.preview.emergentagent.com';
 
 export const CampaignHistory = () => {
   const [campaigns, setCampaigns] = useState([]);

@@ -5,7 +5,7 @@ import { Button } from '../components/Button';
 import { DollarSign, TrendingUp, CreditCard, Wallet, Smartphone, Calendar, Printer } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://foodapp-redesign.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-native-reboot.preview.emergentagent.com';
 
 export const Revenue = () => {
   const [orders, setOrders] = useState([]);

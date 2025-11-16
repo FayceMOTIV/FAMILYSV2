@@ -14,7 +14,7 @@ import base64
 import io
 
 # Configuration
-BASE_URL = "https://foodapp-redesign.preview.emergentagent.com"
+BASE_URL = "https://react-native-reboot.preview.emergentagent.com"
 ADMIN_EMAIL = "admin@familys.app"
 ADMIN_PASSWORD = "Admin@123456"
 

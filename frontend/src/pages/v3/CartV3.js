@@ -5,7 +5,7 @@ import { X, Plus, Minus, TrendingUp, ShoppingBag, ChevronRight, Trash2 } from 'l
 import { useApp } from '../../context/AppContext';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://foodapp-redesign.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://react-native-reboot.preview.emergentagent.com';
 
 /**
  * Panier V3 - Avec preview cashback et option d'utilisation

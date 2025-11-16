@@ -11,7 +11,7 @@ from typing import Dict, Optional, List
 from datetime import datetime, timezone
 
 # Backend URL from environment
-BACKEND_URL = "https://foodapp-redesign.preview.emergentagent.com"
+BACKEND_URL = "https://react-native-reboot.preview.emergentagent.com"
 
 class CorrectedFrenchTester:
     def __init__(self):
