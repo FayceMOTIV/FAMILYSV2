@@ -1,22 +1,83 @@
-import { View, Text, ScrollView, StyleSheet } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
+import { useState } from 'react'
 import { Colors, Spacing, Typography, BorderRadius, Shadows } from '../constants/theme'
 import Button from '../components/Button'
 import Badge from '../components/Badge'
 import useCartStore from '../stores/cartStore'
 import useLoyaltyStore from '../stores/loyaltyStore'
+import useOrderStore from '../stores/orderStore'
+import useAuthStore from '../stores/authStore'
 
 export default function CheckoutScreen() {
   const router = useRouter()
-  const { items, getSubtotal, getTax, getTotal, getCashbackEarned } = useCartStore()
+  const { items, getSubtotal, getTax, getTotal, getCashbackEarned, clearCart } = useCartStore()
   const { loyaltyPercentage } = useLoyaltyStore()
+  const { createOrder, loading: creatingOrder } = useOrderStore()
+  const { user } = useAuthStore()
+  
+  const [orderMode, setOrderMode] = useState('takeaway')
   
   const subtotal = getSubtotal()
   const tax = getTax()
   const total = getTotal()
   const cashbackEarned = getCashbackEarned(loyaltyPercentage / 100)
+  
+  const handlePlaceOrder = async () => {
+    if (!user) {
+      Alert.alert('Connexion requise', 'Veuillez vous connecter pour passer commande')
+      router.push('/auth/login')
+      return
+    }
+    
+    if (items.length === 0) {
+      Alert.alert('Panier vide', 'Ajoutez des produits avant de commander')
+      return
+    }
+    
+    // Build order payload
+    const orderPayload = {
+      items: items.map(item => ({
+        product_id: item.id,
+        quantity: item.quantity,
+        unit_price: item.price,
+        options: item.options || []
+      })),
+      total: total,
+      subtotal: subtotal,
+      tax: tax,
+      mode: orderMode,
+      customer_email: user.email,
+      payment_method: 'cash', // Or card, will be configured later
+      status: 'pending'
+    }
+    
+    console.log('📦 Placing order...', orderPayload)
+    
+    const result = await createOrder(orderPayload)
+    
+    if (result.success) {
+      // Clear cart
+      clearCart()
+      console.log('✅ Order placed successfully, cart cleared')
+      
+      // Navigate to confirmation
+      Alert.alert(
+        'Commande confirmée ! 🎉',
+        `Votre commande #${result.order.id} a été enregistrée.`,
+        [
+          {
+            text: 'OK',
+            onPress: () => router.replace('/(tabs)')
+          }
+        ]
+      )
+    } else {
+      Alert.alert('Erreur', result.error || 'Impossible de créer la commande')
+    }
+  }
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
