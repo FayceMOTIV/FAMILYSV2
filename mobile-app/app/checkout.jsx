@@ -249,6 +249,7 @@ const styles = StyleSheet.create({
   },
   orderTypeButtons: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: Spacing.m,
   },
   orderTypeButton: {
