@@ -98,11 +98,37 @@ export default function ProfileScreen() {
           </View>
         </Pressable>
 
+        {/* Orders History */}
+        {orders.length > 0 && (
+          <View style={styles.ordersSection}>
+            <Text style={styles.ordersTitle}>Mes dernières commandes</Text>
+            {orders.slice(0, 3).map((order) => (
+              <View key={order.id} style={styles.orderCard}>
+                <View style={styles.orderHeader}>
+                  <Text style={styles.orderNumber}>#{order.id}</Text>
+                  <Badge 
+                    text={order.status} 
+                    variant={
+                      order.status === 'delivered' ? 'success' : 
+                      order.status === 'cancelled' ? 'error' : 'warning'
+                    }
+                    size="small"
+                  />
+                </View>
+                <Text style={styles.orderDate}>
+                  {new Date(order.created_at).toLocaleDateString('fr-FR')}
+                </Text>
+                <Text style={styles.orderTotal}>{order.total?.toFixed(2) || '0.00'}€</Text>
+              </View>
+            ))}
+          </View>
+        )}
+
         {/* Menu Items */}
         <View style={styles.menuSection}>
           <Pressable style={styles.menuItem}>
             <Ionicons name="receipt" size={24} color={Colors.gray700} />
-            <Text style={styles.menuItemText}>Mes commandes</Text>
+            <Text style={styles.menuItemText}>Toutes mes commandes</Text>
             <Ionicons name="chevron-forward" size={20} color={Colors.gray400} />
           </Pressable>
 
