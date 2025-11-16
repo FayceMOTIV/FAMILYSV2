@@ -272,6 +272,49 @@ const styles = StyleSheet.create({
     fontWeight: Typography.bold,
     color: Colors.gray900,
   },
+  cashbackToggle: {
+    marginTop: Spacing.l,
+    backgroundColor: Colors.white,
+    borderRadius: BorderRadius.l,
+    padding: Spacing.l,
+    ...Shadows.small,
+  },
+  cashbackToggleContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  cashbackToggleTitle: {
+    fontSize: Typography.m,
+    fontWeight: Typography.semibold,
+    color: Colors.gray900,
+    marginBottom: Spacing.xs,
+  },
+  cashbackToggleSubtitle: {
+    fontSize: Typography.s,
+    color: Colors.gray600,
+  },
+  cashbackPreviewDetails: {
+    marginTop: Spacing.m,
+    paddingTop: Spacing.m,
+    borderTopWidth: 1,
+    borderTopColor: Colors.gray200,
+  },
+  cashbackPreviewRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.xs,
+  },
+  cashbackPreviewLabel: {
+    fontSize: Typography.s,
+    color: Colors.gray600,
+  },
+  cashbackPreviewValue: {
+    fontSize: Typography.s,
+    fontWeight: Typography.semibold,
+    color: Colors.gray900,
+  },
   footer: {
     backgroundColor: Colors.white,
     padding: Spacing.l,
