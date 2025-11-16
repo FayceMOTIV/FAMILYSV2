@@ -212,12 +212,12 @@ export const ProductDetailV3 = () => {
                 💳 Gagne {finalCashback.toFixed(2)}€ sur ta carte !
               </h3>
               <p className="text-green-800 text-sm">
-                En commandant ce produit, tu gagnes <strong>{finalCashback.toFixed(2)}€</strong> sur ta carte Family's Cashback.
+                En commandant ce produit, tu gagnes <strong>{finalCashback.toFixed(2)}€</strong> sur ta carte de fidélité Family's.
               </p>
               {cashbackMultiplier > 1 && (
                 <div className="mt-2 bg-amber-100 border border-amber-300 rounded-lg px-3 py-2">
                   <p className="text-amber-900 text-sm font-bold">
-                    ⚡ Cashback boosté aujourd'hui : tu gagnes {finalCashback.toFixed(2)}€ au lieu de {cashbackAmount.toFixed(2)}€
+                    ⚡ Fidélité boostée aujourd'hui : tu gagnes {finalCashback.toFixed(2)}€ au lieu de {cashbackAmount.toFixed(2)}€
                   </p>
                 </div>
               )}
