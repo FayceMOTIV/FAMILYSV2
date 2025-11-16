@@ -86,3 +86,15 @@ export const promotionsAPI = {
   getAll: () => apiClient.get('/admin/promotions'),
   getActive: () => apiClient.get('/admin/promotions?status=active')
 };
+
+export const ordersAPI = {
+  create: (orderData) => apiClient.post('/orders', orderData),
+  getById: (orderId) => apiClient.get(`/orders/${orderId}`),
+  getByCustomer: (email) => apiClient.get(`/orders/customer/${email}`),
+  getMyOrders: () => apiClient.get('/orders/me')
+};
+
+export const usersAPI = {
+  getMe: () => apiClient.get('/auth/me'),
+  getProfile: () => apiClient.get('/users/me')
+};
