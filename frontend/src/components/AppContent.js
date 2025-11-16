@@ -13,6 +13,7 @@ import MobileProfile from '../pages/MobileProfile';
 import Checkout from '../pages/Checkout';
 import { Notifications } from '../pages/Notifications';
 import { NotificationToast } from './NotificationToast';
+import DiagnosticTest from '../pages/DiagnosticTest';
 // V3 Pages
 import { HomeV3 } from '../pages/v3/HomeV3';
 import { MenuV3 } from '../pages/v3/MenuV3';
