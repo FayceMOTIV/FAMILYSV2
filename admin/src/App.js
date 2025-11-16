@@ -32,7 +32,7 @@ import { ModeLogin } from './pages/ModeLogin';
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter basename="/admin">
+      <BrowserRouter basename="/">
         <Routes>
           <Route path="/admin/login" element={<Login />} />
           <Route path="/admin/kiosk" element={<OrdersKiosk />} />
