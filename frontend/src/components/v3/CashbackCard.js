@@ -48,7 +48,7 @@ export const CashbackCard = ({ balance = 0, earnedToday = 0, onClick }) => {
               <CreditCard className="w-6 h-6 text-white" />
             </div>
             <div>
-              <span className="text-white text-base font-bold block">Ma Carte Cashback</span>
+              <span className="text-white text-base font-bold block">Ma Carte de Fidélité</span>
               <span className="text-white/60 text-xs">À dépenser sans limite</span>
             </div>
           </div>
@@ -86,7 +86,7 @@ export const CashbackCard = ({ balance = 0, earnedToday = 0, onClick }) => {
         <div className="flex items-start gap-2 bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3">
           <span className="text-xl">✨</span>
           <p className="text-white/90 text-sm font-medium">
-            Utilise ton cashback sur ta prochaine commande ou accumule-le !
+            Utilise tes points fidélité sur ta prochaine commande ou accumule-les !
           </p>
         </div>
       </div>
