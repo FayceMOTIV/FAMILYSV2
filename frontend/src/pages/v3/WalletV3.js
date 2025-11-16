@@ -149,7 +149,7 @@ export const WalletV3 = () => {
             <div>
               <h3 className="font-bold text-blue-900 mb-2">Comment ça marche ?</h3>
               <p className="text-blue-800 text-sm mb-2">
-                Chaque fois que tu commandes chez Family's, tu gagnes <strong>{cashbackSettings.loyalty_percentage}% du montant</strong> en cashback sur ta carte.
+                Chaque fois que tu commandes chez Family's, tu gagnes <strong>{cashbackSettings.loyalty_percentage}% du montant</strong> en points fidélité sur ta carte.
               </p>
               <p className="text-blue-800 text-sm">
                 Tu peux utiliser ta cagnotte quand tu veux sur tes prochaines commandes. 
