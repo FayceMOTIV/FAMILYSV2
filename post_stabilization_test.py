@@ -296,13 +296,16 @@ class PostStabilizationTester:
                     {
                         "product_id": "test-product-1",
                         "name": "Test Burger",
-                        "price": 10.0,
+                        "base_price": 10.0,
                         "quantity": 1,
-                        "options": []
+                        "options": [],
+                        "total_price": 10.0
                     }
                 ],
-                "total": 10.0,
-                "order_type": "takeaway",
+                "subtotal": 10.0,
+                "vat_amount": 2.0,
+                "total": 12.0,
+                "consumption_mode": "takeaway",
                 "use_cashback": False
             }
             
