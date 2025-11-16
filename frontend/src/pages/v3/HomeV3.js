@@ -110,19 +110,28 @@ export const HomeV3 = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-        {/* Carte Cashback */}
-        {user && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <CashbackCard
-              balance={cashbackBalance}
-              earnedToday={0}
-              onClick={() => navigate('/wallet')}
-            />
-          </motion.div>
-        )}
+        {/* Carte Cashback - MISE EN AVANT */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative"
+        >
+          <CashbackCard
+            balance={cashbackBalance}
+            earnedToday={0}
+            onClick={() => user ? navigate('/wallet') : navigate('/profile')}
+          />
+          {!user && (
+            <div className="absolute inset-0 bg-black/5 backdrop-blur-[2px] rounded-2xl flex items-center justify-center">
+              <button
+                onClick={() => navigate('/profile')}
+                className="px-6 py-3 bg-white text-[#C62828] font-bold rounded-xl shadow-lg hover:shadow-xl transition-all"
+              >
+                Se connecter pour voir mon cashback
+              </button>
+            </div>
+          )}
+        </motion.div>
 
         {/* Bannières Promos */}
         {activePromos.length > 0 && (
