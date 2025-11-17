@@ -65,11 +65,6 @@ export const categoriesAPI = {
   getAll: () => apiClient.get('/categories')
 };
 
-export const ordersAPI = {
-  create: (orderData) => apiClient.post('/orders', orderData),
-  getByCustomer: (email) => apiClient.get(`/orders/customer/${email}`)
-};
-
 export const cashbackAPI = {
   getSettings: () => apiClient.get('/cashback/settings'),
   getBalance: (customerId) => apiClient.get(`/cashback/balance/${customerId}`),
