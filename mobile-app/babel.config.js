@@ -4,7 +4,7 @@ module.exports = function(api) {
     presets: ['babel-preset-expo'],
     plugins: [
       'nativewind/babel',
-      'react-native-reanimated/plugin', // PAS DE TABLEAU NI D'OPTIONS POUR ÉVITER LE CONFLIT
+      'react-native-reanimated/plugin', // Forme simple pour éviter le conflit
     ],
   };
 };
