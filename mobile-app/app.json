@@ -18,7 +18,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.familys.app",
       "appleTeamId": "5ZR87TPM89",
-      "buildNumber": "10",
+      "buildNumber": "11",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
