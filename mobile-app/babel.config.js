@@ -4,7 +4,7 @@ module.exports = function(api) {
     presets: ['babel-preset-expo'],
     plugins: [
       'nativewind/babel',
-      'react-native-reanimated/plugin', // Forme simple pour éviter le conflit de duplication
+      // RETIREZ LA LIGNE 'react-native-reanimated/plugin' POUR VOIR SI C'EST LA CAUSE DE LA DUPLICATION
     ],
   };
 };
