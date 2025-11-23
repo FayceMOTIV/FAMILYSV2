@@ -11,13 +11,20 @@ module.exports = function withPodfilePatches(config) {
       if (fs.existsSync(podfilePath)) {
         let podfileContent = fs.readFileSync(podfilePath, 'utf-8');
         
+        // Supprimer la ligne complète contenant privacy_file_aggregation_enabled
         podfileContent = podfileContent.replace(
-          /:privacy_file_aggregation_enabled\s*=>\s*\w+,?\s*\n?/g,
+          /.*:privacy_file_aggregation_enabled.*\n?/g,
+          ''
+        );
+        
+        // Supprimer aussi la version avec crochets
+        podfileContent = podfileContent.replace(
+          /.*\['apple\.privacyManifestAggregationEnabled'\].*\n?/g,
           ''
         );
         
         fs.writeFileSync(podfilePath, podfileContent);
-        console.log('✅ Podfile patched: removed :privacy_file_aggregation_enabled');
+        console.log('✅ Podfile patched successfully');
       }
       
       return config;
