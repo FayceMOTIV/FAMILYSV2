@@ -11,11 +11,36 @@ if [ -f "$PODFILE" ]; then
   echo "📄 Found Podfile at: $PODFILE"
   
   # Supprimer la ligne contenant :privacy_file_aggregation_enabled
-  sed -i.bak '/:privacy_file_aggregation_enabled/d' "$PODFILE"
-  
-  echo "✅ Podfile patched successfully!"
-  echo "   Removed :privacy_file_aggregation_enabled parameter"
-else
-  echo "⚠️  Podfile not found at $PODFILE"
-  exit 1
-fi
+  sed -i.bak '/:privacy_file_aggregation_enabled
+cat > ~/Desktop/FAMILYS\ V3/mobile-new/eas.json << 'EOF'
+{
+  "cli": {
+    "version": ">= 5.2.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": false,
+        "resourceClass": "m-medium",
+        "autoIncrement": true
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "ios": {
+        "simulator": false
+      },
+      "postPrebuildCommand": "bash scripts/eas-build-post-prebuild.sh"
+    },
+    "production": {
+      "ios": {
+        "simulator": false
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
