@@ -18,7 +18,7 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
-      "buildNumber": "1"
+      "buildNumber": "2"
     },
     "android": {
       "adaptiveIcon": {
@@ -32,7 +32,8 @@
     },
     "plugins": [
       "expo-router",
-      "./plugins/withPodfilePatches"
+      "./plugins/withPodfilePatches",
+      "./plugins/withRemoveAPSEntitlement"
     ],
     "scheme": "familys",
     "experiments": {
