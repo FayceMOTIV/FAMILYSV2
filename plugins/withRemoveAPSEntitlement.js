@@ -1,13 +1,15 @@
 const { withEntitlementsPlist } = require('@expo/config-plugins');
 
 module.exports = function withRemoveAPSEntitlement(config) {
-  return withEntitlementsPlist(config, (config) => {
+  return withEntitlementsPlist(config, (modConfig) => {
+    const entitlements = modConfig.modResults;
+    
     // Supprimer l'entitlement aps-environment
-    if (config.modResults['aps-environment']) {
-      delete config.modResults['aps-environment'];
+    if (entitlements['aps-environment']) {
+      delete entitlements['aps-environment'];
       console.log('✅ Removed aps-environment entitlement');
     }
     
-    return config;
+    return modConfig;
   });
 };
