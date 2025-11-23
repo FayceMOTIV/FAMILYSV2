@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "Family's",
+    "slug": "familys-new",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#C62828"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fayce.familys.newapp"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#C62828"
+      },
+      "package": "com.fayce.familys.newapp"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "newArchEnabled": false
+          },
+          "android": {
+            "newArchEnabled": false
+          }
+        }
+      ]
+    ],
+    "scheme": "familys",
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
