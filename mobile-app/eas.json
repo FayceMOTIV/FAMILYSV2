@@ -1,0 +1,24 @@
+{
+  "cli": {
+    "version": ">= 5.2.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "production": {
+      "ios": {
+        "buildConfiguration": "Release",
+        "credentialsSource": "remote",
+        "autoIncrement": true
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "lefamilys01@gmail.com",
+        "ascAppId": "6755365400",
+        "appleTeamId": "5ZR87TPM89"
+      }
+    }
+  }
+}

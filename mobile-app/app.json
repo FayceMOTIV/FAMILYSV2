@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "Family's",
+    "slug": "familys-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.familys.app",
+      "appleTeamId": "5ZR87TPM89",
+      "buildNumber": "12",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.familys.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "scheme": "familys",
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b57323d3-0098-4c0b-ab55-a9b2ba020e2e",
+        "owner": "fayce"
+      }
+    }
+  }
+}

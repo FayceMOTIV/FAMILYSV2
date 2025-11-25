@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Télécharger Family's App</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #C62828 0%, #B71C1C 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        .logo { font-size: 80px; margin-bottom: 20px; }
+        h1 {
+            color: #C62828;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        .download-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #C62828 0%, #B71C1C 100%);
+            color: white;
+            padding: 25px 50px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 20px;
+            margin: 20px 0;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 10px 30px rgba(198, 40, 40, 0.4);
+        }
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(198, 40, 40, 0.5);
+        }
+        .spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #C62828;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .info-box {
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 40px;
+            text-align: left;
+        }
+        .info-box h3 {
+            color: #C62828;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        .info-box ul {
+            list-style: none;
+            padding: 0;
+        }
+        .info-box li {
+            padding: 8px 0;
+            color: #666;
+            line-height: 1.6;
+        }
+        .info-box li:before {
+            content: "✅ ";
+            margin-right: 8px;
+        }
+        .file-size {
+            color: #999;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">📱</div>
+        <h1>Family's Mobile App</h1>
+        <p class="subtitle">
+            Code source complet de l'application mobile<br>
+            Prêt pour TestFlight et App Store
+        </p>
+        
+        <a href="https://react-reborn.preview.emergentagent.com:3010/familys-mobile-app.zip" 
+           class="download-btn" 
+           id="downloadBtn"
+           download="familys-mobile-app.zip">
+            📥 Télécharger le ZIP
+        </a>
+        
+        <div class="spinner" id="spinner"></div>
+        <p class="file-size">Taille : 309 KB (sans node_modules)</p>
+        
+        <div class="info-box">
+            <h3>📦 Contenu du package :</h3>
+            <ul>
+                <li>Code source complet (React Native + Expo)</li>
+                <li>14/14 fonctionnalités implémentées</li>
+                <li>Configuration Expo & EAS prête</li>
+                <li>README avec guide TestFlight</li>
+                <li>Stores, Components, Screens complets</li>
+                <li>Service API configuré</li>
+            </ul>
+        </div>
+        
+        <div class="info-box" style="margin-top: 20px;">
+            <h3>🚀 Étapes suivantes :</h3>
+            <ul>
+                <li>Décompresse le fichier ZIP</li>
+                <li>Installe : <code style="background: #e0e0e0; padding: 2px 6px; border-radius: 4px;">yarn install</code></li>
+                <li>Configure : <code style="background: #e0e0e0; padding: 2px 6px; border-radius: 4px;">npx eas credentials</code></li>
+                <li>Build : <code style="background: #e0e0e0; padding: 2px 6px; border-radius: 4px;">npx eas build --platform ios</code></li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            document.getElementById('spinner').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('spinner').style.display = 'none';
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
