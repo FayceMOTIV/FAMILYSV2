@@ -1,49 +1,46 @@
 {
   "expo": {
-    "name": "Family's",
+    "name": "Familys",
     "slug": "familys-new",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "contain",
+      "resizeMode": "cover",
       "backgroundColor": "#C62828"
     },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.fayce.familys.app2025",
-      "deploymentTarget": "13.4",
-      "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
-      },
-      "buildNumber": "6"
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#C62828"
-      },
-      "package": "com.fayce.familys.newapp"
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#ffffff"
+      }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/icon.png"
     },
     "plugins": [
-      "expo-router"
-    ],
-    "scheme": "familys",
-    "experiments": {
-      "typedRoutes": true
-    },
-    "extra": {
-      "router": {
-        "origin": false
-      },
-      "eas": {
-        "projectId": "2de4246b-75aa-49c4-93a5-ee6b9595a703"
-      }
-    }
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "resizeMode": "cover",
+          "backgroundColor": "#C62828"
+        }
+      ]
+    ]
   }
 }

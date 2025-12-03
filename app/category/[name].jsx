@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, FlatList, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
-import { getProducts } from '../../services/products';
+import { fetchProducts } from '../../services/productsService';
 import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
 
@@ -20,8 +20,8 @@ export default function CategoryProducts() {
   const loadProducts = async () => {
     try {
       const category = name === 'all' ? null : decodeURIComponent(name);
-      const response = await getProducts(category, null, 0, 100);
-      setProducts(response.products || []);
+const products = await fetchProducts(category);
+setProducts(products || []);
     } catch (error) {
       console.error('Error loading products:', error);
     } finally {

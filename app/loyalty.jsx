@@ -1,210 +1,246 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useMemo } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ArrowLeft, Award, TrendingUp, Gift } from 'lucide-react-native';
-import { getLoyalty, getLoyaltyHistory } from '../services/loyalty';
-import Card from '../components/Card';
-import Badge from '../components/Badge';
-import Loader from '../components/Loader';
+import { useAuthStore } from '../stores/authStore';
+import { COLORS } from '../constants';
 
-export default function LoyaltyCard() {
+function formatCurrency(amount) {
+  const safe = Number(amount) || 0;
+  return `${safe.toFixed(2).replace('.', ',')} €`;
+}
+
+export default function LoyaltyScreen() {
   const router = useRouter();
-  
-  const [loyalty, setLoyalty] = useState(null);
-  const [history, setHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
-  
-  useEffect(() => {
-    loadData();
-  }, []);
-  
-  const loadData = async () => {
-    try {
-      const [loyaltyRes, historyRes] = await Promise.all([
-        getLoyalty(),
-        getLoyaltyHistory(0, 20)
-      ]);
-      setLoyalty(loyaltyRes);
-      setHistory(historyRes.history || []);
-    } catch (error) {
-      console.error('Error loading loyalty:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  if (loading) {
-    return <Loader />;
-  }
-  
-  if (!loyalty) {
-    return null;
-  }
-  
-  const tierProgress = loyalty.next_tier 
-    ? ((loyalty.points / (loyalty.points + loyalty.next_tier.points_needed)) * 100).toFixed(0)
-    : 100;
-  
+  const { user } = useAuthStore();
+
+  const { balance, rate, history } = useMemo(() => {
+    const rawBalance =
+      user?.cashback_balance ??
+      user?.cashback ??
+      user?.loyaltyBalance ??
+      0;
+
+    const rawRate =
+      user?.cashback_rate ??
+      user?.cashbackRate ??
+      user?.loyaltyRate ??
+      5;
+
+    const rawHistory =
+      user?.cashback_history ??
+      user?.cashbackHistory ??
+      [];
+
+    return {
+      balance: Number(rawBalance) || 0,
+      rate: Number(rawRate) || 0,
+      history: Array.isArray(rawHistory) ? rawHistory : [],
+    };
+  }, [user]);
+
   return (
-    <View className="flex-1 bg-[#f5f5f5]">
-      <ScrollView className="flex-1">
-        {/* Header */}
-        <View className="bg-gradient-to-br from-[#FFD54F] to-[#FFC107] px-6 pt-12 pb-8">
-          <TouchableOpacity 
-            onPress={() => router.back()}
-            className="mb-6"
-          >
-            <ArrowLeft size={24} color="#1a1a1a" />
-          </TouchableOpacity>
-          
-          <View className="items-center">
-            <Text className="text-[#1a1a1a] text-3xl font-bold mb-2">
-              Carte de Fidélité
-            </Text>
-            <Text className="text-[#333333]">
-              {loyalty.customer_name}
-            </Text>
-          </View>
-        </View>
-        
-        {/* Tier Card */}
-        <View className="px-6 -mt-8 mb-4">
-          <Card className="p-6">
-            <View className="items-center">
-              <View 
-                className="w-24 h-24 rounded-full items-center justify-center mb-4"
-                style={{ backgroundColor: loyalty.tier?.color || '#666666' }}
-              >
-                <Award size={48} color="white" />
-              </View>
-              
-              <Text className="text-3xl font-bold text-[#1a1a1a] mb-1">
-                {loyalty.tier?.name}
-              </Text>
-              
-              <Badge variant="secondary" className="mb-4">
-                {loyalty.tier?.discount}% de réduction
-              </Badge>
-              
-              <View className="flex-row items-end mb-2">
-                <Text className="text-5xl font-bold text-[#C62828]">
-                  {loyalty.points?.toFixed(0)}
-                </Text>
-                <Text className="text-xl text-[#666666] ml-2 mb-2">points</Text>
-              </View>
-              
-              <Text className="text-[#666666] text-lg">
-                = {loyalty.points_value?.toFixed(2)}€
-              </Text>
-            </View>
-          </Card>
-        </View>
-        
-        {/* Progress to Next Tier */}
-        {loyalty.next_tier && (
-          <View className="px-6 mb-4">
-            <Card className="p-4">
-              <View className="flex-row items-center justify-between mb-3">
-                <Text className="font-bold text-[#1a1a1a]">
-                  Prochain niveau: {loyalty.next_tier.name}
-                </Text>
-                <Text className="text-[#C62828] font-semibold">
-                  {tierProgress}%
-                </Text>
-              </View>
-              
-              <View className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                <View 
-                  className="h-full bg-[#C62828]"
-                  style={{ width: `${tierProgress}%` }}
-                />
-              </View>
-              
-              <Text className="text-[#666666] text-sm mt-2">
-                Plus que {loyalty.next_tier.points_needed} points pour atteindre {loyalty.next_tier.name}
-              </Text>
-            </Card>
-          </View>
-        )}
-        
-        {/* Stats */}
-        <View className="px-6 mb-4">
-          <View className="flex-row">
-            <Card className="flex-1 mr-2 p-4">
-              <View className="flex-row items-center mb-2">
-                <TrendingUp size={20} color="#C62828" />
-                <Text className="text-[#666666] text-sm ml-2">Commandes</Text>
-              </View>
-              <Text className="text-2xl font-bold text-[#1a1a1a]">
-                {loyalty.total_orders}
-              </Text>
-            </Card>
-            
-            <Card className="flex-1 ml-2 p-4">
-              <View className="flex-row items-center mb-2">
-                <Gift size={20} color="#C62828" />
-                <Text className="text-[#666666] text-sm ml-2">Dépensé</Text>
-              </View>
-              <Text className="text-2xl font-bold text-[#1a1a1a]">
-                {loyalty.total_spent?.toFixed(0)}€
-              </Text>
-            </Card>
-          </View>
-        </View>
-        
-        {/* QR Code Section */}
-        <View className="px-6 mb-4">
-          <Card className="p-6">
-            <Text className="text-lg font-bold text-[#1a1a1a] mb-4 text-center">
-              Code QR de Fidélité
-            </Text>
-            <View className="items-center bg-white p-4 rounded-lg">
-              <View className="w-48 h-48 bg-gray-200 rounded-lg items-center justify-center">
-                <Text className="text-4xl">📱</Text>
-                <Text className="text-[#666666] text-xs mt-2 text-center">
-                  QR Code{'\n'}(à scanner en caisse)
-                </Text>
-              </View>
-              <Text className="text-[#666666] text-xs mt-3">
-                ID: {loyalty.qr_code?.slice(0, 8)}
-              </Text>
-            </View>
-          </Card>
-        </View>
-        
-        {/* History */}
-        <View className="px-6 pb-8">
-          <Text className="text-xl font-bold text-[#1a1a1a] mb-3">
-            Historique des points
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      {/* Header */}
+      <Text style={styles.title}>Mes récompenses</Text>
+      <Text style={styles.subtitle}>
+        À chaque commande, une partie de ce que tu dépenses revient dans ta cagnotte.
+      </Text>
+
+      {/* Carte solde */}
+      <View style={styles.balanceCard}>
+        <Text style={styles.balanceLabel}>Solde fidélité</Text>
+        <Text style={styles.balanceValue}>{formatCurrency(balance)}</Text>
+
+        {rate > 0 && (
+          <Text style={styles.balanceRate}>
+            {rate}% de cashback sur chaque commande éligible
           </Text>
-          
-          {history.length === 0 ? (
-            <Card className="p-6">
-              <Text className="text-[#666666] text-center">
-                Aucun historique de points
-              </Text>
-            </Card>
-          ) : (
-            history.map((item) => (
-              <Card key={item.order_id} className="mb-3 p-4">
-                <View className="flex-row justify-between items-center">
-                  <View className="flex-1">
-                    <Text className="font-semibold text-[#1a1a1a] mb-1">
-                      {item.description}
-                    </Text>
-                    <Text className="text-[#666666] text-sm">
-                      {new Date(item.date).toLocaleDateString('fr-FR')}
-                    </Text>
-                  </View>
-                  <Text className="text-[#4CAF50] font-bold text-lg">
-                    +{item.points} pts
-                  </Text>
-                </View>
-              </Card>
-            ))
-          )}
+        )}
+
+        <TouchableOpacity
+          style={styles.ctaButton}
+          onPress={() => router.push('/(tabs)/cart')}
+        >
+          <Text style={styles.ctaText}>Utiliser mon solde</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Bloc explication */}
+      <View style={styles.infoCard}>
+        <Text style={styles.infoTitle}>Comment ça marche ?</Text>
+        <Text style={styles.infoText}>
+          1. Passe une commande dans l&apos;app Family&apos;s.{'\n'}
+          2. Tu gagnes automatiquement du cashback sur ton compte.{'\n'}
+          3. Utilise ton solde pour payer une partie de ta prochaine commande.
+        </Text>
+      </View>
+
+      {/* Historique */}
+      <View style={styles.historyHeader}>
+        <Text style={styles.historyTitle}>Historique de mes gains</Text>
+      </View>
+
+      {history.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyTitle}>Aucun gain pour le moment</Text>
+          <Text style={styles.emptyText}>
+            Passe ta première commande pour commencer à remplir ta cagnotte fidélité.
+          </Text>
         </View>
-      </ScrollView>
-    </View>
+      ) : (
+        <View style={styles.historyList}>
+          {history.map((item, index) => (
+            <View key={item.id || index} style={styles.historyItem}>
+              <View style={styles.historyLeft}>
+                <Text style={styles.historyLabel}>
+                  +{formatCurrency(item.amount)}
+                </Text>
+                <Text style={styles.historyOrder}>
+                  {item.label || `Commande #${item.orderNumber || '—'}`}
+                </Text>
+              </View>
+              <Text style={styles.historyDate}>
+                {item.date || ''}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )}
+    </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  content: {
+    padding: 16,
+    paddingBottom: 40,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: COLORS.text,
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: COLORS.textLight,
+    marginBottom: 16,
+  },
+  balanceCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
+    marginBottom: 16,
+  },
+  balanceLabel: {
+    fontSize: 13,
+    color: COLORS.textLight,
+    marginBottom: 4,
+  },
+  balanceValue: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: COLORS.primary,
+    marginBottom: 4,
+  },
+  balanceRate: {
+    fontSize: 13,
+    color: COLORS.textLight,
+    marginBottom: 12,
+  },
+  ctaButton: {
+    marginTop: 4,
+    backgroundColor: COLORS.primary,
+    borderRadius: 999,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  ctaText: {
+    color: COLORS.white,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  infoCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+  },
+  infoTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: COLORS.text,
+    marginBottom: 6,
+  },
+  infoText: {
+    fontSize: 13,
+    color: COLORS.textLight,
+    lineHeight: 18,
+  },
+  historyHeader: {
+    marginTop: 4,
+    marginBottom: 8,
+  },
+  historyTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.text,
+  },
+  historyList: {
+    backgroundColor: COLORS.white,
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+  historyItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#EEEEEE',
+  },
+  historyLeft: {
+    flexShrink: 1,
+    paddingRight: 8,
+  },
+  historyLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: COLORS.success,
+  },
+  historyOrder: {
+    fontSize: 12,
+    color: COLORS.textLight,
+    marginTop: 2,
+  },
+  historyDate: {
+    fontSize: 11,
+    color: COLORS.textLight,
+    textAlign: 'right',
+  },
+  emptyState: {
+    backgroundColor: COLORS.white,
+    borderRadius: 16,
+    padding: 16,
+    alignItems: 'flex-start',
+  },
+  emptyTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: COLORS.text,
+    marginBottom: 4,
+  },
+  emptyText: {
+    fontSize: 13,
+    color: COLORS.textLight,
+  },
+});

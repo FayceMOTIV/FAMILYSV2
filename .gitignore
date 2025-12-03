@@ -1,13 +1,26 @@
-node_modules/
-.expo/
-.expo-shared/
-npm-debug.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-*.orig.*
-web-build/
-dist/
+node_modules
+build
+.DS_Store
+
+# Fichiers sensibles
 .env
+backend/.env
+
+# Fichiers cache
+__pycache__/
+*.pyc
+.expo/
+.backup/
+
+# Fichiers système
+.DS_Store
+*.log
+
+# Node
+node_modules/
+
+# Fichiers temporaires
+*.backup
+*.OLD-BACKUP
+*.BACKUP
+*.bak

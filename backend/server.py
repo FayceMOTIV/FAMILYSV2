@@ -36,6 +36,17 @@ from routes.admin import dashboard_simple as admin_dashboard_simple
 from routes import notifications as notifications_routes
 from routes import cashback as cashback_routes
 from routes import orders as orders_routes
+from routes import restaurant as restaurant_routes
+from routes import auth as auth_routes
+from routes import categories as categories_routes
+from routes import products as products_routes
+from routes.app import promotions as app_promotions
+from routes.app import cart as app_cart
+from routes.app import app_settings as app_settings
+from routes import surprise as surprise_routes
+from routes.admin import surprise as admin_surprise_routes
+from routes.admin import popups as admin_popups
+from routes import popups as popups_routes
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -62,7 +73,7 @@ class StatusCheck(BaseModel):
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class StatusCheckCreate(BaseModel):
-    client_name: str
+    pass
 
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
@@ -115,6 +126,11 @@ admin_router.include_router(admin_stock.router)
 admin_router.include_router(admin_ticket_z.router)
 admin_router.include_router(admin_pause.router)
 admin_router.include_router(admin_dashboard_simple.router)
+admin_router.include_router(admin_popups.router)
+
+# Routes publiques pour popups
+app.include_router(popups_routes.router, prefix="/api/v1", tags=["popups"])
+
 
 # Routes publiques pour notifications
 app.include_router(notifications_routes.router, prefix="/api/v1", tags=["notifications"])
@@ -125,12 +141,33 @@ app.include_router(cashback_routes.router, prefix="/api/v1", tags=["cashback"])
 # Routes publiques pour orders
 app.include_router(orders_routes.router, prefix="/api/v1", tags=["orders"])
 
+# Routes publiques pour restaurant info
+app.include_router(restaurant_routes.router, prefix="/api/v1", tags=["restaurant"])
+
+# Routes publiques pour auth
+app.include_router(auth_routes.router, prefix="/api/v1", tags=["auth"])
+
+# Routes publiques pour categories
+app.include_router(categories_routes.router, prefix="/api/v1", tags=["categories"])
+
+# Routes publiques pour products
+app.include_router(products_routes.router, prefix="/api/v1", tags=["products"])
+
+# Routes publiques pour promotions (app)
+app.include_router(app_promotions.router, prefix="/api/v1", tags=["promotions"])
+app.include_router(app_cart.router, prefix="/api/v1", tags=["cart"])
+app.include_router(app_settings.router, prefix="/api/v1", tags=["app-settings"])
+
+# Routes Surprise du Jour
+app.include_router(surprise_routes.router, prefix="/api/v1", tags=["surprise"])
+admin_router.include_router(admin_surprise_routes.router)
+
 # Include the routers in the main app
 app.include_router(api_router)
 app.include_router(admin_router)
 
 # Serve uploaded files
-UPLOAD_DIR = Path("/app/backend/uploads")
+UPLOAD_DIR = Path(__file__).parent / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
 

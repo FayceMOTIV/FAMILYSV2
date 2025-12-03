@@ -1,0 +1,549 @@
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useCartStore } from '../../stores/cartStore';
+
+const { width } = Dimensions.get('window');
+
+// Services
+const API_BASE_URL = 'http://localhost:8000/api/v1';
+
+const fetchCategories = async () => {
+  const response = await fetch(`${API_BASE_URL}/categories`);
+  const data = await response.json();
+  return data.categories || [];
+};
+
+const fetchProducts = async (category = null, search = null) => {
+  let url = `${API_BASE_URL}/products?`;
+  if (category && category !== 'Tout') url += `category=${category}&`;
+  if (search) url += `search=${search}`;
+  
+  const response = await fetch(url);
+  const data = await response.json();
+  return data.products || [];
+};
+
+// Composant ProductCard
+const ProductCard = ({ product, onAdd }) => {
+  const getEmojiFromCategory = (category) => {
+    const emojis = {
+      'Burgers': '🍔',
+      'Pizzas': '🍕',
+      'Tacos': '🌮',
+      'Desserts': '🍰',
+      'Boissons': '🥤',
+    };
+    return emojis[category] || '🍽️';
+  };
+
+  return (
+    <View style={styles.productCard}>
+      {/* Image avec emoji */}
+      <View style={styles.productImage}>
+        <Text style={styles.productEmoji}>
+          {getEmojiFromCategory(product.category)}
+        </Text>
+        
+        {/* Badges */}
+        {product.badge === 'nouveau' && (
+          <View style={[styles.productBadge, { backgroundColor: '#EF4444' }]}>
+            <Text style={styles.productBadgeText}>NOUVEAU</Text>
+          </View>
+        )}
+        {product.badge === 'promo' && (
+          <View style={[styles.productBadge, { backgroundColor: '#EF4444' }]}>
+            <Text style={styles.productBadgeText}>-20%</Text>
+          </View>
+        )}
+        {product.badge === 'bestseller' && (
+          <View style={[styles.productBadge, { backgroundColor: '#F59E0B' }]}>
+            <Text style={styles.productBadgeText}>TOP</Text>
+          </View>
+        )}
+      </View>
+      
+      {/* Infos produit */}
+      <View style={styles.productInfo}>
+        <Text style={styles.productName} numberOfLines={1}>
+          {product.name}
+        </Text>
+        <Text style={styles.productDescription} numberOfLines={2}>
+          {product.description}
+        </Text>
+        
+        <View style={styles.productFooter}>
+          <Text style={styles.productPrice}>
+            {(product.base_price || 0).toFixed(2)} €
+          </Text>
+          <TouchableOpacity style={styles.addButton} onPress={onAdd}>
+            <Text style={styles.addButtonText}>+</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+};
+
+// Composant principal
+export default function MenuScreen() {
+  const router = useRouter();
+  const cartItems = useCartStore((state) => state.items);
+  const addItem = useCartStore((state) => state.addItem);
+  
+  // Calcul du total dans le composant pour la réactivité
+  const totalAmount = cartItems.reduce((sum, item) => sum + ((item.price || 0) * (item.quantity || 1)), 0);
+  const cartItemsCount = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
+  
+  // States
+  const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('Tout');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  // Chargement initial
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  // Changement de catégorie
+  useEffect(() => {
+    if (selectedCategory) {
+      loadProducts(selectedCategory === 'Tout' ? null : selectedCategory);
+    }
+  }, [selectedCategory]);
+
+  // Recherche
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery.length > 2) {
+        loadProducts(
+          selectedCategory === 'Tout' ? null : selectedCategory,
+          searchQuery
+        );
+      } else if (searchQuery.length === 0) {
+        loadProducts(selectedCategory === 'Tout' ? null : selectedCategory);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const [categoriesData, productsData] = await Promise.all([
+        fetchCategories(),
+        fetchProducts()
+      ]);
+      
+      const allCategories = [
+        { name: 'Tout', icon: '🍽️' },
+        ...categoriesData
+      ];
+      
+      setCategories(allCategories);
+      setProducts(productsData);
+    } catch (error) {
+      console.error('Erreur chargement:', error);
+      Alert.alert('Erreur', 'Impossible de charger le menu');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadProducts = async (category = null, search = null) => {
+    try {
+      const data = await fetchProducts(category, search);
+      setProducts(data);
+    } catch (error) {
+      console.error('Erreur:', error);
+    }
+  };
+
+  const handleAddToCart = (product) => {
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.base_price,
+      quantity: 1,
+      image: product.image,
+      description: product.description,
+    });
+  };
+
+  // Grouper les produits par catégorie
+  const groupedProducts = products.reduce((acc, product) => {
+    if (!acc[product.category]) {
+      acc[product.category] = [];
+    }
+    acc[product.category].push(product);
+    return acc;
+  }, {});
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#FF6B6B" />
+        <Text style={styles.loadingText}>Chargement du menu...</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      {/* HEADER FIXE */}
+      <LinearGradient
+        colors={['#FF6B6B', '#FF8E53']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
+        {/* Titre */}
+        <View style={styles.headerTop}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Text style={styles.backButton}>← Retour</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>🍽️ Menu</Text>
+        </View>
+
+        {/* Barre de recherche */}
+        <View style={styles.searchBar}>
+          <Text style={styles.searchIcon}>🔍</Text>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Rechercher un produit..."
+            placeholderTextColor="rgba(255,255,255,0.6)"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+        </View>
+
+        {/* Catégories */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.categoriesScroll}
+          contentContainerStyle={{ gap: 8 }}
+        >
+          {categories.map((category, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.categoryChip,
+                selectedCategory === category.name && styles.categoryChipActive
+              ]}
+              onPress={() => setSelectedCategory(category.name)}
+            >
+              <Text
+                style={[
+                  styles.categoryChipText,
+                  selectedCategory === category.name && styles.categoryChipTextActive
+                ]}
+              >
+                {category.icon} {category.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </LinearGradient>
+
+      {/* ZONE SCROLLABLE DES PRODUITS */}
+      <ScrollView style={styles.productsContainer}>
+        {selectedCategory === 'Tout' ? (
+          // Afficher par sections
+          Object.keys(groupedProducts).map((categoryName) => (
+            <View key={categoryName}>
+              <Text style={styles.sectionTitle}>{categoryName}</Text>
+              <View style={styles.productsGrid}>
+                {groupedProducts[categoryName].map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onAdd={() => handleAddToCart(product)}
+                  />
+                ))}
+              </View>
+            </View>
+          ))
+        ) : (
+          // Afficher seulement la catégorie sélectionnée
+          <View style={styles.productsGrid}>
+            {products.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onAdd={() => handleAddToCart(product)}
+              />
+            ))}
+          </View>
+        )}
+        
+        {/* Espace vide en bas pour le panier flottant */}
+        <View style={{ height: 120 }} />
+      </ScrollView>
+
+      {/* PANIER FLOTTANT - Visible seulement si panier non vide */}
+      {cartItemsCount > 0 && (
+        <LinearGradient
+          colors={['#4F46E5', '#7C3AED']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.floatingCart}
+        >
+          <TouchableOpacity
+            style={styles.floatingCartContent}
+            onPress={() => router.push('/cart')}
+          >
+            <View style={styles.cartLeft}>
+              <View style={styles.cartBadge}>
+                <Text style={styles.cartBadgeText}>{cartItemsCount}</Text>
+              </View>
+              <Text style={styles.cartText}>Voir mon panier</Text>
+            </View>
+            <Text style={styles.cartTotal}>{totalAmount.toFixed(2)} €</Text>
+          </TouchableOpacity>
+        </LinearGradient>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
+    position: 'relative',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F8F9FA',
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: '#6B7280',
+  },
+  
+  // HEADER
+  header: {
+    paddingTop: 60,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+  },
+  headerTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  backButton: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    marginRight: 12,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  
+  // RECHERCHE
+  searchBar: {
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 12,
+    padding: 12,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  searchIcon: {
+    fontSize: 18,
+    marginRight: 8,
+    opacity: 0.7,
+  },
+  searchInput: {
+    flex: 1,
+    color: '#FFFFFF',
+    fontSize: 15,
+  },
+  
+  // CATÉGORIES
+  categoriesScroll: {
+    flexGrow: 0,
+    marginBottom: 12,
+  },
+  categoryChip: {
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  categoryChipActive: {
+    backgroundColor: '#FFFFFF',
+  },
+  categoryChipText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  categoryChipTextActive: {
+    color: '#FF6B6B',
+  },
+  
+  // PRODUITS
+  productsContainer: {
+    flex: 1,
+    padding: 16,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+    marginBottom: 16,
+    marginTop: 8,
+  },
+  productsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginBottom: 24,
+  },
+  productCard: {
+    width: (width - 44) / 2,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  productImage: {
+    width: '100%',
+    height: 120,
+    backgroundColor: '#FEF3C7',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  productEmoji: {
+    fontSize: 60,
+  },
+  productBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+  },
+  productBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  productInfo: {
+    padding: 12,
+  },
+  productName: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#1A1A1A',
+    marginBottom: 4,
+  },
+  productDescription: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginBottom: 8,
+    lineHeight: 16,
+  },
+  productFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  productPrice: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FF6B6B',
+  },
+  addButton: {
+    backgroundColor: '#FF6B6B',
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  addButtonText: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  
+  // PANIER FLOTTANT
+  floatingCart: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    right: 20,
+    borderRadius: 16,
+    shadowColor: '#4F46E5',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 24,
+    elevation: 8,
+    zIndex: 1000,
+  },
+  floatingCartContent: {
+    padding: 16,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  cartLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  cartBadge: {
+    backgroundColor: '#FFFFFF',
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  cartBadgeText: {
+    color: '#4F46E5',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  cartText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  cartTotal: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+});

@@ -1,134 +1,48 @@
 from fastapi import APIRouter, HTTPException
-from typing import List, Optional, Dict, Any
+from database import db
 from datetime import datetime, timezone
-import os
-import uuid
-from motor.motor_asyncio import AsyncIOMotorClient
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from typing import Optional
 
-router = APIRouter()
+router = APIRouter(prefix="/notifications", tags=["notifications"])
 
-# MongoDB connection
-MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-client = AsyncIOMotorClient(MONGO_URL)
-db = client['familys_restaurant']
+class PushTokenRequest(BaseModel):
+    email: str
+    push_token: str
 
-# Public notification models (different from admin models)
-class PublicNotification(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    user_id: str
-    type: str
-    title: str
-    message: str
-    data: Optional[Dict[str, Any]] = None
-    is_read: bool = False
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+@router.get("/customer/{email}")
+async def get_customer_notifications(email: str):
+    """Get notifications for a customer by email."""
+    notifications = await db.notifications.find({
+        "customer_email": email,
+        "restaurant_id": "default"
+    }).sort("created_at", -1).to_list(length=50)
+    
+    for notif in notifications:
+        notif.pop("_id", None)
+    
+    return {"notifications": notifications}
 
-class PublicNotificationCreate(BaseModel):
-    user_id: str
-    type: str
-    title: str
-    message: str
-    data: Optional[Dict[str, Any]] = None
+@router.patch("/{notif_id}/read")
+async def mark_notification_read(notif_id: str):
+    """Mark a notification as read."""
+    result = await db.notifications.update_one(
+        {"id": notif_id},
+        {"$set": {"is_read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    return {"success": True}
 
-@router.post("/notifications")
-async def create_notification(notification: PublicNotificationCreate):
-    """
-    Créer une notification pour un utilisateur
-    """
-    try:
-        notif = PublicNotification(
-            user_id=notification.user_id,
-            type=notification.type,
-            title=notification.title,
-            message=notification.message,
-            data=notification.data
-        )
-        
-        result = await db.notifications.insert_one(notif.model_dump())
-        
-        return {
-            "success": True,
-            "notification_id": notif.id
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@router.get("/notifications/{user_id}")
-async def get_user_notifications(user_id: str, unread_only: bool = False):
-    """
-    Récupérer les notifications d'un utilisateur
-    """
-    try:
-        query = {"user_id": user_id}
-        if unread_only:
-            query["is_read"] = False
-        
-        notifications = await db.notifications.find(query, {"_id": 0}).sort("created_at", -1).to_list(length=50)
-        
-        return {
-            "notifications": notifications,
-            "count": len(notifications)
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@router.put("/notifications/{notification_id}/read")
-async def mark_as_read(notification_id: str):
-    """
-    Marquer une notification comme lue
-    """
-    try:
-        result = await db.notifications.update_one(
-            {"id": notification_id},
-            {"$set": {"is_read": True}}
-        )
-        
-        if result.modified_count == 0:
-            raise HTTPException(status_code=404, detail="Notification not found")
-        
-        return {"success": True}
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@router.post("/notifications/{user_id}/mark-all-read")
-async def mark_all_as_read(user_id: str):
-    """
-    Marquer toutes les notifications d'un utilisateur comme lues
-    """
-    try:
-        result = await db.notifications.update_many(
-            {"user_id": user_id, "is_read": False},
-            {"$set": {"is_read": True}}
-        )
-        
-        return {
-            "success": True,
-            "marked_count": result.modified_count
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-async def send_loyalty_credited_notification(user_id: str, order_id: str, amount_credited: float, total_points: float):
-    """
-    Envoyer une notification de crédit de fidélité
-    """
-    try:
-        notification = PublicNotificationCreate(
-            user_id=user_id,
-            type="loyalty_credited",
-            title="🎉 Points de fidélité crédités !",
-            message=f"Merci pour ta commande, ta carte de fidélité a été crédité de {amount_credited:.2f} €!",
-            data={
-                "order_id": order_id,
-                "amount_credited": amount_credited,
-                "total_points": total_points
-            }
-        )
-        
-        await create_notification(notification)
-        
-    except Exception as e:
-        print(f"Error sending loyalty notification: {e}")
+@router.post("/customer/push-token")
+async def save_customer_push_token(request: PushTokenRequest):
+    """Save push token for a customer."""
+    await db.customers.update_one(
+        {"email": request.email},
+        {"$set": {
+            "push_token": request.push_token,
+            "push_token_updated_at": datetime.now(timezone.utc).isoformat()
+        }},
+        upsert=True
+    )
+    return {"success": True}

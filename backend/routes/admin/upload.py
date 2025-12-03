@@ -1,57 +1,50 @@
-from fastapi import APIRouter, File, UploadFile, HTTPException
-import os
-import uuid
+from fastapi import APIRouter, UploadFile, File, HTTPException
 from pathlib import Path
+import shutil
+import uuid
+import os
 
 router = APIRouter(prefix="/upload", tags=["admin-upload"])
 
-# Dossier pour stocker les images
-UPLOAD_DIR = Path("/app/backend/uploads")
-UPLOAD_DIR.mkdir(exist_ok=True)
-
-# URL publique pour accéder aux images
-UPLOAD_URL_BASE = "/uploads"
+# Utiliser un chemin relatif au lieu d'absolu
+UPLOAD_DIR = Path(__file__).parent.parent.parent / "uploads"
+UPLOAD_DIR.mkdir(exist_ok=True, parents=True)
 
 @router.post("/image")
 async def upload_image(file: UploadFile = File(...)):
-    """Upload une image et retourne l'URL."""
-    
-    # Vérifier le type de fichier
-    if not file.content_type.startswith("image/"):
-        raise HTTPException(status_code=400, detail="Le fichier doit être une image")
-    
-    # Générer un nom unique
-    extension = file.filename.split(".")[-1]
-    filename = f"{uuid.uuid4()}.{extension}"
-    filepath = UPLOAD_DIR / filename
-    
-    # Sauvegarder le fichier
+    """Upload une image et retourne l'URL"""
     try:
-        contents = await file.read()
-        with open(filepath, "wb") as f:
-            f.write(contents)
+        # Vérifier le type de fichier
+        if not file.content_type.startswith('image/'):
+            raise HTTPException(status_code=400, detail="Le fichier doit être une image")
+        
+        # Générer un nom unique
+        ext = file.filename.split('.')[-1]
+        filename = f"{uuid.uuid4()}.{ext}"
+        file_path = UPLOAD_DIR / filename
+        
+        # Sauvegarder le fichier
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        
+        # Retourner l'URL relative
+        return {
+            "success": True,
+            "url": f"/uploads/{filename}",
+            "filename": filename
+        }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur lors de l'upload: {str(e)}")
-    
-    # Retourner l'URL
-    image_url = f"{UPLOAD_URL_BASE}/{filename}"
-    
-    return {
-        "success": True,
-        "url": image_url,
-        "filename": filename
-    }
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/image/{filename}")
 async def delete_image(filename: str):
-    """Supprime une image uploadée."""
-    filepath = UPLOAD_DIR / filename
-    
-    if not filepath.exists():
-        raise HTTPException(status_code=404, detail="Image non trouvée")
-    
+    """Supprime une image"""
     try:
-        os.remove(filepath)
-        return {"success": True, "message": "Image supprimée"}
+        file_path = UPLOAD_DIR / filename
+        if file_path.exists():
+            file_path.unlink()
+            return {"success": True, "message": "Image supprimée"}
+        else:
+            raise HTTPException(status_code=404, detail="Image non trouvée")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur lors de la suppression: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))

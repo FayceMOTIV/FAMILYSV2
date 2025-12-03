@@ -1,22 +1,21 @@
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { API_BASE_URL } from '../constants/api';
+import { API_URL } from '../constants';
 
+// Create axios instance
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: API_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Request interceptor to add token
+// Simple interceptor without AsyncStorage (for Expo Go compatibility)
+// Token will be managed by Zustand store
 api.interceptors.request.use(
   async (config) => {
-    const token = await AsyncStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    // Token can be set manually when needed
+    // Example: api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     return config;
   },
   (error) => {
@@ -29,12 +28,17 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid - logout user
-      AsyncStorage.removeItem('token');
-      AsyncStorage.removeItem('user');
+      // Handle unauthorized - will be managed by calling code
+      console.log('Unauthorized - please login again');
     }
     return Promise.reject(error);
   }
 );
 
 export default api;
+
+// Helper functions
+export const apiGet = (url, params) => api.get(url, { params });
+export const apiPost = (url, data) => api.post(url, data);
+export const apiPut = (url, data) => api.put(url, data);
+export const apiDelete = (url) => api.delete(url);
