@@ -2,6 +2,7 @@
   "expo": {
     "name": "Familys",
     "slug": "familys-new",
+    "scheme": "familys",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -20,7 +21,12 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fayce.familysnew",
+      "buildNumber": "2",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -41,6 +47,12 @@
           "backgroundColor": "#C62828"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "2de4246b-75aa-49c4-93a5-ee6b9595a703"
+      }
+    }
   }
 }
