@@ -1,83 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Animated, Dimensions, Modal, Linking } from 'react-native';
+import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Animated, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../stores/authStore';
 import { useFavoritesStore } from '../../stores/favoritesStore';
 import { API_BASE_URL } from '../../constants/config';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 const { width, height } = Dimensions.get('window');
 
-interface Popup { id: string; title?: string; image_url: string; link_url?: string; link_type?: string; display_frequency: string; priority: number; }
-
-function PopupModal({ onNavigate }: { onNavigate: (path: string) => void }) {
-  const [visible, setVisible] = useState(false);
-  const [currentPopup, setCurrentPopup] = useState<Popup | null>(null);
-
-  useEffect(() => { checkAndShowPopup(); }, []);
-
-  const checkAndShowPopup = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/popups`);
-      const popups: Popup[] = response.data.popups || [];
-      if (popups.length === 0) return;
-      for (const popup of popups) {
-        const shouldShow = await shouldShowPopup(popup);
-        if (shouldShow) { setCurrentPopup(popup); setVisible(true); await markPopupAsShown(popup); break; }
-      }
-    } catch (error) { console.log('Error loading popups:', error); }
-  };
-
-  const shouldShowPopup = async (popup: Popup): Promise<boolean> => {
-    const storageKey = `popup_shown_${popup.id}`;
-    const lastShown = await AsyncStorage.getItem(storageKey);
-    if (!lastShown) return true;
-    const lastShownDate = new Date(lastShown);
-    const now = new Date();
-    switch (popup.display_frequency) {
-      case 'once': return false;
-      case 'every_session': return now.getTime() - lastShownDate.getTime() > 30 * 60 * 1000;
-      case 'every_day': return lastShownDate.toDateString() !== now.toDateString();
-      default: return false;
-    }
-  };
-
-  const markPopupAsShown = async (popup: Popup) => { await AsyncStorage.setItem(`popup_shown_${popup.id}`, new Date().toISOString()); };
-  const handleClose = () => { setVisible(false); setCurrentPopup(null); };
-  const handlePress = async () => {
-    if (!currentPopup) return;
-    if (currentPopup.link_type === 'none' || !currentPopup.link_url) { handleClose(); return; }
-    handleClose();
-    if (currentPopup.link_type === 'external') { try { await Linking.openURL(currentPopup.link_url); } catch (e) {} }
-    else if (currentPopup.link_type === 'internal') { onNavigate(currentPopup.link_url); }
-  };
-
-  if (!currentPopup || !visible) return null;
-  return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
-      <View style={popupStyles.overlay}>
-        <View style={popupStyles.container}>
-          <TouchableOpacity style={popupStyles.closeButton} onPress={handleClose}>
-            <View style={popupStyles.closeCircle}><Text style={popupStyles.closeX}>✕</Text></View>
-          </TouchableOpacity>
-          <TouchableOpacity activeOpacity={currentPopup.link_type === 'none' ? 1 : 0.9} onPress={handlePress}>
-            <Image source={{ uri: currentPopup.image_url }} style={popupStyles.popupImage} resizeMode="contain" />
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Modal>
-  );
-}
-
-const popupStyles = StyleSheet.create({
-  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center', padding: 20 },
-  container: { width: width - 40, maxHeight: height * 0.8, backgroundColor: '#FFF', borderRadius: 20, overflow: 'hidden' },
-  closeButton: { position: 'absolute', top: 10, right: 10, zIndex: 10 },
-  closeCircle: { width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center' },
-  closeX: { color: '#FFF', fontSize: 18, fontWeight: 'bold' },
-  popupImage: { width: width - 40, height: undefined, aspectRatio: 0.75, minHeight: 350, maxHeight: height * 0.7 },
-});
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -153,7 +83,6 @@ export default function HomeScreen() {
 
   return (
     <>
-      <PopupModal onNavigate={(path) => router.push(path as any)} />
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Image source={require('../../assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
