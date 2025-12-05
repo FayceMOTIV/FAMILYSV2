@@ -31,6 +31,7 @@ class Product(BaseModel):
     is_out_of_stock: bool = False
     stock_status: Optional[str] = None  # '2h', 'today', 'indefinite'
     stock_resume_at: Optional[str] = None  # Timestamp pour réactivation auto
+    option_ids: List[str] = Field(default_factory=list)  # IDs des options associées
     option_groups: List[ProductOptionGroup] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -43,6 +44,7 @@ class ProductCreate(BaseModel):
     vat_rate: float = 10.0
     image_url: Optional[str] = None
     tags: List[str] = Field(default_factory=list)
+    option_ids: List[str] = Field(default_factory=list)
     option_groups: List[ProductOptionGroup] = Field(default_factory=list)
 
 class ProductUpdate(BaseModel):
@@ -56,4 +58,5 @@ class ProductUpdate(BaseModel):
     badge: Optional[str] = None
     is_available: Optional[bool] = None
     is_out_of_stock: Optional[bool] = None
+    option_ids: Optional[List[str]] = None
     option_groups: Optional[List[ProductOptionGroup]] = None

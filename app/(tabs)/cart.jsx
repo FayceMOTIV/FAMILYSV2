@@ -319,6 +319,18 @@ export default function CartScreen() {
                     <Text style={styles.itemName} numberOfLines={2}>{item.name}</Text>
                     {isReward && <View style={styles.rewardBadge}><Text style={styles.rewardBadgeText}>GRATUIT 🎁</Text></View>}
                   </View>
+                  
+                  {/* Afficher les options sélectionnées */}
+                  {item.options && item.options.length > 0 && (
+                    <View style={styles.itemOptionsContainer}>
+                      {item.options.map((opt, optIndex) => (
+                        <Text key={optIndex} style={styles.itemOptionText}>
+                          • {typeof opt === 'string' ? opt : (opt.choiceName || opt.name || '')}
+                        </Text>
+                      ))}
+                    </View>
+                  )}
+                  
                   {/* Prix avec prix barré si promo */}
                   <View style={styles.itemPriceRow}>
                     <Text style={[styles.itemPrice, isReward && styles.itemPriceFree]}>
@@ -605,6 +617,8 @@ const styles = StyleSheet.create({
   itemInfo: { flex: 1 },
   itemNameRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 4, flexWrap: 'wrap' },
   itemName: { flex: 1, fontSize: 15, fontWeight: 'bold', color: '#1A1A1A' },
+  itemOptionsContainer: { marginTop: 4, marginBottom: 4 },
+  itemOptionText: { fontSize: 12, color: '#6B7280', marginBottom: 2 },
   rewardBadge: { backgroundColor: '#10B981', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   rewardBadgeText: { fontSize: 10, fontWeight: 'bold', color: '#FFF' },
   itemPriceRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },

@@ -71,8 +71,34 @@ async def create_product(
         **product_create.model_dump()
     )
     
-    await db.products.insert_one(product.model_dump())
-    return {"success": True, "product": product.model_dump()}
+    # Si option_ids est fourni, générer option_groups pour l'app mobile
+    product_dict = product.model_dump()
+    if product_dict.get("option_ids"):
+        option_groups = []
+        for option_id in product_dict["option_ids"]:
+            option = await db.options.find_one({"id": option_id})
+            if option:
+                option_group = {
+                    "id": option["id"],
+                    "name": option["name"],
+                    "type": option.get("type", "single"),
+                    "required": option.get("is_required", False),
+                    "options": [
+                        {
+                            "id": choice.get("id", str(i)),
+                            "name": choice["name"],
+                            "delta_price": choice.get("price", 0),
+                            "image_url": choice.get("image_url"),
+                            "sub_options": choice.get("sub_options", [])
+                        }
+                        for i, choice in enumerate(option.get("choices", []))
+                    ]
+                }
+                option_groups.append(option_group)
+        product_dict["option_groups"] = option_groups
+    
+    await db.products.insert_one(product_dict)
+    return {"success": True, "product": product_dict}
 
 @router.put("/{product_id}")  # response_model=Product
 async def update_product(
@@ -98,6 +124,31 @@ async def update_product(
     # Update fields
     update_data = product_update.model_dump(exclude_unset=True)
     update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    # Si option_ids est fourni, générer option_groups pour l'app mobile
+    if "option_ids" in update_data and update_data["option_ids"]:
+        option_groups = []
+        for option_id in update_data["option_ids"]:
+            option = await db.options.find_one({"id": option_id})
+            if option:
+                option_group = {
+                    "id": option["id"],
+                    "name": option["name"],
+                    "type": option.get("type", "single"),
+                    "required": option.get("is_required", False),
+                    "options": [
+                        {
+                            "id": choice.get("id", str(i)),
+                            "name": choice["name"],
+                            "delta_price": choice.get("price", 0),
+                            "image_url": choice.get("image_url"),
+                            "sub_options": choice.get("sub_options", [])
+                        }
+                        for i, choice in enumerate(option.get("choices", []))
+                    ]
+                }
+                option_groups.append(option_group)
+        update_data["option_groups"] = option_groups
     
     await db.products.update_one(
         {"id": product_id},

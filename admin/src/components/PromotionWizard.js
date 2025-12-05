@@ -4,7 +4,7 @@ import { Button } from './Button';
 import { ChevronRight, ChevronLeft, Check } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://fastfood-fixes.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
 
 export const PromotionWizard = ({ isOpen, onClose, promotion, onSuccess }) => {
   const [step, setStep] = useState(1);
@@ -24,16 +24,29 @@ export const PromotionWizard = ({ isOpen, onClose, promotion, onSuccess }) => {
     eligible_categories: [],
     all_products: false,
     min_cart_amount: null,
+    // BOGO fields
+    bogo_buy_quantity: 1,
+    bogo_get_quantity: 1,
+    bogo_cheapest_free: false,
+    // Conditional discount fields
+    conditional_quantity: 2,
+    conditional_discount_percent: 50,
+    // Dates
     start_date: new Date().toISOString().split('T')[0],
     end_date: new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0],
     start_time: null,
     end_time: null,
     days_active: [],
     limit_per_customer: null,
+    limit_total: null,
     priority: 0,
     stackable: false,
+    // Display
     badge_text: '',
     badge_color: '#FF6B35',
+    // Code promo
+    promo_code: null,
+    code_required: false,
     status: 'active'
   });
 
@@ -184,6 +197,80 @@ export const PromotionWizard = ({ isOpen, onClose, promotion, onSuccess }) => {
                 required
               />
             </div>
+          </div>
+        )}
+
+        {/* BOGO Configuration */}
+        {formData.type === 'bogo' && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 space-y-3">
+            <h4 className="font-semibold text-green-800">🎁 Configuration BOGO</h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Acheter (quantité)</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={formData.bogo_buy_quantity || 1}
+                  onChange={(e) => setFormData({...formData, bogo_buy_quantity: parseInt(e.target.value)})}
+                  className="w-full px-3 py-2 border rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Obtenir gratuit (quantité)</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={formData.bogo_get_quantity || 1}
+                  onChange={(e) => setFormData({...formData, bogo_get_quantity: parseInt(e.target.value)})}
+                  className="w-full px-3 py-2 border rounded-lg"
+                />
+              </div>
+            </div>
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={formData.bogo_cheapest_free || false}
+                onChange={(e) => setFormData({...formData, bogo_cheapest_free: e.target.checked})}
+                className="w-4 h-4"
+              />
+              <span className="text-sm">Le moins cher est gratuit (si produits différents)</span>
+            </label>
+            <p className="text-xs text-green-600">
+              Exemple: Acheter {formData.bogo_buy_quantity || 1} = {formData.bogo_get_quantity || 1} offert(s)
+            </p>
+          </div>
+        )}
+
+        {/* Conditional Discount Configuration */}
+        {formData.type === 'conditional_discount' && (
+          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 space-y-3">
+            <h4 className="font-semibold text-purple-800">🔢 Configuration Conditionnelle</h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">À partir du Xème article</label>
+                <input
+                  type="number"
+                  min="2"
+                  value={formData.conditional_quantity || 2}
+                  onChange={(e) => setFormData({...formData, conditional_quantity: parseInt(e.target.value)})}
+                  className="w-full px-3 py-2 border rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Réduction (%)</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="100"
+                  value={formData.conditional_discount_percent || 50}
+                  onChange={(e) => setFormData({...formData, conditional_discount_percent: parseInt(e.target.value)})}
+                  className="w-full px-3 py-2 border rounded-lg"
+                />
+              </div>
+            </div>
+            <p className="text-xs text-purple-600">
+              Exemple: Le {formData.conditional_quantity || 2}ème article à -{formData.conditional_discount_percent || 50}%
+            </p>
           </div>
         )}
 
@@ -409,6 +496,32 @@ export const PromotionWizard = ({ isOpen, onClose, promotion, onSuccess }) => {
         </div>
       )}
 
+      {/* Code promo */}
+      {formData.type === 'promo_code' && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 space-y-3">
+          <h4 className="font-semibold text-yellow-800">🔖 Configuration Code Promo</h4>
+          <div>
+            <label className="block text-sm font-medium mb-1">Code à saisir *</label>
+            <input
+              type="text"
+              value={formData.promo_code || ''}
+              onChange={(e) => setFormData({...formData, promo_code: e.target.value.toUpperCase()})}
+              className="w-full px-3 py-2 border rounded-lg uppercase"
+              placeholder="Ex: BIENVENUE20"
+            />
+          </div>
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={formData.code_required || false}
+              onChange={(e) => setFormData({...formData, code_required: e.target.checked})}
+              className="w-4 h-4"
+            />
+            <span className="text-sm">Code obligatoire (la promo ne s'applique pas automatiquement)</span>
+          </label>
+        </div>
+      )}
+
       {/* Limites */}
       <div className="grid grid-cols-2 gap-4">
         <div>
@@ -420,16 +533,31 @@ export const PromotionWizard = ({ isOpen, onClose, promotion, onSuccess }) => {
             className="w-full px-3 py-2 border rounded-lg"
             placeholder="Illimité"
           />
+          <p className="text-xs text-gray-500 mt-1">Nombre max d'utilisation par client</p>
         </div>
         <div>
-          <label className="block text-sm font-medium mb-2">Priorité (0-100)</label>
+          <label className="block text-sm font-medium mb-2">Limite totale</label>
           <input
             type="number"
-            value={formData.priority}
-            onChange={(e) => setFormData({...formData, priority: parseInt(e.target.value) || 0})}
+            value={formData.limit_total || ''}
+            onChange={(e) => setFormData({...formData, limit_total: parseInt(e.target.value) || null})}
             className="w-full px-3 py-2 border rounded-lg"
+            placeholder="Illimité"
           />
+          <p className="text-xs text-gray-500 mt-1">Nombre max d'utilisation total</p>
         </div>
+      </div>
+
+      {/* Priorité */}
+      <div>
+        <label className="block text-sm font-medium mb-2">Priorité (0-100)</label>
+        <input
+          type="number"
+          value={formData.priority}
+          onChange={(e) => setFormData({...formData, priority: parseInt(e.target.value) || 0})}
+          className="w-full px-3 py-2 border rounded-lg"
+        />
+        <p className="text-xs text-gray-500 mt-1">Plus la priorité est élevée, plus la promo est appliquée en premier</p>
       </div>
 
       {/* Cumulable */}

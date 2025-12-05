@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { Button } from './Button';
 import { X, Plus, Trash2, Upload, Image as ImageIcon } from 'lucide-react';
+import { NestedSubOptionsEditor } from './NestedSubOptionsEditor';
 
 export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -479,6 +480,17 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
                   className="w-full px-3 py-2 border rounded-lg resize-none mt-2"
                   placeholder="💬 Commentaire interne (non visible par le client)"
                   rows="2"
+                />
+
+                {/* Sous-options conditionnelles imbriquées */}
+                <NestedSubOptionsEditor
+                  choice={choice}
+                  onChange={(updatedChoice) => {
+                    const newChoices = [...formData.choices];
+                    newChoices[index] = updatedChoice;
+                    setFormData({ ...formData, choices: newChoices });
+                  }}
+                  choiceLibrary={choiceLibrary}
                 />
               </div>
             ))}

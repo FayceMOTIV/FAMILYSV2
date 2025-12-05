@@ -77,9 +77,23 @@ export default function OrderScreen() {
     if (selectedCategory !== 'all') {
       const category = categories.find(c => c.id === selectedCategory);
       const categoryName = category?.name || selectedCategory;
-      filtered = products.filter(p => 
-        p.category === categoryName || p.category_id === selectedCategory
-      );
+      
+      console.log('🔍 Filtrage catégorie:', { selectedCategory, categoryName });
+      
+      filtered = products.filter(p => {
+        // Comparaisons possibles:
+        // 1. category (nom) === categoryName (nom)
+        // 2. category (UUID) === selectedCategory (UUID) 
+        // 3. category_id === selectedCategory
+        const match = p.category === categoryName || 
+                      p.category === selectedCategory ||
+                      p.category_id === selectedCategory ||
+                      p.category?.toLowerCase() === categoryName?.toLowerCase();
+        
+        return match;
+      });
+      
+      console.log('📦 Produits filtrés:', filtered.length, filtered.map(p => p.name));
     }
     
     if (searchQuery.trim()) {

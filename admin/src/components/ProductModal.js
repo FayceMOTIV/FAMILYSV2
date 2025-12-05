@@ -7,7 +7,7 @@ import { productsAPI, categoriesAPI } from '../services/api';
 import axios from 'axios';
 import { ChevronUp, ChevronDown, X, Info } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://fastfood-fixes.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
 
 export const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
   const [loading, setLoading] = useState(false);
@@ -167,9 +167,16 @@ export const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
 
     try {
       const payload = {
-        ...formData,
+        name: formData.name,
+        category: formData.category,
+        description: formData.description,
         base_price: parseFloat(formData.base_price),
         vat_rate: parseFloat(formData.vat_rate),
+        image_url: formData.image_url || formData.image || null,
+        tags: formData.tags,
+        option_ids: formData.option_ids,
+        is_available: formData.is_available,
+        is_out_of_stock: formData.is_out_of_stock,
         option_groups: [],
       };
 
@@ -218,7 +225,7 @@ export const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
           >
             <option value="">Sélectionner...</option>
             {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
+              <option key={cat.id} value={cat.name}>
                 {cat.name}
               </option>
             ))}

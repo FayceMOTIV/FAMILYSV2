@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFavoritesStore } from '../../stores/favoritesStore';
@@ -37,10 +38,7 @@ export default function FavoritesScreen() {
   };
 
   const handleProductPress = (product) => {
-    router.push({
-      pathname: '/product-detail',
-      params: { productId: product.id }
-    });
+    router.push(`/product/${product.id}`);
   };
 
   const handleQuickAdd = (product) => {
@@ -106,7 +104,15 @@ export default function FavoritesScreen() {
 
           {/* Image/Emoji Produit */}
           <View style={styles.productImage}>
-            <Text style={styles.productEmoji}>{product.emoji || '🍽️'}</Text>
+            {(product.image_url || product.image) ? (
+              <Image 
+                source={{ uri: product.image_url || product.image }} 
+                style={styles.productImageReal}
+                resizeMode="cover"
+              />
+            ) : (
+              <Text style={styles.productEmoji}>{product.emoji || '🍽️'}</Text>
+            )}
           </View>
 
           {/* Info Produit */}
@@ -277,6 +283,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  productImageReal: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 12,
   },
   productEmoji: {
     fontSize: 60,

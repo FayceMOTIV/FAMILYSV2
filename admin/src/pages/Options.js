@@ -6,7 +6,7 @@ import { OptionModal } from '../components/OptionModal';
 import { Plus, Edit, Trash2, Copy } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://fastfood-fixes.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
 
 export const Options = () => {
   const [options, setOptions] = useState([]);
@@ -168,12 +168,25 @@ export const Options = () => {
 
                   <div className="border-t pt-3 mt-3">
                     <p className="text-xs font-bold text-gray-500 mb-2">CHOIX ({option.choices?.length || 0}):</p>
-                    <div className="space-y-1 max-h-32 overflow-y-auto">
+                    <div className="space-y-1 max-h-40 overflow-y-auto">
                       {option.choices?.map((choice) => (
-                        <div key={choice.id} className="flex justify-between items-center text-sm bg-gray-50 p-2 rounded">
-                          <span>{choice.name}</span>
-                          {choice.price > 0 && (
-                            <span className="font-bold text-green-600">+{choice.price}€</span>
+                        <div key={choice.id} className="bg-gray-50 p-2 rounded">
+                          <div className="flex justify-between items-center text-sm">
+                            <span>{choice.name}</span>
+                            {choice.price > 0 && (
+                              <span className="font-bold text-green-600">+{choice.price}€</span>
+                            )}
+                          </div>
+                          {/* Badge sous-options */}
+                          {choice.sub_options?.length > 0 && (
+                            <div className="mt-1 flex items-center gap-1">
+                              <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">
+                                🔗 {choice.sub_options.length} sous-option{choice.sub_options.length > 1 ? 's' : ''}
+                              </span>
+                              <span className="text-xs text-gray-400">
+                                ({choice.sub_options.map(so => so.name).join(', ')})
+                              </span>
+                            </div>
                           )}
                         </div>
                       ))}

@@ -132,11 +132,14 @@ export default function HomeScreen() {
               <View style={styles.favoritesArrow}><Text style={styles.arrowText}>→</Text></View>
             </View>
             <View style={styles.favoritesPreview}>
-              {favoriteProducts.slice(0, 3).map((product, index) => (
-                <View key={product.id} style={[styles.miniProductCircle, { marginLeft: index > 0 ? -10 : 0, zIndex: 3 - index }]}>
-                  {product.image_url ? <Image source={{ uri: product.image_url }} style={styles.miniProductImage} /> : <Text style={styles.miniProductEmoji}>{product.emoji || '🍔'}</Text>}
-                </View>
-              ))}
+              {favoriteProducts.slice(0, 3).map((product, index) => {
+                const imageUrl = product.image_url || product.image;
+                return (
+                  <View key={product.id} style={[styles.miniProductCircle, { marginLeft: index > 0 ? -10 : 0, zIndex: 3 - index }]}>
+                    {imageUrl ? <Image source={{ uri: imageUrl }} style={styles.miniProductImage} /> : <Text style={styles.miniProductEmoji}>{product.emoji || '🍔'}</Text>}
+                  </View>
+                );
+              })}
               {favoriteProducts.length > 3 && <View style={[styles.miniProductCircle, styles.moreCircle, { marginLeft: -10 }]}><Text style={styles.moreText}>+{favoriteProducts.length - 3}</Text></View>}
             </View>
           </TouchableOpacity>
@@ -152,14 +155,20 @@ export default function HomeScreen() {
               {promoProducts.map((product) => {
                 const promo = product.active_promotions?.[0];
                 const originalPrice = product.base_price || 0;
-                const promoPrice = product.promo_price || originalPrice;
-                const discount = promo?.discount_percent || Math.round((1 - promoPrice / originalPrice) * 100);
+                const promoPrice = product.promo_price;
+                const hasDiscount = promoPrice && promoPrice < originalPrice;
+                const imageUrl = product.image_url || product.image;
+                // Utiliser le badge du produit, ou le badge_text de la promo, ou le nom de la promo
+                const badgeText = product.promo_badge || promo?.badge_text || promo?.name;
                 return (
                   <TouchableOpacity key={product.id} style={styles.promoCard} onPress={() => router.push(`/product/${product.id}`)}>
-                    <View style={styles.promoTagContainer}><Text style={styles.promoTag}>-{discount}%</Text></View>
-                    {product.image_url ? <Image source={{ uri: product.image_url }} style={styles.promoImage} resizeMode="cover" /> : <View style={styles.promoImagePlaceholder}><Text style={styles.promoEmoji}>{product.emoji || '🍔'}</Text></View>}
+                    {badgeText && <View style={styles.promoTagContainer}><Text style={styles.promoTag}>{badgeText}</Text></View>}
+                    {imageUrl ? <Image source={{ uri: imageUrl }} style={styles.promoImage} resizeMode="cover" /> : <View style={styles.promoImagePlaceholder}><Text style={styles.promoEmoji}>{product.emoji || '🍔'}</Text></View>}
                     <Text style={styles.promoName} numberOfLines={1}>{product.name}</Text>
-                    <View style={styles.promoPriceRow}><Text style={styles.promoPrice}>{promoPrice.toFixed(2)}€</Text><Text style={styles.promoOldPrice}>{originalPrice.toFixed(2)}€</Text></View>
+                    <View style={styles.promoPriceRow}>
+                      <Text style={[styles.promoPrice, !hasDiscount && { color: '#1A1A1A' }]}>{(promoPrice || originalPrice).toFixed(2)}€</Text>
+                      {hasDiscount && <Text style={styles.promoOldPrice}>{originalPrice.toFixed(2)}€</Text>}
+                    </View>
                   </TouchableOpacity>
                 );
               })}

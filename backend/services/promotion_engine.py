@@ -188,9 +188,11 @@ class PromotionEngine:
         
         buy_qty = promo.get("bogo_buy_quantity", 1)
         get_qty = promo.get("bogo_get_quantity", 1)
+        limit_per_customer = promo.get("limit_per_customer")  # Limite d'utilisation
         
         total_discount = 0
         free_items = []
+        total_free_count = 0  # Compteur total d'items gratuits
         
         for item in eligible_items:
             qty = item.get("quantity", 1)
@@ -198,6 +200,15 @@ class PromotionEngine:
             
             if sets > 0:
                 free_qty = sets * get_qty
+                
+                # Appliquer la limite par client si définie
+                if limit_per_customer:
+                    remaining_limit = limit_per_customer - total_free_count
+                    if remaining_limit <= 0:
+                        break
+                    free_qty = min(free_qty, remaining_limit)
+                
+                total_free_count += free_qty
                 item_price = item.get("price", 0)
                 discount = free_qty * item_price
                 total_discount += discount
