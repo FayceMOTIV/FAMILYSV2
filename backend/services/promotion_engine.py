@@ -1,408 +1,378 @@
-from typing import List, Dict, Any, Optional
-from datetime import datetime, date, time
-from models.promotion import Promotion, PromotionType, DiscountValueType
-import logging
+"""
+Moteur de promotions - Calcule et applique les promotions sur un panier
+"""
+from datetime import datetime, timezone
+from typing import List, Dict, Optional
+import re
 
-logger = logging.getLogger(__name__)
 
 class PromotionEngine:
     """
-    Moteur de calcul et d'application des promotions Family's
+    Moteur de calcul des promotions pour le panier
     """
     
     def __init__(self, db):
         self.db = db
     
-    async def get_applicable_promotions(
-        self,
-        cart: Dict[str, Any],
-        customer: Optional[Dict[str, Any]] = None,
-        promo_code: Optional[str] = None
-    ) -> List[Dict]:
+    async def apply_promotions(self, cart: dict, customer: dict = None, promo_code: str = None) -> dict:
         """
-        Récupère toutes les promotions applicables au panier
-        """
-        now = datetime.now()
-        today = now.date()
-        current_time = now.time()
-        current_day = now.strftime("%a").lower()[:3]
+        Applique les promotions sur un panier
         
-        query = {
-            "status": "active",
-            "start_date": {"$lte": today.isoformat()},
-            "end_date": {"$gte": today.isoformat()}
+        Args:
+            cart: {"items": [...], "total": float, "delivery_fee": float}
+            customer: Données client (optionnel)
+            promo_code: Code promo saisi (optionnel)
+        
+        Returns:
+            {
+                "items": [...],  # Items avec promos appliquées
+                "applied_promotions": [...],
+                "total_discount": float,
+                "suggestions": [...],
+                "loyalty_multiplier": float
+            }
+        """
+        result = {
+            "items": cart.get("items", []),
+            "applied_promotions": [],
+            "total_discount": 0.0,
+            "suggestions": [],
+            "loyalty_multiplier": 1.0
         }
         
-        promos_raw = await self.db.promotions.find(query).to_list(length=None)
-        applicable_promos = []
-        
-        for promo_dict in promos_raw:
-            promo_dict.pop("_id", None)
+        try:
+            # Récupérer les promos actives
+            active_promos = await self._get_active_promotions()
             
-            if not self._check_conditions(promo_dict, cart, customer, promo_code, current_day, current_time):
-                continue
+            cart_total = cart.get("total", 0)
+            cart_items = cart.get("items", [])
             
-            applicable_promos.append(promo_dict)
+            # Appliquer les promos automatiques
+            for promo in active_promos:
+                if promo.get("auto_apply", True):
+                    promo_result = await self._apply_single_promo(promo, cart_items, cart_total, customer)
+                    
+                    if promo_result["applied"]:
+                        result["applied_promotions"].append({
+                            "id": promo.get("id"),
+                            "name": promo.get("name"),
+                            "type": promo.get("promo_type"),
+                            "discount": promo_result["discount"],
+                            "badge": promo.get("badge_text", "🏷️ PROMO"),
+                            "details": promo_result.get("details")
+                        })
+                        result["total_discount"] += promo_result["discount"]
+                        
+                        # Appliquer le multiplicateur de fidélité si présent
+                        if promo.get("loyalty_multiplier"):
+                            result["loyalty_multiplier"] = max(
+                                result["loyalty_multiplier"],
+                                promo.get("loyalty_multiplier", 1.0)
+                            )
+            
+            # Appliquer le code promo si fourni
+            if promo_code:
+                code_result = await self._apply_promo_code(promo_code, cart_items, cart_total, customer)
+                
+                if code_result["applied"]:
+                    result["applied_promotions"].append({
+                        "id": code_result.get("promo_id"),
+                        "name": code_result.get("name"),
+                        "type": "promo_code",
+                        "discount": code_result["discount"],
+                        "badge": "🏷️ CODE",
+                        "details": code_result.get("details")
+                    })
+                    result["total_discount"] += code_result["discount"]
+            
+            # Générer des suggestions
+            result["suggestions"] = await self._generate_suggestions(cart_items, cart_total, active_promos)
+            
+        except Exception as e:
+            print(f"Error applying promotions: {e}")
         
-        applicable_promos.sort(key=lambda p: p.get("priority", 0), reverse=True)
-        
-        return applicable_promos
+        return result
     
-    def _check_conditions(
-        self,
-        promo: Dict,
-        cart: Dict[str, Any],
-        customer: Optional[Dict[str, Any]],
-        promo_code: Optional[str],
-        current_day: str,
-        current_time: time
-    ) -> bool:
+    async def _get_active_promotions(self) -> List[dict]:
         """
-        Vérifie toutes les conditions d'applicabilité
+        Récupère les promotions actives
         """
-        # Code promo requis
-        if promo.get("code_required"):
-            promo_code_upper = promo_code.upper() if promo_code else None
-            if promo.get("promo_code") != promo_code_upper:
+        now = datetime.now(timezone.utc).isoformat()
+        
+        promos = await self.db.promotions.find({
+            "is_active": True,
+            "$or": [
+                {"start_date": {"$exists": False}},
+                {"start_date": {"$lte": now}}
+            ],
+            "$or": [
+                {"end_date": {"$exists": False}},
+                {"end_date": {"$gte": now}}
+            ]
+        }).to_list(length=100)
+        
+        return promos
+    
+    async def _apply_single_promo(self, promo: dict, items: List[dict], cart_total: float, customer: dict = None) -> dict:
+        """
+        Applique une seule promo et retourne le résultat
+        """
+        result = {"applied": False, "discount": 0.0, "details": None}
+        
+        promo_type = promo.get("promo_type")
+        conditions = promo.get("conditions", {})
+        
+        # Vérifier les conditions
+        if not self._check_conditions(conditions, items, cart_total, customer):
+            return result
+        
+        # Appliquer selon le type
+        if promo_type == "percentage":
+            discount_percent = promo.get("discount_value", 0)
+            result["discount"] = round(cart_total * (discount_percent / 100), 2)
+            result["applied"] = True
+            
+        elif promo_type == "fixed_amount":
+            result["discount"] = min(promo.get("discount_value", 0), cart_total)
+            result["applied"] = True
+            
+        elif promo_type == "bogo":
+            # Buy One Get One
+            bogo_result = self._calculate_bogo(promo, items)
+            result["discount"] = bogo_result["discount"]
+            result["details"] = bogo_result.get("details")
+            result["applied"] = bogo_result["discount"] > 0
+            
+        elif promo_type == "free_product":
+            # Produit gratuit
+            result["details"] = {"free_product": promo.get("free_product_id")}
+            result["applied"] = True
+            
+        elif promo_type == "free_delivery":
+            delivery_fee = promo.get("delivery_fee", 0)
+            result["discount"] = delivery_fee
+            result["applied"] = True
+        
+        # Vérifier la limite d'utilisation
+        if result["applied"] and promo.get("max_uses"):
+            usage_count = promo.get("usage_count", 0)
+            if usage_count >= promo.get("max_uses"):
+                result["applied"] = False
+                result["discount"] = 0
+        
+        return result
+    
+    def _check_conditions(self, conditions: dict, items: List[dict], cart_total: float, customer: dict = None) -> bool:
+        """
+        Vérifie si les conditions de la promo sont remplies
+        """
+        # Montant minimum
+        min_order = conditions.get("min_order_amount", 0)
+        if cart_total < min_order:
+            return False
+        
+        # Catégories requises
+        required_categories = conditions.get("required_categories", [])
+        if required_categories:
+            item_categories = [item.get("category") for item in items]
+            if not any(cat in item_categories for cat in required_categories):
                 return False
         
-        # Jours actifs
-        days_active = promo.get("days_active", [])
-        if days_active and current_day not in days_active:
-            return False
-        
-        # Horaires
-        start_time_str = promo.get("start_time")
-        end_time_str = promo.get("end_time")
-        if start_time_str and end_time_str:
-            try:
-                start_t = time.fromisoformat(start_time_str) if isinstance(start_time_str, str) else start_time_str
-                end_t = time.fromisoformat(end_time_str) if isinstance(end_time_str, str) else end_time_str
-                if not (start_t <= current_time <= end_t):
-                    return False
-            except:
-                pass
-        
-        # Montant panier
-        cart_total = cart.get("total", 0)
-        min_cart = promo.get("min_cart_amount")
-        max_cart = promo.get("max_cart_amount")
-        
-        if min_cart and cart_total < min_cart:
-            return False
-        if max_cart and cart_total > max_cart:
-            return False
-        
-        # Limite d'utilisation totale
-        limit_total = promo.get("limit_total")
-        usage_count = promo.get("usage_count", 0)
-        if limit_total and usage_count >= limit_total:
-            return False
-        
-        # Nouveau client
-        if promo.get("target_new_customers") and customer:
-            if customer.get("orders_count", 0) > 0:
+        # Produits requis
+        required_products = conditions.get("required_products", [])
+        if required_products:
+            item_ids = [item.get("product_id") or item.get("id") for item in items]
+            if not any(pid in item_ids for pid in required_products):
                 return False
         
-        # Client inactif
-        target_inactive = promo.get("target_inactive_days")
-        if target_inactive and customer:
-            last_order_date = customer.get("last_order_date")
-            if last_order_date:
-                try:
-                    days_inactive = (datetime.now() - datetime.fromisoformat(last_order_date)).days
-                    if days_inactive < target_inactive:
-                        return False
-                except:
-                    pass
+        # Nouveaux clients uniquement
+        if conditions.get("new_customers_only") and customer:
+            order_count = customer.get("order_count", 0)
+            if order_count > 0:
+                return False
+        
+        # Jours de la semaine
+        valid_days = conditions.get("valid_days", [])
+        if valid_days:
+            today = datetime.now().strftime("%A").lower()
+            day_mapping = {
+                "monday": "lundi", "tuesday": "mardi", "wednesday": "mercredi",
+                "thursday": "jeudi", "friday": "vendredi", "saturday": "samedi", "sunday": "dimanche"
+            }
+            if today not in valid_days and day_mapping.get(today) not in valid_days:
+                return False
         
         return True
     
-    def _get_item_category(self, item: Dict) -> str:
-        """Helper pour récupérer la catégorie d'un item"""
-        return item.get("category") or item.get("category_id") or ""
-    
-    def _get_item_id(self, item: Dict) -> str:
-        """Helper pour récupérer l'ID d'un item"""
-        return item.get("product_id") or item.get("id") or ""
-    
-    def calculate_discount(
-        self,
-        promo: Dict,
-        cart: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _calculate_bogo(self, promo: dict, items: List[dict]) -> dict:
         """
-        Calcule la remise pour une promotion donnée
+        Calcule la réduction BOGO (Buy One Get One)
         """
-        items = cart.get("items", [])
-        cart_total = cart.get("total", 0)
-        promo_type = promo.get("type")
+        result = {"discount": 0.0, "details": {"free_items": []}}
         
-        if promo_type == "bogo":
-            return self._calculate_bogo(promo, items)
+        bogo_config = promo.get("bogo_config", {})
+        buy_quantity = bogo_config.get("buy_quantity", 1)
+        get_quantity = bogo_config.get("get_quantity", 1)
+        get_discount_percent = bogo_config.get("get_discount_percent", 100)  # 100 = gratuit
+        target_categories = bogo_config.get("target_categories", [])
+        target_products = bogo_config.get("target_products", [])
         
-        elif promo_type == "percent_item":
-            return self._calculate_percent_item(promo, items)
-        
-        elif promo_type == "percent_category":
-            return self._calculate_percent_category(promo, items)
-        
-        elif promo_type == "fixed_item":
-            return self._calculate_fixed_item(promo, items)
-        
-        elif promo_type == "fixed_category":
-            return self._calculate_fixed_category(promo, items)
-        
-        elif promo_type == "conditional_discount":
-            return self._calculate_conditional(promo, items)
-        
-        elif promo_type == "threshold":
-            return self._calculate_threshold(promo, cart_total)
-        
-        elif promo_type == "shipping_free":
-            return {"discount": cart.get("delivery_fee", 0), "type": "shipping"}
-        
-        elif promo_type in ["happy_hour", "flash", "new_customer", "inactive_customer", "seasonal", "promo_code"]:
-            return self._calculate_percent_cart(promo, cart_total)
-        
-        return {"discount": 0, "type": "unknown"}
-    
-    def _calculate_bogo(self, promo: Dict, items: List[Dict]) -> Dict[str, Any]:
-        """BOGO: Achetez X obtenez Y gratuit"""
-        eligible_cats = promo.get("eligible_categories", [])
-        eligible_prods = promo.get("eligible_products", [])
-        
+        # Filtrer les items éligibles
         eligible_items = []
         for item in items:
-            cat = self._get_item_category(item)
-            prod_id = self._get_item_id(item)
-            
-            if prod_id in eligible_prods or cat in eligible_cats or (not eligible_cats and not eligible_prods):
+            if target_products and item.get("product_id") in target_products:
+                eligible_items.append(item)
+            elif target_categories and item.get("category") in target_categories:
+                eligible_items.append(item)
+            elif not target_products and not target_categories:
                 eligible_items.append(item)
         
-        if not eligible_items:
-            return {"discount": 0, "type": "bogo", "items_free": []}
+        # Trier par prix croissant (le moins cher sera gratuit)
+        eligible_items.sort(key=lambda x: x.get("price", 0))
         
-        cheapest_free = promo.get("bogo_cheapest_free", False)
-        eligible_items.sort(key=lambda x: x.get("price", 0), reverse=not cheapest_free)
+        # Calculer combien d'items gratuits
+        total_eligible = sum(item.get("quantity", 1) for item in eligible_items)
+        sets = total_eligible // (buy_quantity + get_quantity)
         
-        buy_qty = promo.get("bogo_buy_quantity", 1)
-        get_qty = promo.get("bogo_get_quantity", 1)
-        limit_per_customer = promo.get("limit_per_customer")  # Limite d'utilisation
-        
-        total_discount = 0
-        free_items = []
-        total_free_count = 0  # Compteur total d'items gratuits
-        
-        for item in eligible_items:
-            qty = item.get("quantity", 1)
-            sets = qty // (buy_qty + get_qty)
+        if sets > 0:
+            free_count = sets * get_quantity
             
-            if sets > 0:
-                free_qty = sets * get_qty
+            # Calculer la réduction sur les items les moins chers
+            discount = 0.0
+            remaining_free = free_count
+            
+            for item in eligible_items:
+                if remaining_free <= 0:
+                    break
                 
-                # Appliquer la limite par client si définie
-                if limit_per_customer:
-                    remaining_limit = limit_per_customer - total_free_count
-                    if remaining_limit <= 0:
-                        break
-                    free_qty = min(free_qty, remaining_limit)
+                qty = min(item.get("quantity", 1), remaining_free)
+                item_discount = item.get("price", 0) * qty * (get_discount_percent / 100)
+                discount += item_discount
+                remaining_free -= qty
                 
-                total_free_count += free_qty
-                item_price = item.get("price", 0)
-                discount = free_qty * item_price
-                total_discount += discount
-                free_items.append({"name": item.get("name"), "qty": free_qty, "savings": discount})
-        
-        return {"discount": total_discount, "type": "bogo", "items_free": free_items}
-    
-    def _calculate_percent_item(self, promo: Dict, items: List[Dict]) -> Dict[str, Any]:
-        """Remise % sur produit(s) spécifique(s)"""
-        eligible_prods = promo.get("eligible_products", [])
-        discount_value = promo.get("discount_value", 0)
-        total_discount = 0
-        
-        for item in items:
-            prod_id = self._get_item_id(item)
-            if prod_id in eligible_prods:
-                item_total = item.get("price", 0) * item.get("quantity", 1)
-                discount = item_total * (discount_value / 100)
-                total_discount += discount
-        
-        return {"discount": total_discount, "type": "percent_item"}
-    
-    def _calculate_percent_category(self, promo: Dict, items: List[Dict]) -> Dict[str, Any]:
-        """Remise % sur catégorie"""
-        eligible_cats = promo.get("eligible_categories", [])
-        excluded_cats = promo.get("excluded_categories", [])
-        discount_value = promo.get("discount_value", 0)
-        total_discount = 0
-        
-        for item in items:
-            cat = self._get_item_category(item)
-            if cat in eligible_cats and cat not in excluded_cats:
-                item_total = item.get("price", 0) * item.get("quantity", 1)
-                discount = item_total * (discount_value / 100)
-                total_discount += discount
-        
-        return {"discount": total_discount, "type": "percent_category"}
-    
-    def _calculate_fixed_item(self, promo: Dict, items: List[Dict]) -> Dict[str, Any]:
-        """Remise fixe sur produit(s)"""
-        eligible_prods = promo.get("eligible_products", [])
-        discount_value = promo.get("discount_value", 0)
-        total_discount = 0
-        
-        for item in items:
-            prod_id = self._get_item_id(item)
-            if prod_id in eligible_prods:
-                qty = item.get("quantity", 1)
-                item_total = item.get("price", 0) * qty
-                discount = min(discount_value * qty, item_total)
-                total_discount += discount
-        
-        return {"discount": total_discount, "type": "fixed_item"}
-    
-    def _calculate_fixed_category(self, promo: Dict, items: List[Dict]) -> Dict[str, Any]:
-        """Remise fixe sur catégorie"""
-        eligible_cats = promo.get("eligible_categories", [])
-        discount_value = promo.get("discount_value", 0)
-        total_discount = 0
-        
-        for item in items:
-            cat = self._get_item_category(item)
-            if cat in eligible_cats:
-                qty = item.get("quantity", 1)
-                item_total = item.get("price", 0) * qty
-                discount = min(discount_value * qty, item_total)
-                total_discount += discount
-        
-        return {"discount": total_discount, "type": "fixed_category"}
-    
-    def _calculate_conditional(self, promo: Dict, items: List[Dict]) -> Dict[str, Any]:
-        """Remise conditionnelle: 2e à -50%, 3 pour 2, etc."""
-        eligible_cats = promo.get("eligible_categories", [])
-        eligible_prods = promo.get("eligible_products", [])
-        cond_qty = promo.get("conditional_quantity", 2)
-        cond_discount = promo.get("conditional_discount_percent", 50)
-        
-        eligible_items = []
-        for item in items:
-            cat = self._get_item_category(item)
-            prod_id = self._get_item_id(item)
-            
-            if prod_id in eligible_prods or cat in eligible_cats or (not eligible_cats and not eligible_prods):
-                eligible_items.append(item)
-        
-        if not eligible_items:
-            return {"discount": 0, "type": "conditional"}
-        
-        total_discount = 0
-        details = []
-        
-        for item in eligible_items:
-            qty = item.get("quantity", 1)
-            price = item.get("price", 0)
-            
-            if qty >= cond_qty:
-                discounted_items = qty // cond_qty
-                discount_per_item = price * (cond_discount / 100)
-                discount = discounted_items * discount_per_item
-                total_discount += discount
-                details.append({
+                result["details"]["free_items"].append({
                     "name": item.get("name"),
-                    "discounted_qty": discounted_items,
-                    "savings": discount
+                    "quantity": qty,
+                    "discount": item_discount
                 })
-        
-        return {"discount": total_discount, "type": "conditional", "details": details}
-    
-    def _calculate_threshold(self, promo: Dict, cart_total: float) -> Dict[str, Any]:
-        """Seuil de panier atteint"""
-        min_cart = promo.get("min_cart_amount", 0)
-        
-        if cart_total >= min_cart:
-            discount_type = promo.get("discount_type", "percentage")
-            discount_value = promo.get("discount_value", 0)
             
-            if discount_type == "percentage":
-                discount = cart_total * (discount_value / 100)
-            else:
-                discount = min(discount_value, cart_total)
-            
-            return {"discount": discount, "type": "threshold"}
+            result["discount"] = round(discount, 2)
         
-        return {"discount": 0, "type": "threshold", "amount_needed": min_cart - cart_total}
+        return result
     
-    def _calculate_percent_cart(self, promo: Dict, cart_total: float) -> Dict[str, Any]:
-        """Remise % sur panier total"""
-        discount_type = promo.get("discount_type", "percentage")
-        discount_value = promo.get("discount_value", 0)
+    async def _apply_promo_code(self, code: str, items: List[dict], cart_total: float, customer: dict = None) -> dict:
+        """
+        Applique un code promo
+        """
+        result = {"applied": False, "discount": 0.0, "name": None, "promo_id": None}
         
-        if discount_type == "percentage":
-            discount = cart_total * (discount_value / 100)
+        # Rechercher le code promo
+        promo = await self.db.promo_codes.find_one({
+            "code": code.upper(),
+            "is_active": True
+        })
+        
+        if not promo:
+            return result
+        
+        # Vérifier les dates de validité
+        now = datetime.now(timezone.utc)
+        
+        if promo.get("start_date"):
+            start = datetime.fromisoformat(promo["start_date"].replace("Z", "+00:00"))
+            if now < start:
+                return result
+        
+        if promo.get("end_date"):
+            end = datetime.fromisoformat(promo["end_date"].replace("Z", "+00:00"))
+            if now > end:
+                return result
+        
+        # Vérifier le nombre d'utilisations
+        if promo.get("max_uses"):
+            if promo.get("usage_count", 0) >= promo["max_uses"]:
+                return result
+        
+        # Vérifier le montant minimum
+        min_order = promo.get("min_order_amount", 0)
+        if cart_total < min_order:
+            return result
+        
+        # Calculer la réduction
+        if promo.get("discount_type") == "percentage":
+            discount = cart_total * (promo.get("discount_value", 0) / 100)
+            # Appliquer le maximum si défini
+            if promo.get("max_discount"):
+                discount = min(discount, promo["max_discount"])
         else:
-            discount = min(discount_value, cart_total)
+            discount = min(promo.get("discount_value", 0), cart_total)
         
-        return {"discount": discount, "type": "cart_percent"}
+        result["applied"] = True
+        result["discount"] = round(discount, 2)
+        result["name"] = promo.get("name", code)
+        result["promo_id"] = promo.get("id")
+        
+        return result
     
-    async def apply_promotions(
-        self,
-        cart: Dict[str, Any],
-        customer: Optional[Dict[str, Any]] = None,
-        promo_code: Optional[str] = None
-    ) -> Dict[str, Any]:
+    async def _generate_suggestions(self, items: List[dict], cart_total: float, active_promos: List[dict]) -> List[dict]:
         """
-        Applique toutes les promotions applicables au panier
+        Génère des suggestions pour bénéficier de promos
         """
-        applicable_promos = await self.get_applicable_promotions(cart, customer, promo_code)
+        suggestions = []
         
-        applied_promos = []
-        total_discount = 0
-        loyalty_multiplier = 1.0
+        for promo in active_promos:
+            conditions = promo.get("conditions", {})
+            min_order = conditions.get("min_order_amount", 0)
+            
+            # Suggérer si proche du minimum
+            if min_order > 0 and cart_total < min_order:
+                diff = min_order - cart_total
+                if diff <= 10:  # Suggérer si moins de 10€ manquants
+                    suggestions.append({
+                        "type": "add_amount",
+                        "message": f"Ajoute {diff:.2f}€ pour bénéficier de {promo.get('name')}",
+                        "promo_name": promo.get("name"),
+                        "amount_needed": diff
+                    })
         
-        for promo in applicable_promos:
-            promo_type = promo.get("type")
-            
-            # Loyalty multiplier
-            if promo_type == "loyalty_multiplier":
-                mult_value = promo.get("multiplier_value", 1.0)
-                loyalty_multiplier = max(loyalty_multiplier, mult_value)
-                applied_promos.append({
-                    "id": promo.get("id"),
-                    "name": promo.get("name"),
-                    "type": "loyalty_multiplier",
-                    "multiplier": mult_value,
-                    "badge": promo.get("badge_text")
-                })
-                continue
-            
-            # Calculer remise
-            result = self.calculate_discount(promo, cart)
-            discount = result.get("discount", 0)
-            
-            if discount > 0:
-                # Vérifier cumul
-                if not promo.get("stackable", False) and applied_promos:
-                    existing_discount_promos = [p for p in applied_promos if p.get("discount", 0) > 0]
-                    if existing_discount_promos:
-                        continue
-                
-                total_discount += discount
-                applied_promos.append({
-                    "id": promo.get("id"),
-                    "name": promo.get("name"),
-                    "type": promo_type,
-                    "discount": round(discount, 2),
-                    "badge": promo.get("badge_text"),
-                    "ticket_text": promo.get("ticket_text"),
-                    "details": result.get("details") or result.get("items_free")
-                })
+        return suggestions[:3]  # Maximum 3 suggestions
+    
+    async def validate_promo_code(self, code: str, cart_total: float = 0) -> dict:
+        """
+        Valide un code promo sans l'appliquer
+        """
+        promo = await self.db.promo_codes.find_one({
+            "code": code.upper(),
+            "is_active": True
+        })
+        
+        if not promo:
+            return {"valid": False, "error": "Code promo invalide"}
+        
+        # Vérifier les dates
+        now = datetime.now(timezone.utc)
+        
+        if promo.get("end_date"):
+            end = datetime.fromisoformat(promo["end_date"].replace("Z", "+00:00"))
+            if now > end:
+                return {"valid": False, "error": "Ce code promo a expiré"}
+        
+        # Vérifier le minimum
+        min_order = promo.get("min_order_amount", 0)
+        if cart_total > 0 and cart_total < min_order:
+            return {
+                "valid": False,
+                "error": f"Minimum de commande: {min_order}€"
+            }
         
         return {
-            "original_total": cart.get("total", 0),
-            "total_discount": round(total_discount, 2),
-            "final_total": round(max(0, cart.get("total", 0) - total_discount), 2),
-            "applied_promotions": applied_promos,
-            "loyalty_multiplier": loyalty_multiplier
+            "valid": True,
+            "promo": {
+                "id": promo.get("id"),
+                "name": promo.get("name"),
+                "code": promo.get("code"),
+                "discount_type": promo.get("discount_type"),
+                "discount_value": promo.get("discount_value"),
+                "min_order_amount": min_order
+            }
         }

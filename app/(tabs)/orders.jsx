@@ -57,20 +57,35 @@ export default function OrdersScreen() {
   useEffect(() => {
     if (isAuthenticated && user?.email) {
       loadOrders();
+      
+      // Polling automatique toutes les 30 secondes pour les commandes en cours
+      const pollInterval = setInterval(() => {
+        // Vérifier si on a des commandes en cours
+        const hasActiveOrders = orders.some(o => 
+          ['pending', 'confirmed', 'in_preparation', 'ready', 'out_for_delivery'].includes(o.status)
+        );
+        
+        if (hasActiveOrders) {
+          loadOrders(true); // true = silent (pas de loading indicator)
+        }
+      }, 30000); // 30 secondes
+      
+      return () => clearInterval(pollInterval);
     } else {
       setLoading(false);
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, orders.length]);
 
-  const loadOrders = async () => {
+  const loadOrders = async (silent = false) => {
     try {
+      if (!silent) setLoading(true);
       const response = await axios.get(`${API_BASE_URL}/orders/customer/${user.email}`);
       setOrders(response.data.orders || []);
     } catch (error) {
       console.error('Erreur chargement commandes:', error);
-      Alert.alert('Erreur', 'Impossible de charger vos commandes');
+      if (!silent) Alert.alert('Erreur', 'Impossible de charger vos commandes');
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
       setRefreshing(false);
     }
   };
@@ -184,29 +199,74 @@ export default function OrdersScreen() {
 
   const renderOrder = (order) => {
     const statusConfig = getStatusConfig(order.status);
+    const hasActiveStatus = ['pending', 'confirmed', 'in_preparation', 'ready', 'out_for_delivery'].includes(order.status);
+    const freeItems = order.items?.filter(item => item.price === 0 || item.fromReward === true) || [];
+    
     return (
-      <View key={order.order_id} style={styles.orderCard}>
+      <View key={order.order_id || order.id} style={[styles.orderCard, hasActiveStatus && styles.orderCardActive]}>
         <View style={styles.orderHeader}>
           <View>
-            <Text style={styles.orderId}>#{order.order_number || order.order_id.slice(0, 8)}</Text>
+            <Text style={styles.orderId}>#{order.order_number || (order.order_id || order.id)?.slice(0, 8)}</Text>
             <Text style={styles.orderDate}>{formatDate(order.created_at)}</Text>
           </View>
           <View style={[styles.statusBadge, { backgroundColor: statusConfig.color }]}>
             <Text style={styles.statusText}>{statusConfig.label}</Text>
           </View>
         </View>
+        
+        {/* Indicateur de mise à jour en temps réel */}
+        {hasActiveStatus && (
+          <View style={styles.liveIndicator}>
+            <View style={styles.liveDot} />
+            <Text style={styles.liveText}>Mise à jour en temps réel</Text>
+          </View>
+        )}
+        
         <View style={styles.itemsSection}>
-          {order.items.slice(0, 2).map((item, index) => (
-            <Text key={index} style={styles.itemText}>• {item.name} x{item.quantity}</Text>
-          ))}
-          {order.items.length > 2 && (
+          {order.items?.slice(0, 2).map((item, index) => {
+            const isFree = item.price === 0 || item.fromReward === true;
+            return (
+              <Text key={index} style={[styles.itemText, isFree && styles.itemTextFree]}>
+                {isFree ? '🎁 ' : '• '}{item.name} x{item.quantity}
+                {isFree && ' (OFFERT)'}
+              </Text>
+            );
+          })}
+          {order.items?.length > 2 && (
             <Text style={styles.moreItems}>+{order.items.length - 2} autre(s) article(s)</Text>
           )}
         </View>
+        
+        {/* Promos appliquées */}
+        {order.promotions_applied && order.promotions_applied.length > 0 && (
+          <View style={styles.promosSection}>
+            {order.promotions_applied.map((promo, idx) => (
+              <View key={idx} style={styles.promoBadge}>
+                <Text style={styles.promoText}>
+                  🏷️ {promo.promo_name || promo.name} (-{(promo.discount_amount || promo.discount || 0).toFixed(2)}€)
+                </Text>
+              </View>
+            ))}
+          </View>
+        )}
+        
+        {/* Économies totales */}
+        {(order.promotions_discount > 0 || order.cashback_used > 0) && (
+          <View style={styles.savingsSection}>
+            {order.promotions_discount > 0 && (
+              <Text style={styles.savingsText}>💰 Économies promos: -{order.promotions_discount.toFixed(2)}€</Text>
+            )}
+            {order.cashback_used > 0 && (
+              <Text style={styles.savingsText}>💜 Fidélité utilisée: -{order.cashback_used.toFixed(2)}€</Text>
+            )}
+          </View>
+        )}
+        
         <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>Total</Text>
+          <Text style={styles.totalLabel}>Total payé</Text>
           <Text style={styles.totalAmount}>{formatPrice(order.total)}</Text>
         </View>
+        
         {order.cashback_earned > 0 && (
           <View style={styles.cashbackBadge}>
             <Text style={styles.cashbackText}>⭐ +{formatPrice(order.cashback_earned)} de cashback gagné</Text>
@@ -309,14 +369,24 @@ const styles = StyleSheet.create({
   scrollView: { flex: 1 },
   ordersContent: { padding: 16 },
   orderCard: { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 20, marginBottom: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 },
+  orderCardActive: { borderWidth: 2, borderColor: '#10B981' },
   orderHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: '#F3F4F6' },
   orderId: { fontSize: 18, fontWeight: 'bold', color: '#1A1A1A', marginBottom: 4 },
   orderDate: { fontSize: 12, color: '#9CA3AF' },
   statusBadge: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 },
   statusText: { color: '#FFFFFF', fontSize: 12, fontWeight: 'bold' },
+  liveIndicator: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, paddingHorizontal: 12, paddingVertical: 6, backgroundColor: '#ECFDF5', borderRadius: 20, alignSelf: 'flex-start' },
+  liveDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#10B981', marginRight: 8 },
+  liveText: { fontSize: 11, color: '#059669', fontWeight: '600' },
   itemsSection: { marginBottom: 16 },
   itemText: { fontSize: 14, color: '#4B5563', marginBottom: 4 },
+  itemTextFree: { color: '#10B981', fontWeight: '600' },
   moreItems: { fontSize: 12, color: '#9CA3AF', fontStyle: 'italic', marginTop: 4 },
+  promosSection: { marginBottom: 12 },
+  promoBadge: { backgroundColor: '#FEF3C7', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, marginBottom: 4, alignSelf: 'flex-start' },
+  promoText: { fontSize: 12, color: '#92400E', fontWeight: '600' },
+  savingsSection: { backgroundColor: '#F0FDF4', borderRadius: 8, padding: 10, marginBottom: 12 },
+  savingsText: { fontSize: 12, color: '#166534', fontWeight: '500', marginBottom: 2 },
   totalRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   totalLabel: { fontSize: 14, color: '#6B7280' },
   totalAmount: { fontSize: 22, fontWeight: 'bold', color: '#C62828' },

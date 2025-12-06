@@ -243,7 +243,7 @@ async def update_order_payment(
                 new_loyalty_points = result["new_balance"]
                 
                 # Envoyer la notification
-                from routes.notifications import send_loyalty_credited_notification
+                from services.notification_service import send_loyalty_credited_notification
                 await send_loyalty_credited_notification(
                     user_id=customer.get("id"),
                     order_id=order_id,

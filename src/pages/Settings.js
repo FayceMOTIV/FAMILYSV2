@@ -3,7 +3,7 @@ import { Header } from '../components/Header';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/Card';
 import { Button } from '../components/Button';
 import { Input, Label, Select, Textarea } from '../components/Input';
-import { Save, Clock, Store, Palette, CreditCard, Percent, Share2, Calendar, Link as LinkIcon, X, Lock, Smartphone, Image, Upload, Sparkles } from 'lucide-react';
+import { Save, Clock, Store, Palette, CreditCard, Percent, Share2, Calendar, Link as LinkIcon, X, Lock, Smartphone, Image, Upload } from 'lucide-react';
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://fastfood-fixes.preview.emergentagent.com';
@@ -53,6 +53,7 @@ export const Settings = () => {
         enable_delivery: true,
         enable_takeaway: true,
         enable_onsite: true,
+        enable_reservations: false,
         loyalty_percentage: 5.0,
         social_media: {},
         service_links: {},
@@ -199,7 +200,7 @@ export const Settings = () => {
             <div>
               <Label className="mb-2 block">🖼️ Image de fond (Header)</Label>
               <p className="text-xs text-gray-500 mb-3">
-                Cette image s'affiche en haut de la page d'accueil avec un dégradé. Format recommandé : <strong>1200x600px</strong>, JPG (max 300Ko).
+                Cette image s'affiche en haut de la page d'accueil avec un dégradé. Format recommandé : 800x600px, JPG/PNG.
               </p>
               
               <div className="flex gap-4 items-start">
@@ -242,7 +243,7 @@ export const Settings = () => {
                             const formData = new FormData();
                             formData.append('file', file);
                             try {
-                              const res = await axios.post(`${API_URL}/api/v1/admin/upload/image`, formData, {
+                              const res = await axios.post(`${API_URL}/upload`, formData, {
                                 headers: { 'Content-Type': 'multipart/form-data' }
                               });
                               setSettings({ ...settings, home_hero_image: res.data.url });
@@ -312,49 +313,6 @@ export const Settings = () => {
               <div className="bg-amber-50 px-4 py-2 text-center">
                 <span className="text-xs text-gray-500">👆 Aperçu de la page d'accueil</span>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Assistant IA */}
-        <Card>
-          <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50">
-            <CardTitle className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5" />
-              🤖 Assistant IA
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="openai_api_key">🔑 Clé API OpenAI</Label>
-              <p className="text-xs text-gray-500 mb-2">
-                Nécessaire pour utiliser l'assistant IA (analyse des ventes, suggestions promos, chat).
-                Obtenez votre clé sur <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-indigo-600 underline">platform.openai.com</a>
-              </p>
-              <div className="relative">
-                <Input
-                  id="openai_api_key"
-                  type="password"
-                  value={settings.openai_api_key || ''}
-                  onChange={(e) => setSettings({ ...settings, openai_api_key: e.target.value })}
-                  placeholder="sk-..."
-                  className="font-mono"
-                />
-              </div>
-              {settings.openai_api_key && (
-                <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
-                  ✅ Clé configurée ({settings.openai_api_key.slice(0, 7)}...{settings.openai_api_key.slice(-4)})
-                </p>
-              )}
-            </div>
-
-            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-              <p className="text-sm font-medium text-indigo-800 mb-2">💡 Fonctionnalités IA disponibles :</p>
-              <ul className="text-xs text-indigo-700 space-y-1">
-                <li>• <strong>Chat IA</strong> - Posez des questions sur votre activité</li>
-                <li>• <strong>Analyse des ventes</strong> - Insights et recommandations automatiques</li>
-                <li>• <strong>Suggestions promos</strong> - L'IA propose des promotions optimales</li>
-              </ul>
             </div>
           </CardContent>
         </Card>
@@ -727,6 +685,15 @@ export const Settings = () => {
                   />
                   <span className="text-sm font-medium">🍽️ Sur place</span>
                 </label>
+                <label className="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                  <input
+                    type="checkbox"
+                    checked={settings.enable_reservations}
+                    onChange={(e) => setSettings({ ...settings, enable_reservations: e.target.checked })}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm font-medium">📅 Réservations</span>
+                </label>
               </div>
             </div>
           </CardContent>
@@ -821,7 +788,7 @@ export const Settings = () => {
             <p className="text-sm text-gray-600 mb-4">
               Définissez des codes PIN à 4 chiffres pour sécuriser l'accès aux différents modes du back-office
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <Label htmlFor="pin_orders_mode">🍽️ Mode Commande</Label>
                 <Input
@@ -861,6 +828,26 @@ export const Settings = () => {
                   className="text-center text-2xl tracking-widest font-bold"
                 />
                 <p className="text-xs text-gray-500 mt-1">Accès : Gestion des livraisons</p>
+              </div>
+              <div>
+                <Label htmlFor="pin_reservation_mode">📅 Mode Réservation</Label>
+                <Input
+                  id="pin_reservation_mode"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]{4}"
+                  maxLength="4"
+                  value={settings.pin_reservation_mode || ''}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^0-9]/g, '');
+                    if (value.length <= 4) {
+                      setSettings({ ...settings, pin_reservation_mode: value });
+                    }
+                  }}
+                  placeholder="••••"
+                  className="text-center text-2xl tracking-widest font-bold"
+                />
+                <p className="text-xs text-gray-500 mt-1">Accès : Gestion des réservations</p>
               </div>
             </div>
             <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mt-4">
