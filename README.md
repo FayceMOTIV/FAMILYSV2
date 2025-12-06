@@ -1,311 +1,240 @@
-# Family's Mobile App - Version Premium
+# 🍔 FAMILYS-CLEAN
 
-## 🎯 Overview
-Application mobile premium pour Family's Restaurant, développée avec Expo Router v3, React Native, et TailwindCSS.
+Application mobile de commande pour **Le Family's** - Restaurant à Bourg-en-Bresse.
 
-## 📱 Tech Stack
-- **Framework**: React Native 0.74 + Expo 51
-- **Navigation**: Expo Router v3 (file-based routing)
-- **Styling**: TailwindCSS v3 + Nativewind v4
-- **State Management**: Zustand
-- **Data Fetching**: Axios
-- **UI Components**: Custom Design System
-- **Icons**: Lucide React Native
+## 📍 Infos Restaurant
 
-## 🏗️ Architecture
+| Info | Valeur |
+|------|--------|
+| Nom | Le Family's |
+| Adresse | 59 rue du 14 Juillet 1789, 01000 Bourg-en-Bresse |
+| Téléphone | 04 74 52 60 82 |
+
+---
+
+## 🏗️ Architecture du Projet
 
 ```
-/app/mobile-new/
-├── app/                    # Expo Router pages
-│   ├── (tabs)/            # Tab navigation
-│   │   ├── index.jsx      # Home page
-│   │   ├── cart.jsx       # Shopping cart
-│   │   ├── orders.jsx     # Order history
-│   │   ├── profile.jsx    # User profile
-│   │   └── surprise.jsx   # Surprise du Jour
-│   ├── auth/              # Authentication
-│   │   ├── login.jsx
-│   │   └── register.jsx
-│   ├── product/[id].jsx   # Product detail
-│   ├── category/[name].jsx # Category products
-│   ├── orders/[id].jsx    # Order detail
-│   └── loyalty.jsx        # Loyalty card
-├── components/            # Reusable components
-│   ├── Button.jsx
-│   ├── Input.jsx
-│   ├── Card.jsx
-│   ├── Badge.jsx
-│   ├── Loader.jsx
-│   ├── ProductCard.jsx
-│   ├── CategoryCard.jsx
-│   ├── OrderCard.jsx
-│   └── SkeletonLoader.jsx
-├── services/              # API services
-│   ├── api.js            # Axios instance
-│   ├── auth.js
-│   ├── products.js
-│   ├── orders.js
-│   ├── loyalty.js
-│   └── surprise.js
-├── stores/                # Zustand stores
-│   ├── authStore.js
-│   └── cartStore.js
-└── constants/             # App constants
-    ├── api.js            # API URLs & endpoints
-    └── theme.js          # Colors & styles
+FAMILYS-CLEAN/
+├── app/                          # 📱 App Mobile (Expo Router V3)
+│   ├── (tabs)/                   # Navigation principale
+│   │   ├── index.tsx             # Home (hero image + catégories)
+│   │   ├── cart.jsx              # Panier + checkout
+│   │   ├── orders.jsx            # Historique commandes (polling 30s)
+│   │   └── account.jsx           # Compte client
+│   ├── surprise-du-jour/         # 🎰 Jeu fidélité quotidien
+│   │   ├── index.tsx             # Page du jeu
+│   │   └── result.tsx            # Résultat (gain/perdu)
+│   ├── order/                    # Commander
+│   ├── product/[id].tsx          # Fiche produit dynamique
+│   └── order-confirmation.jsx    # Confirmation commande
+│
+├── backend/                      # ⚙️ API FastAPI
+│   ├── server.py                 # Point d'entrée uvicorn
+│   ├── database.py               # Connexion MongoDB
+│   ├── models/                   # Modèles Pydantic
+│   │   ├── order.py
+│   │   ├── product.py
+│   │   ├── promotion.py
+│   │   ├── customer.py
+│   │   ├── surprise.py
+│   │   └── settings.py
+│   ├── routes/
+│   │   ├── app/                  # Routes app mobile
+│   │   │   ├── products.py
+│   │   │   ├── categories.py
+│   │   │   ├── cart.py
+│   │   │   ├── promotions.py
+│   │   │   └── app_settings.py
+│   │   ├── admin/                # Routes backoffice
+│   │   │   ├── orders.py
+│   │   │   ├── products.py
+│   │   │   ├── promotions.py
+│   │   │   ├── customers.py
+│   │   │   ├── ai.py
+│   │   │   └── notifications.py
+│   │   ├── orders.py
+│   │   ├── customers.py
+│   │   ├── cashback.py
+│   │   ├── surprise.py
+│   │   └── notifications.py
+│   └── services/                 # Services métier
+│       ├── notification_service.py
+│       ├── cashback_service.py
+│       ├── promotion_engine.py
+│       └── ai_service.py
+│
+├── admin/                        # 🖥️ Backoffice React
+│   ├── src/
+│   │   ├── pages/
+│   │   │   ├── Dashboard.js
+│   │   │   ├── OrdersManagement.js
+│   │   │   ├── ProductsManagement.js
+│   │   │   ├── PromotionsManagement.js
+│   │   │   ├── CustomersManagement.js
+│   │   │   ├── Settings.js
+│   │   │   └── AIMarketing.js
+│   │   └── components/
+│   └── package.json
+│
+└── assets/                       # Images, fonts
 ```
 
-## 🎨 Design System
+---
 
-### Colors
-- **Primary Red**: #C62828 (Family's Red)
-- **Secondary Gold**: #FFD54F
-- **Dark**: #1a1a1a
-- **Light**: #f5f5f5
+## 🛠️ Stack Technique
 
-### Components
-- Button (variants: primary, secondary, outline, ghost)
-- Input (with label & error support)
-- Card (with shadow)
-- Badge (status indicators)
-- Skeleton Loaders
+### App Mobile
+| Techno | Version |
+|--------|---------|
+| Expo SDK | ~52 |
+| Expo Router | ~4 |
+| React Native | 0.76+ |
+| NativeWind | 4.x |
+| Axios | latest |
+| Expo Notifications | latest |
 
-## 🔑 Features
+### Backend
+| Techno | Version |
+|--------|---------|
+| Python | 3.11+ |
+| FastAPI | latest |
+| Uvicorn | latest |
+| Motor | latest |
+| MongoDB | 6.x |
+| Pydantic | 2.x |
 
-### ✅ Implemented
+### Backoffice
+| Techno | Version |
+|--------|---------|
+| React | 18.x |
+| Tailwind CSS | 3.x |
+| Craco | latest |
 
-1. **Authentication**
-   - Register new account
-   - Login with email/password
-   - JWT token management
-   - Auto-login on app start
+---
 
-2. **Home Page**
-   - Welcome banner
-   - Promotional sliders
-   - Category navigation
-   - Featured products
-   - Surprise du Jour CTA
+## 🚀 Démarrage Rapide
 
-3. **Products & Categories**
-   - Browse by category
-   - Product search
-   - Product detail page
-   - Add to cart
-
-4. **Shopping Cart**
-   - Add/remove items
-   - Quantity management
-   - Order total calculation
-   - Checkout flow
-
-5. **Order Management**
-   - Place orders
-   - Order history
-   - Order tracking
-   - Order details
-
-6. **Loyalty Card**
-   - Points balance
-   - Tier system (Basic, Bronze, Silver, Gold)
-   - Points history
-   - QR code (for in-store scanning)
-   - Progress to next tier
-
-7. **Surprise du Jour**
-   - Daily game
-   - Win rewards (points, discounts, free products)
-   - Claim rewards
-   - Rewards history
-
-8. **User Profile**
-   - View profile info
-   - Stats (orders, spending)
-   - Logout
-
-## 🌐 API Endpoints
-
-Base URL: `https://api-overhaul-2.preview.emergentagent.com/api/v1`
-
-### Auth
-- POST `/auth/register` - Register new user
-- POST `/auth/login` - Login
-- GET `/auth/me` - Get current user
-
-### Products
-- GET `/products` - List products
-- GET `/products/{id}` - Product detail
-- GET `/categories` - List categories
-- GET `/featured` - Featured products
-- GET `/promos` - Active promotions
-
-### Orders
-- POST `/orders` - Create order
-- GET `/orders` - Order history
-- GET `/orders/{id}` - Order detail
-
-### Loyalty
-- GET `/loyalty` - Get loyalty card
-- GET `/loyalty/history` - Points history
-
-### Surprise du Jour
-- GET `/surprise/status` - Check play status
-- POST `/surprise/play` - Play the game
-- POST `/surprise/claim/{id}` - Claim reward
-- GET `/surprise/rewards` - Rewards history
-
-### Profile
-- GET `/profile` - Get profile
-- PUT `/profile` - Update profile
-- POST `/profile/change-password` - Change password
-
-## 🔐 Authentication Flow
-
-1. User enters credentials (email/password)
-2. App sends POST to `/auth/login`
-3. Backend validates and returns JWT token
-4. Token stored in AsyncStorage
-5. Token added to all subsequent API requests via Axios interceptor
-6. On app restart, token auto-loaded from storage
-
-## 🛒 Shopping Flow
-
-1. Browse products by category or featured
-2. Click product to view details
-3. Add to cart with quantity
-4. View cart and adjust quantities
-5. Enter delivery address
-6. Place order
-7. Earn loyalty points
-8. View order in history
-
-## 🎁 Loyalty System
-
-### Tiers
-- **Basic**: 0-499 points (0% discount)
-- **Bronze**: 500-1,999 points (5% discount)
-- **Silver**: 2,000-4,999 points (10% discount)
-- **Gold**: 5,000+ points (15% discount)
-
-### Points
-- Earn 10 points per € spent
-- 100 points = 1€ discount
-- Can use up to 50% of order value
-
-## 🎲 Surprise du Jour
-
-- Play once per day
-- Win random rewards:
-  - Bonus points
-  - Percentage discounts
-  - Free products
-- Rewards expire after 7 days
-- Must claim rewards to use them
-
-## 📦 Installation & Setup
-
+### 1. Backend
 ```bash
-# Install dependencies
-cd /app/mobile-new
-yarn install
-
-# Start development server
-yarn start
-
-# Run on specific platform
-yarn android  # Android
-yarn ios      # iOS
-yarn web      # Web browser
+cd backend
+pip install -r requirements.txt
+uvicorn server:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-## 🧪 Testing
-
-### API Testing
-All backend endpoints tested and working:
-- ✅ Authentication
-- ✅ Products & Categories
-- ✅ Orders
-- ✅ Loyalty
-- ✅ Surprise du Jour
-- ✅ Profile
-
-### Test Credentials
-```
-Email: test@familys.fr
-Password: test1234
-```
-
-## 🚀 Deployment
-
-### Requirements
-- Expo account
-- EAS CLI installed
-- Bundle ID: `com.fayce.familys.newapp`
-
-### Build Commands
+### 2. Backoffice
 ```bash
-# Install EAS CLI
-npm install -g eas-cli
-
-# Login to Expo
-eas login
-
-# Configure build
-eas build:configure
-
-# Build for iOS
-eas build --platform ios
-
-# Build for Android
-eas build --platform android
+cd admin
+npm install
+npm run dev
+# → http://localhost:3001
 ```
 
-## 📝 Notes
+### 3. App Mobile
+```bash
+npm install
+npx expo start
+```
 
-- Old mobile app in `/app/mobile` is deprecated
-- All development should be in `/app/mobile-new`
-- Backend API is stable and fully functional
-- Test data includes 10 products across 4 categories
-- Surprise du Jour rewards are configured and active
+---
 
-## 🎯 Next Steps (Future Enhancements)
+## 📱 Fonctionnalités Implémentées
 
-1. **Push Notifications**
-   - Order status updates
-   - New promotions
-   - Daily surprise reminder
+### ✅ Commande
+- [x] Catégories de produits
+- [x] Produits avec options dynamiques (récursives)
+- [x] Panier avec calcul temps réel
+- [x] Modes : À emporter / Sur place / Livraison
+- [x] Créneaux horaires dynamiques
+- [x] Confirmation de commande
 
-2. **Payment Integration**
-   - Credit card payments
-   - Apple Pay / Google Pay
+### ✅ Promotions (14 types)
+- [x] Pourcentage (-10%, -20%, etc.)
+- [x] Montant fixe (-5€)
+- [x] BOGO (1 acheté = 1 offert)
+- [x] Produit gratuit
+- [x] Livraison gratuite
+- [x] Happy Hour
+- [x] Menu du jour
+- [x] Code promo
+- [x] Et plus...
 
-3. **Social Features**
-   - Share orders
-   - Invite friends
-   - Referral program
+### ✅ Fidélité
+- [x] Cashback automatique (X% configurable)
+- [x] Utilisation du solde au checkout
+- [x] Historique des transactions
 
-4. **Advanced Features**
-   - Order scheduling
-   - Favorites list
-   - Allergen filters
-   - Multi-language support
+### ✅ Surprise du Jour
+- [x] Jeu quotidien (1 tentative/jour)
+- [x] 25% chance de "pas de chance"
+- [x] Récompenses : produit gratuit, réduction, cashback
+- [x] Expiration 3 jours
+- [x] Coût estimé : 400-600€/mois
 
-## 💡 Development Tips
+### ✅ Notifications
+- [x] Push notifications (Expo)
+- [x] Changement de statut commande
+- [x] Fidélité créditée
 
-- Use `expo start --clear` to clear cache if issues occur
-- Test on real devices for best performance
-- Check logs with `npx react-native log-android` or `log-ios`
-- API errors are logged to console
-- Use React DevTools for debugging
+### ✅ Backoffice
+- [x] Gestion commandes + impression ticket 80mm
+- [x] Gestion produits/catégories/options
+- [x] Gestion promotions
+- [x] Gestion clients
+- [x] Paramètres restaurant
+- [x] IA Marketing (assistant + génération)
 
-## 🐛 Known Issues
+### 🔜 À faire
+- [ ] Paiement Stripe (CB + Apple Pay)
+- [ ] Livraison avec suivi GPS
+- [ ] Programme parrainage
 
-None currently. All major features tested and working.
+---
 
-## 📞 Support
+## 🍎 Apple / Expo
 
-For issues or questions:
-- Check console logs first
-- Verify API connectivity
-- Test with provided credentials
-- Review this README for guidance
+| Info | Valeur |
+|------|--------|
+| Bundle ID | `com.fayce.familysnew` |
+| Team ID | `5ZR87TPM89` |
+| Provider | 2k (ARA) |
+| Apple ID | lefamilys01@gmail.com |
+| Compte Expo | @fayce |
+
+### Build & Deploy
+```bash
+# Build preview (Ad Hoc)
+eas build --platform ios --profile preview
+
+# Build production
+eas build --platform ios --profile production
+
+# Soumettre à TestFlight
+eas submit --platform ios
+```
+
+---
+
+## 🔗 URLs
+
+| Environnement | URL |
+|---------------|-----|
+| Backend local | http://192.168.10.102:8000 |
+| Backoffice local | http://localhost:3001 |
+| API Docs | http://localhost:8000/docs |
+
+---
+
+## 📁 GitHub
+
+**Repository** : https://github.com/FayceMOTIV/FAMILYSV2
+
+---
+
+## 👤 Auteur
+
+**Faiçal** - Entrepreneur, propriétaire du Family's et développeur de l'app.
+
+Autres projets :
+- AppySolution.fr (apps white-label pour restaurants)
+- Zwin (plateforme halal)
