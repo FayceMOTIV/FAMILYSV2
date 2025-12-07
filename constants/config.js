@@ -1,6 +1,6 @@
 // Configuration API unifiée
-export const API_BASE_URL = 'http://192.168.1.185:8000/api/v1';
-export const API_URL = 'http://192.168.1.185:8000/api/v1';
+export const API_BASE_URL = 'http://192.168.1.185:8000/api/v1/fb';
+export const API_URL = 'http://192.168.1.185:8000/api/v1/fb';
 
 export const APP_NAME = "Family's";
 export const APP_VERSION = '1.0.0';
