@@ -1,125 +1,150 @@
 # FAMILYS-CLEAN - Contexte Claude
 
-## 🎯 Projet
-Application mobile restaurant "Le Family's" (Bourg-en-Bresse) avec backoffice admin.
+## Projet
+- **App**: React Native/Expo (app mobile restaurant)
+- **Backend**: FastAPI (Python) - **100% Firebase**
+- **Backoffice**: React (admin panel)
+- **Firebase Project**: family-2026 (eur3)
+- **Bundle ID**: com.fayce.familysnew
+- **GitHub**: https://github.com/FayceMOTIV/FAMILYSV2
 
-## 🏗️ Architecture
+## Serveurs
+- Backend: `http://localhost:8000` (uvicorn server:app --host 0.0.0.0 --port 8000 --reload)
+- Backoffice: `http://localhost:3002` (npm run dev)
+- IP locale: 192.168.1.185
 
-### Stack Technique
-- **App Mobile**: React Native / Expo (TypeScript)
-- **Backend**: FastAPI (Python) avec Firebase
-- **Backoffice**: React.js
-- **Base de données**: Firebase Firestore (migré depuis MongoDB)
-- **Storage**: Firebase Storage pour images
-- **Bundle ID**: `com.fayce.familysnew`
+## Authentification Backoffice (PIN)
+| Mode | PIN par défaut | URL |
+|------|----------------|-----|
+| Back Office | 1234 | /login |
+| Mode Commandes | 1111 | /orders-mode-login |
+| Mode Livraison | 2222 | /delivery-mode-login |
 
-### Structure des dossiers
+- Page sélection: `/select-mode`
+- PIN configurables dans Paramètres > Codes PIN
+- Session 24h (admin), 8h (modes)
+
+## Routes Firebase (/api/v1/fb/)
+- `/categories` - CRUD + reorder + sync produits
+- `/products` - CRUD + toggleStock + out_of_stock_until
+- `/options` - CRUD + reorder (récursif)
+- `/choice-library` - Bibliothèque d'options
+- `/promotions` - 14 types de promos
+- `/orders` - CRUD + updateStatus + notifications auto
+- `/customers` - CRUD + loyalty + export
+- `/settings` - Config restaurant + PIN
+- `/popups` - Gestion popups
+- `/upload` - Images Firebase Storage
+- `/surprise` - Jeu Surprise du Jour
+- `/dashboard` - Stats + top produits
+- `/notifications` - Push notifications
+- `/ai` - Marketing IA (OpenAI)
+- `/app-settings` - Config app mobile (is_paused, time-slots)
+
+## Fonctionnalités Mode Commandes
+- Liste commandes actives (refresh 10s)
+- Changement statut → notification auto client
+- Gestion ruptures:
+  - Rupture 24H (reset à minuit)
+  - Rupture indéfinie
+- Pause commandes (bloque app mobile)
+- Recherche produits
+
+## Fonctionnalités Mode Livraison
+- Commandes type "delivery" uniquement
+- Statuts: ready → delivering → delivered
+- Infos client: nom, téléphone (clic pour appeler)
+- Adresse avec lien Google Maps
+- Gestion paiement (espèces/CB)
+- Interface responsive (mobile-first)
+
+## Notifications Automatiques (FCM)
+Déclenchées au changement de statut:
+- `new`: "Merci ! 🙏"
+- `in_preparation`: "C'est parti ! 👨‍🍳"
+- `ready`: "C'est prêt ! 🎉"
+- `delivering`: "En route ! 🛵" (si livraison activée)
+- `delivered`: "Bon appétit ! 😋" (si livraison activée)
+- `completed`: "À très vite ! 💚"
+- `cancelled`: "Commande annulée 😔"
+
+## Pause Commandes
+- Activable dans Mode Commandes ou Paramètres
+- `is_paused: true` → App mobile affiche banner
+- `no_more_orders_today: true` → "Plus de commandes aujourd'hui"
+- Route: GET /api/v1/fb/app-settings/app-config
+
+## Structure Fichiers Clés
 ```
-FAMILYS-CLEAN/
-├── app/                    # App mobile Expo
-│   ├── (tabs)/            # Pages principales (index.tsx, menu.jsx, cart.jsx, etc.)
-│   ├── product/[id].tsx   # Page détail produit
-│   └── surprise-du-jour/  # Module jeu
-├── admin/                  # Backoffice React
-│   ├── src/pages/         # Pages admin
-│   └── src/services/      # Services API
-├── backend/               # API FastAPI
-│   ├── routes/firebase/   # Routes Firebase (fb_*)
-│   ├── routes/admin/      # Routes admin
-│   └── firebase_config.py # Config Firebase
-└── stores/                # Zustand stores
+backend/
+  server.py                 # Point d'entrée FastAPI
+  firebase_config.py        # Config Firebase Admin SDK
+  routes/firebase/          # Toutes les routes Firebase
+    orders.py              # + notifications auto
+    products.py            # + out_of_stock_until
+    settings.py            # + admin_pin, pin_orders_mode, pin_delivery_mode
+    app_settings.py        # Config app mobile
+
+admin/
+  src/
+    pages/
+      ModeSelector.js      # Sélection des modes
+      Login.js             # PIN admin
+      ModeLogin.js         # PIN modes
+      OrdersMode.js        # Gestion commandes + ruptures
+      DeliveryMode.js      # Gestion livraisons
+      Settings.js          # Config + PIN
+    contexts/
+      AuthContext.js       # Gestion session PIN
+    services/
+      api.js               # Toutes les API Firebase
+
+app/
+  (tabs)/
+    cart.jsx               # Panier + gestion pause
 ```
 
-## 🔥 Firebase - Routes API
+## Collections Firebase
+- `categories` - Catégories menu
+- `products` - Produits (avec is_out_of_stock, out_of_stock_until)
+- `options` - Options produits
+- `choice_library` - Bibliothèque choix
+- `promotions` - Promotions
+- `orders` - Commandes
+- `customers` - Clients
+- `settings/restaurant` - Config globale
+- `popups` - Popups marketing
+- `admin_notifications` - Notifs marketing
+- `customer_notifications` - Notifs clients
+- `surprise_config` - Config jeu
+- `surprise_rewards` - Récompenses jeu
 
-### Préfixe: `/api/v1/fb/`
+## Variables Importantes
+- `API_BASE_URL` (app): depuis constants/config.js
+- `API_URL` (admin): process.env.REACT_APP_BACKEND_URL
+- Firebase Storage: gs://family-2026.firebasestorage.app
 
-| Route | Description |
-|-------|-------------|
-| `/fb/products` | Produits (CRUD) |
-| `/fb/categories` | Catégories |
-| `/fb/settings` | Paramètres restaurant |
-| `/fb/orders` | Commandes |
-| `/fb/customers` | Clients |
-| `/fb/promotions` | Promotions |
-| `/fb/popups` | Popups marketing |
-| `/fb/upload/branding` | Upload images |
-| `/fb/surprise/*` | Module Surprise du Jour |
-
-## 🎰 Module Surprise du Jour (Simplifié)
-
-### 3 onglets seulement:
-1. **Dashboard** - Stats + Coût mensuel
-2. **Configuration** - Probabilités + Paramètres (fusionnés)
-3. **Récompenses** - Liste des gains clients
-
-### Types de récompenses:
-- `discount_percent` - Réduction % sur panier
-- `discount_amount` - Réduction € fixe
-- `cashback` - Crédit fidélité
-- `product` - Produit offert (lié au menu)
-- `menu` - Menu offert (lié au menu)
-
-### Routes backend:
-- `GET /api/v1/fb/surprise/stats` - Statistiques
-- `GET/POST/PUT/DELETE /api/v1/fb/surprise/config` - Configuration récompenses
-- `GET/PUT /api/v1/fb/surprise/settings` - Paramètres module
-- `GET /api/v1/fb/surprise/rewards` - Liste récompenses
-- `POST /api/v1/fb/surprise/play` - Jouer (app mobile)
-- `GET /api/v1/fb/surprise/status` - Statut joueur
-
-## 🛒 Système de Promotions
-
-### 14 types supportés:
-- BOGO (Buy One Get One)
-- Réductions pourcentage/montant
-- Happy Hour
-- Offres conditionnelles
-- Threshold discounts
-- etc.
-
-### Fichiers clés:
-- `admin/src/components/PromotionWizard.js`
-- `app/(tabs)/cart.jsx` - Application des promos
-- `backend/routes/firebase/promotions.py`
-
-## 📱 App Mobile - Pages principales
-
-| Fichier | Description |
-|---------|-------------|
-| `(tabs)/index.tsx` | Accueil avec image hero Firebase |
-| `(tabs)/menu.jsx` | Menu avec catégories |
-| `(tabs)/cart.jsx` | Panier avec promos |
-| `product/[id].tsx` | Détail produit + options |
-| `surprise-du-jour/` | Jeu roue |
-
-## ⚙️ Commandes de démarrage
+## Commandes Utiles
 ```bash
 # Backend
 cd ~/Desktop/FAMILYS-CLEAN/backend
-python3 -m uvicorn server:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn server:app --host 0.0.0.0 --port 8000 --reload
 
 # Backoffice
 cd ~/Desktop/FAMILYS-CLEAN/admin
-npm start  # Port 3003
+npm run dev
 
-# App Mobile (dev)
-cd ~/Desktop/FAMILYS-CLEAN
-npx expo start
+# Tester routes
+curl http://localhost:8000/api/v1/fb/settings
+curl http://localhost:8000/api/v1/fb/app-settings/app-config
+
+# Set PIN
+curl -X PUT http://localhost:8000/api/v1/fb/settings \
+  -H "Content-Type: application/json" \
+  -d '{"admin_pin": "1234", "pin_orders_mode": "1111", "pin_delivery_mode": "2222"}'
 ```
 
-## 📋 TODO Restants
-
-1. [ ] Créer le menu complet (catégories + produits)
-2. [ ] Configurer les récompenses Surprise du Jour
-3. [ ] Tester le jeu sur l'app mobile
-4. [ ] Configurer Stripe (paiement CB + Apple Pay)
-5. [ ] Build EAS pour TestFlight
-6. [ ] Tester cycle complet commande
-
-## 🔧 Notes techniques
-
-- **Settings Firebase**: Collection `settings`, document `restaurant`
-- **Image hero**: Champ `hero_image_url` dans settings
-- **Produits**: Supportent options dynamiques avec sous-options
-- **Panier**: Applique automatiquement les promos actives
+## TODO
+- [ ] Configurer Stripe (CB + Apple Pay)
+- [ ] TestFlight deployment
+- [ ] Tests complets promotions
