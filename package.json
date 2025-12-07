@@ -39,7 +39,9 @@
   },
   "scripts": {
     "start": "BROWSER=none PORT=3001 craco start",
-    "build": "craco build"
+    "build": "craco build",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "devDependencies": {
     "@craco/craco": "^7.1.0",

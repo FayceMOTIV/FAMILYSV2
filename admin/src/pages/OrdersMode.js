@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { ordersAPI, settingsAPI, productsAPI } from '../services/api';
+import useNotificationSound from '../hooks/useNotificationSound';
 import { 
   Package, Clock, CheckCircle, XCircle, 
   Pause, Play, RefreshCw, LogOut, ChefHat,
@@ -11,6 +12,8 @@ import {
 
 export const OrdersMode = () => {
   const navigate = useNavigate();
+  const { playNotificationSound } = useNotificationSound();
+  const previousOrdersCount = useRef(0);
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,7 +44,16 @@ export const OrdersMode = () => {
         settingsAPI.get(),
         productsAPI.getAll()
       ]);
-      setOrders(ordersRes.data?.orders || []);
+      
+      const newOrders = ordersRes.data?.orders || [];
+      
+      // Jouer un son si nouvelle commande
+      if (previousOrdersCount.current > 0 && newOrders.length > previousOrdersCount.current) {
+        playNotificationSound();
+      }
+      previousOrdersCount.current = newOrders.length;
+      
+      setOrders(newOrders);
       const s = settingsRes.data?.settings || {};
       setSettings(s);
       setIsPaused(s.is_paused || false);
