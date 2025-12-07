@@ -40,6 +40,7 @@ export const CategoryModal = ({ isOpen, onClose, category, onSuccess }) => {
     setLoading(true);
 
     try {
+      console.log("formData avant submit:", formData);
       const payload = {
         ...formData,
         order: parseInt(formData.order),

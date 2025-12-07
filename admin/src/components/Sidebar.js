@@ -24,46 +24,44 @@ import { cn } from '../utils/cn';
 
 const menuItems = [
   // 1. Tableau de bord - Vue d'ensemble
-  { name: 'Tableau de bord', path: '/', icon: LayoutDashboard, exact: true },
+  { name: 'Tableau de bord', path: '/admin', icon: LayoutDashboard, exact: true },
   
   // 2. Commandes - Le plus utilisé quotidiennement
-  { name: 'Commandes', path: '/orders', icon: ShoppingCart },
+  { name: 'Commandes', path: '/admin/orders', icon: ShoppingCart },
   
   // 3. Gestion du Menu - Produits, catégories, stock
-  { name: 'Gestion du Menu', path: '/menu', icon: Menu, highlight: true },
+  { name: 'Gestion du Menu', path: '/admin/menu', icon: Menu, highlight: true },
   
   // 4. Promotions V2 - Nouveau moteur de promotions
-  { name: '🎯 Promotions', path: '/promotions', icon: Tag, highlight: true },
+  { name: '🎯 Promotions', path: '/admin/promotions', icon: Tag, highlight: true },
   
   // 5. Notifications - Communication clients
-  { name: 'Notifications', path: '/notifications', icon: Bell },
+  { name: 'Notifications', path: '/admin/notifications', icon: Bell },
   
   // 6. Chiffre d'Affaires - Analytics
-  { name: 'Chiffre d\'Affaires', path: '/revenue', icon: DollarSign },
+  { name: 'Chiffre d\'Affaires', path: '/admin/revenue', icon: DollarSign },
   
   // 7. IA Marketing - Campagnes intelligentes
-  { name: '🤖 IA Marketing', path: '/ai-marketing', icon: Zap, section: true },
-  { name: 'Campagnes proposées', path: '/ai-marketing/campaigns', icon: Zap, indent: true },
-  { name: 'Historique & Résultats', path: '/ai-marketing/history', icon: History, indent: true },
-  { name: 'Paramètres IA', path: '/ai-marketing/settings', icon: Sliders, indent: true },
+  { name: '🤖 IA Marketing', path: '/admin/ai-marketing', icon: Zap, section: true },
+  { name: 'Campagnes proposées', path: '/admin/ai-marketing/campaigns', icon: Zap, indent: true },
+  { name: 'Historique & Résultats', path: '/admin/ai-marketing/history', icon: History, indent: true },
+  { name: 'Paramètres IA', path: '/admin/ai-marketing/settings', icon: Sliders, indent: true },
   
   // 8. SURPRISE DU JOUR - MODULE INDÉPENDANT (avec onglets internes)
-  { name: '🎰 Surprise du Jour', path: '/surprise-du-jour', icon: Sparkles, highlight: true },
+  { name: '🎰 Surprise du Jour', path: '/admin/surprise-du-jour', icon: Sparkles, highlight: true },
   
   // 9. Clients - Gestion clientèle
-  { name: 'Clients', path: '/customers', icon: Users },
+  { name: 'Clients', path: '/admin/customers', icon: Users },
   
   // 10. Assistant IA - Aide contextuelle
-  { name: 'Assistant IA', path: '/ai', icon: Sparkles },
+  { name: 'Assistant IA', path: '/admin/ai', icon: Sparkles },
   
-  // 11. Réservations - Moins fréquent
-  { name: 'Réservations', path: '/reservations', icon: Calendar },
   // 11.5 Popups - Gestion popups app mobile
-  { name: '📱 Popups', path: '/popups', icon: Image, highlight: true },
+  { name: '📱 Popups', path: '/admin/popups', icon: Image, highlight: true },
 
   
   // 12. Paramètres - Configuration
-  { name: 'Paramètres', path: '/settings', icon: Settings },
+  { name: 'Paramètres', path: '/admin/settings', icon: Settings },
 ];
 
 export const Sidebar = () => {
@@ -125,7 +123,7 @@ export const Sidebar = () => {
           <p className="text-xs text-gray-500">{user?.email}</p>
         </div>
         <button
-          onClick={logout}
+          onClick={() => { logout(); window.location.href = "/select-mode"; }}
           className="flex items-center space-x-2 w-full px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 transition-all"
         >
           <LogOut className="w-4 h-4" />

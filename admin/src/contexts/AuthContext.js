@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authAPI } from '../services/api';
+import { settingsAPI } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -12,60 +12,75 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  // AUTHENTICATION DISABLED FOR PREVIEW
-  const [user, setUser] = useState({
-    email: 'admin@familys.app',
-    first_name: 'Admin',
-    last_name: 'Preview',
-    role: 'admin'
-  });
-  const [loading, setLoading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Auto-login for preview mode
-    const fakeUser = {
-      email: 'admin@familys.app',
-      first_name: 'Admin',
-      last_name: 'Preview',
-      role: 'admin'
-    };
+    const session = localStorage.getItem('admin_session');
+    const sessionExpiry = localStorage.getItem('admin_session_expiry');
     
-    localStorage.setItem('admin_token', 'preview-mode-token');
-    localStorage.setItem('admin_user', JSON.stringify(fakeUser));
-    setUser(fakeUser);
+    if (session && sessionExpiry) {
+      const expiry = new Date(sessionExpiry);
+      if (expiry > new Date()) {
+        setIsAuthenticated(true);
+        setUser({ name: 'Admin', email: 'Le Family\'s' });
+      } else {
+        localStorage.removeItem('admin_session');
+        localStorage.removeItem('admin_session_expiry');
+      }
+    }
+    setLoading(false);
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (pin) => {
     try {
-      const response = await authAPI.login(email, password);
-      const { access_token, user: userData } = response.data;
-      
-      localStorage.setItem('admin_token', access_token);
-      localStorage.setItem('admin_user', JSON.stringify(userData));
-      
-      setUser(userData);
-      return { success: true };
+      const response = await settingsAPI.get();
+      const settings = response.data?.settings || {};
+      const storedPin = settings.admin_pin;
+      const correctPin = storedPin || '1234';
+
+      if (pin === correctPin) {
+        const expiry = new Date();
+        expiry.setHours(expiry.getHours() + 24);
+        
+        localStorage.setItem('admin_session', 'true');
+        localStorage.setItem('admin_session_expiry', expiry.toISOString());
+        setIsAuthenticated(true);
+        setUser({ name: 'Admin', email: 'Le Family\'s' });
+        
+        return { success: true };
+      } else {
+        return { success: false, error: 'Code PIN incorrect' };
+      }
     } catch (error) {
-      return {
-        success: false,
-        error: error.response?.data?.detail || 'Login failed',
-      };
+      console.error('Login error:', error);
+      return { success: false, error: 'Erreur de connexion' };
     }
   };
 
   const logout = () => {
-    localStorage.removeItem('admin_token');
-    localStorage.removeItem('admin_user');
+    localStorage.removeItem('admin_session');
+    localStorage.removeItem('admin_session_expiry');
+    setIsAuthenticated(false);
     setUser(null);
   };
 
   const value = {
-    user,
+    isAuthenticated,
     loading,
     login,
     logout,
-    isAuthenticated: !!user,
+    user,
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="animate-spin w-8 h-8 border-4 border-red-500 border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

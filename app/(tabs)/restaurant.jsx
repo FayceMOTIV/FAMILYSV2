@@ -8,11 +8,9 @@ import {
   Alert,
   Platform,
   ActivityIndicator,
-  Image,
-  StyleSheet
+  Image
 } from 'react-native';
-import { Phone, MapPin, Mail, Facebook, Instagram } from 'lucide-react-native';
-import { useRouter } from 'expo-router';
+import { Phone, MapPin, Mail, Facebook, Instagram, Twitter } from 'lucide-react-native';
 import { getRestaurantInfo } from '../../services/restaurantService';
 
 const DAYS_FR = {
@@ -25,14 +23,7 @@ const DAYS_FR = {
   sunday: 'Dimanche'
 };
 
-// URLs des réseaux sociaux - À MODIFIER avec tes vrais liens
-const SOCIAL_LINKS = {
-  instagram: 'https://instagram.com/familys_restaurant',
-  facebook: 'https://facebook.com/familys.restaurant'
-};
-
 export default function RestaurantScreen() {
-  const router = useRouter();
   const [info, setInfo] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -91,99 +82,98 @@ export default function RestaurantScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4F46E5" />
+      <View className="flex-1 bg-white items-center justify-center">
+        <ActivityIndicator size="large" color="#C62828" />
       </View>
     );
   }
 
-  // Utilise les liens du backend si disponibles, sinon utilise les liens en dur
-  const instagramUrl = info?.social_media?.instagram || SOCIAL_LINKS.instagram;
-  const facebookUrl = info?.social_media?.facebook || SOCIAL_LINKS.facebook;
-
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-white">
       {/* Header avec logo */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Text style={styles.backButtonText}>← Retour</Text>
-        </TouchableOpacity>
-
-        {info?.logo_url ? (
-          <View style={styles.logoContainer}>
-            <View style={styles.logoWrapper}>
-              <Image
-                source={{ uri: info.logo_url }}
-                style={styles.logoImage}
-                resizeMode="contain"
-              />
-            </View>
-          </View>
-        ) : (
-          <View style={styles.logoContainer}>
-            <View style={styles.logoPlaceholder}>
-              <Text style={styles.logoEmoji}>🍔</Text>
-            </View>
+      <View className="bg-[#C62828] pt-12 pb-6 px-6">
+        {info?.logo_url && (
+          <View className="items-center mb-4">
+            <Image
+              source={{ uri: info.logo_url }}
+              className="w-24 h-24 rounded-full bg-white"
+              resizeMode="contain"
+            />
           </View>
         )}
-        <Text style={styles.headerTitle}>Infos du Resto</Text>
-        <Text style={styles.headerSubtitle}>Toutes nos infos pratiques</Text>
+        <Text className="text-white opacity-90 mt-1 text-center">Toutes nos infos pratiques</Text>
+        
+        {/* Coordonnées GPS si disponibles */}
+        {info?.latitude && info?.longitude && (
+          <Text className="text-white opacity-75 text-xs text-center mt-2">
+            📍 {info.latitude.toFixed(6)}, {info.longitude.toFixed(6)}
+          </Text>
+        )}
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+      <ScrollView className="flex-1 px-6 py-6">
         {/* Actions rapides */}
-        <View style={styles.actionsRow}>
-          <TouchableOpacity style={[styles.actionButton, styles.greenButton]} onPress={handleCall}>
+        <View className="flex-row justify-between mb-8">
+          <TouchableOpacity 
+            onPress={handleCall}
+            className="bg-green-500 rounded-2xl p-4 flex-1 mr-2 items-center"
+          >
             <Phone color="white" size={28} />
-            <Text style={styles.actionText}>Appeler</Text>
+            <Text className="text-white font-semibold mt-2 text-sm">Appeler</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.actionButton, styles.blueButton]} onPress={handleOpenMap}>
+          <TouchableOpacity 
+            onPress={handleOpenMap}
+            className="bg-blue-500 rounded-2xl p-4 flex-1 mx-2 items-center"
+          >
             <MapPin color="white" size={28} />
-            <Text style={styles.actionText}>Y aller</Text>
+            <Text className="text-white font-semibold mt-2 text-sm">Y aller</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.actionButton, styles.purpleButton]} onPress={handleEmail}>
+          <TouchableOpacity 
+            onPress={handleEmail}
+            className="bg-purple-500 rounded-2xl p-4 flex-1 ml-2 items-center"
+          >
             <Mail color="white" size={28} />
-            <Text style={styles.actionText}>Email</Text>
+            <Text className="text-white font-semibold mt-2 text-sm">Email</Text>
           </TouchableOpacity>
         </View>
 
         {/* Coordonnées détaillées */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>📞 Contact</Text>
+        <View className="mb-8">
+          <Text className="text-xl font-bold text-gray-800 mb-4">📞 Contact</Text>
           
-          <View style={styles.infoCard}>
-            <Text style={styles.infoLabel}>Téléphone</Text>
-            <Text style={styles.infoValue}>{info?.phone}</Text>
+          <View className="bg-gray-50 rounded-2xl p-4 mb-3">
+            <Text className="text-gray-500 text-xs mb-1">Téléphone</Text>
+            <Text className="text-gray-800 text-lg font-semibold">{info?.phone}</Text>
           </View>
 
-          <View style={styles.infoCard}>
-            <Text style={styles.infoLabel}>Adresse</Text>
-            <Text style={styles.infoValue}>{info?.address}</Text>
+          <View className="bg-gray-50 rounded-2xl p-4 mb-3">
+            <Text className="text-gray-500 text-xs mb-1">Adresse</Text>
+            <Text className="text-gray-800 text-lg font-semibold">{info?.address}</Text>
             {info?.city && (
-              <Text style={styles.infoSubValue}>{info.postal_code} {info.city}</Text>
+              <Text className="text-gray-600">{info.postal_code} {info.city}</Text>
             )}
           </View>
 
-          <View style={styles.infoCard}>
-            <Text style={styles.infoLabel}>Email</Text>
-            <Text style={styles.infoValue}>{info?.email}</Text>
+          <View className="bg-gray-50 rounded-2xl p-4">
+            <Text className="text-gray-500 text-xs mb-1">Email</Text>
+            <Text className="text-gray-800 text-lg font-semibold">{info?.email}</Text>
           </View>
         </View>
 
         {/* Horaires d'ouverture */}
         {info?.opening_hours && Object.keys(info.opening_hours).length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>🕐 Horaires</Text>
-            <View style={styles.hoursCard}>
-              {Object.entries(info.opening_hours).map(([day, hours], index, array) => (
-                <View key={day} style={[styles.hourRow, index < array.length - 1 && styles.hourRowBorder]}>
-                  <Text style={styles.dayText}>{DAYS_FR[day]}</Text>
+          <View className="mb-8">
+            <Text className="text-xl font-bold text-gray-800 mb-4">🕐 Horaires</Text>
+            <View className="bg-gray-50 rounded-2xl p-4">
+              {Object.entries(info.opening_hours).map(([day, hours]) => (
+                <View key={day} className="flex-row justify-between py-3 border-b border-gray-200 last:border-b-0">
+                  <Text className="text-gray-700 font-medium text-base">{DAYS_FR[day]}</Text>
                   {hours.closed ? (
-                    <Text style={styles.closedText}>Fermé</Text>
+                    <Text className="text-red-500 font-semibold">Fermé</Text>
                   ) : (
-                    <Text style={styles.hoursText}>
+                    <Text className="text-gray-800 font-semibold">
                       {hours.open} - {hours.close}
                     </Text>
                   )}
@@ -193,32 +183,48 @@ export default function RestaurantScreen() {
           </View>
         )}
 
-        {/* Réseaux sociaux - TOUJOURS AFFICHÉS */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>🌐 Suivez-nous</Text>
-          
-          {/* Instagram */}
-          <TouchableOpacity
-            onPress={() => openSocialMedia('Instagram', instagramUrl)}
-            style={[styles.socialButton, styles.instagramButton]}
-          >
-            <Instagram color="white" size={28} strokeWidth={2.5} />
-            <Text style={styles.socialText}>Instagram</Text>
-          </TouchableOpacity>
+        {/* Réseaux sociaux */}
+        {info?.social_media && Object.keys(info.social_media).length > 0 && (
+          <View className="mb-8">
+            <Text className="text-xl font-bold text-gray-800 mb-4">🌐 Suivez-nous</Text>
+            <View className="space-y-3">
+              {info.social_media.facebook && (
+                <TouchableOpacity
+                  onPress={() => openSocialMedia('Facebook', info.social_media.facebook)}
+                  className="bg-[#1877F2] rounded-2xl px-6 py-4 flex-row items-center justify-center mb-3"
+                >
+                  <Facebook color="white" size={24} />
+                  <Text className="text-white font-semibold text-lg ml-3">Facebook</Text>
+                </TouchableOpacity>
+              )}
+              {info.social_media.instagram && (
+                <TouchableOpacity
+                  onPress={() => openSocialMedia('Instagram', info.social_media.instagram)}
+                  className="rounded-2xl px-6 py-4 flex-row items-center justify-center mb-3"
+                  style={{ backgroundColor: '#E4405F' }}
+                >
+                  <Instagram color="white" size={24} />
+                  <Text className="text-white font-semibold text-lg ml-3">Instagram</Text>
+                </TouchableOpacity>
+              )}
+              {info.social_media.twitter && (
+                <TouchableOpacity
+                  onPress={() => openSocialMedia('Twitter', info.social_media.twitter)}
+                  className="bg-[#1DA1F2] rounded-2xl px-6 py-4 flex-row items-center justify-center"
+                >
+                  <Twitter color="white" size={24} />
+                  <Text className="text-white font-semibold text-lg ml-3">Twitter</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+        )}
 
-          {/* Facebook */}
-          <TouchableOpacity
-            onPress={() => openSocialMedia('Facebook', facebookUrl)}
-            style={[styles.socialButton, styles.facebookButton]}
-          >
-            <Facebook color="white" size={28} strokeWidth={2.5} />
-            <Text style={styles.socialText}>Facebook</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.infoBadge}>
-          <Text style={styles.infoBadgeTitle}>💡 Bon à savoir</Text>
-          <Text style={styles.infoBadgeText}>
+        <View className="bg-amber-50 rounded-2xl p-6 mb-6">
+          <Text className="text-amber-800 text-center font-semibold text-base mb-2">
+            💡 Bon à savoir
+          </Text>
+          <Text className="text-amber-700 text-center text-sm">
             Vous pouvez nous appeler pendant les horaires d'ouverture pour toute question !
           </Text>
         </View>
@@ -226,46 +232,3 @@ export default function RestaurantScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFFFFF' },
-  loadingContainer: { flex: 1, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' },
-  header: { backgroundColor: '#4F46E5', paddingTop: 64, paddingBottom: 32, paddingHorizontal: 24 },
-  backButton: { position: 'absolute', top: 64, left: 24, zIndex: 10, backgroundColor: '#FFFFFF', borderRadius: 12, paddingVertical: 12, paddingHorizontal: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 },
-  backButtonText: { color: '#4F46E5', fontSize: 16, fontWeight: '600' },
-  logoContainer: { alignItems: 'center', marginBottom: 16, marginTop: 32 },
-  logoWrapper: { backgroundColor: '#FFFFFF', borderRadius: 50, padding: 8 },
-  logoImage: { width: 96, height: 96, borderRadius: 48 },
-  logoPlaceholder: { backgroundColor: '#FFFFFF', borderRadius: 56, width: 112, height: 112, alignItems: 'center', justifyContent: 'center' },
-  logoEmoji: { fontSize: 60 },
-  headerTitle: { color: '#FFFFFF', fontSize: 32, fontWeight: 'bold', textAlign: 'center', marginBottom: 8 },
-  headerSubtitle: { color: 'rgba(255, 255, 255, 0.9)', fontSize: 16, textAlign: 'center' },
-  scrollView: { flex: 1 },
-  scrollContent: { padding: 24 },
-  actionsRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 32 },
-  actionButton: { flex: 1, borderRadius: 16, padding: 16, alignItems: 'center', marginHorizontal: 4 },
-  greenButton: { backgroundColor: '#10B981' },
-  blueButton: { backgroundColor: '#3B82F6' },
-  purpleButton: { backgroundColor: '#8B5CF6' },
-  actionText: { color: '#FFFFFF', fontWeight: '600', fontSize: 14, marginTop: 8 },
-  section: { marginBottom: 32 },
-  sectionTitle: { fontSize: 20, fontWeight: 'bold', color: '#1F2937', marginBottom: 16 },
-  infoCard: { backgroundColor: '#F9FAFB', borderRadius: 16, padding: 16, marginBottom: 12 },
-  infoLabel: { color: '#6B7280', fontSize: 12, marginBottom: 4 },
-  infoValue: { color: '#1F2937', fontSize: 18, fontWeight: '600' },
-  infoSubValue: { color: '#4B5563', fontSize: 14, marginTop: 4 },
-  hoursCard: { backgroundColor: '#F9FAFB', borderRadius: 16, padding: 16 },
-  hourRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12 },
-  hourRowBorder: { borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
-  dayText: { color: '#374151', fontSize: 16, fontWeight: '500' },
-  hoursText: { color: '#1F2937', fontSize: 16, fontWeight: '600' },
-  closedText: { color: '#EF4444', fontSize: 16, fontWeight: '600' },
-  socialButton: { borderRadius: 16, paddingVertical: 16, paddingHorizontal: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
-  instagramButton: { backgroundColor: '#E4405F', shadowColor: '#E4405F', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 5 },
-  facebookButton: { backgroundColor: '#1877F2', shadowColor: '#1877F2', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 5 },
-  socialText: { color: '#FFFFFF', fontSize: 18, fontWeight: 'bold', marginLeft: 12 },
-  infoBadge: { backgroundColor: '#FEF3C7', borderRadius: 16, padding: 24, marginBottom: 24 },
-  infoBadgeTitle: { color: '#92400E', fontSize: 16, fontWeight: '600', textAlign: 'center', marginBottom: 8 },
-  infoBadgeText: { color: '#B45309', fontSize: 14, textAlign: 'center', lineHeight: 20 },
-});
-

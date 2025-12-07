@@ -3,9 +3,7 @@ import { Header } from '../components/Header';
 import { Card, CardContent } from '../components/Card';
 import { Button } from '../components/Button';
 import { DollarSign, TrendingUp, CreditCard, Wallet, Smartphone, Calendar, Printer } from 'lucide-react';
-import axios from 'axios';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://fastfood-fixes.preview.emergentagent.com';
+import { ordersAPI } from '../services/api';
 
 export const Revenue = () => {
   const [orders, setOrders] = useState([]);
@@ -16,8 +14,9 @@ export const Revenue = () => {
   const [stats, setStats] = useState({
     total: 0,
     cash: 0,
-    card: 0,
-    mobile: 0,
+    card_restaurant: 0,
+    ticket_resto: 0,
+    check: 0,
     online: 0,
     orderCount: 0
   });
@@ -29,11 +28,8 @@ export const Revenue = () => {
   const loadRevenue = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/api/v1/admin/orders`, {
-        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-      });
-      const allOrders = response.data.orders || [];
+      const response = await ordersAPI.getAll();
+      const allOrders = response.data?.orders || [];
       
       // Filtrer par statut et paiement
       const paidOrders = allOrders.filter(o => 
@@ -49,25 +45,37 @@ export const Revenue = () => {
       setOrders(filteredOrders);
     } catch (error) {
       console.error('Error loading revenue:', error);
+      setOrders([]);
+      setStats({
+        total: 0,
+        cash: 0,
+        card_restaurant: 0,
+        ticket_resto: 0,
+        check: 0,
+        online: 0,
+        orderCount: 0
+      });
     } finally {
       setLoading(false);
     }
   };
 
   const filterOrdersByDate = (orders) => {
+    if (!orders || orders.length === 0) return [];
+    
     const now = new Date();
     let startDate, endDate;
 
     switch (dateRange) {
       case 'today':
-        startDate = new Date(now.setHours(0, 0, 0, 0));
-        endDate = new Date(now.setHours(23, 59, 59, 999));
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+        endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
         break;
       case 'yesterday':
         const yesterday = new Date(now);
         yesterday.setDate(yesterday.getDate() - 1);
-        startDate = new Date(yesterday.setHours(0, 0, 0, 0));
-        endDate = new Date(yesterday.setHours(23, 59, 59, 999));
+        startDate = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate(), 0, 0, 0);
+        endDate = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate(), 23, 59, 59);
         break;
       case 'week':
         startDate = new Date(now);
@@ -96,48 +104,46 @@ export const Revenue = () => {
   };
 
   const calculateStats = (orders) => {
-    const stats = {
+    const newStats = {
       total: 0,
       cash: 0,
       card_restaurant: 0,
       ticket_resto: 0,
       check: 0,
       online: 0,
-      orderCount: orders.length
+      orderCount: orders?.length || 0
     };
+
+    if (!orders || orders.length === 0) {
+      setStats(newStats);
+      return;
+    }
 
     orders.forEach(order => {
       const amount = order.total || 0;
-      stats.total += amount;
+      newStats.total += amount;
 
-      // Logique de distinction :
-      // 1. Si payment_status === 'paid' → Paiement en ligne (via l'app)
-      // 2. Sinon → Paiement au restaurant selon la méthode
-      
       const isPaidOnline = order.payment_status === 'paid';
       const method = order.payment_method?.toLowerCase() || 'cash';
 
       if (isPaidOnline) {
-        // Tous les paiements faits via l'app vont dans "Paiement en ligne"
-        stats.online += amount;
+        newStats.online += amount;
       } else {
-        // Paiements au restaurant selon la méthode
         if (method === 'cash' || method === 'espece') {
-          stats.cash += amount;
+          newStats.cash += amount;
         } else if (method === 'card' || method === 'cb' || method === 'card_restaurant') {
-          stats.card_restaurant += amount;
+          newStats.card_restaurant += amount;
         } else if (method === 'ticket_resto' || method === 'ticket_restaurant') {
-          stats.ticket_resto += amount;
+          newStats.ticket_resto += amount;
         } else if (method === 'check' || method === 'cheque') {
-          stats.check += amount;
+          newStats.check += amount;
         } else {
-          // Par défaut, si méthode inconnue et non payé en ligne, on met en CB restaurant
-          stats.card_restaurant += amount;
+          newStats.card_restaurant += amount;
         }
       }
     });
 
-    setStats(stats);
+    setStats(newStats);
   };
 
   const dateRangeOptions = [
@@ -149,118 +155,12 @@ export const Revenue = () => {
   ];
 
   const paymentMethods = [
-    { key: 'online', label: 'Paiement en ligne', icon: Smartphone, color: 'purple', amount: stats.online },
-    { key: 'card_restaurant', label: 'CB (restaurant)', icon: CreditCard, color: 'blue', amount: stats.card_restaurant },
-    { key: 'ticket_resto', label: 'Ticket restaurant', icon: Wallet, color: 'orange', amount: stats.ticket_resto },
-    { key: 'check', label: 'Chèque bancaire', icon: CreditCard, color: 'indigo', amount: stats.check },
-    { key: 'cash', label: 'Espèce', icon: Wallet, color: 'green', amount: stats.cash }
+    { key: 'online', label: 'Paiement en ligne', icon: Smartphone, color: 'purple', amount: stats.online || 0 },
+    { key: 'card_restaurant', label: 'CB (restaurant)', icon: CreditCard, color: 'blue', amount: stats.card_restaurant || 0 },
+    { key: 'ticket_resto', label: 'Ticket restaurant', icon: Wallet, color: 'orange', amount: stats.ticket_resto || 0 },
+    { key: 'check', label: 'Chèque bancaire', icon: CreditCard, color: 'indigo', amount: stats.check || 0 },
+    { key: 'cash', label: 'Espèce', icon: Wallet, color: 'green', amount: stats.cash || 0 }
   ];
-
-  const printRevenue = () => {
-    // ESC/POS commands for 80MM thermal printer
-    const ESC = '\x1B';
-    const GS = '\x1D';
-    
-    let receipt = '';
-    
-    // Initialize printer
-    receipt += ESC + '@';
-    
-    // Center align + Bold + Double size
-    receipt += ESC + 'a' + '\x01'; // Center
-    receipt += ESC + 'E' + '\x01'; // Bold
-    receipt += GS + '!' + '\x11'; // Double size
-    receipt += 'CHIFFRE D\'AFFAIRES\n';
-    receipt += GS + '!' + '\x00'; // Normal size
-    receipt += ESC + 'E' + '\x00'; // Bold off
-    receipt += '\n';
-    
-    // Date range
-    receipt += ESC + 'a' + '\x01'; // Center
-    const dateRangeLabel = dateRangeOptions.find(opt => opt.value === dateRange)?.label || 'Personnalisé';
-    receipt += dateRangeLabel + '\n';
-    if (dateRange === 'custom' && customStartDate && customEndDate) {
-      receipt += `${customStartDate} - ${customEndDate}\n`;
-    }
-    receipt += '\n';
-    
-    // Line separator
-    receipt += ESC + 'a' + '\x00'; // Left align
-    receipt += '--------------------------------\n';
-    
-    // Total
-    receipt += ESC + 'E' + '\x01'; // Bold
-    receipt += GS + '!' + '\x11'; // Double size
-    receipt += 'TOTAL: ' + stats.total.toFixed(2) + ' EUR\n';
-    receipt += GS + '!' + '\x00'; // Normal size
-    receipt += ESC + 'E' + '\x00'; // Bold off
-    receipt += '--------------------------------\n\n';
-    
-    // Payment methods breakdown
-    receipt += ESC + 'E' + '\x01'; // Bold
-    receipt += 'REPARTITION PAR MOYEN:\n';
-    receipt += ESC + 'E' + '\x00'; // Bold off
-    receipt += '\n';
-    
-    paymentMethods.forEach(method => {
-      if (method.amount > 0) {
-        const label = method.label.padEnd(20, ' ');
-        const amount = method.amount.toFixed(2).padStart(10, ' ');
-        receipt += label + amount + ' EUR\n';
-      }
-    });
-    
-    receipt += '\n--------------------------------\n\n';
-    
-    // Number of orders
-    receipt += 'Nombre de commandes: ' + orders.length + '\n';
-    receipt += '\n--------------------------------\n\n';
-    
-    // Orders list (last 10)
-    receipt += ESC + 'E' + '\x01'; // Bold
-    receipt += 'DERNIERES COMMANDES:\n';
-    receipt += ESC + 'E' + '\x00'; // Bold off
-    receipt += '\n';
-    
-    const lastOrders = orders.slice(0, 10);
-    lastOrders.forEach((order, index) => {
-      receipt += `#${order.order_number || order.id.substring(0, 8)}\n`;
-      receipt += `  ${order.customer_name || 'Client'}\n`;
-      receipt += `  ${order.total.toFixed(2)} EUR\n`;
-      if (index < lastOrders.length - 1) {
-        receipt += '\n';
-      }
-    });
-    
-    receipt += '\n--------------------------------\n';
-    
-    // Footer
-    receipt += ESC + 'a' + '\x01'; // Center
-    receipt += '\n';
-    const now = new Date();
-    receipt += `Imprime le ${now.toLocaleDateString('fr-FR')} a ${now.toLocaleTimeString('fr-FR')}\n`;
-    receipt += '\n\n\n';
-    
-    // Cut paper
-    receipt += GS + 'V' + '\x41' + '\x03';
-    
-    // Create blob and open print dialog
-    const blob = new Blob([receipt], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    
-    const printWindow = window.open(url, '_blank', 'width=302,height=500');
-    if (printWindow) {
-      printWindow.onload = () => {
-        printWindow.print();
-        setTimeout(() => {
-          URL.revokeObjectURL(url);
-          printWindow.close();
-        }, 100);
-      };
-    } else {
-      alert('Veuillez autoriser les pop-ups pour imprimer');
-    }
-  };
 
   if (loading) {
     return (
@@ -328,30 +228,19 @@ export const Revenue = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-green-100 text-sm mb-1">Chiffre d'Affaires Total</p>
-                <p className="text-5xl font-black">{stats.total.toFixed(2)}€</p>
-                <p className="text-green-100 text-sm mt-2">{stats.orderCount} commandes</p>
+                <p className="text-5xl font-black">{(stats.total || 0).toFixed(2)}€</p>
+                <p className="text-green-100 text-sm mt-2">{stats.orderCount || 0} commandes</p>
               </div>
-              <div className="flex flex-col items-end gap-3">
-                <DollarSign className="w-20 h-20 text-white/30" />
-                <Button
-                  onClick={printRevenue}
-                  variant="outline"
-                  size="sm"
-                  className="bg-white/20 border-white/30 text-white hover:bg-white/30"
-                >
-                  <Printer className="w-4 h-4 mr-2" />
-                  Imprimer
-                </Button>
-              </div>
+              <DollarSign className="w-20 h-20 text-white/30" />
             </div>
           </CardContent>
         </Card>
 
         {/* Répartition par mode de paiement */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           {paymentMethods.map(method => {
             const Icon = method.icon;
-            const percentage = stats.total > 0 ? (method.amount / stats.total * 100) : 0;
+            const percentage = stats.total > 0 ? ((method.amount || 0) / stats.total * 100) : 0;
             
             return (
               <Card key={method.key}>
@@ -363,86 +252,69 @@ export const Revenue = () => {
                     </span>
                   </div>
                   <p className="text-sm text-gray-600 mb-1">{method.label}</p>
-                  <p className="text-2xl font-black text-gray-800">{method.amount.toFixed(2)}€</p>
+                  <p className="text-2xl font-black text-gray-800">{(method.amount || 0).toFixed(2)}€</p>
                 </CardContent>
               </Card>
             );
           })}
         </div>
 
-        {/* Tableau détaillé */}
-        <Card>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">N° Commande</th>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Client</th>
-                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Mode Paiement</th>
-                    <th className="px-6 py-3 text-right text-xs font-bold text-gray-700 uppercase">Montant</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {orders.map(order => (
-                    <tr key={order.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        {new Date(order.created_at).toLocaleDateString('fr-FR')}
-                        <br />
-                        <span className="text-xs text-gray-500">
-                          {new Date(order.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-bold text-primary">
-                          #{order.order_number || order.id?.slice(0, 8)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm">
-                        {order.customer_name || order.customer_email || 'Client'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                          order.payment_method === 'cash' ? 'bg-green-100 text-green-700' :
-                          order.payment_method === 'card_restaurant' ? 'bg-blue-100 text-blue-700' :
-                          order.payment_method === 'online' ? 'bg-purple-100 text-purple-700' :
-                          order.payment_method === 'ticket_resto' ? 'bg-orange-100 text-orange-700' :
-                          order.payment_method === 'check' ? 'bg-indigo-100 text-indigo-700' :
-                          'bg-gray-100 text-gray-700'
-                        }`}>
-                          {order.payment_method === 'cash' ? '💵 Espèce' :
-                           order.payment_method === 'card_restaurant' ? '💳 CB (restaurant)' :
-                           order.payment_method === 'online' ? '🌐 Paiement en ligne' :
-                           order.payment_method === 'ticket_resto' ? '🎫 Ticket Restaurant' :
-                           order.payment_method === 'check' ? '📝 Chèque bancaire' :
-                           order.payment_method}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <span className="text-lg font-black text-gray-800">
-                          {order.total.toFixed(2)}€
-                        </span>
-                      </td>
+        {/* Message si pas de données */}
+        {orders.length === 0 ? (
+          <Card>
+            <CardContent className="p-12 text-center">
+              <DollarSign className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500 text-lg">Aucune commande pour cette période</p>
+              <p className="text-gray-400 text-sm mt-2">Les revenus s'afficheront ici quand vous aurez des commandes</p>
+            </CardContent>
+          </Card>
+        ) : (
+          /* Tableau détaillé */
+          <Card>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 border-b">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Date</th>
+                      <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">N° Commande</th>
+                      <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Client</th>
+                      <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Mode Paiement</th>
+                      <th className="px-6 py-3 text-right text-xs font-bold text-gray-700 uppercase">Montant</th>
                     </tr>
-                  ))}
-                </tbody>
-                <tfoot className="bg-gray-50 border-t-2 border-gray-300">
-                  <tr>
-                    <td colSpan="4" className="px-6 py-4 text-right text-sm font-bold text-gray-700">
-                      TOTAL
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <span className="text-2xl font-black text-green-600">
-                        {stats.total.toFixed(2)}€
-                      </span>
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {orders.map(order => (
+                      <tr key={order.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          {new Date(order.created_at).toLocaleDateString('fr-FR')}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="text-sm font-bold text-primary">
+                            #{order.order_number || order.id?.slice(0, 8)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          {order.customer_name || 'Client'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-700">
+                            {order.payment_method || 'N/A'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right">
+                          <span className="text-lg font-black text-gray-800">
+                            {(order.total || 0).toFixed(2)}€
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Animated, Dimensions } from 'react-native';
+import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Animated, Dimensions, ImageBackground } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../stores/authStore';
 import { useFavoritesStore } from '../../stores/favoritesStore';
@@ -7,7 +7,6 @@ import { API_BASE_URL } from '../../constants/config';
 import axios from 'axios';
 
 const { width, height } = Dimensions.get('window');
-
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -20,6 +19,7 @@ export default function HomeScreen() {
   const [countdown, setCountdown] = useState('');
   const [favoriteProducts, setFavoriteProducts] = useState([]);
   const [promoProducts, setPromoProducts] = useState([]);
+  const [settings, setSettings] = useState(null);
 
   const userData = { firstName: user?.name?.split(' ')[0] || "Gourmand", loyaltyBalance: user?.loyalty_points || 0, loyaltyPercentage: 5 };
 
@@ -35,6 +35,7 @@ export default function HomeScreen() {
     ]));
     bounce.start();
     loadData();
+    loadSettings();
     return () => { pulse.stop(); bounce.stop(); };
   }, []);
 
@@ -43,7 +44,7 @@ export default function HomeScreen() {
       const interval = setInterval(() => {
         const now = new Date();
         const next = new Date(surpriseStatus.next_play_time);
-        const diff = next - now;
+        const diff = next.getTime() - now.getTime();
         if (diff <= 0) { setCountdown('Disponible !'); setSurpriseStatus({ ...surpriseStatus, can_play: true }); }
         else {
           const hours = Math.floor(diff / (1000 * 60 * 60));
@@ -56,17 +57,26 @@ export default function HomeScreen() {
     }
   }, [surpriseStatus]);
 
+  const loadSettings = async () => {
+    try {
+      const r = await axios.get(`${API_BASE_URL}/fb/settings`);
+      setSettings(r.data.settings || r.data);
+    } catch (e) {
+      console.log('Error loading settings:', e);
+    }
+  };
+
   const loadData = async () => {
     try { const r = await axios.get(`${API_BASE_URL}/admin/surprise-du-jour/recent-winners?limit=5`); setRecentWinners(r.data || []); } catch (e) {}
     if (user?.id) { try { const r = await axios.get(`${API_BASE_URL}/surprise-du-jour/status?user_id=${user.id}`); setSurpriseStatus(r.data); } catch (e) {} }
     try {
-      const r = await axios.get(`${API_BASE_URL}/products`);
+      const r = await axios.get(`${API_BASE_URL}/fb/products`);
       const all = r.data.products || r.data || [];
       setPromoProducts(all.filter(p => p.active_promotions && p.active_promotions.length > 0).slice(0, 5));
     } catch (e) {}
     if (favorites && favorites.length > 0) {
       try {
-        const r = await axios.get(`${API_BASE_URL}/products`);
+        const r = await axios.get(`${API_BASE_URL}/fb/products`);
         const all = r.data.products || r.data || [];
         setFavoriteProducts(all.filter(p => favorites.includes(p.id)).slice(0, 4));
       } catch (e) {}
@@ -76,144 +86,170 @@ export default function HomeScreen() {
   const getGreeting = () => {
     const hour = new Date().getHours();
     const firstName = userData.firstName;
-    if (hour < 12) return `Bonjour ${firstName} ! ☀️`;
-    if (hour < 18) return `Hey ${firstName} ! 🍔`;
-    return `Bonsoir ${firstName} ! 🌙`;
+    if (hour < 12) return `Bonjour ${firstName} !`;
+    if (hour < 18) return `Hey ${firstName} !`;
+    return `Bonsoir ${firstName} !`;
   };
 
+  const heroImage = settings?.hero_image_url || settings?.home_hero_image;
+
   return (
-    <>
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <View style={styles.header}>
-          <Image source={require('../../assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
-          <Text style={styles.greeting}>{getGreeting()}</Text>
-          <Text style={styles.subtitle}>Prêt(e) à te régaler ?</Text>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      {/* Header avec image Hero */}
+      <View style={styles.headerContainer}>
+        {heroImage ? (
+          <ImageBackground 
+            source={{ uri: heroImage }} 
+            style={styles.heroImage}
+            imageStyle={{ borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}
+          >
+            <View style={styles.heroOverlay}>
+              <Image source={require('../../assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
+              <Text style={styles.greeting}>{getGreeting()}</Text>
+              <Text style={styles.subtitle}>{settings?.home_tagline || 'Prêt à te régaler ?'}</Text>
+            </View>
+          </ImageBackground>
+        ) : (
+          <View style={styles.header}>
+            <Image source={require('../../assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
+            <Text style={styles.greetingDark}>{getGreeting()}</Text>
+            <Text style={styles.subtitleDark}>{settings?.home_tagline || 'Prêt à te régaler ?'}</Text>
+          </View>
+        )}
+      </View>
+
+      <Animated.View style={[styles.loyaltyCard, { transform: [{ scale: pulseAnim }] }]}>
+        <View style={styles.loyaltyDecoCircle1} />
+        <View style={styles.loyaltyDecoCircle2} />
+        <View style={styles.loyaltyContent}>
+          <View style={styles.loyaltyLeft}>
+            <View style={styles.loyaltyIconContainer}><Text style={styles.loyaltyIcon}>💎</Text></View>
+            <Text style={styles.loyaltyLabel}>Ma Carte Fidélité</Text>
+          </View>
+          <View style={styles.loyaltyRight}>
+            <Text style={styles.loyaltyAmount}>{userData.loyaltyBalance.toFixed(2)}€</Text>
+            <Text style={styles.loyaltySubtext}>+{userData.loyaltyPercentage}% à chaque achat</Text>
+          </View>
         </View>
+        <View style={styles.loyaltyStars}><Text style={styles.starEmoji}>⭐</Text><Text style={styles.starEmoji}>⭐</Text><Text style={styles.starEmoji}>⭐</Text></View>
+      </Animated.View>
 
-        <Animated.View style={[styles.loyaltyCard, { transform: [{ scale: pulseAnim }] }]}>
-          <View style={styles.loyaltyDecoCircle1} />
-          <View style={styles.loyaltyDecoCircle2} />
-          <View style={styles.loyaltyContent}>
-            <View style={styles.loyaltyLeft}>
-              <View style={styles.loyaltyIconContainer}><Text style={styles.loyaltyIcon}>💎</Text></View>
-              <Text style={styles.loyaltyLabel}>Ma Carte Fidélité</Text>
-            </View>
-            <View style={styles.loyaltyRight}>
-              <Text style={styles.loyaltyAmount}>{userData.loyaltyBalance.toFixed(2)}€</Text>
-              <Text style={styles.loyaltySubtext}>+{userData.loyaltyPercentage}% à chaque achat</Text>
-            </View>
-          </View>
-          <View style={styles.loyaltyStars}><Text style={styles.starEmoji}>⭐</Text><Text style={styles.starEmoji}>⭐</Text><Text style={styles.starEmoji}>⭐</Text></View>
-        </Animated.View>
+      <TouchableOpacity style={styles.gameCard} onPress={() => router.push('/surprise-du-jour')}>
+        <View style={styles.gameBackground}><Text style={styles.gameBgEmoji}>🎰</Text></View>
+        <Animated.View style={[styles.gameIconContainer, { transform: [{ translateY: bounceAnim }] }]}><Text style={styles.gameMainIcon}>🎁</Text></Animated.View>
+        <View style={styles.gameContent}>
+          <Text style={styles.gameTitle}>🎮 Jouer & Gagner 🎯</Text>
+          <Text style={styles.gameDesc}>Tente ta chance et gagne des récompenses !</Text>
+          {surpriseStatus && !surpriseStatus.can_play && countdown ? (
+            <View style={styles.countdownContainer}><Text style={styles.countdownLabel}>⏰ Prochain jeu dans</Text><Text style={styles.countdownValue}>{countdown}</Text></View>
+          ) : (<View style={styles.playNowBadge}><Text style={styles.playNowText}>🚀 JOUER MAINTENANT</Text></View>)}
+        </View>
+        <View style={styles.gameDecorations}><Text style={styles.decoEmoji}>🎲</Text><Text style={styles.decoEmoji}>🎪</Text><Text style={styles.decoEmoji}>✨</Text></View>
+      </TouchableOpacity>
 
-        <TouchableOpacity style={styles.gameCard} onPress={() => router.push('/surprise-du-jour')}>
-          <View style={styles.gameBackground}><Text style={styles.gameBgEmoji}>🎰</Text></View>
-          <Animated.View style={[styles.gameIconContainer, { transform: [{ translateY: bounceAnim }] }]}><Text style={styles.gameMainIcon}>🎁</Text></Animated.View>
-          <View style={styles.gameContent}>
-            <Text style={styles.gameTitle}>🎮 Jouer & Gagner 🎯</Text>
-            <Text style={styles.gameDesc}>Tente ta chance et gagne des récompenses !</Text>
-            {surpriseStatus && !surpriseStatus.can_play && countdown ? (
-              <View style={styles.countdownContainer}><Text style={styles.countdownLabel}>⏰ Prochain jeu dans</Text><Text style={styles.countdownValue}>{countdown}</Text></View>
-            ) : (<View style={styles.playNowBadge}><Text style={styles.playNowText}>🚀 JOUER MAINTENANT</Text></View>)}
-          </View>
-          <View style={styles.gameDecorations}><Text style={styles.decoEmoji}>🎲</Text><Text style={styles.decoEmoji}>🎪</Text><Text style={styles.decoEmoji}>✨</Text></View>
-        </TouchableOpacity>
-
-        {favoriteProducts.length > 0 && (
-          <TouchableOpacity style={styles.favoritesButton} onPress={() => router.push('/favorites')}>
-            <View style={styles.favoritesButtonContent}>
-              <View style={styles.favoritesButtonLeft}>
-                <View style={styles.favoritesIconContainer}><Text style={styles.favoritesIcon}>❤️</Text></View>
-                <View>
-                  <Text style={styles.favoritesButtonTitle}>Mes Favoris</Text>
-                  <Text style={styles.favoritesButtonSubtitle}>{favoriteProducts.length} produit{favoriteProducts.length > 1 ? 's' : ''} sauvegardé{favoriteProducts.length > 1 ? 's' : ''}</Text>
-                </View>
+      {favoriteProducts.length > 0 && (
+        <TouchableOpacity style={styles.favoritesButton} onPress={() => router.push('/favorites')}>
+          <View style={styles.favoritesButtonContent}>
+            <View style={styles.favoritesButtonLeft}>
+              <View style={styles.favoritesIconContainer}><Text style={styles.favoritesIcon}>❤️</Text></View>
+              <View>
+                <Text style={styles.favoritesButtonTitle}>Mes Favoris</Text>
+                <Text style={styles.favoritesButtonSubtitle}>{favoriteProducts.length} produit{favoriteProducts.length > 1 ? 's' : ''} sauvegardé{favoriteProducts.length > 1 ? 's' : ''}</Text>
               </View>
-              <View style={styles.favoritesArrow}><Text style={styles.arrowText}>→</Text></View>
             </View>
-            <View style={styles.favoritesPreview}>
-              {favoriteProducts.slice(0, 3).map((product, index) => {
-                const imageUrl = product.image_url || product.image;
-                return (
-                  <View key={product.id} style={[styles.miniProductCircle, { marginLeft: index > 0 ? -10 : 0, zIndex: 3 - index }]}>
-                    {imageUrl ? <Image source={{ uri: imageUrl }} style={styles.miniProductImage} /> : <Text style={styles.miniProductEmoji}>{product.emoji || '🍔'}</Text>}
-                  </View>
-                );
-              })}
-              {favoriteProducts.length > 3 && <View style={[styles.miniProductCircle, styles.moreCircle, { marginLeft: -10 }]}><Text style={styles.moreText}>+{favoriteProducts.length - 3}</Text></View>}
-            </View>
-          </TouchableOpacity>
-        )}
-
-        {promoProducts.length > 0 && (
-          <View style={styles.section}>
-            <View style={styles.promoHeader}>
-              <View style={styles.promoTitleContainer}><Text style={styles.promoFireEmoji}>🔥</Text><Text style={styles.promoSectionTitle}>PROMOS DU MOMENT</Text><Text style={styles.promoFireEmoji}>🔥</Text></View>
-              <TouchableOpacity onPress={() => router.push('/order')}><Text style={styles.seeAllPromo}>Voir tout →</Text></TouchableOpacity>
-            </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.promosScroll}>
-              {promoProducts.map((product) => {
-                const promo = product.active_promotions?.[0];
-                const originalPrice = product.base_price || 0;
-                const promoPrice = product.promo_price;
-                const hasDiscount = promoPrice && promoPrice < originalPrice;
-                const imageUrl = product.image_url || product.image;
-                // Utiliser le badge du produit, ou le badge_text de la promo, ou le nom de la promo
-                const badgeText = product.promo_badge || promo?.badge_text || promo?.name;
-                return (
-                  <TouchableOpacity key={product.id} style={styles.promoCard} onPress={() => router.push(`/product/${product.id}`)}>
-                    {badgeText && <View style={styles.promoTagContainer}><Text style={styles.promoTag}>{badgeText}</Text></View>}
-                    {imageUrl ? <Image source={{ uri: imageUrl }} style={styles.promoImage} resizeMode="cover" /> : <View style={styles.promoImagePlaceholder}><Text style={styles.promoEmoji}>{product.emoji || '🍔'}</Text></View>}
-                    <Text style={styles.promoName} numberOfLines={1}>{product.name}</Text>
-                    <View style={styles.promoPriceRow}>
-                      <Text style={[styles.promoPrice, !hasDiscount && { color: '#1A1A1A' }]}>{(promoPrice || originalPrice).toFixed(2)}€</Text>
-                      {hasDiscount && <Text style={styles.promoOldPrice}>{originalPrice.toFixed(2)}€</Text>}
-                    </View>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
+            <View style={styles.favoritesArrow}><Text style={styles.arrowText}>→</Text></View>
           </View>
-        )}
-
-        {recentWinners.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>🏆 Derniers Gagnants</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.winnersScroll}>
-              {recentWinners.map((winner, index) => (
-                <View key={index} style={styles.winnerCard}>
-                  <View style={styles.winnerHeader}>
-                    <View style={styles.winnerAvatar}><Text style={styles.winnerInitial}>{winner.name ? winner.name[0].toUpperCase() : '?'}</Text></View>
-                    <View><Text style={styles.winnerName}>{winner.name || 'Joueur'}</Text><Text style={styles.winnerTime}>{winner.time}</Text></View>
-                  </View>
-                  <Text style={styles.winnerReward}>✨ {winner.reward}</Text>
+          <View style={styles.favoritesPreview}>
+            {favoriteProducts.slice(0, 3).map((product, index) => {
+              const imageUrl = product.image_url || product.image;
+              return (
+                <View key={product.id} style={[styles.miniProductCircle, { marginLeft: index > 0 ? -10 : 0, zIndex: 3 - index }]}>
+                  {imageUrl ? <Image source={{ uri: imageUrl }} style={styles.miniProductImage} /> : <Text style={styles.miniProductEmoji}>{product.emoji || '🍔'}</Text>}
                 </View>
-              ))}
-            </ScrollView>
+              );
+            })}
+            {favoriteProducts.length > 3 && <View style={[styles.miniProductCircle, styles.moreCircle, { marginLeft: -10 }]}><Text style={styles.moreText}>+{favoriteProducts.length - 3}</Text></View>}
           </View>
-        )}
+        </TouchableOpacity>
+      )}
 
+      {promoProducts.length > 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>⚡ Actions Rapides</Text>
-          <View style={styles.quickActions}>
-            <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/order')}><Text style={styles.actionEmoji}>🍽️</Text><Text style={styles.actionText}>Commander</Text></TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/(tabs)/orders')}><Text style={styles.actionEmoji}>📜</Text><Text style={styles.actionText}>Historique</Text></TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/about')}><Text style={styles.actionEmoji}>ℹ️</Text><Text style={styles.actionText}>Le Resto</Text></TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/(tabs)/profile')}><Text style={styles.actionEmoji}>👤</Text><Text style={styles.actionText}>Mon Profil</Text></TouchableOpacity>
+          <View style={styles.promoHeader}>
+            <View style={styles.promoTitleContainer}>
+              <Text style={styles.promoFireEmoji}>🔥</Text>
+              <Text style={styles.promoSectionTitle}>Promos en cours</Text>
+              <Text style={styles.promoFireEmoji}>🔥</Text>
+            </View>
+            <TouchableOpacity onPress={() => router.push('/(tabs)/menu')}>
+              <Text style={styles.seeAllPromo}>Voir tout →</Text>
+            </TouchableOpacity>
           </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.promosScroll}>
+            {promoProducts.map((product) => {
+              const promo = product.active_promotions?.[0];
+              const imageUrl = product.image_url || product.image;
+              return (
+                <TouchableOpacity key={product.id} style={styles.promoCard} onPress={() => router.push(`/product/${product.id}`)}>
+                  {promo && <View style={styles.promoTagContainer}><Text style={styles.promoTag}>{promo.badge_text || `-${promo.discount_value}%`}</Text></View>}
+                  {imageUrl ? <Image source={{ uri: imageUrl }} style={styles.promoImage} /> : <View style={styles.promoImagePlaceholder}><Text style={styles.promoEmoji}>{product.emoji || '🍔'}</Text></View>}
+                  <Text style={styles.promoName} numberOfLines={2}>{product.name}</Text>
+                  <View style={styles.promoPriceRow}>
+                    <Text style={styles.promoPrice}>{product.final_price?.toFixed(2) || product.base_price?.toFixed(2)}€</Text>
+                    {product.original_price && product.original_price > product.final_price && <Text style={styles.promoOldPrice}>{product.original_price.toFixed(2)}€</Text>}
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
         </View>
-        <View style={{ height: 100 }} />
-      </ScrollView>
-    </>
+      )}
+
+      {recentWinners.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>🏆 Derniers Gagnants</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.winnersScroll}>
+            {recentWinners.map((winner, index) => (
+              <View key={index} style={styles.winnerCard}>
+                <View style={styles.winnerHeader}>
+                  <View style={styles.winnerAvatar}><Text style={styles.winnerInitial}>{winner.user_name?.[0] || '?'}</Text></View>
+                  <View>
+                    <Text style={styles.winnerName}>{winner.user_name || 'Anonyme'}</Text>
+                    <Text style={styles.winnerTime}>{winner.time_ago || 'Récemment'}</Text>
+                  </View>
+                </View>
+                <Text style={styles.winnerReward}>🎁 {winner.reward_label || 'Récompense'}</Text>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>⚡ Actions Rapides</Text>
+        <View style={styles.quickActions}>
+          <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/(tabs)/menu')}><Text style={styles.actionEmoji}>🍽️</Text><Text style={styles.actionText}>Commander</Text></TouchableOpacity>
+          <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/(tabs)/orders')}><Text style={styles.actionEmoji}>📜</Text><Text style={styles.actionText}>Historique</Text></TouchableOpacity>
+          <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/about')}><Text style={styles.actionEmoji}>ℹ️</Text><Text style={styles.actionText}>Le Resto</Text></TouchableOpacity>
+          <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/(tabs)/profile')}><Text style={styles.actionEmoji}>👤</Text><Text style={styles.actionText}>Mon Profil</Text></TouchableOpacity>
+        </View>
+      </View>
+      <View style={{ height: 100 }} />
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F3F4F6' },
-  header: { padding: 24, paddingTop: 60, backgroundColor: '#FFF', alignItems: 'center', borderBottomLeftRadius: 30, borderBottomRightRadius: 30 },
+  container: { flex: 1, backgroundColor: '#FFF8F0' },
+  headerContainer: { marginBottom: 0 },
+  heroImage: { width: '100%', height: 220 },
+  heroOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.3)', borderBottomLeftRadius: 30, borderBottomRightRadius: 30, padding: 24, paddingTop: 60, alignItems: 'center', justifyContent: 'center' },
+  header: { padding: 24, paddingTop: 60, backgroundColor: '#C62828', alignItems: 'center', borderBottomLeftRadius: 30, borderBottomRightRadius: 30 },
   logo: { width: 180, height: 60, marginBottom: 16 },
-  greeting: { fontSize: 26, fontWeight: 'bold', color: '#1A1A1A', marginBottom: 4 },
-  subtitle: { fontSize: 16, color: '#6B7280' },
+  greeting: { fontSize: 28, fontWeight: 'bold', color: '#FFF', marginBottom: 4, textShadowColor: 'rgba(0,0,0,0.5)', textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 3 },
+  subtitle: { fontSize: 18, color: '#FFF', textShadowColor: 'rgba(0,0,0,0.5)', textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 3 },
+  greetingDark: { fontSize: 28, fontWeight: 'bold', color: '#FFF', marginBottom: 4 },
+  subtitleDark: { fontSize: 18, color: '#FFE0E0' },
   loyaltyCard: { margin: 16, padding: 20, backgroundColor: '#4F46E5', borderRadius: 24, overflow: 'hidden', shadowColor: '#4F46E5', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.4, shadowRadius: 20, elevation: 10 },
   loyaltyDecoCircle1: { position: 'absolute', top: -30, right: -30, width: 100, height: 100, borderRadius: 50, backgroundColor: 'rgba(255,255,255,0.1)' },
   loyaltyDecoCircle2: { position: 'absolute', bottom: -40, left: -20, width: 120, height: 120, borderRadius: 60, backgroundColor: 'rgba(255,255,255,0.08)' },

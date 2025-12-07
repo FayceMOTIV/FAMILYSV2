@@ -29,14 +29,14 @@ export const Settings = () => {
 
   const loadSettings = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/v1/admin/settings`);
+      const response = await axios.get(`${API_URL}/api/v1/fb/settings`);
       setSettings({
-        ...response.data,
+        ...(response.data.settings || response.data),
         social_media: response.data.social_media || {},
         service_links: response.data.service_links || {},
         opening_hours: response.data.opening_hours || {},
         order_hours: response.data.order_hours || {},
-        home_hero_image: response.data.home_hero_image || '',
+        home_hero_image: response.data.hero_image_url || response.data.home_hero_image || '',
         home_tagline: response.data.home_tagline || ''
       });
     } catch (error) {
@@ -69,7 +69,9 @@ export const Settings = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await axios.put(`${API_URL}/api/v1/admin/settings`, settings);
+      const dataToSave = { ...settings, hero_image_url: settings.home_hero_image || settings.hero_image_url };
+      await axios.put(`${API_URL}/api/v1/fb/settings`, dataToSave);
+
       alert('✅ Paramètres enregistrés avec succès !');
     } catch (error) {
       console.error('Error saving settings:', error);
@@ -242,10 +244,10 @@ export const Settings = () => {
                             const formData = new FormData();
                             formData.append('file', file);
                             try {
-                              const res = await axios.post(`${API_URL}/api/v1/admin/upload/image`, formData, {
+                              const res = await axios.post(`${API_URL}/api/v1/fb/upload/branding`, formData, {
                                 headers: { 'Content-Type': 'multipart/form-data' }
                               });
-                              setSettings({ ...settings, home_hero_image: res.data.url });
+                              setSettings({ ...settings, home_hero_image: res.data.url, hero_image_url: res.data.url });
                             } catch (err) {
                               alert('Erreur upload image');
                             }
@@ -818,6 +820,26 @@ export const Settings = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="mb-6 pb-6 border-b">
+                <Label htmlFor="admin_pin">🔑 Code PIN Admin (Accès Back Office)</Label>
+                <Input
+                  id="admin_pin"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]{4}"
+                  maxLength="4"
+                  value={settings.admin_pin || ''}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^0-9]/g, '');
+                    if (value.length <= 4) {
+                      setSettings({ ...settings, admin_pin: value });
+                    }
+                  }}
+                  placeholder="••••"
+                  className="text-center text-2xl tracking-widest font-bold max-w-xs"
+                />
+                <p className="text-xs text-gray-500 mt-1">Code principal pour accéder au back office complet</p>
+              </div>
             <p className="text-sm text-gray-600 mb-4">
               Définissez des codes PIN à 4 chiffres pour sécuriser l'accès aux différents modes du back-office
             </p>

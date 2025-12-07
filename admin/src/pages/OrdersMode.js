@@ -1,344 +1,443 @@
 import React, { useState, useEffect } from 'react';
-import { Header } from '../components/Header';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
-import { Package, TrendingUp, AlertCircle, Pause, Play, Clock, XCircle, CheckCircle, Truck, Calendar } from 'lucide-react';
-import axios from 'axios';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+import { ordersAPI, settingsAPI, productsAPI } from '../services/api';
+import { 
+  Package, Clock, CheckCircle, XCircle, 
+  Pause, Play, RefreshCw, LogOut, ChefHat,
+  AlertTriangle, X, Timer, Ban
+} from 'lucide-react';
 
 export const OrdersMode = () => {
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [dashboard, setDashboard] = useState(null);
+  const navigate = useNavigate();
+  const [orders, setOrders] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [settings, setSettings] = useState({});
   const [isPaused, setIsPaused] = useState(false);
-  const [noMoreOrdersToday, setNoMoreOrdersToday] = useState(false);
-  const [settings, setSettings] = useState(null);
-  const [showPauseModal, setShowPauseModal] = useState(false);
-  const [showNoMoreOrdersModal, setShowNoMoreOrdersModal] = useState(false);
-  const [pauseDuration, setPauseDuration] = useState('30');
+  const [showStockModal, setShowStockModal] = useState(false);
+  const [stockFilter, setStockFilter] = useState('all'); // all, out_of_stock
+  const [searchProduct, setSearchProduct] = useState('');
 
   useEffect(() => {
-    loadDashboard();
-    loadPauseStatus();
-    loadSettings();
-    const interval = setInterval(() => {
-      loadDashboard();
-      loadPauseStatus();
-    }, 30000);
+    const session = localStorage.getItem('orders_mode_session');
+    const expiry = localStorage.getItem('orders_mode_expiry');
+    
+    if (!session || !expiry || new Date(expiry) < new Date()) {
+      navigate('/orders-mode-login');
+      return;
+    }
+
+    loadData();
+    const interval = setInterval(loadData, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [navigate]);
 
-  const loadDashboard = async () => {
+  const loadData = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/v1/admin/dashboard/simple`);
-      setDashboard(response.data);
-    } catch (error) {
-      console.error('Error loading dashboard:', error);
-    }
-  };
-
-  const loadPauseStatus = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/api/v1/admin/pause/status`);
-      setIsPaused(response.data.is_paused);
-      setNoMoreOrdersToday(response.data.no_more_orders_today);
-    } catch (error) {
-      console.error('Error loading pause status:', error);
-    }
-  };
-
-  const loadSettings = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/api/v1/admin/settings`);
-      setSettings(response.data);
-    } catch (error) {
-      console.error('Error loading settings:', error);
-    }
-  };
-
-  const handlePause = async () => {
-    try {
-      const duration = pauseDuration === 'until_tonight' ? null : parseInt(pauseDuration);
-      await axios.post(`${API_URL}/api/v1/admin/pause`, {
-        is_paused: true,
-        pause_reason: 'Trop de commandes',
-        pause_duration_minutes: duration
+      const [ordersRes, settingsRes, productsRes] = await Promise.all([
+        ordersAPI.getActive(),
+        settingsAPI.get(),
+        productsAPI.getAll()
+      ]);
+      setOrders(ordersRes.data?.orders || []);
+      const s = settingsRes.data?.settings || {};
+      setSettings(s);
+      setIsPaused(s.is_paused || false);
+      
+      // Vérifier les ruptures 24H expirées
+      const prods = productsRes.data?.products || [];
+      const now = new Date();
+      prods.forEach(p => {
+        if (p.out_of_stock_until) {
+          const until = new Date(p.out_of_stock_until);
+          if (until <= now && p.is_out_of_stock) {
+            // Remettre en stock automatiquement
+            productsAPI.toggleStock(p.id, false);
+          }
+        }
       });
-      setShowPauseModal(false);
-      loadPauseStatus();
-      alert('✅ Restaurant mis en pause');
+      setProducts(prods);
     } catch (error) {
-      alert('❌ Erreur lors de la mise en pause');
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleResume = async () => {
+  const handleStatusChange = async (orderId, newStatus) => {
     try {
-      await axios.post(`${API_URL}/api/v1/admin/pause`, {
-        is_paused: false
-      });
-      loadPauseStatus();
-      alert('✅ Restaurant réouvert');
+      await ordersAPI.updateStatus(orderId, newStatus);
+      loadData();
     } catch (error) {
-      alert('❌ Erreur');
+      console.error('Error updating status:', error);
+      alert('Erreur lors de la mise à jour');
     }
   };
 
-  const handleNoMoreOrders = async (enable) => {
+  const togglePause = async () => {
     try {
-      await axios.post(`${API_URL}/api/v1/admin/no-more-orders-today`, {
-        no_more_orders_today: enable
-      });
-      setShowNoMoreOrdersModal(false);
-      loadPauseStatus();
-      alert(enable ? '🚫 Plus de commandes pour aujourd\'hui' : '✅ Commandes réouvertes');
+      await settingsAPI.update({ is_paused: !isPaused });
+      setIsPaused(!isPaused);
     } catch (error) {
-      alert('❌ Erreur');
+      console.error('Error:', error);
     }
   };
 
-  const handleNavigateToMode = (mode) => {
-    // Demander le PIN puis naviguer
-    const pin = prompt(`Code PIN pour Mode ${mode === 'delivery' ? 'Livraison' : 'Réservation'} :`);
-    if (pin) {
-      axios.post(`${API_URL}/api/v1/admin/verify-pin`, { pin, mode })
-        .then(() => {
-          window.location.href = `/admin/${mode}-mode`;
-        })
-        .catch(() => {
-          alert('❌ Code PIN incorrect');
+  const setProductOutOfStock = async (productId, type) => {
+    try {
+      if (type === '24h') {
+        // Rupture jusqu'à minuit
+        const midnight = new Date();
+        midnight.setHours(23, 59, 59, 999);
+        await productsAPI.update(productId, { 
+          is_out_of_stock: true,
+          out_of_stock_until: midnight.toISOString()
         });
+      } else if (type === 'indefinite') {
+        // Rupture indéfinie
+        await productsAPI.update(productId, { 
+          is_out_of_stock: true,
+          out_of_stock_until: null
+        });
+      } else {
+        // Remettre en stock
+        await productsAPI.update(productId, { 
+          is_out_of_stock: false,
+          out_of_stock_until: null
+        });
+      }
+      loadData();
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Erreur lors de la mise à jour du stock');
     }
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem('orders_mode_session');
+    localStorage.removeItem('orders_mode_expiry');
+    navigate('/select-mode');
+  };
+
+  const getStatusBadge = (status) => {
+    const badges = {
+      'new': { bg: 'bg-yellow-100', text: 'text-yellow-800', label: '🆕 Nouvelle' },
+      'in_preparation': { bg: 'bg-blue-100', text: 'text-blue-800', label: '👨‍🍳 En préparation' },
+      'ready': { bg: 'bg-green-100', text: 'text-green-800', label: '✅ Prête' },
+      'delivering': { bg: 'bg-purple-100', text: 'text-purple-800', label: '🚗 En livraison' }
+    };
+    const badge = badges[status] || { bg: 'bg-gray-100', text: 'text-gray-800', label: status };
+    return <span className={`px-3 py-1 rounded-full text-sm font-semibold ${badge.bg} ${badge.text}`}>{badge.label}</span>;
+  };
+
+  const formatTime = (dateStr) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const getStockStatus = (product) => {
+    if (!product.is_out_of_stock) return 'in_stock';
+    if (product.out_of_stock_until) return '24h';
+    return 'indefinite';
+  };
+
+  const outOfStockProducts = products.filter(p => p.is_out_of_stock === true);
+  
+  const filteredProducts = products.filter(p => {
+    const matchesSearch = p.name.toLowerCase().includes(searchProduct.toLowerCase());
+    const matchesFilter = stockFilter === 'all' || 
+      (stockFilter === 'out_of_stock' && p.is_out_of_stock);
+    return matchesSearch && matchesFilter;
+  });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header title="🍽️ Mode Commande" subtitle="Gestion simplifiée pour le personnel" />
-      
-      <div className="p-6 space-y-6">
-        {/* Alert Pause/No More Orders */}
-        {(isPaused || noMoreOrdersToday) && (
-          <Card className="bg-red-50 border-2 border-red-500">
-            <div className="p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <AlertCircle className="w-6 h-6 text-red-600" />
-                <div>
-                  <h3 className="font-bold text-red-900">
-                    {noMoreOrdersToday ? '🚫 PLUS DE COMMANDES AUJOURD\'HUI' : '⏸️ RESTAURANT EN PAUSE'}
-                  </h3>
-                  {isPaused && <p className="text-sm text-red-700">Les clients ne peuvent pas commander actuellement</p>}
-                </div>
-              </div>
-              {isPaused && (
-                <Button onClick={handleResume} className="bg-green-600 hover:bg-green-700">
-                  <Play className="w-4 h-4 mr-2" />
-                  Reprendre
-                </Button>
-              )}
-              {noMoreOrdersToday && (
-                <Button onClick={() => handleNoMoreOrders(false)} className="bg-green-600 hover:bg-green-700">
-                  Réouvrir
-                </Button>
-              )}
+    <div className="min-h-screen bg-gray-100">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b px-4 md:px-6 py-4 sticky top-0 z-10">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <ChefHat className="w-8 h-8 text-blue-600" />
+            <div>
+              <h1 className="text-xl md:text-2xl font-bold text-gray-800">Mode Commandes</h1>
+              <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs font-semibold">
+                {orders.length} active{orders.length > 1 ? 's' : ''}
+              </span>
             </div>
-          </Card>
-        )}
-
-        {/* Tabs */}
-        <div className="flex gap-2 border-b">
-          <button
-            onClick={() => setActiveTab('dashboard')}
-            className={`px-4 py-2 font-medium ${activeTab === 'dashboard' ? 'border-b-2 border-primary text-primary' : 'text-gray-600'}`}
-          >
-            📊 Dashboard
-          </button>
-          <button
-            onClick={() => setActiveTab('pause')}
-            className={`px-4 py-2 font-medium ${activeTab === 'pause' ? 'border-b-2 border-primary text-primary' : 'text-gray-600'}`}
-          >
-            ⏸️ Pause & Fermeture
-          </button>
-          <button
-            onClick={() => setActiveTab('stock')}
-            className={`px-4 py-2 font-medium ${activeTab === 'stock' ? 'border-b-2 border-primary text-primary' : 'text-gray-600'}`}
-          >
-            📦 Rupture
-          </button>
-          <button
-            onClick={() => window.location.href = '/admin/orders'}
-            className="px-4 py-2 font-medium text-gray-600 hover:text-primary"
-          >
-            📋 Commandes
-          </button>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button variant="outline" size="sm" onClick={loadData}>
+              <RefreshCw className="w-4 h-4 md:mr-2" />
+              <span className="hidden md:inline">Actualiser</span>
+            </Button>
+            <Button 
+              variant="outline"
+              size="sm"
+              onClick={() => setShowStockModal(true)}
+              className={outOfStockProducts.length > 0 ? 'border-red-300 text-red-600' : ''}
+            >
+              <AlertTriangle className="w-4 h-4 md:mr-2" />
+              <span className="hidden md:inline">Ruptures</span> ({outOfStockProducts.length})
+            </Button>
+            <Button 
+              size="sm"
+              variant={isPaused ? "default" : "outline"}
+              onClick={togglePause}
+              className={isPaused ? 'bg-red-500 hover:bg-red-600' : ''}
+            >
+              {isPaused ? <Play className="w-4 h-4 md:mr-2" /> : <Pause className="w-4 h-4 md:mr-2" />}
+              <span className="hidden md:inline">{isPaused ? 'Reprendre' : 'Pause'}</span>
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleLogout}>
+              <LogOut className="w-4 h-4 md:mr-2" />
+              <span className="hidden md:inline">Quitter</span>
+            </Button>
+          </div>
         </div>
-
-        {/* Dashboard Tab */}
-        {activeTab === 'dashboard' && dashboard && (
-          <div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <Card className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <CheckCircle className="w-12 h-12 text-white/80" />
-                    <span className="text-5xl font-black">{dashboard.orders_completed_today}</span>
-                  </div>
-                  <p className="text-xl font-bold">Commandes traitées</p>
-                  <p className="text-sm text-white/80">Aujourd'hui</p>
-                </div>
-              </Card>
-
-              <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white">
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <TrendingUp className="w-12 h-12 text-white/80" />
-                    <span className="text-5xl font-black">{dashboard.revenue_today.toFixed(0)}€</span>
-                  </div>
-                  <p className="text-xl font-bold">Chiffre d'affaires</p>
-                  <p className="text-sm text-white/80">Aujourd'hui</p>
-                </div>
-              </Card>
-            </div>
-
-            {/* Boutons vers autres modes */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {settings?.enable_delivery && (
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleNavigateToMode('delivery')}>
-                  <div className="p-6 flex items-center gap-4">
-                    <div className="bg-orange-100 p-4 rounded-full">
-                      <Truck className="w-8 h-8 text-orange-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold">Mode Livraison</h3>
-                      <p className="text-sm text-gray-600">Gérer les livraisons en cours</p>
-                    </div>
-                  </div>
-                </Card>
-              )}
-              
-              {settings?.enable_reservations && (
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleNavigateToMode('reservation')}>
-                  <div className="p-6 flex items-center gap-4">
-                    <div className="bg-purple-100 p-4 rounded-full">
-                      <Calendar className="w-8 h-8 text-purple-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold">Mode Réservation</h3>
-                      <p className="text-sm text-gray-600">Gérer les réservations</p>
-                    </div>
-                  </div>
-                </Card>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Pause Tab */}
-        {activeTab === 'pause' && (
-          <div className="space-y-4">
-            <Card>
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-4">⏸️ Mettre en pause les commandes</h3>
-                <p className="text-gray-600 mb-4">Empêche temporairement les clients de passer commande</p>
-                
-                {!isPaused ? (
-                  <Button onClick={() => setShowPauseModal(true)} className="bg-orange-500 hover:bg-orange-600">
-                    <Pause className="w-4 h-4 mr-2" />
-                    Mettre en pause
-                  </Button>
-                ) : (
-                  <Button onClick={handleResume} className="bg-green-600 hover:bg-green-700">
-                    <Play className="w-4 h-4 mr-2" />
-                    Reprendre les commandes
-                  </Button>
-                )}
-              </div>
-            </Card>
-
-            <Card>
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-4">🚫 Plus de commandes pour aujourd'hui</h3>
-                <p className="text-gray-600 mb-4">Bloque toutes les nouvelles commandes jusqu'à demain</p>
-                
-                {!noMoreOrdersToday ? (
-                  <Button onClick={() => setShowNoMoreOrdersModal(true)} className="bg-red-600 hover:bg-red-700">
-                    <XCircle className="w-4 h-4 mr-2" />
-                    Plus de commandes aujourd'hui
-                  </Button>
-                ) : (
-                  <Button onClick={() => handleNoMoreOrders(false)} className="bg-green-600 hover:bg-green-700">
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Réouvrir les commandes
-                  </Button>
-                )}
-              </div>
-            </Card>
-          </div>
-        )}
-
-        {/* Stock Tab */}
-        {activeTab === 'stock' && (
-          <Card>
-            <div className="p-6">
-              <h3 className="text-xl font-bold mb-4">📦 Gestion des ruptures</h3>
-              <p className="text-gray-600 mb-4">Cette fonctionnalité sera disponible via le module de gestion des stocks</p>
-              <Button onClick={() => window.location.href = '/admin/stock'}>
-                Ouvrir gestion des stocks
-              </Button>
-            </div>
-          </Card>
-        )}
       </div>
 
-      {/* Pause Modal */}
-      {showPauseModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-md">
-            <div className="p-6">
-              <h3 className="text-xl font-bold mb-4">⏸️ Mettre en pause</h3>
-              <p className="text-gray-600 mb-4">Pendant combien de temps ?</p>
-              
-              <select
-                value={pauseDuration}
-                onChange={(e) => setPauseDuration(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg mb-4"
-              >
-                <option value="30">30 minutes</option>
-                <option value="60">1 heure</option>
-                <option value="120">2 heures</option>
-                <option value="until_tonight">Jusqu'à ce soir</option>
-                <option value="indefinite">Indéfini</option>
-              </select>
-              
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setShowPauseModal(false)} className="flex-1">
-                  Annuler
-                </Button>
-                <Button onClick={handlePause} className="flex-1 bg-orange-500 hover:bg-orange-600">
-                  Confirmer
-                </Button>
-              </div>
-            </div>
-          </Card>
+      {/* Alerte Pause */}
+      {isPaused && (
+        <div className="bg-red-500 text-white px-4 py-3 text-center font-semibold">
+          ⏸️ Commandes en pause - Les clients ne peuvent pas commander
         </div>
       )}
 
-      {/* No More Orders Modal */}
-      {showNoMoreOrdersModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-md">
-            <div className="p-6">
-              <h3 className="text-xl font-bold mb-4">🚫 Plus de commandes</h3>
-              <p className="text-gray-600 mb-4">Êtes-vous sûr de ne plus vouloir accepter de commandes aujourd'hui ?</p>
-              <p className="text-sm text-red-600 mb-4">Les clients verront un message à l'ouverture de l'app</p>
-              
+      {/* Liste des commandes */}
+      <div className="p-4 md:p-6">
+        {orders.length === 0 ? (
+          <Card className="text-center py-16">
+            <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-500">Aucune commande active</h3>
+            <p className="text-gray-400 mt-2">Les nouvelles commandes apparaîtront ici</p>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {orders.map((order) => (
+              <Card key={order.id} className={`p-4 ${order.status === 'new' ? 'ring-2 ring-yellow-400 animate-pulse' : ''}`}>
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h3 className="font-bold text-xl">#{order.order_number}</h3>
+                    <p className="text-sm text-gray-600">{order.customer_name}</p>
+                    <p className="text-xs text-gray-400 flex items-center gap-1">
+                      <Clock className="w-3 h-3" /> {formatTime(order.created_at)}
+                    </p>
+                  </div>
+                  {getStatusBadge(order.status)}
+                </div>
+
+                <div className="border-t pt-3 mb-3 max-h-32 overflow-y-auto">
+                  {order.items?.map((item, idx) => (
+                    <div key={idx} className="text-sm py-1 border-b border-gray-100 last:border-0">
+                      <span className="font-semibold">{item.quantity}x</span> {item.name}
+                      {item.options && item.options.length > 0 && (
+                        <p className="text-xs text-gray-400 ml-4">
+                          {item.options.map(o => o.name || o).join(', ')}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {order.notes && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded p-2 mb-3 text-sm">
+                    📝 {order.notes}
+                  </div>
+                )}
+
+                <div className="border-t pt-3">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-xs text-gray-500">
+                      {order.order_type === 'delivery' ? '🚗 Livraison' : '🏪 À emporter'}
+                    </span>
+                    <span className="font-bold text-xl text-green-600">{order.total?.toFixed(2)}€</span>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    {order.status === 'new' && (
+                      <>
+                        <Button 
+                          size="sm" 
+                          className="flex-1 bg-blue-500 hover:bg-blue-600"
+                          onClick={() => handleStatusChange(order.id, 'in_preparation')}
+                        >
+                          <ChefHat className="w-4 h-4 mr-1" /> Préparer
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="text-red-500 border-red-300"
+                          onClick={() => handleStatusChange(order.id, 'cancelled')}
+                        >
+                          <XCircle className="w-4 h-4" />
+                        </Button>
+                      </>
+                    )}
+                    {order.status === 'in_preparation' && (
+                      <Button 
+                        size="sm" 
+                        className="flex-1 bg-green-500 hover:bg-green-600"
+                        onClick={() => handleStatusChange(order.id, 'ready')}
+                      >
+                        <CheckCircle className="w-4 h-4 mr-1" /> Prête !
+                      </Button>
+                    )}
+                    {order.status === 'ready' && order.order_type === 'delivery' && (
+                      <Button 
+                        size="sm" 
+                        className="flex-1 bg-purple-500 hover:bg-purple-600"
+                        onClick={() => handleStatusChange(order.id, 'delivering')}
+                      >
+                        🚗 En livraison
+                      </Button>
+                    )}
+                    {order.status === 'ready' && order.order_type !== 'delivery' && (
+                      <Button 
+                        size="sm" 
+                        className="flex-1 bg-gray-600 hover:bg-gray-700"
+                        onClick={() => handleStatusChange(order.id, 'completed')}
+                      >
+                        <CheckCircle className="w-4 h-4 mr-1" /> Récupérée
+                      </Button>
+                    )}
+                    {order.status === 'delivering' && (
+                      <Button 
+                        size="sm" 
+                        className="flex-1 bg-green-600 hover:bg-green-700"
+                        onClick={() => handleStatusChange(order.id, 'delivered')}
+                      >
+                        <CheckCircle className="w-4 h-4 mr-1" /> Livrée
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Modal Gestion des Ruptures */}
+      {showStockModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-2xl max-h-[90vh] overflow-hidden">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h2 className="text-xl font-bold">🚫 Gestion des Ruptures</h2>
+              <button onClick={() => setShowStockModal(false)}>
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            {/* Filtres */}
+            <div className="p-4 border-b bg-gray-50">
+              <input
+                type="text"
+                placeholder="🔍 Rechercher un produit..."
+                value={searchProduct}
+                onChange={(e) => setSearchProduct(e.target.value)}
+                className="w-full px-4 py-2 border rounded-lg mb-3"
+              />
               <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setShowNoMoreOrdersModal(false)} className="flex-1">
-                  Annuler
-                </Button>
-                <Button onClick={() => handleNoMoreOrders(true)} className="flex-1 bg-red-600 hover:bg-red-700">
-                  Confirmer
-                </Button>
+                <button 
+                  onClick={() => setStockFilter('all')}
+                  className={`px-3 py-1 rounded-full text-sm ${stockFilter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                >
+                  Tous ({products.length})
+                </button>
+                <button 
+                  onClick={() => setStockFilter('out_of_stock')}
+                  className={`px-3 py-1 rounded-full text-sm ${stockFilter === 'out_of_stock' ? 'bg-red-500 text-white' : 'bg-gray-200'}`}
+                >
+                  En rupture ({outOfStockProducts.length})
+                </button>
               </div>
+            </div>
+
+            <div className="p-4 overflow-y-auto max-h-[50vh]">
+              <div className="space-y-3">
+                {filteredProducts.map((product) => {
+                  const status = getStockStatus(product);
+                  return (
+                    <div 
+                      key={product.id}
+                      className={`p-3 rounded-lg border ${
+                        status !== 'in_stock' 
+                          ? 'bg-red-50 border-red-300' 
+                          : 'bg-white border-gray-200'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-3">
+                          {product.image_url && (
+                            <img src={product.image_url} alt="" className="w-12 h-12 rounded object-cover" />
+                          )}
+                          <div>
+                            <p className="font-semibold">{product.name}</p>
+                            <p className="text-sm text-gray-500">{product.category_name}</p>
+                          </div>
+                        </div>
+                        {status === 'in_stock' && (
+                          <span className="px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
+                            ✅ En stock
+                          </span>
+                        )}
+                        {status === '24h' && (
+                          <span className="px-2 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-700">
+                            ⏰ Rupture 24H
+                          </span>
+                        )}
+                        {status === 'indefinite' && (
+                          <span className="px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700">
+                            🚫 Rupture indéfinie
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="flex gap-2 mt-2">
+                        {status === 'in_stock' ? (
+                          <>
+                            <button
+                              onClick={() => setProductOutOfStock(product.id, '24h')}
+                              className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-orange-100 text-orange-700 rounded-lg text-sm font-semibold hover:bg-orange-200"
+                            >
+                              <Timer className="w-4 h-4" /> Rupture 24H
+                            </button>
+                            <button
+                              onClick={() => setProductOutOfStock(product.id, 'indefinite')}
+                              className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-red-100 text-red-700 rounded-lg text-sm font-semibold hover:bg-red-200"
+                            >
+                              <Ban className="w-4 h-4" /> Rupture indéfinie
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            onClick={() => setProductOutOfStock(product.id, 'in_stock')}
+                            className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-green-100 text-green-700 rounded-lg text-sm font-semibold hover:bg-green-200"
+                          >
+                            <CheckCircle className="w-4 h-4" /> Remettre en stock
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            
+            <div className="p-4 border-t bg-gray-50">
+              <Button onClick={() => setShowStockModal(false)} className="w-full">
+                Fermer
+              </Button>
             </div>
           </Card>
         </div>

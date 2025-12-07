@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { Upload, X, Loader } from 'lucide-react';
-import axios from 'axios';
+import { uploadAPI } from '../services/api';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://fastfood-fixes.preview.emergentagent.com';
-
-export const ImageUpload = ({ currentImage, onImageChange, label = "Image" }) => {
+export const ImageUpload = ({ currentImage, onImageChange, label = "Image", folder = "images" }) => {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState(currentImage || null);
 
@@ -25,20 +23,13 @@ export const ImageUpload = ({ currentImage, onImageChange, label = "Image" }) =>
     };
     reader.readAsDataURL(file);
 
-    // Upload vers le serveur
+    // Upload vers Firebase Storage
     setUploading(true);
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await axios.post(`${API_URL}/api/v1/admin/upload/image`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
-      const imageUrl = `${API_URL}${response.data.url}`;
+      const response = await uploadAPI.image(file, folder);
+      const imageUrl = response.data.url;
       onImageChange(imageUrl);
+      setPreview(imageUrl);
       alert('✅ Image uploadée!');
     } catch (error) {
       console.error('Erreur upload:', error);
@@ -53,6 +44,11 @@ export const ImageUpload = ({ currentImage, onImageChange, label = "Image" }) =>
     setPreview(null);
     onImageChange('');
   };
+
+  // Sync preview with currentImage prop
+  React.useEffect(() => {
+    setPreview(currentImage || null);
+  }, [currentImage]);
 
   return (
     <div>
@@ -104,7 +100,7 @@ export const ImageUpload = ({ currentImage, onImageChange, label = "Image" }) =>
       <div className="mt-3">
         <input
           type="text"
-          value={preview || ''}
+          value={typeof preview === 'string' && !preview.startsWith('data:') ? preview : ''}
           onChange={(e) => {
             setPreview(e.target.value);
             onImageChange(e.target.value);

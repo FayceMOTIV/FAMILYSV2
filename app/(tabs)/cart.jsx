@@ -88,7 +88,7 @@ export default function CartScreen() {
   const loadAppConfig = async () => {
     try {
       setLoadingConfig(true);
-      const response = await axios.get(`${API_BASE_URL}/settings/app-config`, { timeout: 5000 });
+      const response = await axios.get(`${API_BASE_URL}/fb/app-settings/app-config`, { timeout: 5000 });
       setAppConfig(response.data);
       // Définir le mode par défaut selon ce qui est activé
       if (response.data.enable_takeaway) {
@@ -115,7 +115,7 @@ export default function CartScreen() {
 
   const loadTimeSlots = async (date) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/settings/time-slots?date=${date}`, { timeout: 5000 });
+      const response = await axios.get(`${API_BASE_URL}/fb/app-settings/time-slots?date=${date}`, { timeout: 5000 });
       setTimeSlots(response.data.slots || []);
       // Sélectionner le premier créneau disponible
       if (response.data.slots && response.data.slots.length > 0 && !pickupTime) {
@@ -584,9 +584,21 @@ export default function CartScreen() {
       </ScrollView>
 
       <View style={styles.footer}>
-        <TouchableOpacity onPress={handleCreateOrder} disabled={loading || isCalculating} style={[styles.orderButton, (loading || isCalculating) && styles.orderButtonDisabled]}>
-          {loading || isCalculating ? <ActivityIndicator color="#FFF" /> : <Text style={styles.orderButtonText}>Commander • {total.toFixed(2)}€</Text>}
-        </TouchableOpacity>
+        {appConfig?.is_paused ? (
+          <View style={styles.pausedBanner}>
+            <Text style={styles.pausedTitle}>⏸️ Commandes temporairement suspendues</Text>
+            <Text style={styles.pausedText}>{appConfig?.pause_reason || "Nous reprenons les commandes très bientôt !"}</Text>
+          </View>
+        ) : appConfig?.no_more_orders_today ? (
+          <View style={styles.pausedBanner}>
+            <Text style={styles.pausedTitle}>🌙 Plus de commandes aujourd'hui</Text>
+            <Text style={styles.pausedText}>Retrouvez-nous demain !</Text>
+          </View>
+        ) : (
+          <TouchableOpacity onPress={handleCreateOrder} disabled={loading || isCalculating} style={[styles.orderButton, (loading || isCalculating) && styles.orderButtonDisabled]}>
+            {loading || isCalculating ? <ActivityIndicator color="#FFF" /> : <Text style={styles.orderButtonText}>Commander • {total.toFixed(2)}€</Text>}
+          </TouchableOpacity>
+        )}
         <TouchableOpacity onPress={clearCart} style={styles.clearButton}>
           <Text style={styles.clearButtonText}>Vider le panier</Text>
         </TouchableOpacity>
@@ -597,6 +609,9 @@ export default function CartScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8F9FA' },
+  pausedBanner: { backgroundColor: '#FEF3C7', borderRadius: 12, padding: 16, alignItems: 'center', marginBottom: 8 },
+  pausedTitle: { fontSize: 16, fontWeight: 'bold', color: '#92400E', marginBottom: 4 },
+  pausedText: { fontSize: 14, color: '#B45309', textAlign: 'center' },
   header: { backgroundColor: '#C62828', paddingTop: 60, paddingBottom: 20, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center' },
   backButton: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.2)', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
   backButtonText: { fontSize: 24, color: '#FFF', fontWeight: 'bold' },

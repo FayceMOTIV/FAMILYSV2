@@ -3,7 +3,7 @@ import { Modal } from './Modal';
 import { Button } from './Button';
 import { Input, Label, Select } from './Input';
 import { ImageUpload } from './ImageUpload';
-import { productsAPI, categoriesAPI } from '../services/api';
+import { productsAPI, categoriesAPI, optionsAPI } from '../services/api';
 import axios from 'axios';
 import { ChevronUp, ChevronDown, X, Info } from 'lucide-react';
 
@@ -94,7 +94,7 @@ export const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
 
   const loadOptions = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/v1/admin/options`);
+      const response = await optionsAPI.getAll();
       setOptions(response.data.options || []);
     } catch (error) {
       console.error('Failed to load options:', error);
