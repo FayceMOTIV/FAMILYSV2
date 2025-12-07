@@ -4,9 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '../components/Card';
 import { Button } from '../components/Button';
 import { OptionModal } from '../components/OptionModal';
 import { Plus, Edit, Trash2, Copy } from 'lucide-react';
-import axios from 'axios';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+import { optionsAPI } from '../services/api';
 
 export const Options = () => {
   const [options, setOptions] = useState([]);
@@ -19,7 +17,7 @@ export const Options = () => {
 
   const loadOptions = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/v1/admin/options`);
+      const response = await optionsAPI.getAll();
       setOptions(response.data.options || []);
     } catch (error) {
       console.error('Erreur chargement options:', error);
@@ -36,7 +34,7 @@ export const Options = () => {
     if (!window.confirm('Supprimer cette option ?')) return;
     
     try {
-      await axios.delete(`${API_URL}/api/v1/admin/options/${optionId}`);
+      await optionsAPI.delete(optionId);
       await loadOptions();
       alert('✅ Option supprimée!');
     } catch (error) {
@@ -57,7 +55,7 @@ export const Options = () => {
       // Remove the id so backend creates a new one
       delete duplicatedOption.id;
       
-      await axios.post(`${API_URL}/api/v1/admin/options`, duplicatedOption);
+      await optionsAPI.create(duplicatedOption);
       await loadOptions();
       alert('✅ Option dupliquée avec succès !');
     } catch (error) {

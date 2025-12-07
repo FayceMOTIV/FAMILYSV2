@@ -3,6 +3,9 @@ import { Modal } from './Modal';
 import { Button } from './Button';
 import { X, Plus, Trash2, Upload, Image as ImageIcon } from 'lucide-react';
 import { NestedSubOptionsEditor } from './NestedSubOptionsEditor';
+import { optionsAPI, choiceLibraryAPI, uploadAPI } from '../services/api';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
 
 export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -24,8 +27,6 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
   const [uploadingImage, setUploadingImage] = useState({});
   const [toast, setToast] = useState(null);
 
-  const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://fastfood-fixes.preview.emergentagent.com';
-
   useEffect(() => {
     if (isOpen) {
       loadChoiceLibrary();
@@ -39,9 +40,8 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
 
   const loadChoiceLibrary = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/v1/admin/choice-library`);
-      const data = await response.json();
-      setChoiceLibrary(data.choices || []);
+      const response = await choiceLibraryAPI.getAll();
+      setChoiceLibrary(response.data.choices || []);
     } catch (error) {
       console.error('Error loading choice library:', error);
     }
@@ -105,21 +105,15 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
         return; // Already in library, skip
       }
 
-      const response = await fetch(`${API_URL}/api/v1/admin/choice-library`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: choice.name,
-          default_price: choice.price,
-          image_url: choice.image_url || null,
-          description: null
-        })
+      await choiceLibraryAPI.create({
+        name: choice.name,
+        default_price: choice.price,
+        image_url: choice.image_url || null,
+        description: null
       });
 
-      if (response.ok) {
-        await loadChoiceLibrary(); // Reload library
-        showToast(`"${choice.name}" ajouté à la bibliothèque`, 'info');
-      }
+      await loadChoiceLibrary(); // Reload library
+      showToast(`"${choice.name}" ajouté à la bibliothèque`, 'info');
     } catch (error) {
       console.error('Error adding to library:', error);
     }
@@ -143,20 +137,9 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
     setUploadingImage(prev => ({ ...prev, [index]: true }));
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch(`${API_URL}/api/v1/admin/upload/image`, {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!response.ok) {
-        throw new Error('Upload failed');
-      }
-
-      const data = await response.json();
-      handleChoiceChange(index, 'image_url', data.url);
+      const response = await uploadAPI.image(file, 'options');
+      const imageUrl = response.data.url;
+      handleChoiceChange(index, 'image_url', imageUrl);
       showToast('Image uploadée avec succès', 'success');
     } catch (error) {
       console.error('Error uploading image:', error);
@@ -233,21 +216,10 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
         choices: formData.choices.filter(c => c.name.trim() !== '')
       };
       
-      const url = option 
-        ? `${API_URL}/api/v1/admin/options/${option.id}`
-        : `${API_URL}/api/v1/admin/options`;
-      
-      const method = option ? 'PUT' : 'POST';
-      
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || 'Failed to save option');
+      if (option) {
+        await optionsAPI.update(option.id, data);
+      } else {
+        await optionsAPI.create(data);
       }
 
       // Add all choices to library after successful save
@@ -259,7 +231,7 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
       onClose();
     } catch (error) {
       console.error('Error saving option:', error);
-      alert(`Erreur: ${error.message}`);
+      alert(`Erreur: ${error.response?.data?.detail || error.message}`);
     } finally {
       setLoading(false);
     }

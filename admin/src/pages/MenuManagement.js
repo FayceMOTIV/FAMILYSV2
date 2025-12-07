@@ -6,15 +6,14 @@ import { ProductModal } from '../components/ProductModal';
 import { CategoryModal } from '../components/CategoryModal';
 import { OptionModal } from '../components/OptionModal';
 import { ProductVisualModal } from '../components/ProductVisualModal';
-import { productsAPI, categoriesAPI } from '../services/api';
+import { productsAPI, categoriesAPI, optionsAPI, choiceLibraryAPI } from '../services/api';
 import { Plus, Edit2, Trash2, Package, Copy, FolderOpen, Sliders, Edit, MoreVertical, Clock, Calendar, XCircle, CheckCircle, ArrowUp, ArrowDown, LayoutGrid, List as ListIcon, Search, X, Filter, Grid, Image } from 'lucide-react';
 import { ProductsListView } from '../components/ProductsListView';
 import { CategoriesListView } from '../components/CategoriesListView';
 import { OptionsListView } from '../components/OptionsListView';
 import { ChoiceLibraryModal } from '../components/ChoiceLibraryModal';
-import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://fastfood-fixes.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
 
 export const MenuManagement = () => {
   const [activeTab, setActiveTab] = useState('products');
@@ -110,7 +109,7 @@ export const MenuManagement = () => {
 
   const loadOptions = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/v1/admin/options`);
+      const response = await optionsAPI.getAll();
       setOptions(response.data.options || []);
     } catch (error) {
       console.error('Error loading options:', error);
@@ -119,7 +118,7 @@ export const MenuManagement = () => {
 
   const loadChoiceLibrary = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/v1/admin/choice-library`);
+      const response = await choiceLibraryAPI.getAll();
       setChoiceLibrary(response.data.choices || []);
     } catch (error) {
       console.error('Error loading choice library:', error);
@@ -180,7 +179,9 @@ export const MenuManagement = () => {
 
   const handleStockStatus = async (productId, status) => {
     try {
-      await axios.post(`${API_URL}/api/v1/admin/products/${productId}/stock-status`, { status });
+      // Convertir le status en is_out_of_stock boolean
+      const is_out_of_stock = status !== 'available';
+      await productsAPI.toggleStock(productId, is_out_of_stock);
       loadProducts();
       
       const messages = {
@@ -236,12 +237,12 @@ export const MenuManagement = () => {
       const category1 = sortedCats[index];
       const category2 = sortedCats[targetIndex];
       
-      await axios.put(`${API_URL}/api/v1/admin/categories/${category1.id}`, {
+      await categoriesAPI.update(category1.id, {
         ...category1,
         order: category2.order || targetIndex
       });
       
-      await axios.put(`${API_URL}/api/v1/admin/categories/${category2.id}`, {
+      await categoriesAPI.update(category2.id, {
         ...category2,
         order: category1.order || index
       });
@@ -358,7 +359,7 @@ export const MenuManagement = () => {
   const handleDeleteOption = async (optionId) => {
     if (!window.confirm('Supprimer cette option ?')) return;
     try {
-      await axios.delete(`${API_URL}/api/v1/admin/options/${optionId}`);
+      await optionsAPI.delete(optionId);
       loadOptions();
       alert('✅ Option supprimée!');
     } catch (error) {
@@ -374,7 +375,7 @@ export const MenuManagement = () => {
         name: `${option.name} (copie)`,
       };
       delete duplicatedOption.id;
-      await axios.post(`${API_URL}/api/v1/admin/options`, duplicatedOption);
+      await optionsAPI.create(duplicatedOption);
       loadOptions();
       alert('✅ Option dupliquée avec succès !');
     } catch (error) {
@@ -385,7 +386,7 @@ export const MenuManagement = () => {
   const handleDeleteChoice = async (choiceId) => {
     if (!window.confirm('Supprimer ce choix de la bibliothèque ?')) return;
     try {
-      await axios.delete(`${API_URL}/api/v1/admin/choice-library/${choiceId}`);
+      await choiceLibraryAPI.delete(choiceId);
       loadChoiceLibrary();
       alert('✅ Choix supprimé!');
     } catch (error) {

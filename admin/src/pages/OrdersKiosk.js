@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, Truck, CheckCircle, Package, Printer, XCircle } from 'lucide-react';
-import axios from 'axios';
+import { ordersAPI } from '../services/api';
 import useNotificationSound from '../hooks/useNotificationSound';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://fastfood-fixes.preview.emergentagent.com';
 
 export const OrdersKiosk = () => {
   const [orders, setOrders] = useState([]);
@@ -28,7 +26,7 @@ export const OrdersKiosk = () => {
 
   const loadOrders = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/v1/admin/orders`);
+      const response = await ordersAPI.getAll();
       setOrders(response.data.orders || []);
     } catch (error) {
       console.error('Error loading orders:', error);
@@ -43,7 +41,7 @@ export const OrdersKiosk = () => {
         )
       );
       
-      await axios.patch(`${API_URL}/api/v1/admin/orders/${orderId}/status`, { status: newStatus });
+      await ordersAPI.updateStatus(orderId, newStatus);
     } catch (error) {
       console.error('Error updating order:', error);
       loadOrders();

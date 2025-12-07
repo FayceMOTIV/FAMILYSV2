@@ -7,9 +7,9 @@ import { CancellationModal } from '../components/CancellationModal';
 import { ConfirmationModal } from '../components/ConfirmationModal';
 import { RefundModal } from '../components/RefundModal';
 import { Package, Clock, Truck, CheckCircle, XCircle, CreditCard, Loader, Printer, Grid, List, DollarSign, FileText, AlertCircle } from 'lucide-react';
-import axios from 'axios';
+import { ordersAPI } from '../services/api';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://fastfood-fixes.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
 
 export const OrdersManagement = () => {
   const [orders, setOrders] = useState([]);
@@ -49,7 +49,7 @@ export const OrdersManagement = () => {
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/v1/admin/orders?status=new`);
+        const response = await ordersAPI.getAll('new');
         const newOrders = response.data.orders || [];
         
         // Si nouvelle commande détectée, jouer le son
@@ -125,7 +125,7 @@ export const OrdersManagement = () => {
     setLoading(true);
     try {
       // Charger toutes les commandes sans filtre
-      const response = await axios.get(`${API_URL}/api/v1/admin/orders`);
+      const response = await ordersAPI.getAll();
       setOrders(response.data.orders || []);
     } catch (error) {
       console.error('Erreur chargement commandes:', error);
@@ -256,7 +256,7 @@ export const OrdersManagement = () => {
       );
       
       // Envoyer la requête au backend
-      await axios.patch(`${API_URL}/api/v1/admin/orders/${orderId}/status`, { status: newStatus });
+      await ordersAPI.updateStatus(orderId, newStatus);
       
       setPendingStatusChange(null);
     } catch (error) {
@@ -288,10 +288,7 @@ export const OrdersManagement = () => {
       );
       
       // Envoyer la requête au backend
-      await axios.patch(`${API_URL}/api/v1/admin/orders/${selectedOrder.id}/status`, { 
-        status: 'canceled',
-        cancellation_reason: reason 
-      });
+      await ordersAPI.cancel(selectedOrder.id, reason);
       
       setShowCancellationModal(false);
       setSelectedOrder(null);

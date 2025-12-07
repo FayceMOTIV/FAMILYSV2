@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '../components/Card';
 import { Button } from '../components/Button';
 import { Input, Label, Select } from '../components/Input';
 import { Image, Plus, Trash2, Edit, Eye, EyeOff, Link as LinkIcon, RefreshCw, Upload, X } from 'lucide-react';
-import axios from 'axios';
+import { popupsAPI, uploadAPI } from '../services/api';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
 
@@ -53,7 +53,7 @@ export const Popups = () => {
   const loadPopups = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API_URL}/api/v1/admin/popups`);
+      const response = await popupsAPI.getAll();
       setPopups(response.data.popups || response.data || []);
     } catch (error) {
       console.error('Erreur chargement popups:', error);
@@ -112,15 +112,12 @@ export const Popups = () => {
 
     setUploading(true);
     try {
-      const formDataUpload = new FormData();
-      formDataUpload.append('file', file);
+      const response = await uploadAPI.popupImage(file);
 
-      const response = await axios.post(`${API_URL}/api/v1/admin/upload/image`, formDataUpload, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-
-      if (response.data.success) {
-        const imageUrl = `${API_URL}${response.data.url}`;
+      if (response.data.success || response.data.url) {
+        const imageUrl = response.data.url.startsWith('http') 
+          ? response.data.url 
+          : `${API_URL}${response.data.url}`;
         setFormData({ ...formData, image_url: imageUrl });
         alert('✅ Image uploadée avec succès !');
       }
@@ -153,10 +150,10 @@ export const Popups = () => {
       };
 
       if (editingPopup) {
-        await axios.put(`${API_URL}/api/v1/admin/popups/${editingPopup.id}`, dataToSend);
+        await popupsAPI.update(editingPopup.id, dataToSend);
         alert('✅ Popup modifiée avec succès !');
       } else {
-        await axios.post(`${API_URL}/api/v1/admin/popups`, dataToSend);
+        await popupsAPI.create(dataToSend);
         alert('✅ Popup créée avec succès !');
       }
       
@@ -172,7 +169,7 @@ export const Popups = () => {
 
   const handleToggle = async (popup) => {
     try {
-      await axios.patch(`${API_URL}/api/v1/admin/popups/${popup.id}/toggle`);
+      await popupsAPI.toggle(popup.id, !popup.is_active);
       loadPopups();
     } catch (error) {
       console.error('Erreur toggle popup:', error);
@@ -186,7 +183,7 @@ export const Popups = () => {
     }
     
     try {
-      await axios.delete(`${API_URL}/api/v1/admin/popups/${popup.id}`);
+      await popupsAPI.delete(popup.id);
       alert('✅ Popup supprimée');
       loadPopups();
     } catch (error) {

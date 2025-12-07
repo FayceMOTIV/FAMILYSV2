@@ -6,9 +6,7 @@ import { Plus, Calendar, TrendingUp, Users, DollarSign, Edit2, Trash2, Copy, Eye
 import { PromotionWizard } from '../components/PromotionWizard';
 import { PromotionCalendar } from '../components/PromotionCalendar';
 // import { PromotionSimulator } from '../components/PromotionSimulator';
-import axios from 'axios';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://fastfood-fixes.preview.emergentagent.com';
+import { promotionsAPI } from '../services/api';
 
 export const PromotionsV2 = () => {
   const [promotions, setPromotions] = useState([]);
@@ -27,7 +25,7 @@ export const PromotionsV2 = () => {
   const loadPromotions = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API_URL}/api/v1/admin/promotions`);
+      const response = await promotionsAPI.getAll();
       setPromotions(response.data.promotions || []);
     } catch (error) {
       console.error('Error loading promotions:', error);
@@ -38,8 +36,14 @@ export const PromotionsV2 = () => {
 
   const loadAnalytics = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/v1/admin/promotions/analytics/overview`);
-      setAnalytics(response.data);
+      // Analytics basiques calculées côté client si pas de route backend
+      const activeCount = promotions.filter(p => p.status === 'active' || p.is_active).length;
+      setAnalytics({
+        active_promotions: activeCount,
+        total_usage: promotions.reduce((sum, p) => sum + (p.usage_count || 0), 0),
+        total_revenue: 0,
+        avg_discount: 0
+      });
     } catch (error) {
       console.error('Error loading analytics:', error);
     }
@@ -49,7 +53,7 @@ export const PromotionsV2 = () => {
     if (!window.confirm('Supprimer cette promotion ?')) return;
     
     try {
-      await axios.delete(`${API_URL}/api/v1/admin/promotions/${id}`);
+      await promotionsAPI.delete(id);
       loadPromotions();
       loadAnalytics();
       alert('✅ Promotion supprimée');

@@ -2,9 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Modal } from './Modal';
 import { Button } from './Button';
 import { ChevronRight, ChevronLeft, Check } from 'lucide-react';
-import axios from 'axios';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+import { productsAPI, categoriesAPI, promotionsAPI } from '../services/api';
 
 export const PromotionWizard = ({ isOpen, onClose, promotion, onSuccess }) => {
   const [step, setStep] = useState(1);
@@ -62,8 +60,8 @@ export const PromotionWizard = ({ isOpen, onClose, promotion, onSuccess }) => {
   const loadData = async () => {
     try {
       const [productsRes, categoriesRes] = await Promise.all([
-        axios.get(`${API_URL}/api/v1/admin/products`),
-        axios.get(`${API_URL}/api/v1/admin/categories`)
+        productsAPI.getAll(),
+        categoriesAPI.getAll()
       ]);
       setProducts(productsRes.data.products || []);
       setCategories(categoriesRes.data.categories || []);
@@ -75,13 +73,11 @@ export const PromotionWizard = ({ isOpen, onClose, promotion, onSuccess }) => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const url = promotion 
-        ? `${API_URL}/api/v1/admin/promotions/${promotion.id}`
-        : `${API_URL}/api/v1/admin/promotions`;
-      
-      const method = promotion ? 'put' : 'post';
-      
-      await axios[method](url, formData);
+      if (promotion) {
+        await promotionsAPI.update(promotion.id, formData);
+      } else {
+        await promotionsAPI.create(formData);
+      }
       
       alert('✅ Promotion enregistrée');
       onSuccess?.();
