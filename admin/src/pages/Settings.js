@@ -32,12 +32,12 @@ export const Settings = () => {
       const response = await axios.get(`${API_URL}/api/v1/fb/settings`);
       setSettings({
         ...(response.data.settings || response.data),
-        social_media: response.data.social_media || {},
-        service_links: response.data.service_links || {},
-        opening_hours: response.data.opening_hours || {},
-        order_hours: response.data.order_hours || {},
-        home_hero_image: response.data.hero_image_url || response.data.home_hero_image || '',
-        home_tagline: response.data.home_tagline || ''
+        social_media: response.data.settings?.social_media || {},
+        service_links: response.data.settings?.service_links || {},
+        opening_hours: response.data.settings?.opening_hours || {},
+        order_hours: response.data.settings?.order_hours || {},
+        home_hero_image: response.data.settings?.hero_image_url || response.data.settings?.home_hero_image || '',
+        home_tagline: response.data.settings?.home_tagline || ''
       });
     } catch (error) {
       console.error('Error loading settings:', error);
