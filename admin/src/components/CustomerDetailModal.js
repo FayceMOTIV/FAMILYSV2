@@ -19,7 +19,7 @@ export const CustomerDetailModal = ({ isOpen, onClose, customer }) => {
   const loadCustomerOrders = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API_URL}/api/v1/admin/orders?customer_id=${customer.id}`);
+      const response = await axios.get(`${API_URL}/api/v1/fb/orders?customer_id=${customer.id}`);
       setOrders(response.data.orders || []);
     } catch (error) {
       console.error('Error loading orders:', error);

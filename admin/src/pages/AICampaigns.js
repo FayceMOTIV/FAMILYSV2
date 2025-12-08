@@ -20,7 +20,7 @@ export const AICampaigns = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('admin_token');
-      const response = await axios.get(`${API_URL}/api/v1/admin/ai-marketing/campaigns/pending`, {
+      const response = await axios.get(`${API_URL}/api/v1/fb/ai-marketing/campaigns/pending`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setCampaigns(response.data.campaigns || []);
@@ -36,7 +36,7 @@ export const AICampaigns = () => {
     try {
       const token = localStorage.getItem('admin_token');
       await axios.post(
-        `${API_URL}/api/v1/admin/ai-marketing/campaigns/generate`,
+        `${API_URL}/api/v1/fb/ai-marketing/campaigns/generate`,
         { force_regenerate: true },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -54,7 +54,7 @@ export const AICampaigns = () => {
     try {
       const token = localStorage.getItem('admin_token');
       await axios.post(
-        `${API_URL}/api/v1/admin/ai-marketing/campaigns/${campaignId}/validate`,
+        `${API_URL}/api/v1/fb/ai-marketing/campaigns/${campaignId}/validate`,
         { accepted, notes: null },
         { headers: { Authorization: `Bearer ${token}` } }
       );

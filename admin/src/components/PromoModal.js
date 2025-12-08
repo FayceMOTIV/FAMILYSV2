@@ -51,7 +51,7 @@ export const PromoModal = ({ isOpen, onClose, promo, onSuccess }) => {
     setLoading(true);
 
     try {
-      const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+      const API_URL = 'http://localhost:8000';
       
       // Prepare data
       const data = {
@@ -67,8 +67,8 @@ export const PromoModal = ({ isOpen, onClose, promo, onSuccess }) => {
       };
       
       const url = promo 
-        ? `${API_URL}/api/v1/admin/promos/${promo.id}`
-        : `${API_URL}/api/v1/admin/promos`;
+        ? `${API_URL}/api/v1/fb/promos/${promo.id}`
+        : `${API_URL}/api/v1/fb/promos`;
       
       const method = promo ? 'PUT' : 'POST';
       

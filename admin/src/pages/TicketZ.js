@@ -20,7 +20,7 @@ export const TicketZ = () => {
   const loadDailyStatus = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/api/v1/admin/ticket-z/daily-status/${today}`, {
+      const response = await fetch(`${API_URL}/api/v1/fb/ticket-z/daily-status/${today}`, {
         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       });
       if (!response.ok) {
@@ -37,7 +37,7 @@ export const TicketZ = () => {
   const loadTickets = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/api/v1/admin/ticket-z`, {
+      const response = await fetch(`${API_URL}/api/v1/fb/ticket-z`, {
         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       });
       if (!response.ok) {
@@ -59,7 +59,7 @@ export const TicketZ = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/api/v1/admin/ticket-z`, {
+      const response = await fetch(`${API_URL}/api/v1/fb/ticket-z`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

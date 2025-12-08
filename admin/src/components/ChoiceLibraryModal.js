@@ -41,11 +41,11 @@ export const ChoiceLibraryModal = ({ isOpen, onClose, choice, onSuccess }) => {
     try {
       if (choice) {
         // Update existing choice
-        await axios.put(`${API_URL}/api/v1/admin/choice-library/${choice.id}`, formData);
+        await axios.put(`${API_URL}/api/v1/fb/choice-library/${choice.id}`, formData);
         alert('✅ Choix modifié avec succès');
       } else {
         // Create new choice
-        await axios.post(`${API_URL}/api/v1/admin/choice-library`, formData);
+        await axios.post(`${API_URL}/api/v1/fb/choice-library`, formData);
         alert('✅ Choix créé avec succès');
       }
       

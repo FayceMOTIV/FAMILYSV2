@@ -262,7 +262,7 @@ export const Notifications = () => {
                   ? 'Créez une notification et planifiez son envoi'
                   : 'Les notifications envoyées dans les dernières 48h apparaîtront ici'}
               </p>
-              <Button onClick={() => setShowModal(true)}>
+              <Button onClick={() => { setEditingNotification(null); setShowModal(true); }}>
                 <Plus className="w-4 h-4 mr-2" />
                 Créer une notification
               </Button>

@@ -20,7 +20,7 @@ export const ReservationMode = () => {
 
   const loadReservations = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/v1/admin/reservations`);
+      const response = await axios.get(`${API_URL}/api/v1/fb/reservations`);
       let filtered = response.data.reservations || [];
       
       const today = new Date().toISOString().split('T')[0];
@@ -43,7 +43,7 @@ export const ReservationMode = () => {
 
   const handleConfirm = async (id) => {
     try {
-      await axios.put(`${API_URL}/api/v1/admin/reservations/${id}`, {
+      await axios.put(`${API_URL}/api/v1/fb/reservations/${id}`, {
         status: 'confirmed'
       });
       loadReservations();
@@ -56,7 +56,7 @@ export const ReservationMode = () => {
   const handleCancel = async (id) => {
     if (!window.confirm('Annuler cette réservation ?')) return;
     try {
-      await axios.put(`${API_URL}/api/v1/admin/reservations/${id}`, {
+      await axios.put(`${API_URL}/api/v1/fb/reservations/${id}`, {
         status: 'cancelled'
       });
       loadReservations();
@@ -68,7 +68,7 @@ export const ReservationMode = () => {
 
   const handleComplete = async (id) => {
     try {
-      await axios.put(`${API_URL}/api/v1/admin/reservations/${id}`, {
+      await axios.put(`${API_URL}/api/v1/fb/reservations/${id}`, {
         status: 'completed'
       });
       loadReservations();

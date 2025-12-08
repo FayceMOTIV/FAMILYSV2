@@ -24,13 +24,13 @@ export const CampaignHistory = () => {
       // Charger les campagnes
       const statusFilter = filter === 'all' ? null : filter;
       const campaignsRes = await axios.get(
-        `${API_URL}/api/v1/admin/ai-marketing/campaigns/all${statusFilter ? `?status=${statusFilter}` : ''}`,
+        `${API_URL}/api/v1/fb/ai-marketing/campaigns/all${statusFilter ? `?status=${statusFilter}` : ''}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
       // Charger les stats
       const statsRes = await axios.get(
-        `${API_URL}/api/v1/admin/ai-marketing/stats`,
+        `${API_URL}/api/v1/fb/ai-marketing/stats`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       

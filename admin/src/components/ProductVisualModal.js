@@ -53,7 +53,7 @@ export const ProductVisualModal = ({ product, isOpen, onClose, onSave }) => {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await axios.post(`${API_URL}/api/v1/admin/upload/image`, formData, {
+      const response = await axios.post(`${API_URL}/api/v1/fb/upload/image`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -72,7 +72,7 @@ export const ProductVisualModal = ({ product, isOpen, onClose, onSave }) => {
 
   const handleSave = async () => {
     try {
-      await axios.put(`${API_URL}/api/v1/admin/products/${product.id}`, {
+      await axios.put(`${API_URL}/api/v1/fb/products/${product.id}`, {
         image_url: imageUrl,
         badge: badge || null
       });

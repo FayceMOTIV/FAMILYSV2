@@ -28,7 +28,7 @@ export const AIMarketingSettings = () => {
   const loadSettings = async () => {
     try {
       const token = localStorage.getItem('admin_token');
-      const response = await axios.get(`${API_URL}/api/v1/admin/ai-marketing/settings`, {
+      const response = await axios.get(`${API_URL}/api/v1/fb/ai-marketing/settings`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setSettings(response.data);
@@ -44,7 +44,7 @@ export const AIMarketingSettings = () => {
     try {
       const token = localStorage.getItem('admin_token');
       await axios.put(
-        `${API_URL}/api/v1/admin/ai-marketing/settings`,
+        `${API_URL}/api/v1/fb/ai-marketing/settings`,
         settings,
         { headers: { Authorization: `Bearer ${token}` } }
       );

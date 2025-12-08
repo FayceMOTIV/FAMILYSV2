@@ -45,7 +45,7 @@ export const PromotionSimulator = ({ promotions }) => {
   const simulate = async () => {
     setLoading(true);
     try {
-      const response = await axios.post(`${API_URL}/api/v1/admin/promotions/simulate`, {
+      const response = await axios.post(`${API_URL}/api/v1/fb/promotions/simulate`, {
         cart,
         customer: null,
         promo_code: promoCode || null

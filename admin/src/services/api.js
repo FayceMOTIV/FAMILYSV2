@@ -12,7 +12,7 @@ const firebaseApi = axios.create({
 
 // API Admin (ancienne - pour AI, auth, etc.)
 const adminApi = axios.create({
-  baseURL: `${API_URL}/api/v1/admin`,
+  baseURL: `${API_URL}/api/v1/fb`,
   headers: {
     'Content-Type': 'application/json',
   },

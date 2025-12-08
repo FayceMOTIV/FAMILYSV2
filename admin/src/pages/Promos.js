@@ -41,8 +41,8 @@ export const Promos = () => {
 
   const handleToggle = async (promo) => {
     try {
-      const API_URL = process.env.REACT_APP_BACKEND_URL || '';
-      await fetch(`${API_URL}/api/v1/admin/promos/${promo.id}`, {
+      const API_URL = 'http://localhost:8000';
+      await fetch(`${API_URL}/api/v1/fb/promos/${promo.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ is_active: !promo.is_active })

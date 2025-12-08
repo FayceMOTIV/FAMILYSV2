@@ -17,7 +17,7 @@ export const NotificationModal = ({ isOpen, onClose, notification, segments, onS
   const [loading, setLoading] = useState(false);
   const [generatingAI, setGeneratingAI] = useState(false);
   const preSelectedSegment = notification?.target_segment || null;
-  const isEditMode = !!notification;
+  const isEditMode = !!notification?.id;
 
   useEffect(() => {
     if (notification) {
@@ -49,8 +49,8 @@ export const NotificationModal = ({ isOpen, onClose, notification, segments, onS
 
     setGeneratingAI(true);
     try {
-      const API_URL = process.env.REACT_APP_BACKEND_URL || '';
-      const response = await axios.post(`${API_URL}/api/v1/admin/ai/chat`, {
+      const API_URL = 'http://localhost:8000';
+      const response = await axios.post(`${API_URL}/api/v1/fb/ai/chat`, {
         question: `Améliore ce message de notification pour un restaurant :
 Titre: ${formData.title}
 Message: ${formData.message}
@@ -95,30 +95,44 @@ Consignes:
     setLoading(true);
 
     try {
-      const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+      const API_URL = 'http://localhost:8000';
       const url = isEditMode 
-        ? `${API_URL}/api/v1/admin/notifications/${notification.id}`
-        : `${API_URL}/api/v1/admin/notifications`;
+        ? `${API_URL}/api/v1/fb/notifications/${notification.id}`
+        : `${API_URL}/api/v1/fb/notifications`;
       
       const method = isEditMode ? 'PUT' : 'POST';
       
       // Prepare data to send
       const dataToSend = {
-        ...formData,
-        // If segment is pre-selected, ensure it's included
-        target_segment: preSelectedSegment || formData.target_segment,
-        target_type: preSelectedSegment ? 'segment' : formData.target_type
+        title: formData.title,
+        message: formData.message,
+        type: 'marketing',
+        target: formData.target_type === 'segment' ? formData.target_segment : 'all',
+        target_ids: [],
+        scheduled_at: formData.scheduled_for || null,
+        image_url: null
       };
       
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dataToSend)
+      const response = await axios({
+        method: method.toLowerCase(),
+        url: url,
+        data: dataToSend
       });
+      
+      if (!response.data) throw new Error('Failed to save notification');
 
-      if (!response.ok) throw new Error('Failed to save notification');
-
-      alert(isEditMode ? '✅ Notification modifiée' : '✅ Notification créée');
+      // Si pas de date programmée et nouvelle notification, envoyer immédiatement
+      if (!isEditMode && !formData.scheduled_for && response.data.notification?.id) {
+        try {
+          await axios.post(`${API_URL}/api/v1/fb/notifications/${response.data.notification.id}/send`);
+          alert('✅ Notification envoyée !');
+        } catch (sendError) {
+          console.error('Error sending notification:', sendError);
+          alert('⚠️ Notification créée mais erreur lors de l\'envoi');
+        }
+      } else {
+        alert(isEditMode ? '✅ Notification modifiée' : '✅ Notification programmée');
+      }
       onSuccess?.();
       onClose();
     } catch (error) {
@@ -282,7 +296,7 @@ Consignes:
             disabled={loading}
             className="flex-1"
           >
-            {loading ? 'Enregistrement...' : (isEditMode ? 'Modifier' : 'Créer')}
+            {loading ? 'Enregistrement...' : (isEditMode ? 'Modifier' : 'Envoyer')}
           </Button>
         </div>
       </form>

@@ -14,7 +14,7 @@ const AIMarketingTemp = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/v1/admin/ai-marketing/campaigns/all?status=pending`);
+      const response = await axios.get(`${BACKEND_URL}/api/v1/fb/ai-marketing/campaigns/all?status=pending`);
       setCampaigns(response.data.campaigns || []);
     } catch (err) {
       setError(err.response?.data?.detail || 'Erreur chargement campagnes');
@@ -29,7 +29,7 @@ const AIMarketingTemp = () => {
     setLoading(true);
     setError(null);
     try {
-      await axios.post(`${BACKEND_URL}/api/v1/admin/ai-marketing/campaigns/generate`, {
+      await axios.post(`${BACKEND_URL}/api/v1/fb/ai-marketing/campaigns/generate`, {
         force_regenerate: false
       });
       await loadCampaigns();
@@ -45,7 +45,7 @@ const AIMarketingTemp = () => {
     setActionLoading(prev => ({ ...prev, [campaignId]: true }));
     try {
       const response = await axios.post(
-        `${BACKEND_URL}/api/v1/admin/ai-marketing/campaigns/${campaignId}/validate`,
+        `${BACKEND_URL}/api/v1/fb/ai-marketing/campaigns/${campaignId}/validate`,
         { accepted, notes: accepted ? 'Validé via page temp' : 'Refusé via page temp' },
         {
           headers: {

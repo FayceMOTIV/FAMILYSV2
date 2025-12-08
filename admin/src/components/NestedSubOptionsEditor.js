@@ -65,7 +65,7 @@ const SubOptionChoiceEditor = ({ choice, onChange, onDelete, depth = 0, choiceLi
       const formData = new FormData();
       formData.append('file', file);
       
-      const response = await fetch(`${API_URL}/api/v1/admin/upload/image`, {
+      const response = await fetch(`${API_URL}/api/v1/fb/upload/image`, {
         method: 'POST',
         body: formData
       });

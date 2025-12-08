@@ -79,7 +79,7 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
     setLoading(true);
 
     try {
-      const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+      const API_URL = 'http://localhost:8000';
       
       // Si un seul paiement, utiliser l'ancien format
       // Si multi-paiements, envoyer le tableau
@@ -96,7 +96,7 @@ export const PaymentModal = ({ isOpen, onClose, order, onSuccess }) => {
         change_given: totalPaid - parseFloat(order.total)
       };
 
-      const response = await fetch(`${API_URL}/api/v1/admin/orders/${order.id}/payment`, {
+      const response = await fetch(`${API_URL}/api/v1/fb/orders/${order.id}/payment`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(paymentData)
