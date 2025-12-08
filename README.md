@@ -1,85 +1,132 @@
 # 🍔 FAMILYS-CLEAN
 
-Application mobile restaurant **Le Family's** (Bourg-en-Bresse) avec backoffice d'administration.
+Application mobile de commande pour le restaurant **Le Family's** à Bourg-en-Bresse, France.
 
-## 🚀 Démarrage rapide
+## 📱 Stack Technique
 
-### Backend (API)
+| Composant | Technologie |
+|-----------|-------------|
+| App Mobile | React Native / Expo |
+| Backend | FastAPI (Python) |
+| Backoffice | React |
+| Base de données | Firebase Firestore |
+| Auth | Firebase Authentication |
+| Push | Firebase Cloud Messaging |
+| Paiements | Stripe |
+
+## 🚀 Démarrage Rapide
+
+### Prérequis
+- Node.js 18+
+- Python 3.10+
+- Expo CLI
+- Firebase project configuré
+
+### Installation
+
 ```bash
+# Clone
+git clone https://github.com/[repo]/FAMILYS-CLEAN.git
+cd FAMILYS-CLEAN
+
+# App Mobile
+npm install
+
+# Backend
 cd backend
-python3 -m uvicorn server:app --host 0.0.0.0 --port 8000 --reload
+pip install -r requirements.txt
+
+# Backoffice
+cd ../admin
+npm install
 ```
 
-### Backoffice Admin
+### Lancement
+
 ```bash
+# Backend (port 8000)
+cd backend
+uvicorn server:app --host 0.0.0.0 --port 8000
+
+# Backoffice (port 3001)
 cd admin
-npm start
-# Accès: http://localhost:3003
-```
+npm run dev
 
-### App Mobile
-```bash
+# App Mobile
 npx expo start
-# Scanner le QR code avec Expo Go
 ```
 
-## 📁 Structure
+## 📂 Structure
+
 ```
-├── app/                 # App Mobile (Expo/React Native)
-├── admin/               # Backoffice (React.js)
-├── backend/             # API (FastAPI + Firebase)
-├── assets/              # Images, fonts
-├── components/          # Composants partagés
-├── stores/              # État global (Zustand)
-└── constants/           # Configuration
+FAMILYS-CLEAN/
+├── app/                    # Pages React Native (Expo Router)
+├── components/             # Composants réutilisables
+├── constants/              # Config (API URLs, Firebase)
+├── stores/                 # État global (Zustand)
+├── services/               # Appels API
+├── backend/
+│   ├── server.py           # Point d'entrée FastAPI
+│   ├── routes/firebase/    # Routes API
+│   └── config/             # Config Firebase Admin
+└── admin/
+    ├── src/pages/          # Pages admin
+    └── src/components/     # Modaux et composants
 ```
 
-## 🔥 Firebase
+## 🔥 API Routes
 
-L'application utilise Firebase pour :
-- **Firestore** : Base de données
-- **Storage** : Images produits/branding
-- **Auth** : Authentification (à venir)
+Base URL: `/api/v1/fb/`
 
-### Collections Firestore
-- `products` - Produits du menu
-- `categories` - Catégories
-- `orders` - Commandes
-- `users` - Clients
-- `settings/restaurant` - Paramètres
-- `promotions` - Promotions actives
-- `popups` - Popups marketing
-- `surprise_configs` - Config récompenses jeu
-- `surprise_plays` - Historique parties
-- `surprise_rewards` - Récompenses gagnées
+| Route | Description |
+|-------|-------------|
+| `/settings` | Configuration restaurant |
+| `/products` | Catalogue produits |
+| `/categories` | Catégories menu |
+| `/options` | Options personnalisation |
+| `/orders` | Gestion commandes |
+| `/customers` | Clients |
+| `/promotions` | Promotions actives |
+| `/notifications` | Notifications push |
+| `/ai/chat` | Assistant IA |
 
-## 🎰 Modules
+## 🎁 Fonctionnalités
 
-### Surprise du Jour
-Jeu quotidien avec roue de récompenses :
-- Dashboard avec stats et coût mensuel
-- Configuration des probabilités
-- Suivi des récompenses clients
+- ✅ Commande mobile avec options personnalisables
+- ✅ 14 types de promotions (BOGO, réductions, happy hour...)
+- ✅ Programme fidélité avec points
+- ✅ Notifications push marketing
+- ✅ Surprise du Jour (roue de la chance)
+- ✅ Backoffice complet pour gestion
+- ✅ Assistant IA pour améliorer les textes
+- ✅ Impression tickets thermiques
 
-### Promotions
-14 types de promotions supportés :
-- BOGO, réductions, happy hour, etc.
+## 🔐 Authentification Backoffice
 
-### Fidélité
-Système de cashback automatique (5% par défaut)
+- **Mode BackOffice** : PIN 1234
+- **Mode Commandes** : PIN 1111
+- **Mode Livraison** : PIN 2222
 
-## 📱 Build Production
+## 📱 Build iOS
+
 ```bash
-# iOS TestFlight
-eas build --platform ios --profile production
+# Incrémenter version
+sed -i '' 's/"buildNumber": "X"/"buildNumber": "Y"/g' app.json
 
-# Android
-eas build --platform android --profile production
+# Build + Submit TestFlight
+eas build --platform ios --profile production --auto-submit
 ```
 
-## 📞 Contact
+Bundle ID: `com.fayce.familysnew`
 
-**Le Family's**
-- 📍 59 rue du 14 Juillet 1789, 01000 Bourg-en-Bresse
-- 📞 04 74 52 60 82
-- 📧 lefamilys01@gmail.com
+## 📝 Documentation
+
+Voir [CLAUDE_CONTEXT.md](./CLAUDE_CONTEXT.md) pour le contexte complet de développement.
+
+## 📄 License
+
+Propriétaire - Le Family's Restaurant
+
+---
+
+*Développé pour Le Family's, Bourg-en-Bresse*
