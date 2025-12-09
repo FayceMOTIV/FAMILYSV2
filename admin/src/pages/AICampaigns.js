@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Header } from '../components/Header';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/Card';
 import { Button } from '../components/Button';
-import { Sparkles, TrendingUp, Calendar, Target, CheckCircle, XCircle, Loader } from 'lucide-react';
+import { Sparkles, TrendingUp, Calendar, Target, CheckCircle, XCircle, Loader, RefreshCw, AlertCircle } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://fastfood-fixes.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
 
 export const AICampaigns = () => {
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     loadPendingCampaigns();
@@ -18,14 +19,13 @@ export const AICampaigns = () => {
 
   const loadPendingCampaigns = async () => {
     setLoading(true);
+    setError('');
     try {
-      const token = localStorage.getItem('admin_token');
-      const response = await axios.get(`${API_URL}/api/v1/fb/ai-marketing/campaigns/pending`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await axios.get(`${API_URL}/api/v1/fb/ai-marketing/campaigns/pending`);
       setCampaigns(response.data.campaigns || []);
     } catch (error) {
       console.error('Erreur chargement campagnes:', error);
+      setError('Impossible de charger les campagnes. Vérifiez que le backend est démarré.');
     } finally {
       setLoading(false);
     }
@@ -33,18 +33,19 @@ export const AICampaigns = () => {
 
   const generateCampaigns = async () => {
     setGenerating(true);
+    setError('');
     try {
-      const token = localStorage.getItem('admin_token');
-      await axios.post(
-        `${API_URL}/api/v1/fb/ai-marketing/campaigns/generate`,
-        { force_regenerate: true },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await axios.post(`${API_URL}/api/v1/fb/ai-marketing/campaigns/generate`, { 
+        force_regenerate: true 
+      });
       await loadPendingCampaigns();
-      alert('✨ Nouvelles campagnes générées !');
+      const count = response.data.campaigns?.length || 0;
+      alert(`✨ ${count} nouvelles campagnes générées !`);
     } catch (error) {
       console.error('Erreur génération:', error);
-      alert('Erreur lors de la génération des campagnes');
+      const errMsg = error.response?.data?.detail || 'Erreur lors de la génération';
+      setError(errMsg);
+      alert('❌ ' + errMsg);
     } finally {
       setGenerating(false);
     }
@@ -52,24 +53,22 @@ export const AICampaigns = () => {
 
   const validateCampaign = async (campaignId, accepted) => {
     try {
-      const token = localStorage.getItem('admin_token');
-      await axios.post(
-        `${API_URL}/api/v1/fb/ai-marketing/campaigns/${campaignId}/validate`,
-        { accepted, notes: null },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await axios.post(`${API_URL}/api/v1/fb/ai-marketing/campaigns/${campaignId}/validate`, { 
+        accepted, 
+        notes: null 
+      });
       
       // Retirer la campagne de la liste
       setCampaigns(campaigns.filter(c => c.id !== campaignId));
       
       if (accepted) {
-        alert('✅ Campagne activée ! Une promo en brouillon a été créée.');
+        alert('✅ Campagne activée ! Une promo en brouillon a été créée dans Promotions.');
       } else {
         alert('❌ Campagne refusée.');
       }
     } catch (error) {
       console.error('Erreur validation:', error);
-      alert('Erreur lors de la validation');
+      alert('Erreur lors de la validation: ' + (error.response?.data?.detail || error.message));
     }
   };
 
@@ -95,39 +94,75 @@ export const AICampaigns = () => {
     }
   };
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return 'N/A';
+    try {
+      return new Date(dateStr).toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    } catch {
+      return dateStr;
+    }
+  };
+
   return (
     <div>
       <Header 
-        title="🤖 IA Marketing - Campagnes Proposées" 
-        subtitle="L'IA analyse tes données et te propose des campagnes pertinentes. Tu valides ou refuses en un clic."
+        title="🤖 Campagnes IA" 
+        subtitle="L'IA analyse tes données et te propose des campagnes pertinentes"
       />
       
       <div className="p-8">
+        {/* Erreur */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-3">
+            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+            <div className="flex-1">
+              <p className="text-red-700 font-medium">Erreur</p>
+              <p className="text-red-600 text-sm">{error}</p>
+            </div>
+            <Button size="sm" variant="outline" onClick={loadPendingCampaigns}>
+              <RefreshCw className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
+
         {/* Actions */}
-        <div className="mb-6 flex justify-between items-center">
+        <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Campagnes en attente</h2>
             <p className="text-sm text-gray-600 dark:text-gray-400">
               {campaigns.length} {campaigns.length > 1 ? 'campagnes proposées' : 'campagne proposée'}
             </p>
           </div>
-          <Button 
-            onClick={generateCampaigns} 
-            disabled={generating}
-            className="flex items-center space-x-2"
-          >
-            {generating ? (
-              <>
-                <Loader className="w-4 h-4 animate-spin" />
-                <span>Génération...</span>
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-4 h-4" />
-                <span>Générer de nouvelles campagnes</span>
-              </>
-            )}
-          </Button>
+          <div className="flex gap-3">
+            <Button 
+              onClick={loadPendingCampaigns} 
+              disabled={loading}
+              variant="outline"
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              Actualiser
+            </Button>
+            <Button 
+              onClick={generateCampaigns} 
+              disabled={generating}
+            >
+              {generating ? (
+                <>
+                  <Loader className="w-4 h-4 animate-spin mr-2" />
+                  Génération...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Générer des campagnes
+                </>
+              )}
+            </Button>
+          </div>
         </div>
 
         {/* Campagnes */}
@@ -142,8 +177,8 @@ export const AICampaigns = () => {
               <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
                 Aucune campagne en attente
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                Clique sur "Générer de nouvelles campagnes" pour que l'IA analyse tes données et te propose des offres pertinentes.
+              <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
+                Clique sur "Générer des campagnes" pour que l'IA analyse tes données de vente et te propose des offres pertinentes.
               </p>
               <Button onClick={generateCampaigns} disabled={generating}>
                 <Sparkles className="w-4 h-4 mr-2" />
@@ -161,7 +196,7 @@ export const AICampaigns = () => {
                       <div className="flex items-center space-x-2 mb-2">
                         <span className="text-2xl">{getCampaignTypeIcon(campaign.type)}</span>
                         <span className={`text-xs font-bold px-3 py-1 rounded-full ${getCampaignTypeColor(campaign.type)}`}>
-                          {campaign.type.replace('_', ' ').toUpperCase()}
+                          {(campaign.type || 'promo').replace('_', ' ').toUpperCase()}
                         </span>
                       </div>
                       <CardTitle className="text-xl">{campaign.name}</CardTitle>
@@ -184,7 +219,7 @@ export const AICampaigns = () => {
                       <div>
                         <p className="text-xs text-gray-500">Période</p>
                         <p className="font-semibold text-gray-800 dark:text-white">
-                          {new Date(campaign.start_date).toLocaleDateString('fr-FR')} - {new Date(campaign.end_date).toLocaleDateString('fr-FR')}
+                          {formatDate(campaign.start_date)} - {formatDate(campaign.end_date)}
                         </p>
                       </div>
                     </div>
@@ -194,7 +229,7 @@ export const AICampaigns = () => {
                       <div>
                         <p className="text-xs text-gray-500">Impact estimé</p>
                         <p className="font-semibold text-green-600">
-                          {campaign.impact_estimate?.ca_increase || 'N/A'}
+                          {campaign.impact_estimate?.ca_increase || '+5-10%'}
                         </p>
                       </div>
                     </div>
@@ -210,11 +245,11 @@ export const AICampaigns = () => {
                     </div>
 
                     <div className="flex items-center space-x-2">
-                      <Calendar className="w-4 h-4 text-orange-500" />
+                      <Sparkles className="w-4 h-4 text-orange-500" />
                       <div>
                         <p className="text-xs text-gray-500">Difficulté</p>
                         <p className="font-semibold text-gray-800 dark:text-white capitalize">
-                          {campaign.impact_estimate?.difficulty || 'N/A'}
+                          {campaign.impact_estimate?.difficulty || 'Facile'}
                         </p>
                       </div>
                     </div>
@@ -235,7 +270,7 @@ export const AICampaigns = () => {
                       className="flex-1 bg-green-600 hover:bg-green-700 text-white"
                     >
                       <CheckCircle className="w-4 h-4 mr-2" />
-                      Oui, activer
+                      Activer
                     </Button>
                     <Button
                       onClick={() => validateCampaign(campaign.id, false)}
@@ -243,7 +278,7 @@ export const AICampaigns = () => {
                       className="flex-1"
                     >
                       <XCircle className="w-4 h-4 mr-2" />
-                      Non
+                      Refuser
                     </Button>
                   </div>
                 </CardContent>

@@ -29,54 +29,77 @@ export default function CartScreen() {
     removeItem, 
     clearCart, 
     getSubtotal,
+    getTotalWithoutPromos,
     getTotal, 
     getProductPromoSavings,
+    getCartPromoDiscount,
     getAppliedPromotions,
     getSuggestions,
     recalculatePromotions,
     isCalculating
   } = useCartStore();
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user, refreshUser } = useAuthStore();
   
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromoCode, setAppliedPromoCode] = useState(null);
   const [promoCodeDiscount, setPromoCodeDiscount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [orderNotes, setOrderNotes] = useState('');
-  const [cashbackBalance, setCashbackBalance] = useState(0);
   const [useCashback, setUseCashback] = useState(false);
   const [consumptionMode, setConsumptionMode] = useState('takeaway');
   const [paymentMethod, setPaymentMethod] = useState('on_site');
   const [pickupDate, setPickupDate] = useState('');
   const [pickupTime, setPickupTime] = useState('');
   
-  // Nouveaux états pour settings dynamiques
+  // Settings dynamiques
   const [appConfig, setAppConfig] = useState(null);
   const [timeSlots, setTimeSlots] = useState([]);
   const [loadingConfig, setLoadingConfig] = useState(true);
+  const [loyaltyPercentage, setLoyaltyPercentage] = useState(5); // Défaut 5%
 
-  const subtotal = getSubtotal() || 0;
-  const productPromoSavings = getProductPromoSavings() || 0;
+  // FIDÉLITÉ : Utiliser directement user.loyalty_balance du store auth
+  const loyaltyBalance = user?.loyalty_balance || 0;
+
+  // Calculs corrects
+  const subtotal = getSubtotal() || 0; // Prix avec promos produits
+  const originalTotal = getTotalWithoutPromos() || 0; // Prix sans promos
+  const productPromoSavings = getProductPromoSavings() || 0; // Économies promos produits
   const appliedPromotions = getAppliedPromotions() || [];
   const suggestions = getSuggestions() || [];
-  const cartPromoDiscount = appliedPromotions.reduce((sum, p) => sum + (p.discount || 0), 0);
-  const cashbackUsed = useCashback ? Math.min(cashbackBalance, subtotal - cartPromoDiscount - promoCodeDiscount) : 0;
+  const cartPromoDiscount = getCartPromoDiscount() || 0; // Promos panier (seuils, codes API)
+  
+  // Cashback utilisable (ne peut pas dépasser le sous-total après promos)
+  const maxCashbackUsable = Math.max(0, subtotal - cartPromoDiscount - promoCodeDiscount);
+  const cashbackUsed = useCashback ? Math.min(loyaltyBalance, maxCashbackUsable) : 0;
+  
+  // Total final
   const total = Math.max(0, subtotal - cartPromoDiscount - promoCodeDiscount - cashbackUsed);
+  
+  // Fidélité à gagner (calculée sur le prix PAYÉ, après toutes réductions)
+  const loyaltyEarned = total > 0 ? parseFloat((total * (loyaltyPercentage / 100)).toFixed(2)) : 0;
+  
+  // Total économies
+  const totalSavings = productPromoSavings + cartPromoDiscount + promoCodeDiscount + cashbackUsed;
 
+  // Récompenses gratuites
   const rewardItems = items.filter(item => item.fromReward === true || item.price === 0);
   const hasRewards = rewardItems.length > 0;
 
   useEffect(() => {
     loadAppConfig();
-    if (isAuthenticated && user?.email) {
-      loadCashbackBalance();
+    
+    // Rafraîchir les données user (fidélité)
+    if (isAuthenticated && user?.uid) {
+      refreshUser?.();
       recalculatePromotions(user.email);
     } else {
       recalculatePromotions();
     }
+    
+    // Date par défaut : aujourd'hui
     const today = new Date();
     setPickupDate(today.toISOString().split('T')[0]);
-  }, [isAuthenticated, user, items.length]);
+  }, [isAuthenticated, user?.uid, items.length]);
 
   // Charger les créneaux quand la date change
   useEffect(() => {
@@ -88,19 +111,42 @@ export default function CartScreen() {
   const loadAppConfig = async () => {
     try {
       setLoadingConfig(true);
-      const response = await axios.get(`${API_BASE_URL}/fb/app-settings/app-config`, { timeout: 5000 });
-      setAppConfig(response.data);
-      // Définir le mode par défaut selon ce qui est activé
-      if (response.data.enable_takeaway) {
-        setConsumptionMode('takeaway');
-      } else if (response.data.enable_onsite) {
-        setConsumptionMode('on_site');
-      } else if (response.data.enable_delivery) {
-        setConsumptionMode('delivery');
+      
+      // Charger app-config ET settings pour loyalty_percentage
+      const [configResponse, settingsResponse] = await Promise.all([
+        axios.get(`${API_BASE_URL}/app-settings/app-config`, { timeout: 5000 }).catch(() => null),
+        axios.get(`${API_BASE_URL}/settings`, { timeout: 5000 }).catch(() => null)
+      ]);
+      
+      if (configResponse?.data) {
+        setAppConfig(configResponse.data);
+        
+        // Mode par défaut selon ce qui est activé
+        if (configResponse.data.enable_takeaway) {
+          setConsumptionMode('takeaway');
+        } else if (configResponse.data.enable_onsite) {
+          setConsumptionMode('on_site');
+        } else if (configResponse.data.enable_delivery) {
+          setConsumptionMode('delivery');
+        }
+      } else {
+        setAppConfig({
+          enable_delivery: false,
+          enable_takeaway: true,
+          enable_onsite: true,
+          enable_reservations: false,
+          time_slot_interval: 15
+        });
       }
+      
+      // Récupérer le % de fidélité depuis settings
+      if (settingsResponse?.data) {
+        const lp = settingsResponse.data.loyalty_percentage || settingsResponse.data.settings?.loyalty_percentage || 5;
+        setLoyaltyPercentage(parseFloat(lp));
+      }
+      
     } catch (error) {
       console.error('Error loading app config:', error);
-      // Valeurs par défaut
       setAppConfig({
         enable_delivery: false,
         enable_takeaway: true,
@@ -115,26 +161,17 @@ export default function CartScreen() {
 
   const loadTimeSlots = async (date) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/fb/app-settings/time-slots?date=${date}`, { timeout: 5000 });
+      const response = await axios.get(`${API_BASE_URL}/app-settings/time-slots?date=${date}`, { timeout: 5000 });
       setTimeSlots(response.data.slots || []);
+      
       // Sélectionner le premier créneau disponible
       if (response.data.slots && response.data.slots.length > 0 && !pickupTime) {
         setPickupTime(response.data.slots[0]);
       }
     } catch (error) {
       console.error('Error loading time slots:', error);
-      // Créneaux par défaut
       setTimeSlots(['12:00', '12:30', '13:00', '19:00', '19:30', '20:00']);
       if (!pickupTime) setPickupTime('12:00');
-    }
-  };
-
-  const loadCashbackBalance = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/cashback/balance/${user.email}`, { timeout: 5000 });
-      setCashbackBalance(response.data.balance || 0);
-    } catch (error) {
-      setCashbackBalance(0);
     }
   };
 
@@ -183,6 +220,7 @@ export default function CartScreen() {
     try {
       setLoading(true);
       const orderData = {
+        customer_uid: user?.uid || user?.id,
         customer_email: user?.email,
         customer_name: user?.name || user?.email,
         customer_phone: user?.phone || '',
@@ -190,20 +228,25 @@ export default function CartScreen() {
           product_id: item.id,
           name: item.name,
           quantity: item.quantity || 1,
+          unit_price: item.price || 0,
           base_price: item.original_price || item.base_price || item.price,
           total_price: (item.price || 0) * (item.quantity || 1),
           options: item.options || [],
           from_reward: item.fromReward || false,
+          has_promo: !!(item.promo_badge || (item.promo_price && item.promo_price < item.base_price)),
+          promo_badge: item.promo_badge || null,
         })),
         subtotal: subtotal,
-        vat_amount: subtotal * 0.1,
-        promotions_applied: appliedPromotions,
-        promo_code: appliedPromoCode?.promo_code || null,
-        promo_code_discount: promoCodeDiscount,
+        original_total: originalTotal,
+        product_promo_savings: productPromoSavings,
         cart_promo_discount: cartPromoDiscount,
+        promo_code: appliedPromoCode?.code || null,
+        promo_code_discount: promoCodeDiscount,
+        promotions_applied: appliedPromotions,
+        loyalty_used: cashbackUsed,
+        loyalty_earned: loyaltyEarned, // Calculé sur le prix PAYÉ
         total: total,
-        use_cashback: useCashback,
-        cashback_used: cashbackUsed,
+        vat_amount: total * 0.1,
         payment_method: paymentMethod,
         consumption_mode: consumptionMode,
         pickup_date: pickupDate,
@@ -217,16 +260,21 @@ export default function CartScreen() {
         clearCart();
         router.push({
           pathname: '/order-confirmation',
-          params: { orderNumber: response.data.order_number, total: total.toFixed(2) }
+          params: { 
+            orderNumber: response.data.order_number || response.data.id, 
+            total: total.toFixed(2) 
+          }
         });
       }
     } catch (error) {
+      console.error('Erreur création commande:', error);
       Alert.alert('Erreur', error.response?.data?.detail || 'Impossible de créer la commande');
     } finally {
       setLoading(false);
     }
   };
 
+  // Panier vide
   if (!items || items.length === 0) {
     return (
       <View style={styles.container}>
@@ -260,7 +308,6 @@ export default function CartScreen() {
     if (appConfig?.enable_delivery) {
       modes.push({ id: 'delivery', label: 'Livraison', icon: '🛵' });
     }
-    // Fallback si aucun mode
     if (modes.length === 0) {
       modes.push({ id: 'takeaway', label: 'À emporter', icon: '🥡' });
       modes.push({ id: 'on_site', label: 'Sur place', icon: '🍽️' });
@@ -307,7 +354,6 @@ export default function CartScreen() {
                       <Text style={styles.itemImageEmoji}>{isReward ? '🎁' : (item.emoji || '🍔')}</Text>
                     )}
                   </View>
-                  {/* Badge promo sur l'image */}
                   {hasPromo && !isReward && (
                     <View style={[styles.itemPromoBadge, { backgroundColor: item.promo_badge_color || '#EF4444' }]}>
                       <Text style={styles.itemPromoBadgeText}>{item.promo_badge || '🔥 PROMO'}</Text>
@@ -320,7 +366,6 @@ export default function CartScreen() {
                     {isReward && <View style={styles.rewardBadge}><Text style={styles.rewardBadgeText}>GRATUIT 🎁</Text></View>}
                   </View>
                   
-                  {/* Afficher les options sélectionnées */}
                   {item.options && item.options.length > 0 && (
                     <View style={styles.itemOptionsContainer}>
                       {item.options.map((opt, optIndex) => (
@@ -331,7 +376,6 @@ export default function CartScreen() {
                     </View>
                   )}
                   
-                  {/* Prix avec prix barré si promo */}
                   <View style={styles.itemPriceRow}>
                     <Text style={[styles.itemPrice, isReward && styles.itemPriceFree]}>
                       {isReward ? 'OFFERT !' : `${(item.price || 0).toFixed(2)}€`}
@@ -340,6 +384,7 @@ export default function CartScreen() {
                       <Text style={styles.itemOriginalPrice}>{item.base_price.toFixed(2)}€</Text>
                     )}
                   </View>
+                  
                   <View style={styles.itemActions}>
                     {isReward ? (
                       <View style={styles.rewardQuantityFixed}>
@@ -373,10 +418,10 @@ export default function CartScreen() {
             {appliedPromotions.map((promo, idx) => (
               <View key={idx} style={styles.promoAppliedItem}>
                 <View style={[styles.promoBadge, { backgroundColor: promo.badge_color || '#10B981' }]}>
-                  <Text style={styles.promoBadgeText}>{promo.badge || '🏷️'}</Text>
+                  <Text style={styles.promoBadgeText}>{promo.badge_text || '🏷️'}</Text>
                 </View>
                 <Text style={styles.promoAppliedName}>{promo.name}</Text>
-                <Text style={styles.promoAppliedDiscount}>-{(promo.discount || 0).toFixed(2)}€</Text>
+                <Text style={styles.promoAppliedDiscount}>-{(promo.discount_amount || 0).toFixed(2)}€</Text>
               </View>
             ))}
           </View>
@@ -432,7 +477,6 @@ export default function CartScreen() {
               onChangeText={setPickupDate} 
             />
           </View>
-          {/* Créneaux horaires en grille */}
           <Text style={styles.timeSlotsLabel}>Choisissez un créneau :</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.timeSlotsContainer}>
             {timeSlots.map((slot) => (
@@ -477,14 +521,17 @@ export default function CartScreen() {
           ))}
         </View>
 
-        {/* Cashback */}
-        {cashbackBalance > 0 && (
+        {/* Fidélité - Utilise user.loyalty_balance */}
+        {loyaltyBalance > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>💰 Cashback</Text>
+            <Text style={styles.sectionTitle}>💎 Ma fidélité</Text>
             <TouchableOpacity onPress={() => setUseCashback(!useCashback)} style={[styles.cashbackCard, useCashback && styles.cashbackCardActive]}>
               <View>
-                <Text style={styles.cashbackTitle}>Utiliser mon cashback</Text>
-                <Text style={styles.cashbackBalance}>Solde : {cashbackBalance.toFixed(2)}€</Text>
+                <Text style={styles.cashbackTitle}>Utiliser mes points fidélité</Text>
+                <Text style={styles.cashbackBalance}>Solde disponible : {loyaltyBalance.toFixed(2)}€</Text>
+                {useCashback && maxCashbackUsable < loyaltyBalance && (
+                  <Text style={styles.cashbackNote}>({cashbackUsed.toFixed(2)}€ utilisables sur cette commande)</Text>
+                )}
               </View>
               <View style={[styles.checkbox, useCashback && styles.checkboxActive]}>
                 {useCashback && <Text style={styles.checkboxText}>✓</Text>}
@@ -526,6 +573,14 @@ export default function CartScreen() {
         <View style={styles.summarySection}>
           <Text style={styles.sectionTitle}>💰 Récapitulatif</Text>
           
+          {/* Prix original si économies */}
+          {productPromoSavings > 0 && (
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Prix original</Text>
+              <Text style={styles.summaryValueStrike}>{originalTotal.toFixed(2)}€</Text>
+            </View>
+          )}
+          
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Sous-total</Text>
             <Text style={styles.summaryValue}>{subtotal.toFixed(2)}€</Text>
@@ -540,8 +595,8 @@ export default function CartScreen() {
 
           {appliedPromotions.map((promo, idx) => (
             <View key={idx} style={styles.summaryRow}>
-              <Text style={styles.summaryLabelGreen}>{promo.badge || '🏷️'} {promo.name}</Text>
-              <Text style={styles.summaryValueGreen}>-{(promo.discount || 0).toFixed(2)}€</Text>
+              <Text style={styles.summaryLabelGreen}>{promo.badge_text || '🏷️'} {promo.name}</Text>
+              <Text style={styles.summaryValueGreen}>-{(promo.discount_amount || 0).toFixed(2)}€</Text>
             </View>
           ))}
 
@@ -561,7 +616,7 @@ export default function CartScreen() {
 
           {cashbackUsed > 0 && (
             <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabelPurple}>💜 Cashback</Text>
+              <Text style={styles.summaryLabelPurple}>💎 Fidélité utilisée</Text>
               <Text style={styles.summaryValuePurple}>-{cashbackUsed.toFixed(2)}€</Text>
             </View>
           )}
@@ -573,9 +628,18 @@ export default function CartScreen() {
             <Text style={styles.summaryTotal}>{total.toFixed(2)}€</Text>
           </View>
 
-          {(cartPromoDiscount + promoCodeDiscount + productPromoSavings) > 0 && (
+          {totalSavings > 0 && (
             <View style={styles.totalSavings}>
-              <Text style={styles.totalSavingsText}>🎉 Vous économisez {(cartPromoDiscount + promoCodeDiscount + productPromoSavings).toFixed(2)}€ !</Text>
+              <Text style={styles.totalSavingsText}>🎉 Vous économisez {totalSavings.toFixed(2)}€ !</Text>
+            </View>
+          )}
+
+          {/* Fidélité à gagner */}
+          {loyaltyEarned > 0 && (
+            <View style={styles.loyaltyEarn}>
+              <Text style={styles.loyaltyEarnText}>
+                💎 +{loyaltyEarned.toFixed(2)}€ crédités sur votre compte fidélité ({loyaltyPercentage}%)
+              </Text>
             </View>
           )}
         </View>
@@ -695,7 +759,6 @@ const styles = StyleSheet.create({
   paymentMethodDisabled: { opacity: 0.5 },
   paymentIcon: { fontSize: 22, marginRight: 12 },
   applePayIconContainer: { flexDirection: 'row', alignItems: 'center', marginRight: 12 },
-  applePayIcon: { fontSize: 22, color: '#000' },
   applePayLabel: { fontSize: 18, fontWeight: '600', color: '#000', marginLeft: 2 },
   paymentInfo: { flex: 1 },
   paymentLabel: { fontSize: 15, fontWeight: '600', color: '#6B7280' },
@@ -705,13 +768,14 @@ const styles = StyleSheet.create({
   checkmark: { width: 24, height: 24, borderRadius: 12, backgroundColor: '#C62828', justifyContent: 'center', alignItems: 'center' },
   checkmarkText: { color: '#FFF', fontSize: 14, fontWeight: 'bold' },
 
-  // Cashback
+  // Fidélité
   cashbackCard: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#F8F9FA', borderRadius: 12, padding: 16, borderWidth: 2, borderColor: '#E5E7EB' },
-  cashbackCardActive: { backgroundColor: '#F5F3FF', borderColor: '#8B5CF6' },
+  cashbackCardActive: { backgroundColor: '#EEF2FF', borderColor: '#6366F1' },
   cashbackTitle: { fontSize: 15, fontWeight: '600', color: '#1A1A1A', marginBottom: 4 },
   cashbackBalance: { fontSize: 13, color: '#6B7280' },
+  cashbackNote: { fontSize: 11, color: '#6366F1', marginTop: 4 },
   checkbox: { width: 24, height: 24, borderRadius: 12, borderWidth: 2, borderColor: '#E5E7EB', justifyContent: 'center', alignItems: 'center' },
-  checkboxActive: { backgroundColor: '#8B5CF6', borderColor: '#8B5CF6' },
+  checkboxActive: { backgroundColor: '#6366F1', borderColor: '#6366F1' },
   checkboxText: { color: '#FFF', fontSize: 14, fontWeight: 'bold' },
 
   // Promo code
@@ -732,16 +796,19 @@ const styles = StyleSheet.create({
   summaryRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
   summaryLabel: { fontSize: 15, color: '#6B7280' },
   summaryValue: { fontSize: 15, fontWeight: '600', color: '#1A1A1A' },
+  summaryValueStrike: { fontSize: 15, color: '#9CA3AF', textDecorationLine: 'line-through' },
   summaryLabelGreen: { fontSize: 14, color: '#059669' },
   summaryValueGreen: { fontSize: 14, fontWeight: '600', color: '#059669' },
-  summaryLabelPurple: { fontSize: 14, color: '#8B5CF6' },
-  summaryValuePurple: { fontSize: 14, fontWeight: '600', color: '#8B5CF6' },
+  summaryLabelPurple: { fontSize: 14, color: '#6366F1' },
+  summaryValuePurple: { fontSize: 14, fontWeight: '600', color: '#6366F1' },
   summaryDivider: { height: 1, backgroundColor: '#E5E7EB', marginVertical: 12 },
   summaryRowTotal: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   summaryLabelTotal: { fontSize: 18, fontWeight: 'bold', color: '#1A1A1A' },
   summaryTotal: { fontSize: 28, fontWeight: 'bold', color: '#C62828' },
   totalSavings: { backgroundColor: '#FEF2F2', padding: 12, borderRadius: 10, marginTop: 12, alignItems: 'center' },
   totalSavingsText: { fontSize: 15, fontWeight: 'bold', color: '#DC2626' },
+  loyaltyEarn: { backgroundColor: '#EEF2FF', padding: 12, borderRadius: 10, marginTop: 8, alignItems: 'center' },
+  loyaltyEarnText: { fontSize: 13, fontWeight: '600', color: '#6366F1' },
 
   // Footer
   footer: { backgroundColor: '#FFF', padding: 16, borderTopWidth: 1, borderTopColor: '#E5E7EB' },

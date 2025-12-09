@@ -102,6 +102,17 @@ Consignes:
       
       const method = isEditMode ? 'PUT' : 'POST';
       
+      // Convertir la date locale en ISO UTC si programmée
+      let scheduledAt = null;
+      let status = 'draft';
+      
+      if (formData.scheduled_for) {
+        // Convertir datetime-local en ISO UTC
+        const localDate = new Date(formData.scheduled_for);
+        scheduledAt = localDate.toISOString();
+        status = 'scheduled'; // IMPORTANT: marquer comme programmée
+      }
+      
       // Prepare data to send
       const dataToSend = {
         title: formData.title,
@@ -109,9 +120,12 @@ Consignes:
         type: 'marketing',
         target: formData.target_type === 'segment' ? formData.target_segment : 'all',
         target_ids: [],
-        scheduled_at: formData.scheduled_for || null,
+        scheduled_at: scheduledAt,
+        status: status, // Envoyer le status explicitement
         image_url: null
       };
+      
+      console.log('📤 Envoi notification:', dataToSend);
       
       const response = await axios({
         method: method.toLowerCase(),
@@ -130,8 +144,16 @@ Consignes:
           console.error('Error sending notification:', sendError);
           alert('⚠️ Notification créée mais erreur lors de l\'envoi');
         }
+      } else if (formData.scheduled_for) {
+        // Notification programmée
+        const scheduledDate = new Date(formData.scheduled_for);
+        const formattedDate = scheduledDate.toLocaleString('fr-FR', {
+          dateStyle: 'short',
+          timeStyle: 'short'
+        });
+        alert(`✅ Notification programmée pour le ${formattedDate}`);
       } else {
-        alert(isEditMode ? '✅ Notification modifiée' : '✅ Notification programmée');
+        alert(isEditMode ? '✅ Notification modifiée' : '✅ Notification sauvegardée');
       }
       onSuccess?.();
       onClose();
@@ -274,6 +296,7 @@ Consignes:
             value={formData.scheduled_for}
             onChange={(e) => setFormData({...formData, scheduled_for: e.target.value})}
             className="w-full px-4 py-2 border rounded-lg"
+            min={new Date().toISOString().slice(0, 16)}
           />
           <p className="text-xs text-gray-500 mt-1">
             Laisser vide pour envoyer immédiatement
@@ -296,7 +319,9 @@ Consignes:
             disabled={loading}
             className="flex-1"
           >
-            {loading ? 'Enregistrement...' : (isEditMode ? 'Modifier' : 'Envoyer')}
+            {loading ? 'Enregistrement...' : (
+              formData.scheduled_for ? 'Programmer' : (isEditMode ? 'Modifier' : 'Envoyer maintenant')
+            )}
           </Button>
         </div>
       </form>

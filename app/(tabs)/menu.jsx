@@ -9,6 +9,7 @@ import {
   Alert,
   StyleSheet,
   Dimensions,
+  Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -35,8 +36,15 @@ const fetchProducts = async (category = null, search = null) => {
   return data.products || [];
 };
 
-// Composant ProductCard avec support promos
-const ProductCard = ({ product, onAdd }) => {
+// Composant ProductCard avec images et support promos
+const ProductCard = ({ product, onPress, onAdd }) => {
+  const router = useRouter();
+  
+  // Image du produit
+  const imageUrl = product.image_url || product.image;
+  const hasImage = imageUrl && imageUrl.length > 0;
+
+  // Emoji fallback
   const getEmojiFromCategory = (category) => {
     const emojis = {
       'Burgers': '🍔',
@@ -44,34 +52,59 @@ const ProductCard = ({ product, onAdd }) => {
       'Tacos': '🌮',
       'Desserts': '🍰',
       'Boissons': '🥤',
+      'Kebabs': '🥙',
+      'Salades': '🥗',
     };
     return emojis[category] || '🍽️';
   };
 
-  // Calcul prix promo
-  const hasPromo = product.promo_price && product.promo_price < product.base_price;
-  const displayPrice = hasPromo ? product.promo_price : (product.base_price || 0);
-  const originalPrice = product.base_price || 0;
+  // Calcul prix promo depuis active_promotions ou promo_price
+  const hasPromo = (product.active_promotions && product.active_promotions.length > 0) || 
+                   (product.promo_price && product.promo_price < product.base_price);
+  const displayPrice = product.promo_price || product.final_price || product.base_price || 0;
+  const originalPrice = product.original_price || product.base_price || 0;
 
-  // Badge à afficher (promo dynamique ou statique)
+  // Badge à afficher (depuis active_promotions ou badge statique)
   const getBadge = () => {
+    // Promo dynamique
+    if (product.active_promotions && product.active_promotions.length > 0) {
+      const promo = product.active_promotions[0];
+      return { 
+        text: promo.badge_text || `-${promo.discount_value}%`, 
+        color: promo.badge_color || '#EF4444' 
+      };
+    }
+    // Legacy promo_badge
     if (hasPromo && product.promo_badge) {
       return { text: product.promo_badge, color: product.promo_badge_color || '#EF4444' };
     }
+    // Badge statique
     if (product.badge === 'nouveau') return { text: 'NOUVEAU', color: '#EF4444' };
-    if (product.badge === 'promo') return { text: '-20%', color: '#EF4444' };
+    if (product.badge === 'promo') return { text: 'PROMO', color: '#EF4444' };
     if (product.badge === 'bestseller') return { text: 'TOP', color: '#F59E0B' };
     return null;
   };
 
   const badge = getBadge();
 
+  const handlePress = () => {
+    router.push(`/product/${product.id}`);
+  };
+
   return (
-    <View style={styles.productCard}>
+    <TouchableOpacity style={styles.productCard} onPress={handlePress} activeOpacity={0.9}>
       <View style={styles.productImage}>
-        <Text style={styles.productEmoji}>
-          {getEmojiFromCategory(product.category)}
-        </Text>
+        {hasImage ? (
+          <Image 
+            source={{ uri: imageUrl }} 
+            style={styles.productImageReal}
+            resizeMode="cover"
+          />
+        ) : (
+          <Text style={styles.productEmoji}>
+            {getEmojiFromCategory(product.category || product.category_name)}
+          </Text>
+        )}
         
         {badge && (
           <View style={[styles.productBadge, { backgroundColor: badge.color }]}>
@@ -90,21 +123,27 @@ const ProductCard = ({ product, onAdd }) => {
         
         <View style={styles.productFooter}>
           <View style={styles.priceContainer}>
-            <Text style={styles.productPrice}>
+            <Text style={[styles.productPrice, hasPromo && styles.promoPrice]}>
               {displayPrice.toFixed(2)} €
             </Text>
-            {hasPromo && (
+            {hasPromo && displayPrice < originalPrice && (
               <Text style={styles.originalPrice}>
                 {originalPrice.toFixed(2)} €
               </Text>
             )}
           </View>
-          <TouchableOpacity style={styles.addButton} onPress={onAdd}>
+          <TouchableOpacity 
+            style={styles.addButton} 
+            onPress={(e) => {
+              e.stopPropagation();
+              onAdd();
+            }}
+          >
             <Text style={styles.addButtonText}>+</Text>
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -183,13 +222,14 @@ export default function MenuScreen() {
 
   // IMPORTANT: Passer le produit complet avec promo_price
   const handleAddToCart = (product) => {
+    const promo = product.active_promotions?.[0];
     addItem({
       id: product.id,
       name: product.name,
       base_price: product.base_price,
-      price: product.promo_price || product.base_price,
+      price: product.promo_price || product.final_price || product.base_price,
       promo_price: product.promo_price,
-      promo_badge: product.promo_badge,
+      promo_badge: promo?.badge_text || product.promo_badge,
       image: product.image_url || product.image,
       image_url: product.image_url,
       description: product.description,
@@ -199,10 +239,11 @@ export default function MenuScreen() {
   };
 
   const groupedProducts = products.filter(p => p.category && p.category.trim() !== '').reduce((acc, product) => {
-    if (!acc[product.category]) {
-      acc[product.category] = [];
+    const cat = product.category || product.category_name || 'Autres';
+    if (!acc[cat]) {
+      acc[cat] = [];
     }
-    acc[product.category].push(product);
+    acc[cat].push(product);
     return acc;
   }, {});
 
@@ -437,6 +478,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
+    overflow: 'hidden',
+  },
+  productImageReal: {
+    width: '100%',
+    height: '100%',
   },
   productEmoji: {
     fontSize: 60,
@@ -480,7 +526,10 @@ const styles = StyleSheet.create({
   productPrice: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#FF6B6B',
+    color: '#1A1A1A',
+  },
+  promoPrice: {
+    color: '#EF4444',
   },
   originalPrice: {
     fontSize: 12,

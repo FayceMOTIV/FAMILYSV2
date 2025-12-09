@@ -1,70 +1,176 @@
 # FAMILYS-CLEAN - Contexte Complet pour Claude
 
+> ⚠️ **IMPORTANT** : MongoDB n'est PLUS utilisé. Toutes les données sont sur **Firebase Firestore**.
+> Dernière mise à jour : 9 décembre 2025 - Build 83
+
+---
+
 ## 📱 PRÉSENTATION DU PROJET
 
 **FAMILYS-CLEAN** est une application de commande mobile complète pour le restaurant "Le Family's" à Bourg-en-Bresse, France.
 
 ### Stack Technique
-- **App Mobile** : React Native / Expo (bundle: `com.fayce.familysnew`)
-- **Backend** : FastAPI Python (port 8000)
-- **Backoffice Admin** : React (port 3001 ou 3002)
-- **Base de données** : Firebase Firestore (migration depuis MongoDB complétée)
-- **Auth** : Firebase Authentication
-- **Notifications** : Firebase Cloud Messaging (FCM)
-- **Paiements** : Stripe (à configurer)
+| Composant | Technologie | Notes |
+|-----------|-------------|-------|
+| App Mobile | React Native / Expo | Bundle: `com.fayce.familysnew` |
+| Backend | FastAPI Python | Port 8000 |
+| Backoffice | React | Port 3001/3002 |
+| Base de données | **Firebase Firestore** | ⚠️ Plus de MongoDB ! |
+| Auth | Firebase Authentication | |
+| Notifications | Firebase Cloud Messaging | |
+| Paiements | Stripe | À configurer |
 
 ### Chemins sur le Mac
 ```
 ~/Desktop/FAMILYS-CLEAN/
 ├── app/                    # App React Native Expo
+│   ├── (tabs)/             # Pages principales (cart, menu, profile, orders)
+│   ├── (auth)/             # Authentification
+│   ├── surprise-du-jour/   # Module Surprise du Jour
+│   └── product/            # Page produit [id].tsx
 ├── backend/                # FastAPI Python
 │   ├── server.py           # Point d'entrée
-│   ├── routes/firebase/    # Routes API Firebase
+│   ├── routes/firebase/    # ⚠️ TOUTES les routes utilisent Firebase
+│   │   ├── fb_surprise.py  # Surprise du Jour
+│   │   ├── orders.py       # Commandes
+│   │   ├── customers.py    # Clients
+│   │   ├── promotions.py   # Promotions
+│   │   └── ...
 │   └── config/             # Config Firebase
 ├── admin/                  # Backoffice React
-│   ├── src/pages/          # Pages admin
-│   └── src/components/     # Composants modaux
-└── constants/              # Config partagée
+│   ├── src/pages/          # Dashboard, Promotions, SurpriseDuJour...
+│   └── src/components/     # PromotionWizard, PromotionCalendar...
+├── services/               # Services app mobile
+│   ├── promotions.js       # Validation promos + codes SDJ
+│   ├── surpriseDuJourService.js # API Surprise du Jour
+│   └── ...
+└── stores/                 # Zustand stores
+    ├── authStore.js        # Auth + user data
+    └── cartStore.js        # Panier + promos
 ```
 
 ---
 
-## 🔥 MIGRATION FIREBASE - COMPLÉTÉE
+## 🔥 FIREBASE - CONFIGURATION
 
-### Routes API
-- **Base URL** : `/api/v1/fb/` (toutes les routes admin migrées)
-- **Anciennes routes MongoDB** : `/api/v1/admin/` → NE PLUS UTILISER
+### ⚠️ PLUS DE MONGODB !
+Toute la base de données a été migrée sur Firebase Firestore. Ne plus utiliser les anciennes routes `/api/v1/admin/`.
 
 ### Collections Firestore
 ```
-products, categories, options, choice_library, promotions, 
-orders, customers, loyalty_transactions, popups, settings, 
-admin_notifications, customer_notifications, 
-surprise_configs, surprise_rewards, surprise_plays
+products          # Produits du menu
+categories        # Catégories de produits
+options           # Options des produits
+choice_library    # Bibliothèque de choix pour options
+promotions        # Promotions (14 types)
+orders            # Commandes
+customers         # Clients (uid, loyalty_balance, etc.)
+loyalty_transactions  # Historique fidélité
+popups            # Popups promotionnels
+settings          # Paramètres globaux (dont surprise)
+admin_notifications    # Notifs admin
+customer_notifications # Notifs clients
+surprise_configs  # Config récompenses SDJ
+surprise_rewards  # Récompenses gagnées
+surprise_plays    # Historique des jeux
 ```
 
-### URL Backend
+### URLs Backend
 - **Local** : `http://localhost:8000`
-- **Ngrok (TestFlight)** : `https://teresita-unspreading-camelia.ngrok-free.dev`
+- **Ngrok (TestFlight)** : Variable - lancer `ngrok http 8000`
 
-⚠️ **Important** : L'URL ngrok change à chaque redémarrage. Pour tests TestFlight, garder ouvert :
-1. Terminal 1 : `ngrok http 8000`
-2. Terminal 2 : `uvicorn server:app --host 0.0.0.0 --port 8000`
+### Routes API
+- **Base URL Firebase** : `/api/v1/fb/`
+- **Surprise du Jour** : `/api/v1/fb/surprise/`
+- **Promotions** : `/api/v1/fb/promotions/`
+- **Commandes** : `/api/v1/fb/orders/`
 
 ---
 
-## 🔐 AUTHENTIFICATION
+## 🎰 SURPRISE DU JOUR - SYSTÈME COMPLET
 
-### App Mobile (authStore.js)
-Firebase Auth intégré avec :
-- `register()` : Crée user Firebase Auth + document `customers`
-- `login()` : Authentifie + récupère données Firestore
-- `logout()` : signOut Firebase
+### Configuration
+- **1 jeu par jour** par utilisateur (reset minuit)
+- **75% de chance de GAGNER** (configurable via `settings/surprise.win_probability`)
+- **25% de chance de PERDRE**
+- **Expiration** : 7 jours (configurable)
 
-### Backoffice (PIN)
-- **BackOffice** : 1234
-- **Commandes** : 1111
-- **Livraison** : 2222
+### Types de Récompenses
+
+| Type | Comportement | Code | Auto-crédité |
+|------|--------------|------|--------------|
+| `discount_percent` | Réduction X% sur panier | SDJ-XXXX | ❌ |
+| `discount_amount` | Réduction X€ fixe | SDJ-XXXX | ❌ |
+| `cashback` | Crédite fidélité | null | ✅ |
+| `product` | Produit gratuit | SDJ-XXXX | ❌ |
+
+### Cashback - Fonctionnement Spécial
+- **Auto-crédité** immédiatement sur `loyalty_balance`
+- **Pas de code** à utiliser (code = null)
+- `is_used: true` dès la création
+- Le client voit son solde fidélité augmenter instantanément
+
+### Récompenses Configurées
+```
+5% de réduction   - 35% prob - max 50/jour
+10% de réduction  - 25% prob - max 30/jour
++2€ fidélité      - 10% prob - max 20/jour (CASHBACK)
++5€ fidélité      - 4% prob  - max 5/jour  (CASHBACK RARE)
+SUNDAE gratuit    - 1% prob  - max 3/jour  (PRODUIT)
+```
+
+### Routes API Surprise
+```
+GET  /surprise/status?user_id=XXX        # Peut jouer ?
+POST /surprise/play?user_id=XXX&user_name=YYY  # Jouer
+GET  /surprise/rewards?user_id=XXX       # Mes récompenses
+GET  /surprise/validate-reward/SDJ-XXX   # Valider un code
+POST /surprise/use-reward/SDJ-XXX        # Utiliser un code
+GET  /surprise/stats                     # Stats globales
+GET  /surprise/config                    # Configs actives
+PUT  /surprise/settings                  # Modifier settings
+```
+
+### Fichiers Clés
+- `backend/routes/firebase/fb_surprise.py` - API complète
+- `services/surpriseDuJourService.js` - Service app mobile
+- `services/promotions.js` - Validation codes SDJ dans panier
+- `app/surprise-du-jour/index.tsx` - Page du jeu
+- `app/surprise-du-jour/rewards.tsx` - Mes récompenses
+- `admin/src/pages/SurpriseDuJour*.js` - Backoffice
+
+---
+
+## 💎 SYSTÈME DE FIDÉLITÉ
+
+### Fonctionnement
+- **Gagner** : X% du montant PAYÉ (après toutes réductions)
+- **Utiliser** : Déduit du total (ne peut pas dépasser le total)
+- **Paramètre** : `settings.loyalty_percentage` (défaut 5%)
+
+### Calcul dans cart.jsx
+```javascript
+// Cashback utilisable = ne peut pas dépasser le sous-total après promos
+const maxCashbackUsable = Math.max(0, subtotal - cartPromoDiscount - promoCodeDiscount);
+const cashbackUsed = useCashback ? Math.min(loyaltyBalance, maxCashbackUsable) : 0;
+
+// Total final
+const total = Math.max(0, subtotal - cartPromoDiscount - promoCodeDiscount - cashbackUsed);
+
+// Fidélité gagnée = calculée sur le prix PAYÉ
+const loyaltyEarned = total > 0 ? parseFloat((total * (loyaltyPercentage / 100)).toFixed(2)) : 0;
+```
+
+### Exemple
+- Client a **10€** de fidélité
+- Commande = **4€**
+- → Utilise **4€** (pas 10€)
+- → Reste **6€** sur la carte
+- → Total à payer = **0€**
+
+### Annulation de Commande
+- La fidélité utilisée est **restituée** automatiquement
+- Code dans `orders.py` route `cancel_order`
 
 ---
 
@@ -72,219 +178,162 @@ Firebase Auth intégré avec :
 
 ### 14 Types de Promotions
 ```
-percentage, fixed_amount, free_item, bogo, bundle, 
+percentage, fixed_amount, free_item, bogo, bundle,
 happy_hour, first_order, minimum_purchase, category_discount,
-loyalty_multiplier, conditional, combo_upgrade, 
+loyalty_multiplier, conditional, combo_upgrade,
 free_delivery, flash_sale
 ```
 
-### BOGO (Buy One Get One)
-- Champs : `bogo_buy_quantity`, `bogo_get_quantity`
-- Respecte `limit_per_customer`
+### Codes Promo dans le Panier
+Le champ "Code promo" accepte :
+1. **Codes promo classiques** → Validés via `/promotions/validate`
+2. **Codes Surprise du Jour (SDJ-XXXX)** → Validés via `/surprise/validate-reward`
 
 ### Fichiers Clés
-- `cart.jsx` : Application automatique des promos
-- `product/[id].tsx` : Badge + prix promo affiché
-- `PromotionWizard.js` : Création/édition dans backoffice
+- `services/promotions.js` - Validation (gère les 2 types)
+- `stores/cartStore.js` - Application automatique
+- `app/(tabs)/cart.jsx` - Affichage + utilisation
+- `admin/src/pages/PromotionsV2.js` - Gestion backoffice
+- `admin/src/components/PromotionWizard.js` - Création/édition
 
 ---
 
-## 📦 OPTIONS DYNAMIQUES
+## 🔐 AUTHENTIFICATION
 
-### Système
-- Options chargées en temps réel depuis Firebase
-- Bibliothèque de choix (`choice_library`)
-- Sous-options récursives supportées
+### App Mobile (authStore.js)
+- `register()` : Crée user Firebase Auth + document `customers`
+- `login()` : Authentifie + récupère données Firestore
+- `logout()` : signOut Firebase
+- `refreshUser()` : Rafraîchit les données (loyalty_balance, etc.)
 
-### Composants
-- `OptionModal.jsx` (app) : Affichage pour clients
-- `OptionModal.js` (admin) : CRUD options
-- `NestedSubOptionsEditor.js` : Gestion sous-options
-
----
-
-## 🔔 NOTIFICATIONS
-
-### Backend Routes
-- `GET /api/v1/fb/notifications` : Liste admin
-- `POST /api/v1/fb/notifications` : Créer (status: draft)
-- `POST /api/v1/fb/notifications/{id}/send` : Envoyer maintenant
-- `GET /api/v1/fb/notifications/client` : Pour l'app
-
-### Frontend (NotificationModal.js)
-- API_URL hardcodé : `http://localhost:8000`
-- Envoi automatique si pas de date programmée
-- IA amélioration avec OpenAI (nécessite clé sk-...)
-
-### Notifications Programmées
-**Fichier créé** : `backend/scheduler.py` avec APScheduler
-- Vérifie toutes les minutes les notifications à envoyer
-- **À intégrer** dans `server.py` au démarrage
+### Backoffice (PIN)
+| Mode | PIN | Usage |
+|------|-----|-------|
+| BackOffice | 1234 | Gestion complète |
+| Commandes | 1111 | Vue commandes uniquement |
+| Livraison | 2222 | Vue livreur |
 
 ---
 
-## 🤖 ASSISTANT IA
+## 📦 COMMANDES
 
-### Configuration
-- Clé OpenAI stockée dans `settings.openai_api_key`
-- Doit commencer par `sk-` pour être valide
-- Configurable dans Backoffice → Paramètres → Assistant IA
+### Flux de Commande
+1. Client remplit panier (promos auto-appliquées)
+2. Choisit mode (emporter/sur place/livraison)
+3. Choisit créneau horaire
+4. Optionnel : utilise fidélité / code promo
+5. Valide → Commande créée avec statut `new`
+6. Notification push envoyée
 
-### Route
-`POST /api/v1/fb/ai/chat` - Requiert clé valide
-
----
-
-## 📋 PAGES APP MOBILE
-
-### Pages Principales
-- `/` : Menu principal avec catégories
-- `/product/[id]` : Détail produit avec options et promos
-- `/cart` : Panier avec promos auto-appliquées
-- `/order-confirmation` : Confirmation après commande
-- `/profile` : Profil (redirige vers auth si non connecté)
-
-### Fonctionnalités
-- **Surprise du Jour** : Roue chance avec récompenses
-- **Favoris** : Navigation vers `/product/{id}`
-- **Popups** : Système de modales marketing
-
----
-
-## ⚙️ BACKOFFICE
-
-### Pages Principales
+### Statuts
 ```
-/dashboard, /orders, /menu, /categories, /promos,
-/customers, /loyalty, /notifications, /settings,
-/reservations, /stock, /stats, /ticket-z
+new → in_preparation → ready → completed
+                    ↘ delivering → completed
+cancelled (à tout moment)
 ```
 
-### Fichiers Corrigés Récemment
-- `Settings.js` : Mapping `response.data.settings`
-- `NotificationModal.js` : Routes Firebase + isEditMode fix
-- `Notifications.js` : Reset editingNotification
-- `api.js` : adminApi vers `/api/v1/fb`
-- 15+ fichiers : Migration `/api/v1/admin` → `/api/v1/fb`
-
-### Variables d'Environnement (admin/.env)
-```
-REACT_APP_BACKEND_URL=http://localhost:8000
-FAST_REFRESH=false
+### Données Sauvegardées
+```javascript
+{
+  customer_uid, customer_email, customer_name, customer_phone,
+  items: [{ product_id, name, quantity, unit_price, options, from_reward, has_promo }],
+  subtotal, original_total, product_promo_savings,
+  cart_promo_discount, promo_code, promo_code_discount,
+  promotions_applied: [],
+  loyalty_used, loyalty_earned,
+  total, vat_amount,
+  payment_method, consumption_mode, pickup_date, pickup_time,
+  notes, status
+}
 ```
 
 ---
 
-## 🚀 BUILD & DÉPLOIEMENT
+## 🛠️ COMMANDES UTILES
 
-### EAS Build iOS
+### Démarrage
 ```bash
-cd ~/Desktop/FAMILYS-CLEAN
-eas build --platform ios --profile production --auto-submit
-```
-
-### Incrémenter Build Number
-```bash
-sed -i '' 's/"buildNumber": "80"/"buildNumber": "81"/g' app.json
-```
-
-### TestFlight
-- Bundle : `com.fayce.familysnew`
-- Builds récents : 78, 79, 80
-
----
-
-## 🐛 PROBLÈMES CONNUS & SOLUTIONS
-
-### URL API Vide dans Composants
-**Problème** : `process.env.REACT_APP_BACKEND_URL` vide
-**Solution** : Hardcoder `const API_URL = 'http://localhost:8000';`
-**Fichiers à vérifier** : NotificationModal.js, PaymentModal.js, PromoModal.js, Promos.js
-
-### Syntaxe axios.post
-**Problème** : `axios.post\`` au lieu de `axios.post(\``
-**Solution** : Corriger avec Python (sed problématique avec backticks)
-
-### Clé OpenAI
-**Problème** : Clé invalide stockée
-**Solution** : Entrer vraie clé commençant par `sk-` dans Paramètres
-
----
-
-## 📝 TODO PRIORITAIRE
-
-### Immédiat
-- [ ] Intégrer scheduler.py dans server.py pour notifs programmées
-- [ ] Tester build 80 sur TestFlight
-- [ ] Configurer Stripe (CB + Apple Pay)
-- [ ] Entrer clé OpenAI valide
-
-### Court Terme
-- [ ] Déployer backend sur serveur (Railway/Render/VPS)
-- [ ] Recréer options perdues lors migration MongoDB
-- [ ] Tests complets promotions dans app
-
-### Production
-- [ ] Migration soldes fidélité (dev externe)
-- [ ] Certificats push production
-- [ ] Domain personnalisé API
-
----
-
-## 🔧 COMMANDES UTILES
-
-### Démarrer l'environnement complet
-```bash
-# Terminal 1 - Backend
+# Backend
 cd ~/Desktop/FAMILYS-CLEAN/backend
-uvicorn server:app --host 0.0.0.0 --port 8000
+uvicorn server:app --host 0.0.0.0 --port 8000 --reload
 
-# Terminal 2 - Ngrok (pour TestFlight)
-ngrok http 8000
-
-# Terminal 3 - Backoffice
+# Backoffice
 cd ~/Desktop/FAMILYS-CLEAN/admin
-npm run dev
+npm start  # ou: npx serve -s build -l 3002
 
-# Terminal 4 - App Expo
+# App Mobile
 cd ~/Desktop/FAMILYS-CLEAN
 npx expo start
+
+# Ngrok (pour TestFlight)
+ngrok http 8000
+```
+
+### Build TestFlight
+```bash
+cd ~/Desktop/FAMILYS-CLEAN
+# Incrémenter le buildNumber dans app.json
+eas build --platform ios --profile production --auto-submit
 ```
 
 ### Tests API
 ```bash
-# Settings
-curl http://localhost:8000/api/v1/fb/settings
+# Stats dashboard
+curl http://localhost:8000/api/v1/fb/dashboard/stats
 
-# Créer notification
-curl -X POST http://localhost:8000/api/v1/fb/notifications \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Test","message":"Message test","type":"marketing","target":"all"}'
+# Jouer Surprise du Jour
+curl -X POST "http://localhost:8000/api/v1/fb/surprise/play?user_id=XXX&user_name=YYY"
 
-# Envoyer notification
-curl -X POST http://localhost:8000/api/v1/fb/notifications/{ID}/send
+# Valider code SDJ
+curl http://localhost:8000/api/v1/fb/surprise/validate-reward/SDJ-XXXXX
 
-# Test IA
-curl -X POST http://localhost:8000/api/v1/fb/ai/chat \
-  -H "Content-Type: application/json" \
-  -d '{"question":"Bonjour"}'
-```
-
-### Git
-```bash
-git add .
-git commit -m "description"
-git push origin main
+# Récompenses d'un user
+curl "http://localhost:8000/api/v1/fb/surprise/rewards?user_id=XXX"
 ```
 
 ---
 
-## 📞 CONTACTS & INFOS
+## ⚠️ POINTS D'ATTENTION
 
-- **Restaurant** : Le Family's, Bourg-en-Bresse
-- **Propriétaire** : Faiçal
-- **Autres projets** : AppySolution.fr, Zwin (annuaire halal)
+### Ne PAS faire
+- ❌ Utiliser les routes `/api/v1/admin/` (anciennes routes MongoDB)
+- ❌ Utiliser `api.get\`template\`` (syntaxe cassée, utiliser concaténation)
+- ❌ Créer des index composites Firestore sans tester (filtrer côté Python)
+
+### À vérifier avant build
+- ✅ URL backend correcte dans `constants/config.js`
+- ✅ buildNumber incrémenté dans `app.json`
+- ✅ Backend accessible (ngrok si TestFlight)
+
+### Structure Customer Firebase
+```javascript
+{
+  uid: "xxx",           // ID du document = ID auth Firebase
+  email, name, phone,
+  loyalty_balance: 0,   // Solde fidélité actuel
+  total_orders: 0,
+  total_spent: 0,
+  // ...
+}
+```
 
 ---
 
-*Dernière mise à jour : 8 décembre 2025*
+## 📝 HISTORIQUE DES MODIFICATIONS (Session 9 déc 2025)
+
+### Corrections Appliquées
+1. **promotions.js** - Syntaxe corrigée + gestion codes SDJ-XXXX
+2. **surpriseDuJourService.js** - URLs corrigées (`/surprise/*`)
+3. **cart.jsx** - Syntaxe axios.post corrigée
+4. **fb_surprise.py** - Cashback auto-crédité + filtre user_id
+
+### Validations Effectuées
+- ✅ Dashboard : Stats correctes
+- ✅ Promotions : Analytics + calendrier navigable
+- ✅ Surprise du Jour : 75% gagner, cashback auto, codes fonctionnels
+- ✅ Fidélité : Calcul correct (min entre solde et total)
+- ✅ Historique commandes : Tout affiché (promos, offerts, économies)
+
+### Build Actuel
+- **Numéro** : 83
+- **Status** : Prêt à builder

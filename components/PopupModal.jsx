@@ -7,6 +7,8 @@ import {
   StyleSheet,
   Dimensions,
   Linking,
+  ActivityIndicator,
+  Text,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
@@ -21,6 +23,8 @@ export default function PopupModal() {
   const [visible, setVisible] = useState(false);
   const [currentPopup, setCurrentPopup] = useState(null);
   const [popupQueue, setPopupQueue] = useState([]);
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     loadPopups();
@@ -31,21 +35,33 @@ export default function PopupModal() {
       const response = await axios.get(`${API_BASE_URL}/popups/active`);
       const popups = response.data.popups || [];
       
+      console.log('📢 Popups actifs:', popups.length);
+      
       if (popups.length === 0) return;
 
       // Filtrer selon la frequence d affichage
       const popupsToShow = [];
       
       for (const popup of popups) {
+        // Vérifier que le popup a une image
+        if (!popup.image_url) {
+          console.log('⚠️ Popup sans image ignoré:', popup.id);
+          continue;
+        }
+        
         const shouldShow = await checkDisplayFrequency(popup);
         if (shouldShow) {
           popupsToShow.push(popup);
         }
       }
 
+      console.log('📢 Popups à afficher:', popupsToShow.length);
+
       if (popupsToShow.length > 0) {
         setPopupQueue(popupsToShow);
         setCurrentPopup(popupsToShow[0]);
+        setImageLoading(true);
+        setImageError(false);
         setVisible(true);
       }
     } catch (error) {
@@ -86,6 +102,8 @@ export default function PopupModal() {
     if (remaining.length > 0) {
       setPopupQueue(remaining);
       setCurrentPopup(remaining[0]);
+      setImageLoading(true);
+      setImageError(false);
     } else {
       setVisible(false);
       setCurrentPopup(null);
@@ -117,18 +135,48 @@ export default function PopupModal() {
     >
       <View style={styles.overlay}>
         <View style={styles.container}>
+          {/* Bouton fermer */}
           <TouchableOpacity style={styles.closeBtn} onPress={handleClose}>
-            <Ionicons name="close-circle" size={36} color="#fff" />
+            <View style={styles.closeBtnBg}>
+              <Ionicons name="close" size={24} color="#333" />
+            </View>
           </TouchableOpacity>
           
           <TouchableOpacity 
             activeOpacity={currentPopup.link_url ? 0.9 : 1}
             onPress={handlePress}
+            style={styles.imageContainer}
           >
+            {/* Loading indicator */}
+            {imageLoading && !imageError && (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#C62828" />
+              </View>
+            )}
+            
+            {/* Error state */}
+            {imageError && (
+              <View style={styles.errorContainer}>
+                <Ionicons name="image-outline" size={48} color="#ccc" />
+                <Text style={styles.errorText}>Image non disponible</Text>
+              </View>
+            )}
+            
+            {/* Image */}
             <Image
               source={{ uri: currentPopup.image_url }}
-              style={styles.image}
+              style={[
+                styles.image,
+                (imageLoading || imageError) && styles.imageHidden
+              ]}
               resizeMode="contain"
+              onLoadStart={() => setImageLoading(true)}
+              onLoadEnd={() => setImageLoading(false)}
+              onError={() => {
+                console.log('❌ Erreur chargement image popup:', currentPopup.image_url);
+                setImageLoading(false);
+                setImageError(true);
+              }}
             />
           </TouchableOpacity>
         </View>
@@ -146,20 +194,64 @@ const styles = StyleSheet.create({
   },
   container: {
     width: width * 0.9,
-    maxHeight: height * 0.8,
+    maxHeight: height * 0.75,
+    backgroundColor: '#fff',
     borderRadius: 20,
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 10,
   },
   closeBtn: {
     position: 'absolute',
-    top: -10,
-    right: -10,
+    top: 10,
+    right: 10,
     zIndex: 10,
-    padding: 10,
+  },
+  closeBtnBg: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  imageContainer: {
+    width: '100%',
+    minHeight: height * 0.4,
   },
   image: {
     width: '100%',
     height: height * 0.6,
-    borderRadius: 20,
+  },
+  imageHidden: {
+    opacity: 0,
+    position: 'absolute',
+  },
+  loadingContainer: {
+    width: '100%',
+    height: height * 0.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  errorContainer: {
+    width: '100%',
+    height: height * 0.4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  errorText: {
+    marginTop: 10,
+    color: '#999',
+    fontSize: 14,
   },
 });

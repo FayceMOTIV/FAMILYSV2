@@ -3,9 +3,9 @@ import { NavLink } from 'react-router-dom';
 
 export const SurpriseDuJourTabs = () => {
   const tabs = [
-    { path: '/surprise-du-jour', label: 'Dashboard', icon: '📊' },
-    { path: '/surprise-du-jour/configuration', label: 'Configuration', icon: '⚙️' },
-    { path: '/surprise-du-jour/rewards', label: 'Récompenses', icon: '🏆' }
+    { path: '/admin/surprise-du-jour', label: 'Dashboard', icon: '📊' },
+    { path: '/admin/surprise-du-jour/configuration', label: 'Configuration', icon: '⚙️' },
+    { path: '/admin/surprise-du-jour/rewards', label: 'Récompenses', icon: '🏆' }
   ];
 
   return (
@@ -15,7 +15,7 @@ export const SurpriseDuJourTabs = () => {
           <NavLink
             key={tab.path}
             to={tab.path}
-            end={tab.path === '/surprise-du-jour'}
+            end={tab.path === '/admin/surprise-du-jour'}
             className={({ isActive }) =>
               `px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                 isActive

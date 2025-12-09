@@ -126,7 +126,7 @@ return (
 {hours.closed ? (
 <Text style={styles.closedText}>Fermé</Text>
 ) : (
-<Text style={styles.hoursText}>{hours.open} - {hours.close}</Text>
+<Text style={styles.hoursText}>{hours.open1} - {hours.close1}{hours.open2 ? ` / ${hours.open2} - ${hours.close2}` : ''}</Text>
 )}
 </View>
 ))}

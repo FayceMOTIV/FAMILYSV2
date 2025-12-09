@@ -36,6 +36,7 @@ class NotificationCreate(BaseModel):
     target_ids: List[str] = []
     scheduled_at: Optional[str] = None
     image_url: Optional[str] = None
+    status: Optional[str] = None  # AJOUT: accepter le status du frontend
 
 class NotificationUpdate(BaseModel):
     title: Optional[str] = None
@@ -45,6 +46,7 @@ class NotificationUpdate(BaseModel):
     target_ids: Optional[List[str]] = None
     scheduled_at: Optional[str] = None
     image_url: Optional[str] = None
+    status: Optional[str] = None  # AJOUT: permettre update du status
 
 def serialize_notification(doc) -> dict:
     data = doc.to_dict()
@@ -161,6 +163,16 @@ def create_notification(notif: NotificationCreate):
     try:
         now = datetime.now(timezone.utc)
         
+        # CORRECTION: Déterminer le status automatiquement
+        # Si scheduled_at est fourni → status = "scheduled"
+        # Sinon utiliser le status fourni ou "draft" par défaut
+        if notif.scheduled_at:
+            notification_status = "scheduled"
+        elif notif.status:
+            notification_status = notif.status
+        else:
+            notification_status = "draft"
+        
         data = {
             "title": notif.title,
             "message": notif.message,
@@ -169,7 +181,7 @@ def create_notification(notif: NotificationCreate):
             "target_ids": notif.target_ids,
             "scheduled_at": notif.scheduled_at,
             "image_url": notif.image_url,
-            "status": "draft",
+            "status": notification_status,  # CORRECTION: utiliser le bon status
             "sent_count": 0,
             "created_at": now,
             "updated_at": now
@@ -181,6 +193,8 @@ def create_notification(notif: NotificationCreate):
         data['id'] = doc_ref.id
         data['created_at'] = now.isoformat()
         data['updated_at'] = now.isoformat()
+        
+        print(f"📋 Notification créée: {data['title']} - Status: {notification_status}")
         
         return {"success": True, "notification": data}
     except Exception as e:
@@ -197,6 +211,11 @@ def update_notification(notif_id: str, notif: NotificationUpdate):
         
         update_data = {k: v for k, v in notif.model_dump().items() if v is not None}
         update_data['updated_at'] = datetime.now(timezone.utc)
+        
+        # Si on met à jour scheduled_at, mettre aussi le status
+        if 'scheduled_at' in update_data and update_data['scheduled_at']:
+            update_data['status'] = 'scheduled'
+        
         doc_ref.update(update_data)
         
         updated_doc = doc_ref.get()
@@ -218,6 +237,21 @@ def delete_notification(notif_id: str):
         return {"success": True, "message": "Notification supprimée"}
     except HTTPException:
         raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.delete("")
+def delete_all_notifications():
+    """Supprimer TOUTES les notifications (pour nettoyer les données mockées)"""
+    try:
+        docs = db.collection('admin_notifications').stream()
+        deleted_count = 0
+        for doc in docs:
+            doc.reference.delete()
+            deleted_count += 1
+        
+        print(f"🗑️ {deleted_count} notifications supprimées")
+        return {"success": True, "message": f"{deleted_count} notifications supprimées"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

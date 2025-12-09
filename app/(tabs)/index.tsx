@@ -59,7 +59,8 @@ export default function HomeScreen() {
 
   const loadSettings = async () => {
     try {
-      const r = await axios.get(`${API_BASE_URL}/fb/settings`);
+      const r = await axios.get(`${API_BASE_URL}/settings`);
+      console.log('📋 Settings chargés:', r.data);
       setSettings(r.data.settings || r.data);
     } catch (e) {
       console.log('Error loading settings:', e);
@@ -67,21 +68,65 @@ export default function HomeScreen() {
   };
 
   const loadData = async () => {
-    try { const r = await axios.get(`${API_BASE_URL}/admin/surprise-du-jour/recent-winners?limit=5`); setRecentWinners(r.data || []); } catch (e) {}
-    if (user?.id) { try { const r = await axios.get(`${API_BASE_URL}/surprise-du-jour/status?user_id=${user.id}`); setSurpriseStatus(r.data); } catch (e) {} }
+    // Recent winners
+    try { 
+      const r = await axios.get(`${API_BASE_URL}/surprise/stats`); 
+      setRecentWinners(r.data?.recent_winners || []); 
+    } catch (e) {
+      console.log('Error loading winners:', e);
+    }
+    
+    // Surprise status
+    if (user?.uid) { 
+      try { 
+        const r = await axios.get(`${API_BASE_URL}/surprise/status?user_id=${user.uid}`); 
+        setSurpriseStatus(r.data); 
+      } catch (e) {
+        console.log('Error loading surprise status:', e);
+      } 
+    }
+    
+    // Products with promotions
     try {
-      const r = await axios.get(`${API_BASE_URL}/fb/products`);
+      const r = await axios.get(`${API_BASE_URL}/products`);
       const all = r.data.products || r.data || [];
-      setPromoProducts(all.filter(p => p.active_promotions && p.active_promotions.length > 0).slice(0, 5));
-    } catch (e) {}
+      console.log('📦 Produits chargés:', all.length);
+      const promos = all.filter(p => p.active_promotions && p.active_promotions.length > 0);
+      console.log('🎁 Produits en promo:', promos.length);
+      setPromoProducts(promos.slice(0, 5));
+    } catch (e) {
+      console.log('Error loading products:', e);
+    }
+    
+    // Favorite products
     if (favorites && favorites.length > 0) {
       try {
-        const r = await axios.get(`${API_BASE_URL}/fb/products`);
+        const r = await axios.get(`${API_BASE_URL}/products`);
         const all = r.data.products || r.data || [];
         setFavoriteProducts(all.filter(p => favorites.includes(p.id)).slice(0, 4));
-      } catch (e) {}
+      } catch (e) {
+        console.log('Error loading favorites:', e);
+      }
     }
   };
+
+  // Reload favorites when they change
+  useEffect(() => {
+    const loadFavorites = async () => {
+      if (favorites && favorites.length > 0) {
+        try {
+          const r = await axios.get(`${API_BASE_URL}/products`);
+          const all = r.data.products || r.data || [];
+          setFavoriteProducts(all.filter(p => favorites.includes(p.id)).slice(0, 4));
+        } catch (e) {
+          console.log('Error loading favorites:', e);
+        }
+      } else {
+        setFavoriteProducts([]);
+      }
+    };
+    loadFavorites();
+  }, [favorites]);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -147,18 +192,25 @@ export default function HomeScreen() {
         <View style={styles.gameDecorations}><Text style={styles.decoEmoji}>🎲</Text><Text style={styles.decoEmoji}>🎪</Text><Text style={styles.decoEmoji}>✨</Text></View>
       </TouchableOpacity>
 
-      {favoriteProducts.length > 0 && (
-        <TouchableOpacity style={styles.favoritesButton} onPress={() => router.push('/favorites')}>
-          <View style={styles.favoritesButtonContent}>
-            <View style={styles.favoritesButtonLeft}>
-              <View style={styles.favoritesIconContainer}><Text style={styles.favoritesIcon}>❤️</Text></View>
-              <View>
-                <Text style={styles.favoritesButtonTitle}>Mes Favoris</Text>
-                <Text style={styles.favoritesButtonSubtitle}>{favoriteProducts.length} produit{favoriteProducts.length > 1 ? 's' : ''} sauvegardé{favoriteProducts.length > 1 ? 's' : ''}</Text>
-              </View>
+      {/* Section Favoris - Toujours visible */}
+      <TouchableOpacity style={styles.favoritesButton} onPress={() => router.push('/favorites')}>
+        <View style={styles.favoritesButtonContent}>
+          <View style={styles.favoritesButtonLeft}>
+            <View style={styles.favoritesIconContainer}><Text style={styles.favoritesIcon}>❤️</Text></View>
+            <View>
+              <Text style={styles.favoritesButtonTitle}>Mes Favoris</Text>
+              <Text style={styles.favoritesButtonSubtitle}>
+                {favoriteProducts.length > 0 
+                  ? `${favoriteProducts.length} produit${favoriteProducts.length > 1 ? 's' : ''} sauvegardé${favoriteProducts.length > 1 ? 's' : ''}`
+                  : 'Ajoute tes premiers favoris !'
+                }
+              </Text>
             </View>
-            <View style={styles.favoritesArrow}><Text style={styles.arrowText}>→</Text></View>
           </View>
+          <View style={styles.favoritesArrow}><Text style={styles.arrowText}>→</Text></View>
+        </View>
+        
+        {favoriteProducts.length > 0 ? (
           <View style={styles.favoritesPreview}>
             {favoriteProducts.slice(0, 3).map((product, index) => {
               const imageUrl = product.image_url || product.image;
@@ -170,8 +222,13 @@ export default function HomeScreen() {
             })}
             {favoriteProducts.length > 3 && <View style={[styles.miniProductCircle, styles.moreCircle, { marginLeft: -10 }]}><Text style={styles.moreText}>+{favoriteProducts.length - 3}</Text></View>}
           </View>
-        </TouchableOpacity>
-      )}
+        ) : (
+          <View style={styles.favoritesEmptyPreview}>
+            <View style={styles.emptyHeart}><Text style={styles.emptyHeartText}>💔</Text></View>
+            <Text style={styles.emptyFavoritesText}>Clique sur ❤️ dans le menu pour ajouter des favoris</Text>
+          </View>
+        )}
+      </TouchableOpacity>
 
       {promoProducts.length > 0 && (
         <View style={styles.section}>
@@ -278,6 +335,8 @@ const styles = StyleSheet.create({
   playNowText: { fontSize: 14, fontWeight: 'bold', color: '#10B981' },
   gameDecorations: { position: 'absolute', bottom: 10, right: 15, flexDirection: 'row', gap: 8 },
   decoEmoji: { fontSize: 20, opacity: 0.6 },
+  
+  // Favorites - Toujours visible
   favoritesButton: { margin: 16, marginTop: 0, padding: 16, backgroundColor: '#FFF', borderRadius: 20, borderWidth: 2, borderColor: '#FEE2E2', shadowColor: '#EF4444', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 12, elevation: 4 },
   favoritesButtonContent: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   favoritesButtonLeft: { flexDirection: 'row', alignItems: 'center' },
@@ -293,6 +352,13 @@ const styles = StyleSheet.create({
   miniProductEmoji: { fontSize: 18 },
   moreCircle: { backgroundColor: '#EF4444' },
   moreText: { fontSize: 12, fontWeight: 'bold', color: '#FFF' },
+  
+  // Empty favorites preview
+  favoritesEmptyPreview: { flexDirection: 'row', alignItems: 'center', marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#FEE2E2' },
+  emptyHeart: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#FEF2F2', justifyContent: 'center', alignItems: 'center', marginRight: 10 },
+  emptyHeartText: { fontSize: 16 },
+  emptyFavoritesText: { flex: 1, fontSize: 12, color: '#9CA3AF', fontStyle: 'italic' },
+  
   section: { marginTop: 16, marginBottom: 8 },
   sectionTitle: { fontSize: 20, fontWeight: 'bold', color: '#1A1A1A', paddingHorizontal: 16, marginBottom: 12 },
   promoHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, marginBottom: 12 },

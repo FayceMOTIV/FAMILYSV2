@@ -1,12 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card } from './Card';
+import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 
-export const PromotionCalendar = ({ promotions, currentDate = new Date(), view = 'month' }) => {
+export const PromotionCalendar = ({ promotions }) => {
+  // State pour la navigation
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [view, setView] = useState('month'); // month ou year
+  
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   
   const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
   const dayNames = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+  
+  // Navigation
+  const goToPreviousMonth = () => {
+    setCurrentDate(new Date(year, month - 1, 1));
+  };
+  
+  const goToNextMonth = () => {
+    setCurrentDate(new Date(year, month + 1, 1));
+  };
+  
+  const goToToday = () => {
+    setCurrentDate(new Date());
+  };
+  
+  const goToPreviousYear = () => {
+    setCurrentDate(new Date(year - 1, month, 1));
+  };
+  
+  const goToNextYear = () => {
+    setCurrentDate(new Date(year + 1, month, 1));
+  };
   
   const getMonthData = (targetYear, targetMonth) => {
     const firstDay = new Date(targetYear, targetMonth, 1);
@@ -31,6 +57,7 @@ export const PromotionCalendar = ({ promotions, currentDate = new Date(), view =
     const dateStr = `${targetYear}-${String(targetMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     
     return promotions.filter(promo => {
+      if (!promo.is_active) return false;
       return promo.start_date <= dateStr && promo.end_date >= dateStr;
     });
   };
@@ -41,10 +68,13 @@ export const PromotionCalendar = ({ promotions, currentDate = new Date(), view =
     const lastDayStr = `${targetYear}-${String(targetMonth + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
     
     return promotions.filter(promo => {
-      // Check if promo overlaps with this month
+      if (!promo.is_active) return false;
       return !(promo.end_date < firstDay || promo.start_date > lastDayStr);
     });
   };
+  
+  // Vérifier si c'est le mois actuel
+  const isCurrentMonth = month === new Date().getMonth() && year === new Date().getFullYear();
   
   // Month view
   if (view === 'month') {
@@ -53,6 +83,42 @@ export const PromotionCalendar = ({ promotions, currentDate = new Date(), view =
     return (
       <Card>
         <div className="p-6">
+          {/* Header avec navigation */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={goToPreviousMonth}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                title="Mois précédent"
+              >
+                <ChevronLeft className="w-5 h-5 text-gray-600" />
+              </button>
+              
+              <h2 className="text-xl font-bold text-gray-800 min-w-48 text-center">
+                {monthNames[month]} {year}
+              </h2>
+              
+              <button
+                onClick={goToNextMonth}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                title="Mois suivant"
+              >
+                <ChevronRight className="w-5 h-5 text-gray-600" />
+              </button>
+            </div>
+            
+            {!isCurrentMonth && (
+              <button
+                onClick={goToToday}
+                className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
+              >
+                <Calendar className="w-4 h-4" />
+                Aujourd'hui
+              </button>
+            )}
+          </div>
+          
+          {/* Calendrier */}
           <div className="grid grid-cols-7 gap-2">
             {dayNames.map(day => (
               <div key={day} className="text-center font-bold text-gray-600 p-2">
@@ -69,13 +135,13 @@ export const PromotionCalendar = ({ promotions, currentDate = new Date(), view =
               return (
                 <div
                   key={index}
-                  className={`min-h-24 p-2 border rounded ${
-                    day ? 'bg-white hover:bg-gray-50' : 'bg-gray-50'
-                  } ${isToday ? 'border-primary border-2 bg-primary/5' : ''}`}
+                  className={`min-h-24 p-2 border rounded-lg transition-all ${
+                    day ? 'bg-white hover:bg-gray-50 hover:shadow-sm' : 'bg-gray-50'
+                  } ${isToday ? 'border-primary border-2 bg-primary/5 shadow-md' : 'border-gray-200'}`}
                 >
                   {day && (
                     <>
-                      <div className={`text-sm font-bold mb-1 ${isToday ? 'text-primary' : ''}`}>
+                      <div className={`text-sm font-bold mb-1 ${isToday ? 'text-primary' : 'text-gray-700'}`}>
                         {day}
                       </div>
                       {promos.length > 0 && (
@@ -83,8 +149,9 @@ export const PromotionCalendar = ({ promotions, currentDate = new Date(), view =
                           {promos.slice(0, 3).map((promo, idx) => (
                             <div
                               key={idx}
-                              className="text-xs bg-gradient-to-r from-orange-400 to-red-500 text-white px-2 py-1 rounded truncate"
-                              title={promo.name}
+                              className="text-xs text-white px-2 py-1 rounded truncate cursor-pointer hover:opacity-90"
+                              style={{ backgroundColor: promo.badge_color || '#f97316' }}
+                              title={`${promo.name} - ${promo.discount_value}${promo.type?.includes('percent') || promo.type === 'conditional_discount' ? '%' : '€'}`}
                             >
                               {promo.name}
                             </div>
@@ -102,6 +169,23 @@ export const PromotionCalendar = ({ promotions, currentDate = new Date(), view =
               );
             })}
           </div>
+          
+          {/* Légende */}
+          <div className="mt-6 pt-4 border-t flex items-center justify-between text-sm text-gray-500">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-orange-500 rounded"></div>
+                <span>Promotion active</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-primary rounded bg-primary/10"></div>
+                <span>Aujourd'hui</span>
+              </div>
+            </div>
+            <div>
+              {promotions.filter(p => p.is_active).length} promotion(s) active(s) au total
+            </div>
+          </div>
         </div>
       </Card>
     );
@@ -112,17 +196,57 @@ export const PromotionCalendar = ({ promotions, currentDate = new Date(), view =
     return (
       <Card>
         <div className="p-6">
+          {/* Header avec navigation année */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={goToPreviousYear}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                title="Année précédente"
+              >
+                <ChevronLeft className="w-5 h-5 text-gray-600" />
+              </button>
+              
+              <h2 className="text-xl font-bold text-gray-800 min-w-24 text-center">
+                {year}
+              </h2>
+              
+              <button
+                onClick={goToNextYear}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                title="Année suivante"
+              >
+                <ChevronRight className="w-5 h-5 text-gray-600" />
+              </button>
+            </div>
+            
+            {year !== new Date().getFullYear() && (
+              <button
+                onClick={goToToday}
+                className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
+              >
+                <Calendar className="w-4 h-4" />
+                Année actuelle
+              </button>
+            )}
+          </div>
+          
           <div className="grid grid-cols-3 gap-6">
             {monthNames.map((monthName, monthIndex) => {
               const monthPromos = getPromosForMonth(year, monthIndex);
-              const isCurrentMonth = monthIndex === new Date().getMonth() && year === new Date().getFullYear();
+              const isCurrentMonthYear = monthIndex === new Date().getMonth() && year === new Date().getFullYear();
               
               return (
                 <Card 
                   key={monthIndex} 
-                  className={`p-4 ${isCurrentMonth ? 'border-2 border-primary bg-primary/5' : 'border'}`}
+                  className={`p-4 cursor-pointer hover:shadow-lg transition-shadow ${
+                    isCurrentMonthYear ? 'border-2 border-primary bg-primary/5' : 'border hover:border-gray-300'
+                  }`}
+                  onClick={() => {
+                    setCurrentDate(new Date(year, monthIndex, 1));
+                  }}
                 >
-                  <h3 className={`font-bold text-center mb-3 ${isCurrentMonth ? 'text-primary' : ''}`}>
+                  <h3 className={`font-bold text-center mb-3 ${isCurrentMonthYear ? 'text-primary' : ''}`}>
                     {monthName}
                   </h3>
                   
@@ -136,7 +260,7 @@ export const PromotionCalendar = ({ promotions, currentDate = new Date(), view =
                     
                     {getMonthData(year, monthIndex).map((day, idx) => {
                       const dayPromos = day ? getPromosForDay(year, monthIndex, day) : [];
-                      const isToday = day === new Date().getDate() && 
+                      const isTodayDay = day === new Date().getDate() && 
                                      monthIndex === new Date().getMonth() && 
                                      year === new Date().getFullYear();
                       
@@ -145,7 +269,7 @@ export const PromotionCalendar = ({ promotions, currentDate = new Date(), view =
                           key={idx}
                           className={`text-xs text-center p-1 rounded ${
                             day ? (dayPromos.length > 0 ? 'bg-orange-400 text-white font-bold' : 'bg-gray-50') : ''
-                          } ${isToday ? 'ring-2 ring-primary' : ''}`}
+                          } ${isTodayDay ? 'ring-2 ring-primary' : ''}`}
                         >
                           {day || ''}
                         </div>
@@ -169,7 +293,8 @@ export const PromotionCalendar = ({ promotions, currentDate = new Date(), view =
                         {monthPromos.slice(0, 2).map((promo, idx) => (
                           <div
                             key={idx}
-                            className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded truncate"
+                            className="text-xs text-white px-2 py-1 rounded truncate"
+                            style={{ backgroundColor: promo.badge_color || '#f97316' }}
                             title={promo.name}
                           >
                             {promo.name}

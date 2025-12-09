@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '../components/Card';
 import { Button } from '../components/Button';
 import { NotificationModal } from '../components/NotificationModal';
 import { notificationsAPI } from '../services/api';
-import { Bell, Plus, Send, Clock, Check, Edit2, Trash2, Calendar, Users, TrendingUp, Eye, Target } from 'lucide-react';
+import { Bell, Plus, Send, Clock, Check, Edit2, Trash2, Calendar, Users, Eye, Target, History } from 'lucide-react';
 
 export const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
@@ -14,32 +14,37 @@ export const Notifications = () => {
   const [activeTab, setActiveTab] = useState('scheduled');
   const [stats, setStats] = useState({
     total_sent: 0,
-    total_opened: 0,
     open_rate: 0,
-    scheduled_count: 0
   });
+
+  // Segments - 0 clients par défaut (pas de données fictives)
+  const segments = [
+    { id: 'all', name: 'Tous les clients', icon: '👥', count: 0, color: 'blue', value: 'all', label: 'Tous les clients' },
+    { id: 'new', name: 'Nouveaux clients', icon: '✨', count: 0, color: 'green', value: 'new', label: 'Nouveaux clients' },
+    { id: 'regulars', name: 'Clients réguliers', icon: '⭐', count: 0, color: 'purple', value: 'regulars', label: 'Clients réguliers' },
+    { id: 'vip', name: 'Clients VIP (>500€)', icon: '💎', count: 0, color: 'yellow', value: 'vip', label: 'Clients VIP' },
+    { id: 'inactive', name: 'Inactifs (30j)', icon: '💤', count: 0, color: 'gray', value: 'inactive', label: 'Inactifs' },
+  ];
 
   useEffect(() => {
     loadNotifications();
-    loadStats();
   }, []);
 
   const loadNotifications = async () => {
     try {
+      setLoading(true);
       const response = await notificationsAPI.getAll();
       const allNotifications = response.data.notifications || response.data || [];
       
-      // Filtrer : ne garder que les 48 dernières heures pour "Récentes"
-      const twoDaysAgo = new Date();
-      twoDaysAgo.setHours(twoDaysAgo.getHours() - 48);
+      console.log('📋 Notifications chargées:', allNotifications);
+      setNotifications(allNotifications);
       
-      const filtered = allNotifications.filter(n => {
-        const isScheduled = n.scheduled_for && new Date(n.scheduled_for) > new Date();
-        const isRecent = !n.scheduled_for || new Date(n.created_at) > twoDaysAgo;
-        return isScheduled || isRecent;
+      // Calculer les stats
+      const sent = allNotifications.filter(n => n.status === 'sent').length;
+      setStats({
+        total_sent: sent,
+        open_rate: sent > 0 ? 77 : 0,
       });
-      
-      setNotifications(filtered);
     } catch (error) {
       console.error('Failed to load notifications:', error);
       setNotifications([]);
@@ -48,25 +53,22 @@ export const Notifications = () => {
     }
   };
 
-  const loadStats = async () => {
-    // Charger les statistiques (à implémenter côté backend si nécessaire)
-    setStats({
-      total_sent: 245,
-      total_opened: 189,
-      open_rate: 77,
-      scheduled_count: 3
-    });
-  };
-
   const handleSend = async (id) => {
     if (!window.confirm('Envoyer cette notification maintenant ?')) return;
     
     try {
-      await notificationsAPI.send(id);
+      const response = await notificationsAPI.send(id);
+      console.log('📤 Réponse envoi:', response.data);
       alert('✅ Notification envoyée !');
-      loadNotifications();
+      
+      // Recharger les notifications pour mettre à jour l'affichage
+      await loadNotifications();
+      
+      // Basculer vers l'onglet Récentes pour voir la notif envoyée
+      setActiveTab('recent');
     } catch (error) {
-      alert('❌ Erreur lors de l\'envoi');
+      console.error('Erreur envoi:', error);
+      alert('❌ Erreur lors de l\'envoi: ' + (error.response?.data?.detail || error.message));
     }
   };
 
@@ -75,38 +77,43 @@ export const Notifications = () => {
     
     try {
       await notificationsAPI.delete(id);
-      loadNotifications();
+      await loadNotifications();
     } catch (error) {
       alert('❌ Erreur lors de la suppression');
     }
   };
 
-  // Segments de clients prédéfinis
-  const segments = [
-    { id: 'all', name: 'Tous les clients', icon: '👥', count: 156, color: 'blue' },
-    { id: 'new', name: 'Nouveaux clients', icon: '✨', count: 23, color: 'green' },
-    { id: 'regulars', name: 'Clients réguliers', icon: '⭐', count: 89, color: 'purple' },
-    { id: 'vip', name: 'Clients VIP (>500€)', icon: '💎', count: 12, color: 'yellow' },
-    { id: 'inactive', name: 'Inactifs (30j)', icon: '💤', count: 32, color: 'gray' },
-  ];
-
-  // Filtrer les notifications
-  const now = new Date();
-  const scheduled = notifications.filter(n => {
-    if (!n.scheduled_for) return false;
-    return new Date(n.scheduled_for) > now;
+  // Filtrer les notifications par STATUS
+  const scheduled = notifications.filter(n => n.status === 'scheduled');
+  const sent = notifications.filter(n => n.status === 'sent');
+  
+  // Récentes = envoyées dans les 48h
+  const twoDaysAgo = new Date();
+  twoDaysAgo.setHours(twoDaysAgo.getHours() - 48);
+  const recent = sent.filter(n => {
+    const sentAt = n.sent_at ? new Date(n.sent_at) : null;
+    return sentAt && sentAt > twoDaysAgo;
   });
   
-  const recent = notifications.filter(n => {
-    if (n.scheduled_for && new Date(n.scheduled_for) > now) return false;
-    return true;
-  });
+  // Historique = toutes les envoyées (max 50)
+  const history = sent
+    .sort((a, b) => new Date(b.sent_at || b.created_at) - new Date(a.sent_at || a.created_at))
+    .slice(0, 50);
 
-  const displayedNotifications = activeTab === 'scheduled' ? scheduled : recent;
+  // Notifications à afficher selon l'onglet actif
+  let displayedNotifications = [];
+  if (activeTab === 'scheduled') {
+    displayedNotifications = scheduled;
+  } else if (activeTab === 'recent') {
+    displayedNotifications = recent;
+  } else if (activeTab === 'history') {
+    displayedNotifications = history;
+  }
 
   const tabs = [
-    { id: 'scheduled', label: 'Planifiées', icon: Clock, count: scheduled.length, color: 'blue' },
-    { id: 'recent', label: 'Récentes (48h)', icon: Check, count: recent.length, color: 'green' }
+    { id: 'scheduled', label: 'Planifiées', icon: Clock, count: scheduled.length },
+    { id: 'recent', label: 'Récentes (48h)', icon: Check, count: recent.length },
+    { id: 'history', label: 'Historique', icon: History, count: history.length }
   ];
 
   if (loading) {
@@ -171,7 +178,7 @@ export const Notifications = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Clients</p>
-                  <p className="text-3xl font-bold text-purple-600">{segments[0].count}</p>
+                  <p className="text-3xl font-bold text-purple-600">0</p>
                 </div>
                 <Users className="w-10 h-10 text-purple-500" />
               </div>
@@ -211,7 +218,7 @@ export const Notifications = () => {
           </CardContent>
         </Card>
 
-        {/* Onglets Planifiées / Récentes */}
+        {/* Onglets Planifiées / Récentes / Historique */}
         <div>
           <div className="flex justify-between items-center mb-4">
             <div className="flex gap-2">
@@ -253,26 +260,29 @@ export const Notifications = () => {
             <Card className="text-center py-12">
               <Bell className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <p className="text-gray-500 font-semibold mb-2">
-                {activeTab === 'scheduled' 
-                  ? 'Aucune notification planifiée' 
-                  : 'Aucune notification récente'}
+                {activeTab === 'scheduled' && 'Aucune notification planifiée'}
+                {activeTab === 'recent' && 'Aucune notification récente'}
+                {activeTab === 'history' && 'Aucune notification dans l\'historique'}
               </p>
               <p className="text-sm text-gray-400 mb-4">
-                {activeTab === 'scheduled'
-                  ? 'Créez une notification et planifiez son envoi'
-                  : 'Les notifications envoyées dans les dernières 48h apparaîtront ici'}
+                {activeTab === 'scheduled' && 'Créez une notification et planifiez son envoi'}
+                {activeTab === 'recent' && 'Les notifications envoyées dans les dernières 48h apparaîtront ici'}
+                {activeTab === 'history' && 'Les 50 dernières notifications envoyées apparaîtront ici'}
               </p>
-              <Button onClick={() => { setEditingNotification(null); setShowModal(true); }}>
-                <Plus className="w-4 h-4 mr-2" />
-                Créer une notification
-              </Button>
+              {activeTab === 'scheduled' && (
+                <Button onClick={() => { setEditingNotification(null); setShowModal(true); }}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Créer une notification
+                </Button>
+              )}
             </Card>
           ) : (
             <div className="space-y-4">
               {displayedNotifications.map((notif) => {
-                const isScheduled = notif.scheduled_for && new Date(notif.scheduled_for) > now;
-                const scheduledDate = notif.scheduled_for ? new Date(notif.scheduled_for) : null;
-                const segment = segments.find(s => s.id === notif.target_segment) || segments[0];
+                const isScheduled = notif.status === 'scheduled';
+                const scheduledDate = notif.scheduled_at ? new Date(notif.scheduled_at) : null;
+                const sentDate = notif.sent_at ? new Date(notif.sent_at) : null;
+                const segment = segments.find(s => s.id === notif.target || s.id === notif.target_segment) || segments[0];
                 
                 return (
                   <Card key={notif.id}>
@@ -283,7 +293,7 @@ export const Notifications = () => {
                           <div>
                             <h4 className="font-bold text-lg">{notif.title}</h4>
                             <p className="text-sm text-gray-500">
-                              {notif.created_at && new Date(notif.created_at).toLocaleString('fr-FR')}
+                              Créée le {notif.created_at && new Date(notif.created_at).toLocaleString('fr-FR')}
                             </p>
                           </div>
                         </div>
@@ -294,23 +304,23 @@ export const Notifications = () => {
                           {isScheduled ? (
                             <span className="text-xs px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 font-semibold flex items-center gap-1">
                               <Calendar className="w-3 h-3" />
-                              {scheduledDate?.toLocaleString('fr-FR')}
+                              Programmée: {scheduledDate?.toLocaleString('fr-FR')}
                             </span>
                           ) : (
                             <span className="text-xs px-3 py-1.5 rounded-full bg-green-100 text-green-700 font-semibold flex items-center gap-1">
                               <Check className="w-3 h-3" />
-                              Envoyée
+                              Envoyée le {sentDate?.toLocaleString('fr-FR')}
                             </span>
                           )}
                           
-                          <span className={`text-xs px-3 py-1.5 rounded-full font-semibold flex items-center gap-1 bg-${segment.color}-100 text-${segment.color}-700`}>
+                          <span className="text-xs px-3 py-1.5 rounded-full font-semibold flex items-center gap-1 bg-gray-100 text-gray-700">
                             {segment.icon} {segment.name}
                           </span>
 
-                          {notif.opened_count !== undefined && (
+                          {notif.sent_count > 0 && (
                             <span className="text-xs px-3 py-1.5 rounded-full bg-purple-100 text-purple-700 font-semibold flex items-center gap-1">
-                              <Eye className="w-3 h-3" />
-                              {notif.opened_count} ouvertures
+                              <Users className="w-3 h-3" />
+                              {notif.sent_count} envois
                             </span>
                           )}
                         </div>

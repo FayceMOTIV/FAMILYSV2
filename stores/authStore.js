@@ -32,6 +32,35 @@ export const useAuthStore = create(
         }
       },
 
+      // Set user directly (from backend API response)
+      setUser: (userData) => {
+        if (!userData) {
+          set({ token: null, user: null, isAuthenticated: false });
+          return;
+        }
+        
+        const user = {
+          uid: userData.uid || userData.id,
+          id: userData.id || userData.uid,
+          email: userData.email || '',
+          name: userData.name || `${userData.first_name || ''} ${userData.last_name || ''}`.trim(),
+          first_name: userData.first_name || userData.name?.split(' ')[0] || '',
+          last_name: userData.last_name || userData.name?.split(' ').slice(1).join(' ') || '',
+          phone: userData.phone || '',
+          address: userData.address || '',
+          loyalty_balance: userData.loyalty_balance || 0,
+          total_orders: userData.total_orders || 0,
+          total_spent: userData.total_spent || 0,
+        };
+        
+        set({ 
+          token: user.uid, 
+          user: user, 
+          isAuthenticated: true,
+          isLoading: false
+        });
+      },
+
       // Register with Firebase Auth
       register: async (email, password, name, phone) => {
         try {
@@ -140,6 +169,8 @@ export const useAuthStore = create(
           set({ token: null, user: null, isAuthenticated: false });
         } catch (error) {
           console.error('Logout error:', error);
+          // Force logout even if Firebase fails
+          set({ token: null, user: null, isAuthenticated: false });
         }
       },
 
@@ -147,6 +178,29 @@ export const useAuthStore = create(
       updateUser: (userData) => {
         const user = { ...get().user, ...userData };
         set({ user });
+      },
+
+      // Refresh user data from Firestore
+      refreshUser: async () => {
+        const { user } = get();
+        if (!user?.uid) return;
+        
+        try {
+          const customerDoc = await getDoc(doc(db, 'customers', user.uid));
+          if (customerDoc.exists()) {
+            const data = customerDoc.data();
+            set({
+              user: {
+                ...user,
+                loyalty_balance: data.loyalty_balance || 0,
+                total_orders: data.total_orders || 0,
+                total_spent: data.total_spent || 0,
+              }
+            });
+          }
+        } catch (error) {
+          console.error('Refresh user error:', error);
+        }
       },
     }),
     {

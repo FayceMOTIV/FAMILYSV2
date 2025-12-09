@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Plus, Trash2, ChevronDown, ChevronRight, Upload, X } from 'lucide-react';
 import { Button } from './Button';
 
@@ -17,10 +17,295 @@ import { Button } from './Button';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
 
+// ============================================
+// COMPOSANT AUTOCOMPLETE POUR LES CHOIX
+// ============================================
+const ChoiceNameAutocomplete = ({ 
+  value, 
+  onChange, 
+  onSelectFromLibrary, 
+  choiceLibrary = [],
+  placeholder = "Tapez pour rechercher..."
+}) => {
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const wrapperRef = useRef(null);
+
+  // Fermer si clic extérieur
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleInputChange = (e) => {
+    const inputValue = e.target.value;
+    onChange(inputValue);
+    
+    if (inputValue.length > 0) {
+      const filtered = choiceLibrary.filter(item => 
+        item.name.toLowerCase().includes(inputValue.toLowerCase())
+      );
+      setSuggestions(filtered.slice(0, 6));
+      setShowSuggestions(true);
+    } else {
+      setSuggestions(choiceLibrary.slice(0, 6));
+      setShowSuggestions(true);
+    }
+    setHighlightedIndex(-1);
+  };
+
+  const handleFocus = () => {
+    const currentValue = value || '';
+    if (currentValue.length === 0) {
+      setSuggestions(choiceLibrary.slice(0, 6));
+    } else {
+      const filtered = choiceLibrary.filter(item => 
+        item.name.toLowerCase().includes(currentValue.toLowerCase())
+      );
+      setSuggestions(filtered.slice(0, 6));
+    }
+    setShowSuggestions(true);
+  };
+
+  const handleSelectSuggestion = (item) => {
+    onSelectFromLibrary(item);
+    setShowSuggestions(false);
+    setHighlightedIndex(-1);
+  };
+
+  const handleKeyDown = (e) => {
+    if (!showSuggestions || suggestions.length === 0) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setHighlightedIndex(prev => 
+          prev < suggestions.length - 1 ? prev + 1 : 0
+        );
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setHighlightedIndex(prev => 
+          prev > 0 ? prev - 1 : suggestions.length - 1
+        );
+        break;
+      case 'Enter':
+        if (highlightedIndex >= 0 && highlightedIndex < suggestions.length) {
+          e.preventDefault();
+          handleSelectSuggestion(suggestions[highlightedIndex]);
+        }
+        break;
+      case 'Escape':
+        setShowSuggestions(false);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const getEmojiForName = (name) => {
+    const lowerName = (name || '').toLowerCase();
+    const emojis = {
+      'coca': '🥤', 'cola': '🥤', 'pepsi': '🥤', 'soda': '🥤',
+      'fanta': '🍊', 'orange': '🍊', 'orangina': '🍊',
+      'sprite': '🍋', 'citron': '🍋',
+      'ice tea': '🍑', 'thé': '🍵', 'tea': '🍵',
+      'eau': '💧', 'water': '💧', 'perrier': '💧', 'evian': '💧',
+      'frite': '🍟', 'frites': '🍟',
+      'potato': '🥔', 'potatoes': '🥔',
+      'salade': '🥗', 'salad': '🥗',
+      'onion': '🧅', 'oignon': '🧅',
+      'nugget': '🍗', 'poulet': '🍗',
+      'ketchup': '🍅', 'tomate': '🍅',
+      'mayo': '🥚', 'mayonnaise': '🥚',
+      'bbq': '🔥', 'barbecue': '🔥',
+      'piment': '🌶️', 'algérien': '🌶️', 'samurai': '⚔️', 'samourai': '⚔️',
+      'andalou': '🇪🇸',
+      'biggy': '⭐', 'special': '⭐',
+      'burger': '🍔', 'menu': '🍔🍟🥤',
+    };
+    
+    for (const [key, emoji] of Object.entries(emojis)) {
+      if (lowerName.includes(key)) return emoji;
+    }
+    return '🍽️';
+  };
+
+  return (
+    <div ref={wrapperRef} style={{ position: 'relative', flex: 1 }}>
+      <div style={{ position: 'relative' }}>
+        <input
+          type="text"
+          value={value}
+          onChange={handleInputChange}
+          onFocus={handleFocus}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          className="w-full px-3 py-2 border rounded-lg text-sm pr-8"
+          autoComplete="off"
+        />
+        {choiceLibrary.length > 0 && (
+          <span 
+            style={{ 
+              position: 'absolute', 
+              right: 8, 
+              top: '50%', 
+              transform: 'translateY(-50%)',
+              fontSize: 12,
+              opacity: 0.5
+            }}
+            title={`${choiceLibrary.length} éléments dans la bibliothèque`}
+          >
+            📚
+          </span>
+        )}
+      </div>
+
+      {/* Dropdown suggestions */}
+      {showSuggestions && suggestions.length > 0 && (
+        <div style={{
+          position: 'absolute',
+          top: '100%',
+          left: 0,
+          right: 0,
+          marginTop: 4,
+          backgroundColor: '#FFF',
+          border: '1px solid #E2E8F0',
+          borderRadius: 10,
+          boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
+          zIndex: 1000,
+          maxHeight: 240,
+          overflowY: 'auto',
+        }}>
+          <div style={{
+            padding: '6px 10px',
+            fontSize: 10,
+            fontWeight: 600,
+            color: '#64748B',
+            backgroundColor: '#F8FAFC',
+            borderBottom: '1px solid #E2E8F0',
+            borderRadius: '10px 10px 0 0',
+          }}>
+            📚 Bibliothèque • ↑↓ naviguer • Entrée sélectionner
+          </div>
+          {suggestions.map((item, index) => (
+            <div
+              key={item.id || index}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '8px 10px',
+                cursor: 'pointer',
+                gap: 8,
+                backgroundColor: index === highlightedIndex ? '#EEF2FF' : 'transparent',
+                transition: 'background-color 0.1s',
+              }}
+              onClick={() => handleSelectSuggestion(item)}
+              onMouseEnter={() => setHighlightedIndex(index)}
+            >
+              {/* Image ou emoji */}
+              {item.image_url ? (
+                <img 
+                  src={item.image_url.startsWith('/') ? `${API_URL}${item.image_url}` : item.image_url}
+                  alt={item.name}
+                  style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: 6,
+                    objectFit: 'cover',
+                    border: '1px solid #E2E8F0',
+                  }}
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+              ) : (
+                <div style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 6,
+                  backgroundColor: '#F1F5F9',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 14,
+                }}>
+                  {getEmojiForName(item.name)}
+                </div>
+              )}
+              
+              {/* Infos */}
+              <div style={{ flex: 1 }}>
+                <span style={{ 
+                  fontSize: 13, 
+                  fontWeight: 500, 
+                  color: '#1E293B',
+                  display: 'block',
+                }}>
+                  {item.name}
+                </span>
+                {item.default_price > 0 && (
+                  <span style={{ 
+                    fontSize: 11, 
+                    color: '#10B981', 
+                    fontWeight: 600 
+                  }}>
+                    +{item.default_price.toFixed(2)}€
+                  </span>
+                )}
+              </div>
+              
+              {/* Indicateur sélection */}
+              {index === highlightedIndex && (
+                <span style={{
+                  fontSize: 9,
+                  color: '#6366F1',
+                  backgroundColor: '#EEF2FF',
+                  padding: '3px 6px',
+                  borderRadius: 4,
+                  fontWeight: 600,
+                }}>
+                  ↵
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Message si pas de résultat */}
+      {showSuggestions && value && suggestions.length === 0 && choiceLibrary.length > 0 && (
+        <div style={{
+          position: 'absolute',
+          top: '100%',
+          left: 0,
+          right: 0,
+          marginTop: 4,
+          backgroundColor: '#FFF',
+          border: '1px solid #E2E8F0',
+          borderRadius: 10,
+          padding: '10px 12px',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+          zIndex: 1000,
+        }}>
+          <span style={{ fontSize: 12, color: '#64748B' }}>
+            ✨ "{value}" - Nouveau choix
+          </span>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============================================
 // Composant pour un choix de sous-option (avec possibilité d'avoir ses propres sous-options)
+// ============================================
 const SubOptionChoiceEditor = ({ choice, onChange, onDelete, depth = 0, choiceLibrary = [] }) => {
   const [expanded, setExpanded] = useState(false);
-  const [showLibrary, setShowLibrary] = useState(false);
   const [uploading, setUploading] = useState(false);
 
   const hasSubOptions = choice.sub_options && choice.sub_options.length > 0;
@@ -65,7 +350,7 @@ const SubOptionChoiceEditor = ({ choice, onChange, onDelete, depth = 0, choiceLi
       const formData = new FormData();
       formData.append('file', file);
       
-      const response = await fetch(`${API_URL}/api/v1/fb/upload/image`, {
+      const response = await fetch(`${API_URL}/api/v1/admin/upload/image`, {
         method: 'POST',
         body: formData
       });
@@ -79,6 +364,16 @@ const SubOptionChoiceEditor = ({ choice, onChange, onDelete, depth = 0, choiceLi
     } finally {
       setUploading(false);
     }
+  };
+
+  // Sélection depuis l'autocomplétion - remplit nom, prix et image
+  const handleSelectFromAutocomplete = (libraryItem) => {
+    onChange({
+      ...choice,
+      name: libraryItem.name,
+      price: libraryItem.default_price || 0,
+      image_url: libraryItem.image_url || ''
+    });
   };
 
   return (
@@ -97,15 +392,33 @@ const SubOptionChoiceEditor = ({ choice, onChange, onDelete, depth = 0, choiceLi
           )}
         </button>
 
+        {/* Image miniature si présente */}
+        {choice.image_url && (
+          <div className="relative flex-shrink-0 mt-1">
+            <img
+              src={choice.image_url.startsWith('/') ? `${API_URL}${choice.image_url}` : choice.image_url}
+              alt={choice.name}
+              className="w-10 h-10 object-cover rounded border"
+            />
+            <button
+              type="button"
+              onClick={() => onChange({ ...choice, image_url: '' })}
+              className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          </div>
+        )}
+
         <div className="flex-1 space-y-2">
-          {/* Ligne principale: nom + prix */}
+          {/* Ligne principale: nom avec autocomplete + prix */}
           <div className="flex gap-2">
-            <input
-              type="text"
+            <ChoiceNameAutocomplete
               value={choice.name}
-              onChange={(e) => onChange({ ...choice, name: e.target.value })}
-              className="flex-1 px-3 py-2 border rounded-lg text-sm"
-              placeholder="Nom du choix"
+              onChange={(value) => onChange({ ...choice, name: value })}
+              onSelectFromLibrary={handleSelectFromAutocomplete}
+              choiceLibrary={choiceLibrary}
+              placeholder="Tapez pour rechercher..."
             />
             <input
               type="number"
@@ -135,24 +448,9 @@ const SubOptionChoiceEditor = ({ choice, onChange, onDelete, depth = 0, choiceLi
             </Button>
           </div>
 
-          {/* Image */}
-          <div className="flex items-center gap-2">
-            {choice.image_url ? (
-              <div className="relative">
-                <img
-                  src={choice.image_url.startsWith('/') ? `${API_URL}${choice.image_url}` : choice.image_url}
-                  alt={choice.name}
-                  className="w-16 h-16 object-cover rounded border"
-                />
-                <button
-                  type="button"
-                  onClick={() => onChange({ ...choice, image_url: '' })}
-                  className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </div>
-            ) : (
+          {/* Image upload - seulement si pas d'image */}
+          {!choice.image_url && (
+            <div className="flex items-center gap-2">
               <label className="flex items-center px-3 py-1.5 border border-dashed rounded cursor-pointer hover:bg-gray-50 text-xs">
                 <input
                   type="file"
@@ -162,16 +460,23 @@ const SubOptionChoiceEditor = ({ choice, onChange, onDelete, depth = 0, choiceLi
                   disabled={uploading}
                 />
                 {uploading ? '⏳' : <Upload className="w-3 h-3 mr-1" />}
-                {uploading ? 'Upload...' : 'Image'}
+                {uploading ? 'Upload...' : '📷 Image'}
               </label>
-            )}
-            
-            {hasSubOptions && (
-              <span className="text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded">
-                {choice.sub_options.length} sous-option{choice.sub_options.length > 1 ? 's' : ''}
-              </span>
-            )}
-          </div>
+              
+              {hasSubOptions && (
+                <span className="text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded">
+                  {choice.sub_options.length} sous-option{choice.sub_options.length > 1 ? 's' : ''}
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Badge sous-options si image présente */}
+          {choice.image_url && hasSubOptions && (
+            <span className="text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded inline-block">
+              {choice.sub_options.length} sous-option{choice.sub_options.length > 1 ? 's' : ''}
+            </span>
+          )}
         </div>
       </div>
 
@@ -194,10 +499,11 @@ const SubOptionChoiceEditor = ({ choice, onChange, onDelete, depth = 0, choiceLi
   );
 };
 
+// ============================================
 // Composant pour une sous-option (contient plusieurs choix)
+// ============================================
 const SubOptionEditor = ({ subOption, onChange, onDelete, depth = 0, choiceLibrary = [] }) => {
   const [expanded, setExpanded] = useState(true);
-  const depthColors = ['#8B5CF6', '#EC4899', '#F59E0B', '#10B981', '#3B82F6'];
   const bgColor = depth === 0 ? 'bg-purple-50' : depth === 1 ? 'bg-pink-50' : depth === 2 ? 'bg-amber-50' : 'bg-emerald-50';
 
   const handleAddChoice = () => {
@@ -301,7 +607,9 @@ const SubOptionEditor = ({ subOption, onChange, onDelete, depth = 0, choiceLibra
   );
 };
 
+// ============================================
 // Composant principal exporté - utilisé dans OptionModal pour un choix principal
+// ============================================
 export const NestedSubOptionsEditor = ({ choice, onChange, choiceLibrary = [] }) => {
   const [showSubOptions, setShowSubOptions] = useState(
     choice.sub_options && choice.sub_options.length > 0

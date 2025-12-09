@@ -1,12 +1,301 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Modal } from './Modal';
 import { Button } from './Button';
-import { X, Plus, Trash2, Upload, Image as ImageIcon } from 'lucide-react';
+import { X, Plus, Trash2, Upload } from 'lucide-react';
 import { NestedSubOptionsEditor } from './NestedSubOptionsEditor';
 import { optionsAPI, choiceLibraryAPI, uploadAPI } from '../services/api';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
 
+// ============================================
+// COMPOSANT AUTOCOMPLETE POUR LES CHOIX
+// ============================================
+const ChoiceNameAutocomplete = ({ 
+  value, 
+  onChange, 
+  onSelectFromLibrary, 
+  choiceLibrary,
+  placeholder = "Tapez pour rechercher..."
+}) => {
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const wrapperRef = useRef(null);
+  const inputRef = useRef(null);
+
+  // Fermer si clic extérieur
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleInputChange = (e) => {
+    const inputValue = e.target.value;
+    onChange(inputValue);
+    
+    if (inputValue.length > 0) {
+      const filtered = choiceLibrary.filter(item => 
+        item.name.toLowerCase().includes(inputValue.toLowerCase())
+      );
+      setSuggestions(filtered.slice(0, 6));
+      setShowSuggestions(true);
+    } else {
+      setSuggestions(choiceLibrary.slice(0, 6));
+      setShowSuggestions(true);
+    }
+    setHighlightedIndex(-1);
+  };
+
+  const handleFocus = () => {
+    const currentValue = value || '';
+    if (currentValue.length === 0) {
+      setSuggestions(choiceLibrary.slice(0, 6));
+    } else {
+      const filtered = choiceLibrary.filter(item => 
+        item.name.toLowerCase().includes(currentValue.toLowerCase())
+      );
+      setSuggestions(filtered.slice(0, 6));
+    }
+    setShowSuggestions(true);
+  };
+
+  const handleSelectSuggestion = (item) => {
+    onSelectFromLibrary(item);
+    setShowSuggestions(false);
+    setHighlightedIndex(-1);
+  };
+
+  const handleKeyDown = (e) => {
+    if (!showSuggestions || suggestions.length === 0) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setHighlightedIndex(prev => 
+          prev < suggestions.length - 1 ? prev + 1 : 0
+        );
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setHighlightedIndex(prev => 
+          prev > 0 ? prev - 1 : suggestions.length - 1
+        );
+        break;
+      case 'Enter':
+        if (highlightedIndex >= 0 && highlightedIndex < suggestions.length) {
+          e.preventDefault();
+          handleSelectSuggestion(suggestions[highlightedIndex]);
+        }
+        break;
+      case 'Escape':
+        setShowSuggestions(false);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const getEmojiForName = (name) => {
+    const lowerName = (name || '').toLowerCase();
+    const emojis = {
+      'coca': '🥤', 'cola': '🥤', 'pepsi': '🥤', 'soda': '🥤',
+      'fanta': '🍊', 'orange': '🍊', 'orangina': '🍊',
+      'sprite': '🍋', 'citron': '🍋',
+      'ice tea': '🍑', 'thé': '🍵', 'tea': '🍵',
+      'eau': '💧', 'water': '💧', 'perrier': '💧', 'evian': '💧',
+      'frite': '🍟', 'frites': '🍟',
+      'potato': '🥔', 'potatoes': '🥔',
+      'salade': '🥗', 'salad': '🥗',
+      'onion': '🧅', 'oignon': '🧅',
+      'nugget': '🍗', 'poulet': '🍗',
+      'ketchup': '🍅', 'tomate': '🍅',
+      'mayo': '🥚', 'mayonnaise': '🥚',
+      'bbq': '🔥', 'barbecue': '🔥',
+      'piment': '🌶️', 'algérien': '🌶️', 'samurai': '⚔️', 'samourai': '⚔️',
+      'andalou': '🇪🇸',
+      'biggy': '⭐', 'special': '⭐',
+      'burger': '🍔', 'menu': '🍔🍟🥤',
+    };
+    
+    for (const [key, emoji] of Object.entries(emojis)) {
+      if (lowerName.includes(key)) return emoji;
+    }
+    return '🍽️';
+  };
+
+  return (
+    <div ref={wrapperRef} style={{ position: 'relative', flex: 1 }}>
+      <div style={{ position: 'relative' }}>
+        <input
+          ref={inputRef}
+          type="text"
+          value={value}
+          onChange={handleInputChange}
+          onFocus={handleFocus}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          className="w-full px-3 py-2 border rounded-lg pr-10"
+          autoComplete="off"
+        />
+        {choiceLibrary.length > 0 && (
+          <span 
+            style={{ 
+              position: 'absolute', 
+              right: 10, 
+              top: '50%', 
+              transform: 'translateY(-50%)',
+              fontSize: 14,
+              opacity: 0.5
+            }}
+            title={`${choiceLibrary.length} éléments dans la bibliothèque`}
+          >
+            📚
+          </span>
+        )}
+      </div>
+
+      {/* Dropdown suggestions */}
+      {showSuggestions && suggestions.length > 0 && (
+        <div style={{
+          position: 'absolute',
+          top: '100%',
+          left: 0,
+          right: 0,
+          marginTop: 4,
+          backgroundColor: '#FFF',
+          border: '1px solid #E2E8F0',
+          borderRadius: 12,
+          boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
+          zIndex: 1000,
+          maxHeight: 280,
+          overflowY: 'auto',
+        }}>
+          <div style={{
+            padding: '8px 12px',
+            fontSize: 11,
+            fontWeight: 600,
+            color: '#64748B',
+            backgroundColor: '#F8FAFC',
+            borderBottom: '1px solid #E2E8F0',
+            borderRadius: '12px 12px 0 0',
+          }}>
+            📚 Bibliothèque • ↑↓ naviguer • Entrée sélectionner
+          </div>
+          {suggestions.map((item, index) => (
+            <div
+              key={item.id || index}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '10px 12px',
+                cursor: 'pointer',
+                gap: 10,
+                backgroundColor: index === highlightedIndex ? '#EEF2FF' : 'transparent',
+                transition: 'background-color 0.1s',
+              }}
+              onClick={() => handleSelectSuggestion(item)}
+              onMouseEnter={() => setHighlightedIndex(index)}
+            >
+              {/* Image ou emoji */}
+              {item.image_url ? (
+                <img 
+                  src={item.image_url.startsWith('/') ? `${API_URL}${item.image_url}` : item.image_url}
+                  alt={item.name}
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 8,
+                    objectFit: 'cover',
+                    border: '1px solid #E2E8F0',
+                  }}
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+              ) : (
+                <div style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 8,
+                  backgroundColor: '#F1F5F9',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 18,
+                }}>
+                  {getEmojiForName(item.name)}
+                </div>
+              )}
+              
+              {/* Infos */}
+              <div style={{ flex: 1 }}>
+                <span style={{ 
+                  fontSize: 14, 
+                  fontWeight: 500, 
+                  color: '#1E293B',
+                  display: 'block',
+                }}>
+                  {item.name}
+                </span>
+                {item.default_price > 0 && (
+                  <span style={{ 
+                    fontSize: 12, 
+                    color: '#10B981', 
+                    fontWeight: 600 
+                  }}>
+                    +{item.default_price.toFixed(2)}€
+                  </span>
+                )}
+              </div>
+              
+              {/* Indicateur sélection */}
+              {index === highlightedIndex && (
+                <span style={{
+                  fontSize: 10,
+                  color: '#6366F1',
+                  backgroundColor: '#EEF2FF',
+                  padding: '4px 8px',
+                  borderRadius: 6,
+                  fontWeight: 600,
+                }}>
+                  ↵
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Message si pas de résultat */}
+      {showSuggestions && value && suggestions.length === 0 && choiceLibrary.length > 0 && (
+        <div style={{
+          position: 'absolute',
+          top: '100%',
+          left: 0,
+          right: 0,
+          marginTop: 4,
+          backgroundColor: '#FFF',
+          border: '1px solid #E2E8F0',
+          borderRadius: 12,
+          padding: '12px 16px',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+          zIndex: 1000,
+        }}>
+          <span style={{ fontSize: 13, color: '#64748B' }}>
+            ✨ "{value}" - Nouveau choix (pas dans la bibliothèque)
+          </span>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============================================
+// COMPOSANT PRINCIPAL OPTIONMODAL
+// ============================================
 export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
   const [formData, setFormData] = useState({
     name: '',
@@ -21,9 +310,6 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
   
   const [loading, setLoading] = useState(false);
   const [choiceLibrary, setChoiceLibrary] = useState([]);
-  const [showLibraryPicker, setShowLibraryPicker] = useState(false);
-  const [librarySearchTerm, setLibrarySearchTerm] = useState('');
-  const [selectedLibraryChoices, setSelectedLibraryChoices] = useState([]);
   const [uploadingImage, setUploadingImage] = useState({});
   const [toast, setToast] = useState(null);
 
@@ -45,53 +331,6 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
     } catch (error) {
       console.error('Error loading choice library:', error);
     }
-  };
-
-  const handleAddSelectedFromLibrary = () => {
-    const newChoices = selectedLibraryChoices.map(libChoice => ({
-      name: libChoice.name,
-      price: libChoice.default_price,
-      image_url: libChoice.image_url || '',
-      internal_comment: ''
-    }));
-    
-    setFormData({
-      ...formData,
-      choices: [...formData.choices, ...newChoices]
-    });
-    
-    setShowLibraryPicker(false);
-    setLibrarySearchTerm('');
-    setSelectedLibraryChoices([]);
-    showToast(`${newChoices.length} choix ajouté${newChoices.length > 1 ? 's' : ''}`, 'success');
-  };
-
-  const toggleLibraryChoice = (choice) => {
-    setSelectedLibraryChoices(prev => {
-      const exists = prev.find(c => c.id === choice.id);
-      if (exists) {
-        return prev.filter(c => c.id !== choice.id);
-      } else {
-        return [...prev, choice];
-      }
-    });
-  };
-
-  const selectAllVisible = () => {
-    const filteredChoices = choiceLibrary.filter((choice) => {
-      if (!librarySearchTerm.trim()) return true;
-      const searchLower = librarySearchTerm.toLowerCase();
-      return (
-        choice.name.toLowerCase().includes(searchLower) ||
-        (choice.description && choice.description.toLowerCase().includes(searchLower)) ||
-        choice.default_price.toString().includes(searchLower)
-      );
-    });
-    setSelectedLibraryChoices(filteredChoices);
-  };
-
-  const deselectAll = () => {
-    setSelectedLibraryChoices([]);
   };
 
   const addChoiceToLibrary = async (choice) => {
@@ -204,6 +443,19 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
     setFormData({ ...formData, choices: newChoices });
   };
 
+  // Nouvelle fonction pour sélectionner depuis l'autocomplétion
+  const handleSelectFromAutocomplete = (index, libraryItem) => {
+    const newChoices = [...formData.choices];
+    newChoices[index] = {
+      ...newChoices[index],
+      name: libraryItem.name,
+      price: libraryItem.default_price || 0,
+      image_url: libraryItem.image_url || '',
+    };
+    setFormData({ ...formData, choices: newChoices });
+    showToast(`"${libraryItem.name}" sélectionné`, 'success');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -236,16 +488,6 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
       setLoading(false);
     }
   };
-
-  const filteredLibraryChoices = choiceLibrary.filter((choice) => {
-    if (!librarySearchTerm.trim()) return true;
-    const searchLower = librarySearchTerm.toLowerCase();
-    return (
-      choice.name.toLowerCase().includes(searchLower) ||
-      (choice.description && choice.description.toLowerCase().includes(searchLower)) ||
-      choice.default_price.toString().includes(searchLower)
-    );
-  });
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="large">
@@ -373,60 +615,75 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
 
         {/* Choix */}
         <div>
-          <label className="block text-sm font-medium mb-3">Choix disponibles *</label>
+          <div className="flex items-center justify-between mb-3">
+            <label className="block text-sm font-medium">Choix disponibles *</label>
+            {choiceLibrary.length > 0 && (
+              <span className="text-xs text-indigo-600 bg-indigo-50 px-2 py-1 rounded-full">
+                📚 {choiceLibrary.length} éléments dans la bibliothèque
+              </span>
+            )}
+          </div>
 
           <div className="space-y-3 max-h-96 overflow-y-auto mb-3">
             {formData.choices.map((choice, index) => (
               <div key={index} className="border rounded-lg p-3 bg-gray-50">
-                <div className="flex gap-2 mb-2">
-                  <input
-                    type="text"
+                <div className="flex gap-2 mb-2 items-start">
+                  {/* Image miniature si présente */}
+                  {choice.image_url && (
+                    <div className="relative flex-shrink-0">
+                      <img 
+                        src={choice.image_url.startsWith('/') ? `${API_URL}${choice.image_url}` : choice.image_url}
+                        alt={choice.name}
+                        className="w-12 h-12 object-cover rounded-lg border-2 border-gray-200"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(index)}
+                        className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Input avec autocomplétion */}
+                  <ChoiceNameAutocomplete
                     value={choice.name}
-                    onChange={(e) => handleChoiceChange(index, 'name', e.target.value)}
-                    className="flex-1 px-3 py-2 border rounded-lg"
-                    placeholder="Nom du choix"
-                    required
+                    onChange={(value) => handleChoiceChange(index, 'name', value)}
+                    onSelectFromLibrary={(item) => handleSelectFromAutocomplete(index, item)}
+                    choiceLibrary={choiceLibrary}
+                    placeholder="Tapez pour rechercher dans la bibliothèque..."
                   />
+
+                  {/* Prix */}
                   <input
                     type="number"
                     step="0.01"
                     min="0"
                     value={choice.price}
                     onChange={(e) => handleChoiceChange(index, 'price', e.target.value)}
-                    className="w-24 px-3 py-2 border rounded-lg"
+                    className="w-24 px-3 py-2 border rounded-lg flex-shrink-0"
                     placeholder="Prix"
                   />
+
+                  {/* Bouton supprimer */}
                   {formData.choices.length > 1 && (
                     <Button
                       type="button"
                       variant="danger"
                       size="sm"
                       onClick={() => handleRemoveChoice(index)}
+                      className="flex-shrink-0"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   )}
                 </div>
 
-                {/* Image Upload Section */}
-                <div className="mt-2">
-                  {choice.image_url ? (
-                    <div className="relative inline-block">
-                      <img 
-                        src={choice.image_url.startsWith('/') ? `${API_URL}${choice.image_url}` : choice.image_url}
-                        alt={choice.name}
-                        className="w-32 h-32 object-cover rounded border"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveImage(index)}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ) : (
-                    <label className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary hover:bg-gray-50 transition-colors">
+                {/* Image Upload Section - seulement si pas d'image */}
+                {!choice.image_url && (
+                  <div className="mt-2">
+                    <label className="flex items-center justify-center w-full px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary hover:bg-gray-50 transition-colors">
                       <input
                         type="file"
                         accept="image/*"
@@ -439,19 +696,20 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
                       ) : (
                         <>
                           <Upload className="w-4 h-4 mr-2 text-gray-400" />
-                          <span className="text-sm text-gray-600">📤 Télécharger une image (max 5MB)</span>
+                          <span className="text-sm text-gray-600">📷 Image (optionnel)</span>
                         </>
                       )}
                     </label>
-                  )}
-                </div>
+                  </div>
+                )}
 
+                {/* Commentaire interne */}
                 <textarea
                   value={choice.internal_comment || ''}
                   onChange={(e) => handleChoiceChange(index, 'internal_comment', e.target.value)}
-                  className="w-full px-3 py-2 border rounded-lg resize-none mt-2"
+                  className="w-full px-3 py-2 border rounded-lg resize-none mt-2 text-sm"
                   placeholder="💬 Commentaire interne (non visible par le client)"
-                  rows="2"
+                  rows="1"
                 />
 
                 {/* Sous-options conditionnelles imbriquées */}
@@ -468,138 +726,17 @@ export const OptionModal = ({ isOpen, onClose, option, onSuccess }) => {
             ))}
           </div>
 
-          {/* Action buttons for choices */}
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleAddChoice}
-              size="sm"
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              Ajouter un choix
-            </Button>
-            {choiceLibrary.length > 0 && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowLibraryPicker(true)}
-                size="sm"
-              >
-                📚 Piocher dans la bibliothèque ({choiceLibrary.length})
-              </Button>
-            )}
-          </div>
+          {/* Bouton ajouter un choix */}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleAddChoice}
+            size="sm"
+          >
+            <Plus className="w-4 h-4 mr-1" />
+            Ajouter un choix
+          </Button>
         </div>
-
-        {/* Library Picker Modal */}
-        {showLibraryPicker && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] flex flex-col">
-              <div className="flex justify-between items-center mb-4">
-                <div>
-                  <h3 className="text-lg font-bold">📚 Choisir depuis la bibliothèque</h3>
-                  {selectedLibraryChoices.length > 0 && (
-                    <p className="text-sm text-primary font-semibold mt-1">
-                      {selectedLibraryChoices.length} choix sélectionné{selectedLibraryChoices.length > 1 ? 's' : ''}
-                    </p>
-                  )}
-                </div>
-                <button onClick={() => {
-                  setShowLibraryPicker(false);
-                  setLibrarySearchTerm('');
-                  setSelectedLibraryChoices([]);
-                }} className="text-gray-400 hover:text-gray-600">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              
-              {/* Search Bar */}
-              <div className="mb-3">
-                <input
-                  type="text"
-                  placeholder="🔍 Rechercher un choix..."
-                  value={librarySearchTerm}
-                  onChange={(e) => setLibrarySearchTerm(e.target.value)}
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-primary focus:outline-none"
-                />
-              </div>
-
-              {/* Selection controls */}
-              <div className="flex gap-2 mb-3">
-                <button
-                  type="button"
-                  onClick={selectAllVisible}
-                  className="text-xs px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded"
-                >
-                  Tout sélectionner
-                </button>
-                <button
-                  type="button"
-                  onClick={deselectAll}
-                  className="text-xs px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded"
-                >
-                  Tout désélectionner
-                </button>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-3 overflow-y-auto flex-1 mb-3">
-                {filteredLibraryChoices.map((choice) => {
-                  const isSelected = selectedLibraryChoices.find(c => c.id === choice.id);
-                  return (
-                    <div
-                      key={choice.id}
-                      onClick={() => toggleLibraryChoice(choice)}
-                      className={`border-2 rounded-lg p-3 cursor-pointer transition-all relative ${
-                        isSelected ? 'border-primary bg-primary/10' : 'border-gray-200 hover:border-primary hover:bg-primary/5'
-                      }`}
-                    >
-                      {/* Checkbox */}
-                      <div className="absolute top-2 right-2">
-                        <input
-                          type="checkbox"
-                          checked={!!isSelected}
-                          onChange={() => {}}
-                          className="w-5 h-5 cursor-pointer"
-                        />
-                      </div>
-
-                      {choice.image_url && (
-                        <img 
-                          src={choice.image_url.startsWith('/') ? `${API_URL}${choice.image_url}` : choice.image_url}
-                          alt={choice.name}
-                          className="w-full h-24 object-cover rounded mb-2"
-                        />
-                      )}
-                      <h4 className="font-bold pr-6">{choice.name}</h4>
-                      <p className="text-sm text-primary font-bold">{choice.default_price.toFixed(2)}€</p>
-                      {choice.description && (
-                        <p className="text-xs text-gray-500 mt-1">{choice.description}</p>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-              
-              {filteredLibraryChoices.length === 0 && (
-                <p className="text-center text-gray-400 py-8">Aucun résultat pour "{librarySearchTerm}"</p>
-              )}
-
-              {/* Add selected button */}
-              {selectedLibraryChoices.length > 0 && (
-                <div className="pt-3 border-t">
-                  <Button
-                    type="button"
-                    onClick={handleAddSelectedFromLibrary}
-                    className="w-full"
-                  >
-                    ✅ Ajouter {selectedLibraryChoices.length} choix sélectionné{selectedLibraryChoices.length > 1 ? 's' : ''}
-                  </Button>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
 
         {/* Buttons */}
         <div className="flex space-x-3 pt-4">

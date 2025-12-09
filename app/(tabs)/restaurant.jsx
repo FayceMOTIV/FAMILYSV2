@@ -174,7 +174,7 @@ export default function RestaurantScreen() {
                     <Text className="text-red-500 font-semibold">Fermé</Text>
                   ) : (
                     <Text className="text-gray-800 font-semibold">
-                      {hours.open} - {hours.close}
+                      {hours.open1} - {hours.close1}{hours.open2 ? ` / ${hours.open2} - ${hours.close2}` : ''}
                     </Text>
                   )}
                 </View>

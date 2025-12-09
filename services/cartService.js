@@ -2,7 +2,8 @@ import api from './api';
 
 export const cartService = {
   /**
-   * Calcule toutes les promotions applicables au panier
+   * Calcule les promotions PANIER (seuils, codes promo, BOGO)
+   * NOTE: Les promos produits individuels sont déjà appliquées via promo_price
    */
   calculatePromotions: async (items, customerEmail = null, promoCode = null) => {
     try {
@@ -11,11 +12,17 @@ export const cartService = {
           id: item.id || item.product_id,
           product_id: item.id || item.product_id,
           name: item.name,
-          price: item.original_price || item.base_price || item.price || 0,
-          base_price: item.base_price || item.price || 0,
+          // IMPORTANT: Envoyer le prix EFFECTIF (déjà avec promo produit)
+          price: item.price || item.promo_price || item.base_price || 0,
+          // Prix original pour calcul des économies
+          base_price: item.base_price || item.original_price || item.price || 0,
+          original_price: item.original_price || item.base_price || item.price || 0,
           quantity: item.quantity || 1,
           category: item.category || item.category_id,
           category_id: item.category || item.category_id,
+          // Indiquer si promo déjà appliquée
+          has_promo: !!(item.promo_price && item.promo_price < (item.base_price || item.price)),
+          promo_badge: item.promo_badge || null,
         })),
         customer_email: customerEmail,
         promo_code: promoCode
@@ -35,7 +42,7 @@ export const cartService = {
   },
 
   /**
-   * Récupère les promos actives pour affichage
+   * Récupère les promos panier actives pour affichage
    */
   getActivePromos: async () => {
     try {

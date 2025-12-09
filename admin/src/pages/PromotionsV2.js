@@ -5,28 +5,39 @@ import { Button } from '../components/Button';
 import { Plus, Calendar, TrendingUp, Users, DollarSign, Edit2, Trash2, Copy, Eye } from 'lucide-react';
 import { PromotionWizard } from '../components/PromotionWizard';
 import { PromotionCalendar } from '../components/PromotionCalendar';
-// import { PromotionSimulator } from '../components/PromotionSimulator';
 import { promotionsAPI } from '../services/api';
 
 export const PromotionsV2 = () => {
   const [promotions, setPromotions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('list'); // list, calendar, analytics, preview
+  const [activeTab, setActiveTab] = useState('list');
   const [selectedPromoForPreview, setSelectedPromoForPreview] = useState(null);
   const [showWizard, setShowWizard] = useState(false);
   const [editingPromo, setEditingPromo] = useState(null);
-  const [analytics, setAnalytics] = useState(null);
+  const [analytics, setAnalytics] = useState({
+    active_promotions: 0,
+    total_usage: 0,
+    total_revenue: 0,
+    total_discount: 0
+  });
 
   useEffect(() => {
     loadPromotions();
-    loadAnalytics();
   }, []);
+
+  // FIX: Calculer analytics quand promotions change
+  useEffect(() => {
+    if (promotions.length > 0) {
+      calculateAnalytics(promotions);
+    }
+  }, [promotions]);
 
   const loadPromotions = async () => {
     setLoading(true);
     try {
       const response = await promotionsAPI.getAll();
-      setPromotions(response.data.promotions || []);
+      const promos = response.data.promotions || [];
+      setPromotions(promos);
     } catch (error) {
       console.error('Error loading promotions:', error);
     } finally {
@@ -34,19 +45,55 @@ export const PromotionsV2 = () => {
     }
   };
 
-  const loadAnalytics = async () => {
-    try {
-      // Analytics basiques calculées côté client si pas de route backend
-      const activeCount = promotions.filter(p => p.status === 'active' || p.is_active).length;
-      setAnalytics({
-        active_promotions: activeCount,
-        total_usage: promotions.reduce((sum, p) => sum + (p.usage_count || 0), 0),
-        total_revenue: 0,
-        avg_discount: 0
-      });
-    } catch (error) {
-      console.error('Error loading analytics:', error);
-    }
+  // FIX: Fonction qui prend les promos en paramètre
+  const calculateAnalytics = (promos) => {
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    
+    // Compter les promos actives (is_active ET dans les dates valides)
+    const activeCount = promos.filter(p => {
+      if (!p.is_active) return false;
+      
+      const startDate = p.start_date || '';
+      const endDate = p.end_date || '';
+      
+      // Vérifier les dates
+      if (startDate && startDate > today) return false;
+      if (endDate && endDate < today) return false;
+      
+      return true;
+    }).length;
+    
+    // Total utilisations
+    const totalUsage = promos.reduce((sum, p) => sum + (p.usage_count || 0), 0);
+    
+    // CA généré et remises (à calculer depuis les commandes idéalement)
+    // Pour l'instant, estimation basée sur usage_count et discount_value
+    let totalRevenue = 0;
+    let totalDiscount = 0;
+    
+    promos.forEach(p => {
+      const usage = p.usage_count || 0;
+      const discountValue = p.discount_value || 0;
+      
+      // Estimation: chaque utilisation génère en moyenne 15€ de CA
+      totalRevenue += usage * 15;
+      
+      // Remise donnée
+      if (p.type === 'percentage' || p.type === 'conditional_discount') {
+        // Estimation: panier moyen 15€ * % de remise
+        totalDiscount += usage * (15 * discountValue / 100);
+      } else {
+        totalDiscount += usage * discountValue;
+      }
+    });
+    
+    setAnalytics({
+      active_promotions: activeCount,
+      total_usage: totalUsage,
+      total_revenue: Math.round(totalRevenue),
+      total_discount: Math.round(totalDiscount)
+    });
   };
 
   const handleDelete = async (id) => {
@@ -55,7 +102,6 @@ export const PromotionsV2 = () => {
     try {
       await promotionsAPI.delete(id);
       loadPromotions();
-      loadAnalytics();
       alert('✅ Promotion supprimée');
     } catch (error) {
       alert('❌ Erreur lors de la suppression');
@@ -75,11 +121,22 @@ export const PromotionsV2 = () => {
     setShowWizard(true);
   };
 
+  const handleToggle = async (promo) => {
+    try {
+      await promotionsAPI.toggle(promo.id, !promo.is_active);
+      loadPromotions();
+    } catch (error) {
+      alert('❌ Erreur lors de la mise à jour');
+    }
+  };
+
   const getTypeLabel = (type) => {
     const labels = {
       'bogo': '🎁 BOGO',
+      'percentage': '% Réduction',
       'percent_item': '% Produit',
       'percent_category': '% Catégorie',
+      'fixed_amount': '€ Fixe',
       'fixed_item': '€ Produit',
       'fixed_category': '€ Catégorie',
       'conditional_discount': '🔢 Conditionnelle',
@@ -96,14 +153,15 @@ export const PromotionsV2 = () => {
     return labels[type] || type;
   };
 
-  const getStatusColor = (status) => {
+  const getTypeColor = (type) => {
     const colors = {
-      'active': 'bg-green-100 text-green-700 border-green-500',
-      'paused': 'bg-orange-100 text-orange-700 border-orange-500',
-      'draft': 'bg-gray-100 text-gray-700 border-gray-500',
-      'expired': 'bg-red-100 text-red-700 border-red-500'
+      'bogo': 'bg-purple-100 text-purple-700',
+      'percentage': 'bg-blue-100 text-blue-700',
+      'conditional_discount': 'bg-yellow-100 text-yellow-700',
+      'fixed_amount': 'bg-green-100 text-green-700',
+      'happy_hour': 'bg-orange-100 text-orange-700',
     };
-    return colors[status] || colors.draft;
+    return colors[type] || 'bg-gray-100 text-gray-700';
   };
 
   if (loading) {
@@ -123,49 +181,47 @@ export const PromotionsV2 = () => {
       
       <div className="p-6 space-y-6">
         {/* Analytics Cards */}
-        {analytics && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white">
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <TrendingUp className="w-8 h-8 text-white/80" />
-                  <span className="text-3xl font-black">{analytics.active_promotions}</span>
-                </div>
-                <p className="text-sm text-white/80">Promos actives</p>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white">
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <TrendingUp className="w-8 h-8 text-white/80" />
+                <span className="text-3xl font-black">{analytics.active_promotions}</span>
               </div>
-            </Card>
-            
-            <Card className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <Users className="w-8 h-8 text-white/80" />
-                  <span className="text-3xl font-black">{analytics.total_usage}</span>
-                </div>
-                <p className="text-sm text-white/80">Utilisations</p>
+              <p className="text-sm text-white/80">Promos actives</p>
+            </div>
+          </Card>
+          
+          <Card className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <Users className="w-8 h-8 text-white/80" />
+                <span className="text-3xl font-black">{analytics.total_usage}</span>
               </div>
-            </Card>
-            
-            <Card className="bg-gradient-to-br from-purple-500 to-pink-600 text-white">
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <DollarSign className="w-8 h-8 text-white/80" />
-                  <span className="text-3xl font-black">{analytics.total_revenue?.toFixed(0)}€</span>
-                </div>
-                <p className="text-sm text-white/80">CA généré</p>
+              <p className="text-sm text-white/80">Utilisations</p>
+            </div>
+          </Card>
+          
+          <Card className="bg-gradient-to-br from-purple-500 to-pink-600 text-white">
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <DollarSign className="w-8 h-8 text-white/80" />
+                <span className="text-3xl font-black">{analytics.total_revenue}€</span>
               </div>
-            </Card>
-            
-            <Card className="bg-gradient-to-br from-orange-500 to-red-600 text-white">
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <DollarSign className="w-8 h-8 text-white/80" />
-                  <span className="text-3xl font-black">{analytics.total_discount?.toFixed(0)}€</span>
-                </div>
-                <p className="text-sm text-white/80">Remises totales</p>
+              <p className="text-sm text-white/80">CA généré</p>
+            </div>
+          </Card>
+          
+          <Card className="bg-gradient-to-br from-orange-500 to-red-600 text-white">
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <DollarSign className="w-8 h-8 text-white/80" />
+                <span className="text-3xl font-black">{analytics.total_discount}€</span>
               </div>
-            </Card>
-          </div>
-        )}
+              <p className="text-sm text-white/80">Remises totales</p>
+            </div>
+          </Card>
+        </div>
 
         {/* Tabs */}
         <div className="flex items-center justify-between">
@@ -198,146 +254,156 @@ export const PromotionsV2 = () => {
           </Button>
         </div>
 
-        {/* List View */}
+        {/* Content based on tab */}
         {activeTab === 'list' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {promotions.map(promo => (
-              <Card key={promo.id} className={`border-2 ${getStatusColor(promo.status)}`}>
-                <div className="p-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <span className="text-xs font-bold px-2 py-1 rounded bg-white/50">
-                        {getTypeLabel(promo.type)}
-                      </span>
-                      <h3 className="font-bold text-lg mt-2">{promo.name}</h3>
-                      <p className="text-sm text-gray-600 mt-1">{promo.description}</p>
-                    </div>
-                    <span className="text-2xl font-black text-primary">
-                      {promo.discount_value}{promo.discount_type === 'percentage' ? '%' : '€'}
-                    </span>
-                  </div>
-                  
-                  {promo.badge_text && (
-                    <div className="mb-3 px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-bold rounded">
-                      {promo.badge_text}
-                    </div>
-                  )}
-                  
-                  <div className="text-xs text-gray-600 space-y-1 mb-3">
-                    <p>📅 {promo.start_date} → {promo.end_date}</p>
-                    {promo.usage_count > 0 && (
-                      <p>📊 {promo.usage_count} utilisations</p>
-                    )}
-                  </div>
-                  
-                  <div className="flex space-x-2">
-                    <Button size="sm" variant="outline" onClick={() => { setEditingPromo(promo); setShowWizard(true); }}>
-                      <Edit2 className="w-3 h-3" />
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={() => handleDuplicate(promo)}>
-                      <Copy className="w-3 h-3" />
-                    </Button>
-                    <Button size="sm" variant="danger" onClick={() => handleDelete(promo.id)}>
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
-                  </div>
-                </div>
+          <div className="space-y-4">
+            {promotions.length === 0 ? (
+              <Card className="text-center py-12">
+                <TrendingUp className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500 mb-4">Aucune promotion créée</p>
+                <Button onClick={() => setShowWizard(true)}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Créer ma première promotion
+                </Button>
               </Card>
-            ))}
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {promotions.map((promo) => {
+                  const isActive = promo.is_active;
+                  const now = new Date().toISOString().split('T')[0];
+                  const isExpired = promo.end_date && promo.end_date < now;
+                  const isUpcoming = promo.start_date && promo.start_date > now;
+                  
+                  let statusColor = 'border-gray-300 bg-gray-50';
+                  let statusText = 'Brouillon';
+                  
+                  if (isActive && !isExpired && !isUpcoming) {
+                    statusColor = 'border-green-500 bg-green-50';
+                    statusText = '✅ Active';
+                  } else if (isExpired) {
+                    statusColor = 'border-red-400 bg-red-50';
+                    statusText = '⏰ Expirée';
+                  } else if (isUpcoming) {
+                    statusColor = 'border-blue-400 bg-blue-50';
+                    statusText = '📅 À venir';
+                  } else if (!isActive) {
+                    statusColor = 'border-orange-400 bg-orange-50';
+                    statusText = '⏸️ Inactive';
+                  }
+                  
+                  return (
+                    <Card key={promo.id} className={`border-2 ${statusColor}`}>
+                      <div className="p-4">
+                        {/* Header */}
+                        <div className="flex justify-between items-start mb-3">
+                          <span className={`text-xs font-semibold px-2 py-1 rounded ${getTypeColor(promo.type)}`}>
+                            {getTypeLabel(promo.type)}
+                          </span>
+                          <span className="text-2xl font-black text-primary">
+                            {promo.discount_value}{promo.type?.includes('percent') || promo.type === 'conditional_discount' || promo.type === 'percentage' ? '%' : '€'}
+                          </span>
+                        </div>
+                        
+                        {/* Name & Description */}
+                        <h3 className="font-bold text-gray-900 mb-1">{promo.name}</h3>
+                        <p className="text-sm text-gray-500 mb-3 line-clamp-2">{promo.description}</p>
+                        
+                        {/* Badge */}
+                        {promo.badge_text && (
+                          <div 
+                            className="inline-block px-3 py-1 rounded-full text-xs font-bold text-white mb-3"
+                            style={{ backgroundColor: promo.badge_color || '#FF6B35' }}
+                          >
+                            {promo.badge_text}
+                          </div>
+                        )}
+                        
+                        {/* Dates */}
+                        <div className="text-xs text-gray-400 mb-3">
+                          🗓️ {promo.start_date} → {promo.end_date}
+                        </div>
+                        
+                        {/* Stats */}
+                        <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
+                          <span>📊 {promo.usage_count || 0} utilisations</span>
+                          {promo.usage_limit && <span>/ {promo.usage_limit} max</span>}
+                        </div>
+                        
+                        {/* Actions */}
+                        <div className="flex gap-2">
+                          <Button 
+                            size="sm" 
+                            variant={isActive ? 'outline' : 'primary'}
+                            onClick={() => handleToggle(promo)}
+                            className="flex-1"
+                          >
+                            {isActive ? '⏸️ Désactiver' : '▶️ Activer'}
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => {
+                              setEditingPromo(promo);
+                              setShowWizard(true);
+                            }}
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => handleDuplicate(promo)}
+                          >
+                            <Copy className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="danger" 
+                            onClick={() => handleDelete(promo.id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 
-        {/* Calendar View */}
         {activeTab === 'calendar' && (
           <PromotionCalendar promotions={promotions} />
         )}
 
-        {/* Preview View */}
         {activeTab === 'preview' && (
           <Card className="p-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Mobile preview */}
-              <div>
-                <h3 className="font-bold text-lg mb-4">📱 Aperçu dans l'application</h3>
-                <div className="bg-gradient-to-b from-gray-100 to-gray-200 rounded-3xl p-4 shadow-2xl mx-auto" style={{maxWidth: '375px'}}>
-                  <div className="bg-black rounded-t-3xl h-8 flex items-center justify-center mb-2">
-                    <div className="w-20 h-5 bg-gray-900 rounded-full"></div>
-                  </div>
-                  
-                  <div className="bg-white rounded-2xl overflow-hidden shadow-inner" style={{height: '667px'}}>
-                    <div className="bg-gradient-to-r from-red-500 to-orange-500 p-4 text-white">
-                      <h2 className="text-xl font-bold">Family's 🍔</h2>
-                      <p className="text-sm text-white/80">Promotions du moment</p>
-                    </div>
-                    
-                    <div className="p-4 overflow-y-auto" style={{height: 'calc(667px - 72px)'}}>
-                      {!promotions || promotions.length === 0 ? (
-                        <div className="text-center py-20">
-                          <div className="text-6xl mb-4">🎯</div>
-                          <h3 className="text-xl font-bold text-gray-700 mb-2">Aucune promotion</h3>
-                          <p className="text-gray-500">Créez votre première promotion pour la voir ici</p>
-                        </div>
-                      ) : (
-                        <div className="space-y-3">
-                          {promotions.slice(0, 8).map((promo, idx) => (
-                            <div 
-                              key={promo.id || idx}
-                              className="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-orange-200 rounded-xl p-4"
-                            >
-                              <div className="flex items-center justify-between">
-                                <div className="flex-1">
-                                  <h4 className="font-bold text-lg">{promo.name || 'Sans nom'}</h4>
-                                  <p className="text-sm text-gray-600 mt-1">{promo.description || ''}</p>
-                                </div>
-                                <div className="text-3xl font-black text-orange-600 ml-4">
-                                  -{promo.discount_value || 0}{promo.discount_type === 'percentage' ? '%' : '€'}
-                                </div>
-                              </div>
-                              {promo.badge_text && (
-                                <div className="mt-3 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold inline-block">
-                                  {promo.badge_text}
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="bg-black rounded-b-3xl h-8 flex items-center justify-center mt-2">
-                    <div className="w-32 h-1 bg-white/30 rounded-full"></div>
-                  </div>
-                </div>
-              </div>
-              
-              <div>
-                <h3 className="font-bold text-lg mb-4">Vos promotions ({promotions?.length || 0})</h3>
-                <div className="space-y-2 max-h-[700px] overflow-y-auto">
-                  {!promotions || promotions.length === 0 ? (
-                    <div className="text-center py-10 text-gray-500">
-                      <p>Aucune promotion disponible</p>
-                      <p className="text-sm mt-2">Créez une promotion dans l'onglet Liste</p>
-                    </div>
-                  ) : (
-                    promotions.map((promo, idx) => (
-                      <Card 
-                        key={promo.id || idx}
-                        className="p-3 hover:shadow-md transition-shadow"
+            <h3 className="text-lg font-bold mb-4">📱 Aperçu dans l'app</h3>
+            <div className="bg-gray-100 rounded-xl p-4 max-w-sm mx-auto">
+              <p className="text-center text-gray-500 mb-4">Promos en cours visibles par les clients :</p>
+              <div className="space-y-3">
+                {promotions.filter(p => p.is_active && p.is_visible_in_app).map(promo => (
+                  <div 
+                    key={promo.id} 
+                    className="bg-white rounded-lg p-3 shadow"
+                  >
+                    <div className="flex justify-between items-center">
+                      <span 
+                        className="text-xs font-bold px-2 py-1 rounded text-white"
+                        style={{ backgroundColor: promo.badge_color || '#FF6B35' }}
                       >
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <h4 className="font-bold">{promo.name || 'Sans nom'}</h4>
-                            <p className="text-sm text-gray-600">{promo.description || ''}</p>
-                          </div>
-                          <span className="text-xl font-black text-primary ml-3">
-                            -{promo.discount_value || 0}{promo.discount_type === 'percentage' ? '%' : '€'}
-                          </span>
-                        </div>
-                      </Card>
-                    ))
-                  )}
-                </div>
+                        {promo.badge_text || promo.name}
+                      </span>
+                      <span className="font-bold text-primary">
+                        -{promo.discount_value}{promo.type?.includes('percent') || promo.type === 'conditional_discount' ? '%' : '€'}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+                {promotions.filter(p => p.is_active && p.is_visible_in_app).length === 0 && (
+                  <p className="text-center text-gray-400 text-sm">Aucune promo visible</p>
+                )}
               </div>
             </div>
           </Card>
@@ -348,13 +414,15 @@ export const PromotionsV2 = () => {
       {showWizard && (
         <PromotionWizard
           isOpen={showWizard}
-          onClose={() => { setShowWizard(false); setEditingPromo(null); }}
-          promotion={editingPromo}
-          onSuccess={() => {
-            loadPromotions();
-            loadAnalytics();
+          onClose={() => {
             setShowWizard(false);
             setEditingPromo(null);
+          }}
+          promotion={editingPromo}
+          onSuccess={() => {
+            setShowWizard(false);
+            setEditingPromo(null);
+            loadPromotions();
           }}
         />
       )}

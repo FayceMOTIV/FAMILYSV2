@@ -31,14 +31,21 @@ export const Revenue = () => {
       const response = await ordersAPI.getAll();
       const allOrders = response.data?.orders || [];
       
-      // Filtrer par statut et paiement
-      const paidOrders = allOrders.filter(o => 
-        o.payment_status === 'paid' && 
-        ['completed', 'ready', 'in_preparation', 'out_for_delivery'].includes(o.status)
-      );
+      console.log('📊 Toutes les commandes:', allOrders.length);
+      
+      // Filtrer par statut complété/payé
+      const paidOrders = allOrders.filter(o => {
+        const isPaid = o.payment_status === 'paid';
+        const isValidStatus = ['completed', 'ready', 'in_preparation', 'out_for_delivery', 'delivered'].includes(o.status);
+        return isPaid || isValidStatus;
+      });
+      
+      console.log('📊 Commandes payées/complétées:', paidOrders.length);
       
       // Filtrer par date
       const filteredOrders = filterOrdersByDate(paidOrders);
+      
+      console.log('📊 Commandes après filtre date:', filteredOrders.length);
       
       // Calculer les stats
       calculateStats(filteredOrders);
@@ -120,30 +127,49 @@ export const Revenue = () => {
     }
 
     orders.forEach(order => {
-      const amount = order.total || 0;
+      const amount = order.total || order.total_amount || 0;
       newStats.total += amount;
 
-      const isPaidOnline = order.payment_status === 'paid';
-      const method = order.payment_method?.toLowerCase() || 'cash';
+      // Déterminer la méthode de paiement
+      const method = (order.payment_method || '').toLowerCase();
+      
+      // Paiement en ligne = Stripe, Apple Pay, ou si explicitement marqué
+      const isOnlinePayment = 
+        method.includes('stripe') || 
+        method.includes('apple') || 
+        method.includes('online') ||
+        method.includes('card_online') ||
+        order.is_online_payment === true ||
+        order.payment_type === 'online';
 
-      if (isPaidOnline) {
+      if (isOnlinePayment) {
         newStats.online += amount;
+      } else if (method === 'cash' || method === 'espece' || method === 'espèce' || method === 'especes') {
+        newStats.cash += amount;
+      } else if (method === 'card' || method === 'cb' || method === 'card_restaurant' || method === 'carte') {
+        newStats.card_restaurant += amount;
+      } else if (method === 'ticket_resto' || method === 'ticket_restaurant' || method === 'ticket' || method === 'tr') {
+        newStats.ticket_resto += amount;
+      } else if (method === 'check' || method === 'cheque' || method === 'chèque') {
+        newStats.check += amount;
       } else {
-        if (method === 'cash' || method === 'espece') {
-          newStats.cash += amount;
-        } else if (method === 'card' || method === 'cb' || method === 'card_restaurant') {
-          newStats.card_restaurant += amount;
-        } else if (method === 'ticket_resto' || method === 'ticket_restaurant') {
-          newStats.ticket_resto += amount;
-        } else if (method === 'check' || method === 'cheque') {
-          newStats.check += amount;
-        } else {
-          newStats.card_restaurant += amount;
-        }
+        // Par défaut, considérer comme CB restaurant
+        newStats.card_restaurant += amount;
       }
     });
 
     setStats(newStats);
+  };
+
+  const formatPaymentMethod = (method) => {
+    if (!method) return 'N/A';
+    const m = method.toLowerCase();
+    if (m.includes('stripe') || m.includes('online') || m.includes('apple')) return '💳 En ligne';
+    if (m === 'cash' || m.includes('espece') || m.includes('espèce')) return '💵 Espèce';
+    if (m === 'card' || m === 'cb' || m.includes('carte')) return '💳 CB';
+    if (m.includes('ticket')) return '🎫 Ticket resto';
+    if (m.includes('cheque') || m.includes('chèque') || m === 'check') return '📄 Chèque';
+    return method;
   };
 
   const dateRangeOptions = [
@@ -287,7 +313,13 @@ export const Revenue = () => {
                     {orders.map(order => (
                       <tr key={order.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          {new Date(order.created_at).toLocaleDateString('fr-FR')}
+                          {new Date(order.created_at).toLocaleDateString('fr-FR', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className="text-sm font-bold text-primary">
@@ -295,16 +327,16 @@ export const Revenue = () => {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-sm">
-                          {order.customer_name || 'Client'}
+                          {order.customer_name || order.customer?.name || 'Client'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className="px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-700">
-                            {order.payment_method || 'N/A'}
+                            {formatPaymentMethod(order.payment_method)}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right">
                           <span className="text-lg font-black text-gray-800">
-                            {(order.total || 0).toFixed(2)}€
+                            {(order.total || order.total_amount || 0).toFixed(2)}€
                           </span>
                         </td>
                       </tr>

@@ -3,7 +3,7 @@ import { Header } from '../components/Header';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/Card';
 import { Button } from '../components/Button';
 import { Input, Label, Select } from '../components/Input';
-import { Image, Plus, Trash2, Edit, Eye, EyeOff, Link as LinkIcon, RefreshCw, Upload, X } from 'lucide-react';
+import { Image, Plus, Trash2, Edit, Eye, EyeOff, Link as LinkIcon, RefreshCw, Upload, X, Info } from 'lucide-react';
 import { popupsAPI, uploadAPI } from '../services/api';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
@@ -31,6 +31,7 @@ export const Popups = () => {
   const [uploading, setUploading] = useState(false);
   const [editingPopup, setEditingPopup] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
   const fileInputRef = useRef(null);
   
   // Form state
@@ -275,7 +276,57 @@ export const Popups = () => {
 
                 {/* Section Image */}
                 <div className="p-4 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
-                  <Label className="text-base font-semibold mb-3 block">Image de la Popup *</Label>
+                  <div className="flex items-center justify-between mb-3">
+                    <Label className="text-base font-semibold mb-0">Image de la Popup *</Label>
+                    <button
+                      type="button"
+                      onClick={() => setShowSizeGuide(!showSizeGuide)}
+                      className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
+                    >
+                      <Info size={16} />
+                      Tailles recommandées
+                    </button>
+                  </div>
+
+                  {/* Guide des tailles */}
+                  {showSizeGuide && (
+                    <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                      <h4 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                        📐 Guide des tailles pour les popups
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div className="bg-white p-3 rounded-lg border border-blue-100">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-8 h-6 bg-gray-300 rounded"></div>
+                            <span className="font-medium text-gray-700">Standard</span>
+                          </div>
+                          <p className="text-lg font-bold text-blue-600">800 × 600 px</p>
+                          <p className="text-xs text-gray-500">Ratio 4:3 • Polyvalent</p>
+                        </div>
+                        <div className="bg-white p-3 rounded-lg border border-green-200 ring-2 ring-green-400">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-5 h-8 bg-gray-300 rounded"></div>
+                            <span className="font-medium text-gray-700">📱 Recommandé</span>
+                          </div>
+                          <p className="text-lg font-bold text-green-600">1080 × 1920 px</p>
+                          <p className="text-xs text-gray-500">Ratio 9:16 • Full mobile</p>
+                        </div>
+                        <div className="bg-white p-3 rounded-lg border border-blue-100">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-6 h-6 bg-gray-300 rounded"></div>
+                            <span className="font-medium text-gray-700">Carré</span>
+                          </div>
+                          <p className="text-lg font-bold text-blue-600">800 × 800 px</p>
+                          <p className="text-xs text-gray-500">Ratio 1:1 • Instagram style</p>
+                        </div>
+                      </div>
+                      <div className="mt-3 pt-3 border-t border-blue-200 text-sm text-blue-700">
+                        <p><strong>Formats acceptés :</strong> JPG, PNG, WebP</p>
+                        <p><strong>Poids max :</strong> 5 MB (2 MB recommandé pour un chargement rapide)</p>
+                        <p><strong>Conseil :</strong> Utilisez des images optimisées pour un affichage fluide sur mobile</p>
+                      </div>
+                    </div>
+                  )}
                   
                   <div className="flex flex-wrap gap-3 mb-4">
                     <div>
@@ -331,7 +382,7 @@ export const Popups = () => {
                   )}
 
                   <p className="text-xs text-gray-500 mt-2">
-                    Formats : JPG, PNG, GIF, WebP • Max : 5MB • Ratio recommandé : 3:4
+                    💡 Cliquez sur "Tailles recommandées" pour voir le guide complet
                   </p>
                 </div>
 

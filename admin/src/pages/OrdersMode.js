@@ -14,14 +14,62 @@ export const OrdersMode = () => {
   const navigate = useNavigate();
   const { playNotificationSound } = useNotificationSound();
   const previousOrdersCount = useRef(0);
+  const wakeLockRef = useRef(null);
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [settings, setSettings] = useState({});
   const [isPaused, setIsPaused] = useState(false);
   const [showStockModal, setShowStockModal] = useState(false);
-  const [stockFilter, setStockFilter] = useState('all'); // all, out_of_stock
+  const [stockFilter, setStockFilter] = useState('all');
   const [searchProduct, setSearchProduct] = useState('');
+  const [wakeLockActive, setWakeLockActive] = useState(false);
+
+  // Wake Lock - Empêche l'écran de s'éteindre
+  const requestWakeLock = async () => {
+    try {
+      if ('wakeLock' in navigator) {
+        wakeLockRef.current = await navigator.wakeLock.request('screen');
+        setWakeLockActive(true);
+        console.log('🔆 Wake Lock activé - L\'écran restera allumé');
+        
+        wakeLockRef.current.addEventListener('release', () => {
+          console.log('🔅 Wake Lock libéré');
+          setWakeLockActive(false);
+        });
+      } else {
+        console.log('⚠️ Wake Lock API non supportée sur ce navigateur');
+      }
+    } catch (err) {
+      console.error('Erreur Wake Lock:', err);
+    }
+  };
+
+  const releaseWakeLock = async () => {
+    if (wakeLockRef.current) {
+      try {
+        await wakeLockRef.current.release();
+        wakeLockRef.current = null;
+        setWakeLockActive(false);
+      } catch (err) {
+        console.error('Erreur libération Wake Lock:', err);
+      }
+    }
+  };
+
+  // Réactiver Wake Lock quand la page redevient visible
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible' && !wakeLockRef.current) {
+        await requestWakeLock();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
 
   useEffect(() => {
     const session = localStorage.getItem('orders_mode_session');
@@ -32,9 +80,16 @@ export const OrdersMode = () => {
       return;
     }
 
+    // Activer Wake Lock au démarrage
+    requestWakeLock();
+
     loadData();
     const interval = setInterval(loadData, 10000);
-    return () => clearInterval(interval);
+    
+    return () => {
+      clearInterval(interval);
+      releaseWakeLock();
+    };
   }, [navigate]);
 
   const loadData = async () => {
@@ -65,7 +120,6 @@ export const OrdersMode = () => {
         if (p.out_of_stock_until) {
           const until = new Date(p.out_of_stock_until);
           if (until <= now && p.is_out_of_stock) {
-            // Remettre en stock automatiquement
             productsAPI.toggleStock(p.id, false);
           }
         }
@@ -100,7 +154,6 @@ export const OrdersMode = () => {
   const setProductOutOfStock = async (productId, type) => {
     try {
       if (type === '24h') {
-        // Rupture jusqu'à minuit
         const midnight = new Date();
         midnight.setHours(23, 59, 59, 999);
         await productsAPI.update(productId, { 
@@ -108,13 +161,11 @@ export const OrdersMode = () => {
           out_of_stock_until: midnight.toISOString()
         });
       } else if (type === 'indefinite') {
-        // Rupture indéfinie
         await productsAPI.update(productId, { 
           is_out_of_stock: true,
           out_of_stock_until: null
         });
       } else {
-        // Remettre en stock
         await productsAPI.update(productId, { 
           is_out_of_stock: false,
           out_of_stock_until: null
@@ -128,6 +179,7 @@ export const OrdersMode = () => {
   };
 
   const handleLogout = () => {
+    releaseWakeLock();
     localStorage.removeItem('orders_mode_session');
     localStorage.removeItem('orders_mode_expiry');
     navigate('/select-mode');
@@ -182,9 +234,16 @@ export const OrdersMode = () => {
             <ChefHat className="w-8 h-8 text-blue-600" />
             <div>
               <h1 className="text-xl md:text-2xl font-bold text-gray-800">Mode Commandes</h1>
-              <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs font-semibold">
-                {orders.length} active{orders.length > 1 ? 's' : ''}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs font-semibold">
+                  {orders.length} active{orders.length > 1 ? 's' : ''}
+                </span>
+                {wakeLockActive && (
+                  <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs font-semibold">
+                    🔆 Écran actif
+                  </span>
+                )}
+              </div>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">

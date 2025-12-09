@@ -23,21 +23,82 @@ def get_dashboard_stats():
         # Commandes aujourd'hui
         orders_today = list(db.collection('orders').where('created_at', '>=', today_start).stream())
         
-        # Calcul CA
+        # Calcul CA et répartition paiements
         ca_today = 0
+        payment_breakdown = {}
+        
         for order in orders_today:
             order_data = order.to_dict()
             if order_data.get('status') not in ['cancelled', 'refunded']:
-                ca_today += order_data.get('total', 0)
+                total = order_data.get('total', 0)
+                ca_today += total
+                
+                # Répartition par méthode de paiement
+                payment_method = order_data.get('payment_method', 'other')
+                if payment_method:
+                    # Normaliser les noms
+                    method_lower = payment_method.lower()
+                    if 'card' in method_lower or 'cb' in method_lower or 'stripe' in method_lower:
+                        method_key = 'card'
+                    elif 'cash' in method_lower or 'espece' in method_lower or 'espèce' in method_lower:
+                        method_key = 'cash'
+                    elif 'ticket' in method_lower:
+                        method_key = 'ticket_resto'
+                    elif 'cheque' in method_lower or 'chèque' in method_lower:
+                        method_key = 'cheque'
+                    elif 'apple' in method_lower:
+                        method_key = 'apple_pay'
+                    else:
+                        method_key = 'other'
+                    
+                    payment_breakdown[method_key] = payment_breakdown.get(method_key, 0) + total
         
-        # Commandes de la semaine
+        # Commandes de la semaine pour top produits
         orders_week = list(db.collection('orders').where('created_at', '>=', week_ago).stream())
+        
+        # Top 5 produits (7 jours)
+        product_stats = {}
+        for order in orders_week:
+            order_data = order.to_dict()
+            if order_data.get('status') in ['cancelled', 'refunded']:
+                continue
+            for item in order_data.get('items', []):
+                product_name = item.get('name', 'Unknown')
+                quantity = item.get('quantity', 1)
+                price = item.get('price', 0) * quantity
+                
+                if product_name not in product_stats:
+                    product_stats[product_name] = {'quantity': 0, 'revenue': 0}
+                product_stats[product_name]['quantity'] += quantity
+                product_stats[product_name]['revenue'] += price
+        
+        # Trier par quantité et prendre top 5
+        top_products = sorted(
+            [{'name': k, 'quantity': v['quantity'], 'revenue': round(v['revenue'], 2)} 
+             for k, v in product_stats.items()],
+            key=lambda x: x['quantity'],
+            reverse=True
+        )[:5]
         
         # Nombre de clients
         customers_count = len(list(db.collection('customers').limit(1000).stream()))
         
         # Nombre de produits
         products_count = len(list(db.collection('products').stream()))
+        
+        # Alertes - produits en rupture de stock
+        out_of_stock_count = 0
+        try:
+            products = db.collection('products').stream()
+            for product in products:
+                product_data = product.to_dict()
+                # Vérifier si le produit est en rupture
+                if product_data.get('out_of_stock', False) or \
+                   product_data.get('is_out_of_stock', False) or \
+                   product_data.get('stock', 999) <= 0:
+                    out_of_stock_count += 1
+        except:
+            pass
         
         # Panier moyen
         panier_moyen = ca_today / len(orders_today) if orders_today else 0
@@ -49,7 +110,11 @@ def get_dashboard_stats():
             "customers_count": customers_count,
             "products_count": products_count,
             "panier_moyen": round(panier_moyen, 2),
-            "alerts": 0
+            "alerts": {
+                "out_of_stock_count": out_of_stock_count
+            },
+            "payment_breakdown": payment_breakdown,
+            "top_products": top_products
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

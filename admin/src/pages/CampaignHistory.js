@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from '../components/Header';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/Card';
-import { CheckCircle, XCircle, TrendingUp, Users, DollarSign, Award, Loader } from 'lucide-react';
+import { CheckCircle, XCircle, TrendingUp, Users, DollarSign, Award, Loader, RefreshCw, Clock, AlertCircle } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://fastfood-fixes.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
 
 export const CampaignHistory = () => {
   const [campaigns, setCampaigns] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // all, accepted, refused
+  const [error, setError] = useState('');
 
   useEffect(() => {
     loadData();
@@ -18,37 +19,36 @@ export const CampaignHistory = () => {
 
   const loadData = async () => {
     setLoading(true);
+    setError('');
     try {
-      const token = localStorage.getItem('admin_token');
-      
       // Charger les campagnes
-      const statusFilter = filter === 'all' ? null : filter;
-      const campaignsRes = await axios.get(
-        `${API_URL}/api/v1/fb/ai-marketing/campaigns/all${statusFilter ? `?status=${statusFilter}` : ''}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const statusFilter = filter === 'all' ? '' : `?status=${filter}`;
+      const campaignsRes = await axios.get(`${API_URL}/api/v1/fb/ai-marketing/campaigns/all${statusFilter}`);
       
       // Charger les stats
-      const statsRes = await axios.get(
-        `${API_URL}/api/v1/fb/ai-marketing/stats`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const statsRes = await axios.get(`${API_URL}/api/v1/fb/ai-marketing/stats`);
       
       setCampaigns(campaignsRes.data.campaigns || []);
       setStats(statsRes.data);
     } catch (error) {
       console.error('Erreur chargement données:', error);
+      setError('Impossible de charger les données. Vérifiez que le backend est démarré.');
     } finally {
       setLoading(false);
     }
   };
 
   const formatDate = (dateStr) => {
-    return new Date(dateStr).toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
+    if (!dateStr) return 'N/A';
+    try {
+      return new Date(dateStr).toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    } catch {
+      return dateStr;
+    }
   };
 
   const getStatusBadge = (status) => {
@@ -68,21 +68,46 @@ export const CampaignHistory = () => {
       );
     } else {
       return (
-        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200">
+        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+          <Clock className="w-3 h-3 mr-1" />
           En attente
         </span>
       );
     }
   };
 
+  const getTypeIcon = (type) => {
+    switch (type) {
+      case 'produit': return '🍔';
+      case 'fidelite': return '⭐';
+      case 'happy_hour': return '⏰';
+      case 'reactivation': return '🔄';
+      case 'panier_moyen': return '🛒';
+      default: return '💡';
+    }
+  };
+
   return (
     <div>
       <Header 
-        title="🧾 Historique & Résultats" 
+        title="📊 Historique & Résultats" 
         subtitle="Suivi des performances de toutes tes campagnes IA"
       />
       
       <div className="p-8">
+        {/* Erreur */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-3">
+            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+            <div className="flex-1">
+              <p className="text-red-700">{error}</p>
+            </div>
+            <button onClick={loadData} className="p-2 hover:bg-red-100 rounded">
+              <RefreshCw className="w-4 h-4 text-red-500" />
+            </button>
+          </div>
+        )}
+
         {/* Stats globales */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -91,7 +116,7 @@ export const CampaignHistory = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">Campagnes totales</p>
-                    <p className="text-3xl font-bold text-gray-800 dark:text-white">{stats.total_campaigns}</p>
+                    <p className="text-3xl font-bold text-gray-800 dark:text-white">{stats.total_campaigns || 0}</p>
                   </div>
                   <TrendingUp className="w-10 h-10 text-primary" />
                 </div>
@@ -103,8 +128,8 @@ export const CampaignHistory = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">Acceptées</p>
-                    <p className="text-3xl font-bold text-green-600">{stats.accepted}</p>
-                    <p className="text-xs text-gray-500">Taux: {stats.acceptance_rate}%</p>
+                    <p className="text-3xl font-bold text-green-600">{stats.accepted || 0}</p>
+                    <p className="text-xs text-gray-500">Taux: {stats.acceptance_rate || 0}%</p>
                   </div>
                   <CheckCircle className="w-10 h-10 text-green-600" />
                 </div>
@@ -116,9 +141,9 @@ export const CampaignHistory = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">CA généré</p>
-                    <p className="text-3xl font-bold text-gold">{stats.total_ca_generated}€</p>
+                    <p className="text-3xl font-bold text-yellow-600">{stats.total_ca_generated || 0}€</p>
                   </div>
-                  <DollarSign className="w-10 h-10 text-gold" />
+                  <DollarSign className="w-10 h-10 text-yellow-600" />
                 </div>
               </CardContent>
             </Card>
@@ -128,7 +153,7 @@ export const CampaignHistory = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">Pts fidélité</p>
-                    <p className="text-3xl font-bold text-purple-600">{stats.total_fidelity_points}</p>
+                    <p className="text-3xl font-bold text-purple-600">{stats.total_fidelity_points || 0}</p>
                   </div>
                   <Award className="w-10 h-10 text-purple-600" />
                 </div>
@@ -155,36 +180,46 @@ export const CampaignHistory = () => {
         )}
 
         {/* Filtres */}
-        <div className="flex space-x-4 mb-6">
+        <div className="flex flex-wrap gap-3 mb-6">
           <button
             onClick={() => setFilter('all')}
             className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
               filter === 'all'
                 ? 'bg-primary text-white'
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300'
             }`}
           >
-            Toutes
+            Toutes ({stats?.total_campaigns || 0})
           </button>
           <button
             onClick={() => setFilter('accepted')}
             className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
               filter === 'accepted'
                 ? 'bg-green-600 text-white'
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300'
             }`}
           >
-            Activées
+            ✅ Activées ({stats?.accepted || 0})
           </button>
           <button
             onClick={() => setFilter('refused')}
             className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
               filter === 'refused'
                 ? 'bg-red-600 text-white'
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300'
             }`}
           >
-            Refusées
+            ❌ Refusées ({stats?.refused || 0})
+          </button>
+          <button
+            onClick={() => setFilter('pending')}
+            className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+              filter === 'pending'
+                ? 'bg-yellow-600 text-white'
+                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300'
+            }`}
+          >
+            ⏳ En attente ({stats?.pending || 0})
           </button>
         </div>
 
@@ -205,14 +240,18 @@ export const CampaignHistory = () => {
                       <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-300 uppercase">Type</th>
                       <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-300 uppercase">Statut</th>
                       <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-300 uppercase">Réduction</th>
-                      <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-300 uppercase">Impact estimé</th>
+                      <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-300 uppercase">Impact</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                     {campaigns.length === 0 ? (
                       <tr>
                         <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
-                          Aucune campagne trouvée
+                          <div className="flex flex-col items-center">
+                            <TrendingUp className="w-12 h-12 text-gray-300 mb-4" />
+                            <p className="text-lg font-medium">Aucune campagne trouvée</p>
+                            <p className="text-sm">Générez des campagnes dans l'onglet "Campagnes proposées"</p>
+                          </div>
                         </td>
                       </tr>
                     ) : (
@@ -222,11 +261,16 @@ export const CampaignHistory = () => {
                             {formatDate(campaign.created_at)}
                           </td>
                           <td className="px-6 py-4">
-                            <div className="text-sm font-semibold text-gray-800 dark:text-white">{campaign.name}</div>
-                            <div className="text-xs text-gray-500 line-clamp-1">{campaign.message}</div>
+                            <div className="flex items-center space-x-2">
+                              <span className="text-lg">{getTypeIcon(campaign.type)}</span>
+                              <div>
+                                <div className="text-sm font-semibold text-gray-800 dark:text-white">{campaign.name}</div>
+                                <div className="text-xs text-gray-500 line-clamp-1 max-w-xs">{campaign.message}</div>
+                              </div>
+                            </div>
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 capitalize">
-                            {campaign.type.replace('_', ' ')}
+                            {(campaign.type || 'promo').replace('_', ' ')}
                           </td>
                           <td className="px-6 py-4">
                             {getStatusBadge(campaign.status)}

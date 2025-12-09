@@ -19,7 +19,7 @@ import { API_BASE_URL } from '../../constants/config';
 
 export default function AuthScreen() {
   const router = useRouter();
-  const { login } = useAuthStore();
+  const { setUser } = useAuthStore();
   
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
@@ -45,7 +45,7 @@ export default function AuthScreen() {
       });
 
       if (response.data && response.data.user) {
-        login(response.data.user);
+        setUser(response.data.user);
         Alert.alert('✅ Connecté', 'Bienvenue !');
         router.replace('/(tabs)');
       }
@@ -106,7 +106,7 @@ export default function AuthScreen() {
       });
 
       if (response.data && response.data.user) {
-        login(response.data.user);
+        setUser(response.data.user);
         Alert.alert('✅ Compte créé', 'Bienvenue chez Family\'s !');
         router.replace('/(tabs)');
       }
