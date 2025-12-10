@@ -23,7 +23,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.fayce.familysnew",
-      "buildNumber": "83",
+      "buildNumber": "84",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
