@@ -36,6 +36,64 @@ const fetchProducts = async (category = null, search = null) => {
   return data.products || [];
 };
 
+// Composant CategoryBadge avec support images
+const CategoryBadge = ({ category, isSelected, onPress }) => {
+  const hasImage = category.image_url || category.image;
+  
+  return (
+    <TouchableOpacity
+      style={[
+        styles.categoryBadge,
+        isSelected && styles.categoryBadgeActive
+      ]}
+      onPress={onPress}
+      activeOpacity={0.8}
+    >
+      {hasImage ? (
+        // Avec image
+        <View style={styles.categoryImageContainer}>
+          <Image 
+            source={{ uri: category.image_url || category.image }} 
+            style={styles.categoryImage}
+            resizeMode="cover"
+          />
+          <LinearGradient
+            colors={['transparent', 'rgba(0,0,0,0.7)']}
+            style={styles.categoryImageOverlay}
+          />
+          <Text style={styles.categoryImageText} numberOfLines={1}>
+            {category.name}
+          </Text>
+          {isSelected && (
+            <View style={styles.categoryCheckmark}>
+              <Text style={styles.categoryCheckmarkText}>✓</Text>
+            </View>
+          )}
+        </View>
+      ) : (
+        // Sans image (emoji)
+        <View style={[
+          styles.categoryEmojiContainer,
+          isSelected && styles.categoryEmojiContainerActive
+        ]}>
+          <Text style={styles.categoryEmoji}>{category.icon || '🍽️'}</Text>
+          <Text style={[
+            styles.categoryEmojiText,
+            isSelected && styles.categoryEmojiTextActive
+          ]} numberOfLines={1}>
+            {category.name}
+          </Text>
+          {isSelected && (
+            <View style={[styles.categoryCheckmark, styles.categoryCheckmarkEmoji]}>
+              <Text style={styles.categoryCheckmarkText}>✓</Text>
+            </View>
+          )}
+        </View>
+      )}
+    </TouchableOpacity>
+  );
+};
+
 // Composant ProductCard avec images et support promos
 const ProductCard = ({ product, onPress, onAdd }) => {
   const router = useRouter();
@@ -282,30 +340,20 @@ export default function MenuScreen() {
           />
         </View>
 
+        {/* NOUVEAU: Catégories avec support images */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           style={styles.categoriesScroll}
-          contentContainerStyle={{ gap: 8 }}
+          contentContainerStyle={styles.categoriesContainer}
         >
           {categories.map((category, index) => (
-            <TouchableOpacity
+            <CategoryBadge
               key={index}
-              style={[
-                styles.categoryChip,
-                selectedCategory === category.name && styles.categoryChipActive
-              ]}
+              category={category}
+              isSelected={selectedCategory === category.name}
               onPress={() => setSelectedCategory(category.name)}
-            >
-              <Text
-                style={[
-                  styles.categoryChipText,
-                  selectedCategory === category.name && styles.categoryChipTextActive
-                ]}
-              >
-                {category.icon} {category.name}
-              </Text>
-            </TouchableOpacity>
+            />
           ))}
         </ScrollView>
       </LinearGradient>
@@ -385,7 +433,7 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingTop: 60,
-    paddingBottom: 20,
+    paddingBottom: 16,
     paddingHorizontal: 20,
   },
   headerTop: {
@@ -422,27 +470,110 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 15,
   },
+  
+  // NOUVEAU: Styles des catégories avec images
   categoriesScroll: {
     flexGrow: 0,
-    marginBottom: 12,
+    marginBottom: 8,
   },
-  categoryChip: {
+  categoriesContainer: {
+    gap: 10,
+    paddingRight: 10,
+  },
+  categoryBadge: {
+    width: 80,
+    height: 90,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  categoryBadgeActive: {
+    transform: [{ scale: 1.05 }],
+  },
+  
+  // Catégorie avec image
+  categoryImageContainer: {
+    width: '100%',
+    height: '100%',
+    position: 'relative',
+  },
+  categoryImage: {
+    width: '100%',
+    height: '100%',
+  },
+  categoryImageOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: '60%',
+  },
+  categoryImageText: {
+    position: 'absolute',
+    bottom: 8,
+    left: 6,
+    right: 6,
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  
+  // Catégorie avec emoji (sans image)
+  categoryEmojiContainer: {
+    width: '100%',
+    height: '100%',
     backgroundColor: 'rgba(255,255,255,0.25)',
-    borderRadius: 20,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 6,
   },
-  categoryChipActive: {
+  categoryEmojiContainerActive: {
     backgroundColor: '#FFFFFF',
   },
-  categoryChipText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#FFFFFF',
+  categoryEmoji: {
+    fontSize: 32,
+    marginBottom: 4,
   },
-  categoryChipTextActive: {
+  categoryEmojiText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  categoryEmojiTextActive: {
     color: '#FF6B6B',
   },
+  
+  // Checkmark de sélection
+  categoryCheckmark: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  categoryCheckmarkEmoji: {
+    backgroundColor: '#FF6B6B',
+  },
+  categoryCheckmarkText: {
+    color: '#10B981',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+
   productsContainer: {
     flex: 1,
     padding: 16,
